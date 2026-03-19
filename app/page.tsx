@@ -23,7 +23,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 export const metadata = {
   title: 'PDV Pro — Vendez en ligne en Afrique de l\'Ouest',
-  description: 'Créez votre boutique en ligne en 10 minutes. Zéro abonnement avec Gratuit. Payez via Wave, Orange Money et Mobile Money. PDV Pro, la plateforme e-commerce africaine.',
+  description: 'Créez votre boutique en ligne en 10 minutes. Zéro abonnement, zéro frais fixe. Paiements Wave, Orange Money et Mobile Money intégrés. Commission dégressive 7% → 4%.',
   openGraph: {
     title: 'PDV Pro — Votre boutique e-commerce en 10 minutes',
     description: 'Vendez sur WhatsApp, Instagram et Facebook avec une vraie boutique. Paiements Mobile Money intégrés.',
@@ -56,7 +56,7 @@ export const metadata = {
     },
     {
       q: "Peut-on vendre des produits physiques ?",
-      r: "Oui ! PDV Pro est la seule plateforme en Afrique de l'Ouest qui supporte nativement le COD (paiement à la livraison) avec une option dédiée à 9 900 FCFA/mois qui débloque cette fonctionnalité et supprime la commission sur ces ventes."
+      r: "Oui ! PDV Pro supporte nativement le paiement à la livraison (COD) pour les vendeurs de produits physiques. Le COD est soumis à une commission fixe de 5%. Aucun abonnement requis — vous activez le COD depuis vos paramètres et c'est tout."
     },
     {
       q: "Quand sont disponibles mes fonds ?",
@@ -68,7 +68,7 @@ export const metadata = {
     },
     {
       q: "Y a-t-il un abonnement obligatoire ?",
-      r: "Non. Le plan de base est 100% gratuit, sans abonnement caché. Nous ne gagnons de l'argent que quand vous en gagnez."
+      r: "Non, jamais. PDV Pro fonctionne à 100% sur un modèle de commission. Aucun abonnement mensuel, aucun frais fixe, aucun coût caché. Nous ne gagnons de l'argent que quand vous en gagnez."
     },
     {
       q: "Peut-on vendre des produits digitaux ?",
@@ -214,7 +214,7 @@ export default async function LandingPage() {
             </h1>
             
             <p className="text-xl md:text-2xl text-slate font-light max-w-3xl mx-auto leading-relaxed">
-              {get('landing_hero_subtitle', 'PDV Pro est la seule plateforme conçue pour le commerce mobile en Afrique de l\'Ouest. Wave, Orange Money, COD — tout est intégré. Zéro abonnement pour commencer.')}
+              {get('landing_hero_subtitle', 'PDV Pro est la seule plateforme conçue pour le commerce mobile en Afrique de l\'Ouest. Wave, Orange Money — tout est intégré. Zéro frais fixe, vous ne payez qu\'une commission sur vos ventes.')}
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
@@ -273,7 +273,7 @@ export default async function LandingPage() {
                   {[
                     { num: '01', title: 'En 2 minutes : votre boutique est live', desc: "Choisissez pdvpro.com/votreboutique, ajoutez votre logo. Votre vitrine professionnelle est accessible immédiatement." },
                     { num: '02', title: 'Ajoutez vos produits, générez vos liens', desc: "Photos, prix, variantes, stock. Chaque produit a son lien de paiement direct à partager sur WhatsApp ou Instagram." },
-                    { num: '03', title: 'Encaissez. L\'argent arrive dans votre wallet.', desc: "Wave, Orange Money ou paiement à la livraison. Dès confirmation, les fonds sont dans votre wallet PDV Pro. Retrait en 1 clic dès 5 000 FCFA." },
+                    { num: '03', title: 'Encaissez. L\'argent arrive dans votre wallet.', desc: "Wave, Orange Money ou carte bancaire. Dès confirmation, les fonds sont dans votre wallet PDV Pro. Retrait en 1 clic dès 5 000 FCFA." },
                   ].map((step, i) => (
                     <div key={i} className="flex gap-6">
                       <div className="shrink-0 w-12 h-12 bg-emerald/10 border border-emerald/20 text-emerald font-bold flex items-center justify-center rounded-full shadow-sm">
@@ -353,7 +353,7 @@ export default async function LandingPage() {
         <section id="features" className="py-24 px-6 bg-cream border-y border-line">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16 max-w-3xl mx-auto">
-              <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block">L'arsenal complet</span>
+              <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block">L&apos;arsenal complet</span>
               <h2 className="text-3xl md:text-5xl font-display font-black mb-4 tracking-tight text-ink">
                 Tout ce dont vous avez besoin pour <span className="text-emerald italic">grandir</span>.
               </h2>
@@ -451,21 +451,24 @@ export default async function LandingPage() {
               <p className="text-xl text-slate font-light">Commencez gratuitement, payez moins quand vous grossissez.</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto mb-10 px-4">
+            <div className="flex justify-center mb-10 px-4">
               {/* Plan Gratuit */}
-              <div className="bg-white border border-line rounded-[2rem] p-8 xl:p-12 transition-all duration-500 flex flex-col hover:border-emerald/30 hover:shadow-2xl hover:shadow-emerald/5 hover:-translate-y-2 relative group overflow-hidden">
+              <div className="w-full max-w-xl bg-white border border-line rounded-[2rem] p-8 xl:p-12 transition-all duration-500 flex flex-col hover:border-emerald/30 hover:shadow-2xl hover:shadow-emerald/5 hover:-translate-y-2 relative group overflow-hidden">
                 <div className="absolute -right-12 -top-12 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500">
                   <Store size={240} className="text-emerald" />
                 </div>
                 <div className="relative z-10 flex-1 flex flex-col">
-                  <h3 className="text-3xl font-display font-black text-ink mb-3 group-hover:text-emerald transition-colors">Plan Gratuit</h3>
+                  <h3 className="text-3xl font-display font-black text-ink mb-3 group-hover:text-emerald transition-colors">Notre modèle</h3>
                   <p className="text-slate font-light mb-8 min-h-[48px] leading-relaxed italic">
-                    "Démarrez sans dépenser un franc. PDV Pro ne gagne que quand vous vendez."
+                    "Zéro abonnement, zéro frais fixe. PDV Pro ne gagne que quand vous vendez."
                   </p>
                   
-                  <div className="flex items-baseline gap-2 mb-8 pb-8 relative">
-                    <span className="text-6xl font-display font-black text-ink tracking-tight">0</span>
-                    <span className="text-xl text-slate font-mono font-medium">F/mois</span>
+                  <div className="flex flex-col mb-8 pb-8 relative">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-6xl font-display font-black text-ink tracking-tight">0</span>
+                      <span className="text-xl text-slate font-mono font-medium">F/mois</span>
+                    </div>
+                    <span className="text-emerald font-bold mt-2">Aucun abonnement — jamais</span>
                     <div className="absolute bottom-0 left-0 w-12 h-1 bg-emerald/20 rounded-full group-hover:w-full transition-all duration-500"></div>
                   </div>
                   
@@ -473,6 +476,10 @@ export default async function LandingPage() {
                     <div className="flex items-start gap-4">
                       <div className="mt-1 bg-emerald/10 rounded-full p-1"><CheckCircle2 className="text-emerald" size={16}/></div>
                       <span className="text-ink font-bold">Commission dégressive : 7% → 4%</span>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="mt-1 bg-emerald/10 rounded-full p-1"><CheckCircle2 className="text-emerald" size={16}/></div>
+                      <span className="text-ink font-bold">COD (livraison) : 5% fixe pour les vendeurs physiques</span>
                     </div>
                     <div className="flex items-start gap-4">
                       <div className="mt-1 bg-emerald/10 rounded-full p-1"><CheckCircle2 className="text-emerald" size={16}/></div>
@@ -493,56 +500,10 @@ export default async function LandingPage() {
                   </Link>
                 </div>
               </div>
-
-              {/* Option COD */}
-              <div className="bg-white rounded-[2rem] p-8 xl:p-12 relative shadow-2xl shadow-emerald/10 flex flex-col transition-all duration-500 hover:-translate-y-2 hover:shadow-emerald/20 group">
-                <div className="absolute inset-0 border-2 border-emerald rounded-[2rem] pointer-events-none"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald/5 to-transparent rounded-[2rem] pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
-                <div className="absolute top-0 right-8 -translate-y-1/2 bg-gradient-to-r from-emerald to-emerald-rich text-white font-mono font-bold text-[10px] uppercase tracking-widest py-2 px-5 rounded-full shadow-lg shadow-emerald/30 border border-emerald-light/30">
-                  <span className="flex items-center gap-1.5"><Zap size={12} /> Booster de ventes</span>
-                </div>
-                
-                <div className="relative z-10 flex-1 flex flex-col">
-                  <h3 className="text-3xl font-display font-black text-ink mb-3 group-hover:text-emerald transition-colors">Option COD</h3>
-                  <p className="text-slate font-light mb-8 min-h-[48px] leading-relaxed italic">
-                    "Rassurez vos clients avec le paiement à la livraison."
-                  </p>
-                  
-                  <div className="flex items-baseline gap-2 mb-8 pb-8 relative">
-                    <span className="text-6xl font-display font-black text-emerald tracking-tight drop-shadow-sm">{get('landing_cod_price', '9 900')}</span>
-                    <span className="text-xl text-slate font-mono font-medium">F/mois</span>
-                    <div className="absolute bottom-0 left-0 w-12 h-1 bg-emerald rounded-full group-hover:w-full transition-all duration-500"></div>
-                  </div>
-                  
-                  <div className="space-y-5 mb-10 flex-1">
-                    <div className="flex items-start gap-4">
-                      <div className="mt-1 bg-emerald/20 rounded-full p-1 shadow-sm"><CheckCircle2 className="text-emerald" size={16}/></div>
-                      <span className="text-ink font-bold">0% de commission sur les ventes COD</span>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="mt-1 bg-emerald/20 rounded-full p-1 shadow-sm"><CheckCircle2 className="text-emerald" size={16}/></div>
-                      <span className="text-ink">Paiement à la livraison activé sur vos pages</span>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="mt-1 bg-emerald/20 rounded-full p-1 shadow-sm"><CheckCircle2 className="text-emerald" size={16}/></div>
-                      <span className="text-ink italic text-sm">Frais achat supportés par l&apos;acheteur</span>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="mt-1 bg-emerald/20 rounded-full p-1 shadow-sm"><CheckCircle2 className="text-emerald" size={16}/></div>
-                      <span className="text-ink">Fonds disponibles après confirmation livraison</span>
-                    </div>
-                  </div>
-                  
-                  <Link href="/register?plan=cod" className="block w-full text-center py-4 bg-emerald hover:bg-emerald-rich text-white font-bold rounded-2xl shadow-xl shadow-emerald/20 transition-all duration-300 transform group-hover:scale-[1.02]">
-                    Prendre l&apos;Option COD
-                  </Link>
-                </div>
-              </div>
             </div>
 
             <p className="text-center text-slate max-w-2xl mx-auto mb-16 bg-white py-4 px-6 rounded-2xl border border-line shadow-sm">
-              <span className="mr-2">💡</span> L'option COD se combine avec le plan Gratuit. Vos ventes en ligne restent à 7%→4%, vos ventes à la livraison à 0%.
+              <span className="mr-2">💡</span> Vous ne payez qu&apos;une commission sur vos ventes réelles. Plus vous vendez, moins vous payez. De 7% pour les débutants à 4% pour les pros.
             </p>
 
             <PricingCalculator />
@@ -582,7 +543,7 @@ export default async function LandingPage() {
             <div className="text-xl text-slate font-light mb-12 max-w-2xl mx-auto space-y-2">
               <p>2 minutes pour créer votre compte.</p>
               <p>0 F pour commencer.</p>
-              <p className="font-medium text-emerald">Les premiers paiements arrivent dès aujourd'hui.</p>
+              <p className="font-medium text-emerald">Les premiers paiements arrivent dès aujourd&apos;hui.</p>
             </div>
             <Link href="/register" className="inline-block px-14 py-5 bg-emerald text-white rounded-xl font-bold text-lg hover:bg-emerald-rich transition shadow-xl shadow-emerald/20 mb-8">
               {get('landing_cta_button', "Créer ma boutique maintenant — C'est gratuit")}
@@ -611,7 +572,7 @@ export default async function LandingPage() {
               <span className="text-2xl font-display font-black tracking-tighter text-white">PDV<span className="text-emerald-light">Pro</span></span>
             </div>
             <p className="font-light max-w-sm leading-relaxed text-sm text-white/60">
-              La plateforme e-commerce tout-en-un conçue spécifiquement pour les réalités du commerce en Afrique de l'Ouest.
+              La plateforme e-commerce tout-en-un conçue spécifiquement pour les réalités du commerce en Afrique de l&apos;Ouest.
             </p>
             <div className="flex gap-4 mt-6">
                <a href={get('landing_instagram_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition"><Instagram size={18}/></a>
