@@ -88,8 +88,8 @@ export async function POST(req: Request): Promise<Response> {
       throw new Error('Erreur lors de la mise à jour du solde.')
     }
 
-    // 6. Enregistrer la transaction de retrait
-    const { error: txError } = await supabaseAdmin
+    // 6. Enregistrer la transaction de retrait (en statut pending d'abord)
+    const { error: txError, data: newTx } = await supabaseAdmin
       .from('AmbassadorTransaction')
       .insert({
         ambassador_id: ambassadorId,
@@ -97,18 +97,40 @@ export async function POST(req: Request): Promise<Response> {
         type:          'withdrawal',
         amount:        amount,
         description:   `Retrait via ${method === 'wave' ? 'Wave' : 'Orange Money'} — ${phone}`,
-        status:        'completed',
+        status:        'pending',
       })
+      .select('id')
+      .single()
 
     if (txError) {
       console.error('[Ambassador Withdrawal] Erreur insert transaction:', txError.message)
-      // Non bloquant — le solde a déjà été déduit
     }
 
-    // 7. TODO : Appeler l'API Wave ou Orange Money pour le transfert réel
-    // Pour l'instant → on simule le succès et on log
+    // Payout automatique via Wave/CinetPay
+    const { executePayout } = await import('@/lib/payouts/payout-service')
+    const payoutResult = await executePayout({
+      phone,
+      amount,
+      reference: newTx?.id || `${ambassadorId}-${Date.now()}`,
+      method
+    })
+
+    if (!payoutResult.success) {
+      // Échec du payout : on annule
+      await supabaseAdmin.from('Ambassador').update({ balance: amb.balance }).eq('id', ambassadorId)
+      if (newTx) {
+        await supabaseAdmin.from('AmbassadorTransaction').update({ status: 'failed' }).eq('id', newTx.id)
+      }
+      return NextResponse.json({ error: payoutResult.error || 'Erreur technique lors du transfert' }, { status: 500 })
+    }
+
+    // Succès
+    if (newTx) {
+      await supabaseAdmin.from('AmbassadorTransaction').update({ status: 'completed' }).eq('id', newTx.id)
+    }
+
     console.log(
-      `[Ambassador Withdrawal] ✅ Retrait ${amount} FCFA via ${method} au ${phone} — ambassadeur ${ambassadorId}`
+      `[Ambassador Withdrawal] ✅ Retrait ${amount} FCFA via ${method} au ${phone} — ambassadeur ${ambassadorId} (ID: ${payoutResult.transactionId})`
     )
 
     return NextResponse.json(

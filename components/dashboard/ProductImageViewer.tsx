@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 
 interface Props {
   images: string[]
@@ -76,13 +77,16 @@ export default function ProductImageViewer({ images, productName, initialIndex =
           )}
 
           {/* IMAGE PRINCIPALE avec filigrane */}
-          <div className="relative max-w-5xl max-h-[85vh] mx-16 flex items-center justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={images[currentIndex]}
-              alt={productName}
-              className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
-            />
+          <div className="relative w-[90vw] max-w-5xl h-[85vh] mx-16 flex items-center justify-center">
+            <div className="relative w-full h-full max-w-full max-h-[85vh]">
+              <Image
+                src={images[currentIndex]}
+                fill
+                sizes="(max-width: 1024px) 90vw, 1024px"
+                alt={productName}
+                className="object-contain rounded-xl drop-shadow-2xl"
+              />
+            </div>
 
             {/* FILIGRANE PDV PRO CENTRAL */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -138,14 +142,15 @@ export default function ProductImageViewer({ images, productName, initialIndex =
                     e.stopPropagation()
                     setCurrentIndex(i)
                   }}
-                  className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition ${
+                  title={`Miniature ${i + 1}`}
+                  aria-label={`Afficher image ${i + 1}`}
+                  className={`relative w-14 h-14 rounded-xl overflow-hidden border-2 transition ${
                     i === currentIndex
                       ? 'border-emerald shadow-lg shadow-emerald/30 scale-110'
                       : 'border-transparent hover:border-white/50 opacity-50 hover:opacity-100'
                   }`}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img} alt={`Miniature ${i + 1}`} className="w-full h-full object-cover" />
+                  <Image src={img} alt={`Miniature ${i + 1}`} fill sizes="56px" className="object-cover" />
                 </button>
               ))}
             </div>

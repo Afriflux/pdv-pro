@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import QRCode from 'qrcode'
 import { X, Download, Share2, Loader2 } from 'lucide-react'
 
@@ -63,9 +64,11 @@ export function QRCodeModal({ productId, productName, onClose }: QRCodeModalProp
           <div className="relative aspect-square w-full max-w-[280px] bg-gray-50 rounded-3xl border-2 border-dashed border-gray-100 flex items-center justify-center overflow-hidden">
             {loading ? (
               <Loader2 className="animate-spin text-emerald" size={32} />
-            ) : (
-              <img src={qrDataUrl} alt={`QR Code for ${productName}`} className="w-full h-full object-contain p-4" />
-            )}
+            ) : qrDataUrl ? (
+              <div className="absolute inset-0 p-4">
+                <Image src={qrDataUrl} alt={`QR Code for ${productName}`} fill sizes="280px" className="object-contain p-4" />
+              </div>
+            ) : null}
           </div>
 
           <div className="text-center space-y-1">

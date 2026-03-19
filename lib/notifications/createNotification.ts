@@ -11,6 +11,7 @@ interface NotificationPayload {
   title: string
   message: string
   link?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabaseClient?: SupabaseClient<any, 'public', any>
 }
 

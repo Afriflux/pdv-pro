@@ -132,6 +132,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       ` (store="${store.name}")`
     )
 
+    // Payout automatique via Wave/CinetPay — intégré dans /api/admin/retraits/[id]
     // 9. Notification Telegram au vendeur (fire-and-forget)
     const telegramToken = process.env.TELEGRAM_BOT_TOKEN
     const chatId        = store.telegram_notifications as string | null

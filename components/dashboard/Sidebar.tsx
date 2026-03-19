@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -266,10 +267,9 @@ function SidebarContent({
       {/* Footer / Profile */}
       <div className={`mt-auto border-t border-white/10 ${collapsed ? 'px-2 pb-2 pt-4' : 'px-4 pb-4 pt-4'} flex-shrink-0 transition-all`}>
         <div className={`flex items-center ${collapsed ? 'justify-center mx-auto' : 'gap-3 overflow-hidden px-1'} mb-3`}>
-          <div className="w-10 h-10 rounded-full border border-white/20 overflow-hidden bg-white/10 flex items-center justify-center flex-shrink-0">
+          <div className="relative w-10 h-10 rounded-full border border-white/20 overflow-hidden bg-white/10 flex items-center justify-center flex-shrink-0">
             {avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              <Image src={avatarUrl} alt="Avatar" fill sizes="40px" className="object-cover" />
             ) : (
               <span className="text-lg font-black text-gold/80">{userName[0]}</span>
             )}

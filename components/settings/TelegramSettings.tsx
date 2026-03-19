@@ -45,6 +45,7 @@ export function TelegramSettings({
   void storeId // reserved for future use
   // États de connexion
   const [isConnected, setIsConnected] = useState(!!initialChatId) // eslint-disable-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_chatId, setChatId] = useState(initialChatId)
   
   // États du token de liaison
@@ -55,6 +56,7 @@ export function TelegramSettings({
   
   // États UI
   const [isLoading, setIsLoading] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   
@@ -118,7 +120,7 @@ export function TelegramSettings({
       setChatId(null)
       setToken(null)
       toast.success('Compte Telegram déconnecté')
-    } catch (error) {
+    } catch {
       toast.error('Erreur lors de la déconnexion')
     } finally {
       setIsLoading(false)
@@ -135,7 +137,7 @@ export function TelegramSettings({
       await updateTelegramNotifications(newNotifs)
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 2000)
-    } catch (error) {
+    } catch {
       toast.error('Erreur lors de la sauvegarde')
       setNotifications(notifications) // Revert
     } finally {

@@ -10,7 +10,11 @@ interface VisitorCounterProps {
   baseCount?: number  // Nombre initial (défaut : aléatoire 3-12)
 }
 
-export default function VisitorCounter({ productId: _productId, baseCount }: VisitorCounterProps) {
+export default function VisitorCounter({ 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  productId: _productId, 
+  baseCount 
+}: VisitorCounterProps) {
   // Initialiser avec baseCount ou un nombre aléatoire entre 3 et 12
   const [count, setCount] = useState<number>(
     () => baseCount ?? Math.floor(Math.random() * 10) + 3

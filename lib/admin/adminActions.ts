@@ -9,7 +9,7 @@ export async function logAdminAction(
   action: string,
   targetType?: string,
   targetId?: string,
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 ) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -121,8 +121,8 @@ export async function getAdminVendors(): Promise<AdminVendor[]> {
     const validStatuses = ['confirmed', 'preparing', 'shipped', 'delivered']
     let revenue = 0
     if (user.orders && Array.isArray(user.orders)) {
-      const ordersArray = user.orders as any[]
-      revenue = ordersArray.reduce((sum, o) => {
+      const ordersArray = user.orders as Record<string, unknown>[]
+      revenue = ordersArray.reduce((sum, o: any) => {
         if (validStatuses.includes(o.status)) {
            return sum + (o.platform_fee || 0)
         }
@@ -200,16 +200,16 @@ export async function getAdminOrders(): Promise<AdminOrder[]> {
 
   if (error) throw new Error(error.message)
 
-  return data.map((o: Record<string, any>) => ({
-    id: o.id,
-    created_at: o.created_at,
-    status: o.status,
-    total_amount: o.total_amount,
-    platform_fee: o.platform_fee || 0,
-    buyer_email: o.buyer?.email || 'Inconnu',
-    buyer_phone: o.buyer?.phone || 'Inconnu',
-    store: o.store && !Array.isArray(o.store) ? o.store : null,
-    product_titles: o.items ? o.items.map((i: Record<string, any>) => i.product_title) : []
+  return data.map((o: Record<string, unknown>) => ({
+    id: o.id as string,
+    created_at: o.created_at as string,
+    status: o.status as string,
+    total_amount: o.total_amount as number,
+    platform_fee: (o.platform_fee as number) || 0,
+    buyer_email: (o.buyer as any)?.email || 'Inconnu',
+    buyer_phone: (o.buyer as any)?.phone || 'Inconnu',
+    store: o.store && !Array.isArray(o.store) ? (o.store as any) : null,
+    product_titles: o.items ? (o.items as any[]).map((i: Record<string, unknown>) => i.product_title as string) : []
   }))
 }
 
@@ -248,15 +248,15 @@ export async function getAdminReports(): Promise<AdminReport[]> {
 
   if (error) throw new Error(error.message)
 
-  return data.map((r: Record<string, any>) => ({
-    id: r.id,
-    created_at: r.created_at,
-    status: r.status,
-    type: r.type,
-    description: r.description,
-    admin_notes: r.admin_notes,
-    reporter: r.reporter && !Array.isArray(r.reporter) ? r.reporter : null,
-    order: r.order && !Array.isArray(r.order) ? r.order : null
+  return data.map((r: Record<string, unknown>) => ({
+    id: r.id as string,
+    created_at: r.created_at as string,
+    status: r.status as string,
+    type: r.type as string,
+    description: r.description as string,
+    admin_notes: r.admin_notes as string | null,
+    reporter: r.reporter && !Array.isArray(r.reporter) ? (r.reporter as any) : null,
+    order: r.order && !Array.isArray(r.order) ? (r.order as any) : null
   }))
 }
 
@@ -477,7 +477,7 @@ export interface AdminWithdrawal {
   vendor_name?: string
   vendor_phone?: string
   store_name?: string
-  wallet: {
+  wallet?: {
     vendor: {
       user_id: string
       name: string
@@ -505,10 +505,11 @@ export async function getAdminWithdrawals(): Promise<AdminWithdrawal[]> {
   if (error) throw new Error(error.message)
 
   // On récupère le nom/tel du vendeur en croisant avec User
-  const withdrawals = await Promise.all(data.map(async (w: Record<string, any>) => {
+  const withdrawals = await Promise.all(data.map(async (w: Record<string, unknown>) => {
     let vendorPhone = ''
     let vendorName = 'Inconnu'
-    const userId = w.wallet?.vendor?.user_id
+    const wallet = w.wallet as any
+    const userId = wallet?.vendor?.user_id
     
     if (userId) {
       const { data: ud } = await supabase.from('User').select('name, phone').eq('id', userId).single()
@@ -519,20 +520,20 @@ export async function getAdminWithdrawals(): Promise<AdminWithdrawal[]> {
     }
 
     return {
-      id: w.id,
-      amount: w.amount,
-      status: w.status,
-      payment_method: w.payment_method,
-      requested_at: w.requested_at,
-      processed_at: w.processed_at,
-      notes: w.notes,
+      id: w.id as string,
+      amount: w.amount as number,
+      status: w.status as string,
+      payment_method: w.payment_method as string,
+      requested_at: w.requested_at as string,
+      processed_at: w.processed_at as string | null,
+      notes: w.notes as string | null,
       vendor_phone: vendorPhone,
       vendor_name: vendorName,
-      store_name: w.wallet?.vendor?.name || 'Boutique introuvable'
+      store_name: wallet?.vendor?.name || 'Boutique introuvable'
     }
   }))
 
-  return withdrawals as any
+  return withdrawals
 }
 
 export async function processWithdrawal(withdrawalId: string, action: 'approve' | 'reject', rejectReason?: string) {
@@ -657,8 +658,9 @@ export async function processWithdrawal(withdrawalId: string, action: 'approve' 
       throw new Error(`Erreur API PayTech : ${res.statusText}`)
     }
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     // ÉCHEC PAYTECH (Réseau ou 400/500)
+    const errMessage = err instanceof Error ? err.message : 'Erreur réseau inconnue'
     console.error("[processWithdrawal] Échec CashOut:", err)
     
     // 1. Revert du Pending -> Balance
@@ -675,10 +677,10 @@ export async function processWithdrawal(withdrawalId: string, action: 'approve' 
     await supabase.from('Withdrawal').update({
       status: 'failed',
       processed_at: new Date().toISOString(),
-      notes: err.message || 'Échec de la transaction PayTech.'
+      notes: errMessage || 'Échec de la transaction PayTech.'
     }).eq('id', withdrawalId)
 
-    await logAdminAction('Échec de transfert', 'Withdrawal', withdrawalId, { error: err.message })
+    await logAdminAction('Échec de transfert', 'Withdrawal', withdrawalId, { error: errMessage })
 
     if (vendorPhone) {
       await sendWhatsApp({
@@ -687,6 +689,6 @@ export async function processWithdrawal(withdrawalId: string, action: 'approve' 
       })
     }
 
-    throw new Error(`Échec du transfert PayTech. Solde restauré. Détail: ${err.message}`)
+    throw new Error(`Échec du transfert PayTech. Solde restauré. Détail: ${errMessage}`)
   }
 }

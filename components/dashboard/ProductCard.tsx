@@ -2,6 +2,7 @@
 
 import React, { useTransition } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import CopyButton from '@/components/dashboard/CopyButton'
 import ProductImageViewer from '@/components/dashboard/ProductImageViewer'
 import { toggleProductStatus, duplicateProduct } from '@/app/actions/products'
@@ -65,11 +66,12 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
 
         {product.images && product.images.length > 0 && (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={product.images[0]}
               alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+              sizes="(max-width: 768px) 100vw, 300px"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
             <ProductImageViewer images={product.images} productName={product.name} />
           </>

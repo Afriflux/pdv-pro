@@ -34,6 +34,7 @@ function formatTimeAgo(createdAt: string): string {
 
 export default async function RecentOrderBadge({
   storeId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   productId: _productId,
 }: RecentOrderBadgeProps) {
   const supabase = createAdminClient()

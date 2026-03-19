@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { computeProductPrice } from '@/lib/promotions/promotionUtils'
 import { FlashCountdown } from '@/components/Promotions/FlashCountdown'
 import { Lightbox } from './Lightbox'
@@ -43,13 +44,13 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
                  className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 group flex flex-col justify-between border border-gray-100/50">
               
               {/* Image Section */}
-              <div className="relative cursor-zoom-in" 
+              <div className="relative w-full h-36 cursor-zoom-in overflow-hidden" 
                    onClick={() => product.images?.length > 0 && setLightboxImages(product.images)}>
                 {product.images?.[0] ? (
-                  <img src={product.images[0]} alt={product.name}
-                       className="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <Image src={product.images[0]} alt={product.name} fill sizes="(max-width: 768px) 50vw, 33vw"
+                       className="object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
-                  <div className="w-full h-36 flex items-center justify-center text-4xl"
+                  <div className="absolute inset-0 flex items-center justify-center text-4xl"
                        style={{ background: accent + '11' }}>
                     {product.type === 'digital' ? '📥' : product.type === 'coaching' ? '🎯' : '📦'}
                   </div>

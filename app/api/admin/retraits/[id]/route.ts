@@ -40,8 +40,8 @@ export async function PATCH(
 
     // 2. Récupérer la demande de retrait
     const { data: withdrawal, error: fetchError } = await supabaseAdmin
-      .from('WithdrawalRequest')
-      .select('*, Store(name, user_id)')
+      .from('Withdrawal')
+      .select('*, Store (name, user_id, whatsapp, User (phone))')
       .eq('id', withdrawalId)
       .single()
 
@@ -65,7 +65,7 @@ export async function PATCH(
       if (!wallet || wallet.balance < withdrawal.amount) {
         // Optionnel : marquer comme insufficient_funds automatiquement ?
         await supabaseAdmin
-          .from('WithdrawalRequest')
+          .from('Withdrawal')
           .update({ status: 'insufficient_funds' })
           .eq('id', withdrawalId)
           
@@ -81,25 +81,80 @@ export async function PATCH(
       if (debitError) throw debitError
 
       await supabaseAdmin
-        .from('WithdrawalRequest')
+        .from('Withdrawal')
         .update({ status: 'approved', processed_at: new Date().toISOString() })
         .eq('id', withdrawalId)
 
-      // 3c. Notification Telegram (si configuré)
+      // Payout automatique via Wave/CinetPay
       try {
-        await triggerPaymentTelegram(
-          withdrawal.Store.user_id,
-          withdrawal.amount,
-          withdrawal.method
-        )
-      } catch (tgError) {
-        console.warn('[Admin Withdrawal] Erreur notification Telegram:', tgError)
+        const { executePayout } = await import('@/lib/payouts/payout-service')
+        
+        let vendorPhone = withdrawal.phone_or_iban
+        if (!vendorPhone) {
+          const storeData = withdrawal.Store as any
+          vendorPhone = storeData?.whatsapp || (storeData?.User && storeData.User[0]?.phone) || storeData?.User?.phone
+        }
+
+        if (!vendorPhone) {
+          throw new Error('Aucun numéro de téléphone trouvé pour le vendeur')
+        }
+
+        const payoutResult = await executePayout({
+          phone: vendorPhone,
+          amount: withdrawal.amount,
+          reference: withdrawalId,
+          method: withdrawal.payment_method
+        })
+
+        if (payoutResult.success) {
+          await supabaseAdmin
+            .from('Withdrawal')
+            .update({ status: 'paid', processed_at: new Date().toISOString(), notes: payoutResult.transactionId })
+            .eq('id', withdrawalId)
+            
+          // Notification Telegram
+          try {
+            await triggerPaymentTelegram(
+              (withdrawal.Store as any).user_id,
+              withdrawal.amount,
+              withdrawal.payment_method
+            )
+          } catch (tgError) {
+            console.warn('[Admin Withdrawal] Erreur notification Telegram:', tgError)
+          }
+        } else {
+          // Échec du payout → Rejeter et recréditer
+          await supabaseAdmin
+            .from('Withdrawal')
+            .update({ status: 'rejected', processed_at: new Date().toISOString(), notes: payoutResult.error })
+            .eq('id', withdrawalId)
+
+          // Recréditer le wallet: On remet l'ancien solde (wallet.balance était l'ancien solde)
+          await supabaseAdmin
+            .from('Wallet')
+            .update({ balance: wallet.balance }) 
+            .eq('id', withdrawal.wallet_id)
+        }
+
+      } catch (payoutError: unknown) {
+        const errMessage = payoutError instanceof Error ? payoutError.message : 'Erreur réseau payout'
+        console.error('[Admin Withdrawal] Erreur Payout:', errMessage)
+        await supabaseAdmin
+          .from('Withdrawal')
+          .update({ status: 'rejected', notes: errMessage })
+          .eq('id', withdrawalId)
+
+        // Recréditer le wallet
+        await supabaseAdmin
+          .from('Wallet')
+          .update({ balance: wallet.balance })
+          .eq('id', withdrawal.wallet_id)
       }
 
     } else {
       // 4. Logique Rejeté
       await supabaseAdmin
-        .from('WithdrawalRequest')
+        .from('Withdrawal')
         .update({ status: 'rejected' })
         .eq('id', withdrawalId)
     }

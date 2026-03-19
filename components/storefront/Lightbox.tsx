@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
@@ -36,6 +37,8 @@ export function Lightbox({ images, initialIndex = 0, onClose }: LightboxProps) {
       {/* Bouton Fermer */}
       <button 
         onClick={onClose}
+        title="Fermer la galerie"
+        aria-label="Fermer"
         className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full"
       >
         <X size={32} />
@@ -45,6 +48,8 @@ export function Lightbox({ images, initialIndex = 0, onClose }: LightboxProps) {
       {images.length > 1 && (
         <button 
           onClick={() => setIndex((i) => (i > 0 ? i - 1 : images.length - 1))}
+          title="Image précédente"
+          aria-label="Précédent"
           className="absolute left-4 md:left-8 text-white/50 hover:text-white transition-colors p-3 hover:bg-white/10 rounded-full"
         >
           <ChevronLeft size={40} />
@@ -52,12 +57,16 @@ export function Lightbox({ images, initialIndex = 0, onClose }: LightboxProps) {
       )}
 
       {/* Image Centrale */}
-      <div className="max-w-[90vw] max-h-[85vh] relative group">
-        <img 
-          src={images[index]} 
-          alt={`Image ${index + 1}`} 
-          className="max-w-full max-h-[85vh] object-contain shadow-2xl rounded-sm"
-        />
+      <div className="w-[90vw] h-[85vh] relative group flex items-center justify-center">
+        <div className="relative w-full h-full max-w-full max-h-[85vh]">
+          <Image 
+            src={images[index]} 
+            alt={`Image ${index + 1}`} 
+            fill
+            sizes="90vw"
+            className="object-contain drop-shadow-2xl"
+          />
+        </div>
         
         {/* Compteur */}
         <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-white/60 text-sm font-medium">
@@ -69,6 +78,8 @@ export function Lightbox({ images, initialIndex = 0, onClose }: LightboxProps) {
       {images.length > 1 && (
         <button 
           onClick={() => setIndex((i) => (i < images.length - 1 ? i + 1 : 0))}
+          title="Image suivante"
+          aria-label="Suivant"
           className="absolute right-4 md:right-8 text-white/50 hover:text-white transition-colors p-3 hover:bg-white/10 rounded-full"
         >
           <ChevronRight size={40} />
@@ -82,11 +93,13 @@ export function Lightbox({ images, initialIndex = 0, onClose }: LightboxProps) {
             <button
               key={i}
               onClick={() => setIndex(i)}
-              className={`w-12 h-12 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${
+              title={`Afficher image ${i + 1}`}
+              aria-label={`Miniature ${i + 1}`}
+              className={`relative w-12 h-12 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${
                 index === i ? 'border-white scale-110 shadow-lg' : 'border-transparent opacity-40 hover:opacity-100'
               }`}
             >
-              <img src={img} alt="" className="w-full h-full object-cover" />
+              <Image src={img} alt={`Miniature ${i + 1}`} fill sizes="48px" className="object-cover" />
             </button>
           ))}
         </div>

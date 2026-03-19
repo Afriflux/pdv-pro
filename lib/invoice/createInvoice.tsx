@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { generateInvoicePdfBuffer } from '../pdf/generateInvoice'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 /** Format : PDV-YYYY-00000X */
-async function generateInvoiceNumber(supabase: any, date: Date): Promise<string> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function generateInvoiceNumber(supabase: SupabaseClient<any, 'public', any>, date: Date): Promise<string> {
   const year = date.getFullYear()
   const prefix = `PDV-${year}-`
 
@@ -58,8 +60,8 @@ export async function createAndStoreInvoice(orderId: string): Promise<string | n
   if (existing) return existing.pdf_url
 
   // Nettoyer les nested arrays Supabase
-  const store   = (Array.isArray(order.store) ? order.store[0] : order.store) as any
-  const product = (Array.isArray(order.product) ? order.product[0] : order.product) as any
+  const store   = (Array.isArray(order.store) ? order.store[0] : order.store) as Record<string, unknown>
+  const product = (Array.isArray(order.product) ? order.product[0] : order.product) as Record<string, unknown>
 
   if (!store || !product) {
     console.error('[createInvoice] Impossible de charger relations via order:', orderId)
@@ -89,8 +91,8 @@ export async function createAndStoreInvoice(orderId: string): Promise<string | n
     date: dateStr,
     orderId,
     store: {
-      name:         store.name,
-      logo_url:     store.logo_url,
+      name:         store.name as string,
+      logo_url:     store.logo_url as string,
       // address:    Dakar, Sénégal par défaut ou à récupérer via User
       isWhiteLabel,
     },
@@ -100,8 +102,8 @@ export async function createAndStoreInvoice(orderId: string): Promise<string | n
       address: order.delivery_address,
     },
     product: {
-      name:     product.name,
-      price:    product.price,
+      name:     product.name as string,
+      price:    product.price as number,
       quantity: order.quantity,
     },
     pricing: {
