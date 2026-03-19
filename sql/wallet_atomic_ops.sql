@@ -19,6 +19,20 @@ CREATE OR REPLACE FUNCTION freeze_commission(
     AND balance >= p_commission;
 $$;
 
+-- 1b. Dégel atomique de commission (Annulation COD ou Fraude)
+--     Restaure le "balance" et réduit le "pending"
+CREATE OR REPLACE FUNCTION unfreeze_commission(
+  p_vendor_id  TEXT,
+  p_commission NUMERIC
+) RETURNS void LANGUAGE sql AS $$
+  UPDATE "Wallet"
+  SET
+    balance    = balance  + p_commission,
+    pending    = GREATEST(0, pending - p_commission),
+    updated_at = NOW()
+  WHERE vendor_id = p_vendor_id;
+$$;
+
 -- 2. Libérer commission (après confirmation paiement COD)
 CREATE OR REPLACE FUNCTION release_commission(
   p_vendor_id  TEXT,

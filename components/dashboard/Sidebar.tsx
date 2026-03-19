@@ -29,7 +29,9 @@ import {
   LogOut,
   Wand2,
   Truck,
-  MapPin
+  MapPin,
+  Calendar,
+  PhoneCall
 } from 'lucide-react'
 import { NotificationBell } from './NotificationBell'
 
@@ -60,8 +62,10 @@ const NAV: NavSection[] = [
       { name: 'Mes Produits', href: '/dashboard/products', icon: Package },
       { name: 'Pages de vente', href: '/dashboard/pages', icon: ShoppingBag },
       { name: 'Commandes', href: '/dashboard/orders', icon: ShoppingCart },
+      { name: 'Validation COD', href: '/dashboard/closing', icon: PhoneCall, for: ['physical', 'hybrid'] },
       { name: 'Livraisons', href: '/dashboard/livraisons', icon: Truck, for: ['physical', 'hybrid'] },
       { name: 'Zones tarifaires', href: '/dashboard/zones', icon: MapPin, for: ['physical', 'hybrid'] },
+      { name: 'Agenda', href: '/dashboard/agenda', icon: Calendar },
       { name: 'Nouveautés', href: '/dashboard/tips', icon: Sparkles },
     ]
   },
@@ -269,7 +273,8 @@ function SidebarContent({
         <div className={`flex items-center ${collapsed ? 'justify-center mx-auto' : 'gap-3 overflow-hidden px-1'} mb-3`}>
           <div className="relative w-10 h-10 rounded-full border border-white/20 overflow-hidden bg-white/10 flex items-center justify-center flex-shrink-0">
             {avatarUrl ? (
-              <Image src={avatarUrl} alt="Avatar" fill sizes="40px" className="object-cover" />
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
               <span className="text-lg font-black text-gold/80">{userName[0]}</span>
             )}

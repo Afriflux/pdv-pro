@@ -14,7 +14,8 @@ import {
   Facebook,
   ChevronDown,
   Sparkles,
-  Users
+  Users,
+  Briefcase
 } from 'lucide-react'
 import PricingCalculator from './PricingCalculator'
 import { LandingNav } from '@/components/landing/LandingNav'
@@ -231,30 +232,54 @@ export default async function LandingPage() {
         </section>
 
         {/* 2. LE PROBLÈME (Douleurs vendeurs WhatsApp) */}
-        <section className="py-24 bg-pearl px-6 border-y border-line">
-          <div className="max-w-7xl mx-auto relative z-10">
+        <section className="py-24 bg-ink border-y border-line/10 relative overflow-hidden">
+          {/* Decorative background glow */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-red-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+          
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-display font-black mb-4 text-ink">La vente sur WhatsApp est brisée.</h2>
-              <p className="text-xl text-slate font-light">Vous perdez des ventes tous les jours à cause d'un processus chaotique.</p>
+              <span className="inline-block bg-red-500/10 text-red-500 border border-red-500/20 rounded-full px-4 py-1.5 font-mono tracking-widest uppercase text-xs mb-6 font-bold shadow-sm">Le Casse-tête</span>
+              <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-white">La vente sur WhatsApp est brisée.</h2>
+              <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">Vous perdez des ventes tous les jours à cause d'un processus chaotique.</p>
             </div>
+          </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="relative w-full max-w-7xl mx-auto">
+            {/* CSS pour scrollbar visible et stylisée sur Desktop */}
+            <style>{`
+              .custom-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(255,255,255,0.2) transparent;
+              }
+              .custom-scrollbar::-webkit-scrollbar {
+                height: 8px;
+              }
+              .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent; 
+              }
+              .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2); 
+                border-radius: 10px;
+              }
+              .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.4); 
+              }
+            `}</style>
+            
+            <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory px-6 pb-8 custom-scrollbar">
               {[
-                { icon: <MessageCircle size={32} />, title: 'Réponses manuelles infinies', desc: "Vous passez 3h par jour à répondre \"C'est combien ?\" sur WhatsApp. Chaque réponse en retard = une vente perdue." },
-                { icon: <Smartphone size={32} />, title: 'Pas de vitrine permanente', desc: "Un statut WhatsApp disparaît en 24h. Vos clients ne savent pas ce que vous vendez." },
-                { icon: <AlertCircle size={32} />, title: 'Paiements non sécurisés', desc: "Captures d'écran falsifiées, virements qui n'arrivent pas, clients qui disparaissent. Vous portez tous les risques." },
-                { icon: <ChartBar size={32} />, title: 'Zéro visibilité sur vos chiffres', desc: "Vous ne savez pas quels produits se vendent le mieux, ni combien vous avez gagné ce mois-ci." },
+                { icon: <MessageCircle size={32} />, title: 'Réponses infinies', desc: "Vous passez 3h par jour à répondre \"C'est combien ?\" sur WhatsApp. Chaque réponse en retard = une vente perdue." },
+                { icon: <Smartphone size={32} />, title: 'Pas de vitrine stable', desc: "Un statut WhatsApp disparaît en 24h. Vos clients ne savent pas avec certitude ce que vous vendez." },
+                { icon: <AlertCircle size={32} />, title: 'Paiements risqués', desc: "Captures d'écran falsifiées, virements qui n'arrivent pas, clients qui disparaissent. Vous prenez tous les risques." },
+                { icon: <ChartBar size={32} />, title: 'Zéro visibilité', desc: "Vous ne savez pas quels produits se vendent le mieux, ni combien vous avez réellement gagné à la fin du mois." },
               ].map((item, i) => (
-                <div key={i} className="bg-white p-8 rounded-2xl border border-line shadow-sm relative overflow-hidden group hover:shadow-md hover:border-emerald-border transition">
-                  <div className="absolute top-0 left-0 w-[3px] h-full bg-line group-hover:bg-red-400 transition-colors"></div>
-                  <div className="flex justify-between items-start mb-6 align-top">
-                    <div className="text-red-400 group-hover:text-red-500 transition-colors">
-                      {item.icon}
-                    </div>
-                    <span className="font-mono text-emerald/40 text-sm tracking-widest font-bold">0{i+1}</span>
+                <div key={i} className="snap-center shrink-0 w-[85vw] md:w-[320px] lg:w-[280px] xl:w-[300px] bg-charcoal/50 backdrop-blur-sm p-8 rounded-3xl border border-white/5 shadow-2xl relative group hover:border-red-500/30 transition-all duration-300 flex flex-col items-center text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 mb-6 group-hover:scale-110 group-hover:bg-red-500/20 transition-all duration-300 shadow-lg border border-red-500/20">
+                    {item.icon}
                   </div>
-                  <h3 className="text-xl font-display font-bold mb-3 text-ink">{item.title}</h3>
-                  <p className="text-slate leading-relaxed text-sm">{item.desc}</p>
+                  <h3 className="text-xl font-display font-bold mb-3 text-white">{item.title}</h3>
+                  <p className="text-cream/60 leading-relaxed text-sm font-light">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -262,147 +287,214 @@ export default async function LandingPage() {
         </section>
 
         {/* 3. LA SOLUTION (3 Étapes) */}
-        <section className="py-24 px-6 bg-white relative">
+        <section className="py-32 px-6 bg-pearl relative overflow-hidden">
+          {/* Subtle glow */}
+          <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-emerald/5 blur-[100px] rounded-full pointer-events-none"></div>
+
           <div className="max-w-7xl mx-auto relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
               <div>
-                <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-ink">Passez au niveau supérieur.</h2>
-                <p className="text-xl text-slate font-light mb-12">Avec PDV Pro, centralisez votre activité et offrez une expérience <span className="text-emerald italic font-medium">premium</span> à vos clients.</p>
+                <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">La Solution</span>
+                <h2 className="text-4xl md:text-6xl font-display font-black mb-6 text-ink leading-tight">Passez au niveau <span className="text-emerald">supérieur</span>.</h2>
+                <p className="text-xl text-slate font-light mb-16 leading-relaxed">Avec PDV Pro, centralisez votre activité et offrez une expérience <span className="font-medium text-emerald bg-emerald/10 px-2 py-0.5 rounded-md">premium</span> à vos clients.</p>
                 
-                <div className="space-y-12">
+                <div className="space-y-0 relative before:absolute before:inset-y-4 before:left-[23px] before:w-[2px] before:bg-emerald/20">
                   {[
                     { num: '01', title: 'En 2 minutes : votre boutique est live', desc: "Choisissez pdvpro.com/votreboutique, ajoutez votre logo. Votre vitrine professionnelle est accessible immédiatement." },
                     { num: '02', title: 'Ajoutez vos produits, générez vos liens', desc: "Photos, prix, variantes, stock. Chaque produit a son lien de paiement direct à partager sur WhatsApp ou Instagram." },
                     { num: '03', title: 'Encaissez. L\'argent arrive dans votre wallet.', desc: "Wave, Orange Money ou carte bancaire. Dès confirmation, les fonds sont dans votre wallet PDV Pro. Retrait en 1 clic dès 5 000 FCFA." },
                   ].map((step, i) => (
-                    <div key={i} className="flex gap-6">
-                      <div className="shrink-0 w-12 h-12 bg-emerald/10 border border-emerald/20 text-emerald font-bold flex items-center justify-center rounded-full shadow-sm">
-                        <CheckCircle2 size={24} />
+                    <div key={i} className="flex gap-6 relative group pb-14 last:pb-0">
+                      <div className="shrink-0 w-12 h-12 bg-white border-4 border-pearl text-emerald font-black flex items-center justify-center rounded-full shadow-md relative z-10 group-hover:bg-emerald group-hover:text-white transition-colors duration-300">
+                        {step.num}
                       </div>
-                      <div>
-                        <h3 className="text-xl font-display font-bold mb-2 text-ink">{step.title}</h3>
-                        <p className="text-slate leading-relaxed font-light">{step.desc}</p>
+                      <div className="pt-2">
+                        <h3 className="text-2xl font-display font-black mb-3 text-ink group-hover:text-emerald transition-colors">{step.title}</h3>
+                        <p className="text-slate leading-relaxed font-light text-lg">{step.desc}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="relative">
-                {/* Mockup dashboard (Clair) */}
-                <div className="bg-cream border border-line rounded-2xl p-6 shadow-xl relative aspect-[4/5] overflow-hidden flex flex-col">
-                   {/* Barre URL */}
-                   <div className="w-full flex justify-between items-center mb-8 bg-white py-3 px-4 rounded-lg border border-line shadow-sm">
-                     <div className="flex gap-2">
-                       <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                       <div className="w-3 h-3 rounded-full bg-gold"></div>
-                       <div className="w-3 h-3 rounded-full bg-emerald-light"></div>
-                     </div>
-                     <div className="h-4 w-32 bg-pearl border border-line rounded-full"></div>
-                     <div className="w-4 h-4 text-dust"><Globe size={16} /></div>
-                   </div>
-                   
-                   {/* Badge IA Check360° */}
-                   <div className="absolute top-20 right-4 bg-white px-4 py-2 rounded-xl shadow-lg border border-emerald/20 flex items-center gap-2 animate-bounce">
-                     <div className="bg-emerald/10 p-1 rounded-full"><Sparkles className="text-emerald" size={16} /></div>
-                     <div>
-                       <span className="block text-[10px] font-mono text-slate uppercase tracking-widest leading-none">IA Check360°</span>
-                       <span className="block text-xs font-bold text-emerald">2 opportunités détectées →</span>
-                     </div>
-                   </div>
-                   
-                   {/* Stat cards internes */}
-                   <div className="w-full bg-white border border-line rounded-xl mb-6 mt-6 relative p-6 flex flex-col justify-center shadow-sm items-center text-center flex-1">
-                     <span className="text-xs font-mono text-slate uppercase tracking-widest mb-2">Revenus du jour</span>
-                     <span className="text-5xl font-display text-emerald font-bold">145 000 F</span>
-                   </div>
+              <div className="relative lg:pl-10">
+                {/* Mockup Premium */}
+                <div className="relative group perspective-1000 hidden md:block">
+                  <div className="absolute -inset-4 bg-gradient-to-r from-emerald to-turquoise opacity-20 blur-2xl rounded-[3rem] group-hover:opacity-30 transition duration-1000"></div>
+                  <div className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-[2rem] p-2 shadow-2xl relative overflow-hidden transform transition-all duration-700 hover:-translate-y-2 hover:rotate-1">
+                    <div className="bg-cream/50 rounded-[1.5rem] p-6 border border-line/50 flex flex-col gap-6">
+                      {/* Browser header */}
+                      <div className="flex items-center gap-3 pb-4 border-b border-line/50">
+                        <div className="flex gap-1.5 pl-2">
+                          <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                          <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                          <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+                        </div>
+                        <div className="flex-1 bg-white/60 h-8 rounded-md border border-line/50 flex items-center justify-center text-xs text-slate font-mono">pdvpro.com/votreboutique</div>
+                      </div>
 
-                   <div className="grid grid-cols-2 gap-4 mb-6">
-                     <div className="bg-white border border-line rounded-xl p-4 shadow-sm flex flex-col items-center justify-center">
-                       <span className="text-[10px] font-mono text-slate uppercase tracking-widest mb-1">Visites</span>
-                       <span className="text-2xl font-display text-turquoise font-bold">342</span>
-                     </div>
-                     <div className="bg-white border border-line rounded-xl p-4 shadow-sm flex flex-col items-center justify-center align-bottom h-full w-full relative min-h-[80px]">
-                       <div className="flex gap-1 items-end h-[32px] absolute bottom-4">
-                         <div className="w-2 h-3 bg-pearl rounded-t-sm"></div>
-                         <div className="w-2 h-5 bg-emerald/40 rounded-t-sm"></div>
-                         <div className="w-2 h-8 bg-emerald rounded-t-sm"></div>
-                         <div className="w-2 h-4 bg-pearl rounded-t-sm"></div>
-                       </div>
-                     </div>
-                   </div>
-                   
-                   <div className="space-y-3 mt-auto relative z-10">
-                     <div className="flex items-center gap-4 bg-white p-3 rounded-xl border border-line shadow-sm hover:border-turquoise/30 transition-colors">
-                        <div className="bg-turquoise/10 text-turquoise px-2 py-1 rounded-md text-[10px] font-mono font-bold tracking-wider">PAYÉ</div>
-                        <div className="h-1.5 w-1/3 bg-pearl rounded-full"></div>
-                        <div className="ml-auto text-turquoise font-mono font-bold text-sm">+15 000 F</div>
-                     </div>
-                     <div className="flex items-center gap-4 bg-white p-3 rounded-xl border border-line shadow-sm hover:border-gold/30 transition-colors">
-                        <div className="bg-gold/10 text-gold px-2 py-1 rounded-md text-[10px] font-mono font-bold tracking-wider">LIVRAISON</div>
-                        <div className="h-1.5 w-1/2 bg-pearl rounded-full"></div>
-                        <div className="ml-auto text-gold font-mono font-bold text-sm">+2 500 F</div>
-                     </div>
-                   </div>
+                      {/* Dashboard Content */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="col-span-2 bg-gradient-to-br from-emerald to-emerald-rich p-6 rounded-2xl text-white shadow-lg relative overflow-hidden flex items-center">
+                           <div>
+                             <p className="text-emerald-50 text-sm font-medium mb-1 tracking-wider uppercase">Revenus du jour</p>
+                             <p className="font-display font-black text-4xl">145 000 F</p>
+                           </div>
+                           <div className="ml-auto bg-white/20 px-3 py-1.5 rounded-lg flex items-center gap-2 backdrop-blur-sm border border-white/20">
+                             <Sparkles size={16} /> <span className="text-[10px] uppercase font-bold tracking-widest">IA Check360°</span>
+                           </div>
+                        </div>
+                        
+                        <div className="col-span-1 bg-white p-5 rounded-2xl border border-line/50 shadow-sm flex flex-col justify-between hover:border-emerald/30 transition-colors">
+                           <p className="text-slate text-xs tracking-widest uppercase font-bold mb-2">Visites</p>
+                           <p className="font-display font-bold text-3xl text-ink">342</p>
+                        </div>
+
+                        <div className="col-span-1 bg-white p-5 rounded-2xl border border-line/50 shadow-sm flex flex-col justify-end min-h-[100px] relative overflow-hidden hover:border-emerald/30 transition-colors">
+                           <div className="flex items-end gap-1 w-full h-12 opacity-80">
+                             <div className="bg-emerald/20 w-1/4 rounded-t-sm h-1/4"></div>
+                             <div className="bg-emerald/50 w-1/4 rounded-t-sm h-2/4"></div>
+                             <div className="bg-emerald w-1/4 rounded-t-sm h-full"></div>
+                             <div className="bg-emerald/30 w-1/4 rounded-t-sm h-2/4"></div>
+                           </div>
+                        </div>
+
+                        <div className="col-span-2 space-y-3 mt-2">
+                          <div className="bg-white p-4 rounded-xl border border-line/50 shadow-sm flex items-center gap-4 hover:border-emerald/30 transition-colors cursor-default">
+                            <div className="w-10 h-10 rounded-lg bg-emerald/10 flex items-center justify-center text-emerald shrink-0"><CheckCircle2 size={20} /></div>
+                            <div>
+                               <p className="text-sm font-bold text-ink tracking-wide">Paiement reçu</p>
+                               <p className="text-xs text-slate mt-0.5">Wave Mobile Money</p>
+                            </div>
+                            <div className="ml-auto font-bold text-emerald">+15 000 F</div>
+                          </div>
+                          <div className="bg-white p-4 rounded-xl border border-line/50 shadow-sm flex items-center gap-4 hover:border-gold/30 transition-colors cursor-default">
+                            <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center text-gold shrink-0"><Store size={20} /></div>
+                            <div>
+                               <p className="text-sm font-bold text-ink tracking-wide">Commande COD</p>
+                               <p className="text-xs text-slate mt-0.5">En attente de livraison</p>
+                            </div>
+                            <div className="ml-auto font-bold text-gold">+2 500 F</div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 4. FONCTIONNALITÉS CLÉS */}
-        <section id="features" className="py-24 px-6 bg-cream border-y border-line">
-          <div className="max-w-7xl mx-auto">
+        {/* 4. FONCTIONNALITÉS CLÉS (Marquee Automatique) */}
+        <section id="features" className="py-24 bg-white border-y border-line overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16 max-w-3xl mx-auto">
-              <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block">L&apos;arsenal complet</span>
-              <h2 className="text-3xl md:text-5xl font-display font-black mb-4 tracking-tight text-ink">
-                Tout ce dont vous avez besoin pour <span className="text-emerald italic">grandir</span>.
+              <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">L'arsenal complet</span>
+              <h2 className="text-4xl md:text-6xl font-display font-black mb-6 tracking-tight text-ink">
+                Tout ce dont vous avez besoin pour <span className="text-emerald relative inline-block">grandir.<span className="absolute -bottom-2 left-0 w-full h-3 bg-gold/30 -rotate-2"></span></span>
               </h2>
             </div>
+          </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border border-line rounded-2xl overflow-hidden bg-white shadow-sm">
-              {[
-                { icon: <Smartphone size={24} />, title: 'Boutique Optimisée Mobile', desc: '98% de vos acheteurs sont sur smartphone. Notre design charge en 1 seconde et convertit mieux.' },
-                { icon: <Zap size={24} />, title: 'Paiements Mobile Money', desc: 'Intégration d\'origine avec Wave et Orange Money (Sénégal/Côte d\'Ivoire) via notre partenaire agréé.' },
-                { icon: <Store size={24} />, title: 'Gestion des Livraisons', desc: 'Configurez vos zones tarifaires. Le client paie le produit + la livraison en un seul clic.' },
-                { icon: <Shield size={24} />, title: 'Automatisations WhatsApp', desc: 'Vos clients reçoivent des confirmations de commande et de suivi directement sur WhatsApp.' },
-                { icon: <ChartBar size={24} />, title: 'Dashboard Analytics', desc: 'Suivez vos vues, vos ventes, votre taux de conversion et l\'origine de vos clients en temps réel.' },
-                { icon: <Globe size={24} />, title: 'Outils Marketing', desc: 'Codes promos, Vente Flash, Cross-selling et Programme d\'affiliation pour vos ambassadeurs.' },
-                { icon: <Sparkles size={24} />, title: 'IA Check360°', desc: 'Votre assistant IA analyse vos ventes chaque semaine et vous dit exactement quoi améliorer pour vendre plus.' },
-                { icon: <MessageCircle size={24} />, title: 'Communautés Telegram', desc: 'Vendez l\'accès à des groupes privés Telegram. L\'invitation est envoyée automatiquement après chaque paiement.' },
-                { icon: <Users size={24} />, title: 'Programme Ambassadeurs', desc: 'Recrutez des ambassadeurs qui vendent pour vous. Commissions automatiques, suivi en temps réel.' },
-              ].map((feat, i) => (
-                <div key={i} className="group p-8 bg-pearl border border-line rounded-[2rem] hover:bg-white hover:border-emerald/20 hover:shadow-xl hover:shadow-emerald/5 transition-all duration-300">
-                  <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300 border border-line group-hover:border-emerald/20 text-emerald">
-                    {feat.icon}
+          {/* Inject inline styles for the marquee animation */}
+          <style>{`
+            @keyframes marqueeX {
+              from { transform: translateX(0); }
+              to { transform: translateX(-100%); }
+            }
+            @keyframes marqueeXReverse {
+              from { transform: translateX(-100%); }
+              to { transform: translateX(0); }
+            }
+            .animate-marqueeX {
+              animation: marqueeX 35s linear infinite;
+            }
+            .animate-marqueeX-reverse {
+              animation: marqueeXReverse 40s linear infinite;
+            }
+            .hover-pause:hover .animate-marqueeX, 
+            .hover-pause:hover .animate-marqueeX-reverse {
+              animation-play-state: paused;
+            }
+          `}</style>
+
+          <div className="relative py-4 hover-pause flex flex-col gap-6 w-full">
+            {/* Fade Edges for premium effect (desktop only) */}
+            <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+
+            {/* Row 1 : Sens normal */}
+            <div className="flex w-max">
+                {[1, 2].map((slide) => (
+                  <div key={slide} className="flex gap-6 pr-6 animate-marqueeX w-max" aria-hidden={slide === 2 ? "true" : undefined}>
+                    {[
+                      { icon: <Smartphone size={28} />, title: 'Boutique Mobile', desc: '98% de vos acheteurs sont sur smartphone. Notre design charge en 1 seconde et convertit mieux.' },
+                      { icon: <Zap size={28} />, title: 'Mobile Money', desc: 'Intégration d\'origine avec Wave et Orange Money (Sénégal/Côte d\'Ivoire) via notre partenaire agréé.' },
+                      { icon: <Store size={28} />, title: 'Gestion Livraisons', desc: 'Configurez vos zones tarifaires. Le client paie le produit + la livraison en un seul clic.' },
+                      { icon: <Shield size={28} />, title: 'Automatisations WA', desc: 'Vos clients reçoivent des confirmations de commande et de suivi directement sur WhatsApp.' },
+                      { icon: <ChartBar size={28} />, title: 'Analytics', desc: 'Suivez vos vues, vos ventes, votre taux de conversion et l\'origine de vos clients en temps réel.' },
+                    ].map((feat, i) => (
+                      <div key={i} className="group p-8 w-[350px] md:w-[420px] shrink-0 bg-pearl/30 border border-line rounded-[2rem] hover:bg-white hover:border-emerald/40 hover:shadow-2xl hover:shadow-emerald/10 transition-all duration-300">
+                        <div className="inline-flex w-14 h-14 bg-white rounded-2xl items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 border border-line group-hover:border-emerald/30 text-emerald">
+                          {feat.icon}
+                        </div>
+                        <h3 className="text-2xl font-display font-bold text-ink mb-3 group-hover:text-emerald transition-colors">{feat.title}</h3>
+                        <p className="text-slate text-sm leading-relaxed font-light">{feat.desc}</p>
+                      </div>
+                    ))}
                   </div>
-                  <h3 className="text-xl font-display font-black text-ink mb-3">{feat.title}</h3>
-                  <p className="text-slate text-sm leading-relaxed">{feat.desc}</p>
-                </div>
-              ))}
+                ))}
             </div>
+
+            {/* Row 2 : Sens inversé (marqueeXReverse) */}
+            <div className="flex w-max">
+                {[1, 2].map((slide) => (
+                  <div key={slide} className="flex gap-6 pr-6 animate-marqueeX-reverse w-max" aria-hidden={slide === 2 ? "true" : undefined}>
+                    {[
+                      { icon: <Globe size={28} />, title: 'Marketing', desc: 'Codes promos, Vente Flash, Cross-selling et Programme d\'affiliation pour vos ambassadeurs.' },
+                      { icon: <Sparkles size={28} />, title: 'IA Check360°', desc: 'Votre assistant IA analyse vos ventes chaque semaine et vous dit exactement quoi améliorer pour vendre plus.' },
+                      { icon: <MessageCircle size={28} />, title: 'Groupes Telegram', desc: 'Vendez l\'accès à des groupes privés. L\'invitation est envoyée automatiquement après chaque paiement.' },
+                      { icon: <Users size={28} />, title: 'Ambassadeurs', desc: 'Recrutez des ambassadeurs qui vendent pour vous. Commissions automatiques, suivi en direct.' },
+                      { icon: <Briefcase size={28} />, title: 'Produits Digitaux & Services', desc: 'Vendez des Ebooks, VOD, ou des Coachings avec notre système de réservation natif.' },
+                    ].map((feat, i) => (
+                      <div key={i} className="group p-8 w-[350px] md:w-[420px] shrink-0 bg-pearl/30 border border-line rounded-[2rem] hover:bg-white hover:border-emerald/40 hover:shadow-2xl hover:shadow-emerald/10 transition-all duration-300">
+                        <div className="inline-flex w-14 h-14 bg-white rounded-2xl items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 border border-line group-hover:border-emerald/30 text-emerald">
+                          {feat.icon}
+                        </div>
+                        <h3 className="text-2xl font-display font-bold text-ink mb-3 group-hover:text-emerald transition-colors">{feat.title}</h3>
+                        <p className="text-slate text-sm leading-relaxed font-light">{feat.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+            </div>
+
           </div>
         </section>
 
         {/* 5. TEMPLATES & SECTEURS */}
-        <section className="py-24 px-6 bg-white overflow-hidden border-b border-line">
-          <div className="max-w-7xl mx-auto">
-             <div className="mb-12 max-w-2xl">
-                <p className="font-bold text-emerald uppercase tracking-widest text-sm mb-4">Déjà utilisé par des vendeurs au Sénégal, en Côte d'Ivoire et au Mali.</p>
-                <h2 className="text-3xl md:text-5xl font-display font-black mb-4 text-ink">Parfait pour tous les business.</h2>
-                <p className="text-lg text-slate font-light">Peu importe ce que vous vendez, nous gérons le processus de la vitrine jusqu'à votre poche.</p>
+        <section className="py-32 px-6 bg-ink text-white overflow-hidden relative border-y border-line/10">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl bg-emerald/10 blur-[150px] rounded-full pointer-events-none"></div>
+          
+          <div className="max-w-7xl mx-auto relative z-10 text-center">
+             <div className="mb-14 max-w-3xl mx-auto">
+                <p className="font-bold text-gold uppercase tracking-widest text-sm mb-4">Déjà utilisé au Sénégal, en Côte d'Ivoire et au Mali.</p>
+                <h2 className="text-4xl md:text-5xl font-display font-black mb-6 text-white">Parfait pour tous les business.</h2>
+                <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">Peu importe ce que vous vendez, nous gérons le processus de la vitrine jusqu'à votre poche.</p>
              </div>
 
-             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+             <div className="flex flex-wrap justify-center gap-4 mb-16 max-w-4xl mx-auto">
                {['Prêt-à-porter', 'Cosmétiques', 'Électronique', 'Alimentation', 'Services (RDV)', 'Restauration', 'Art & Déco', 'Produits Digitaux', 'B2B & Gros', 'Santé & Bien-être'].map((tag, i) => (
-                 <div key={i} className="px-4 py-4 rounded-xl bg-white border border-line text-center font-mono text-xs font-bold tracking-wider text-dust hover:border-emerald/30 hover:text-emerald hover:shadow-md transition cursor-default">
+                 <div key={i} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-sm font-bold tracking-widest text-cream/80 hover:border-emerald hover:text-white hover:bg-emerald/20 shadow-sm hover:shadow-emerald/20 transition-all cursor-default transform hover:-translate-y-1">
                    {tag.toUpperCase()}
                  </div>
                ))}
              </div>
 
-             <div className="text-center md:text-left">
-               <Link href="/vendeurs" className="inline-flex items-center text-emerald font-bold hover:text-emerald-rich transition gap-1 group text-lg">
-                 Voir les boutiques actives <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+             <div>
+               <Link href="/vendeurs" className="inline-flex items-center bg-white text-ink px-8 py-4 rounded-xl font-bold hover:bg-emerald hover:text-white transition gap-2 shadow-xl shadow-white/5">
+                 Voir les boutiques actives <ArrowRight size={20} />
                </Link>
              </div>
           </div>
@@ -445,17 +537,20 @@ export default async function LandingPage() {
         {/* 7. TARIFS & CALCULATEUR */}
         <section id="pricing" className="py-24 px-6 bg-pearl">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-12">
               <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block">Tarification</span>
               <h2 className="text-3xl md:text-5xl font-display font-black mb-4 text-ink">Un modèle clair.</h2>
-              <p className="text-xl text-slate font-light">Commencez gratuitement, payez moins quand vous grossissez.</p>
+              <p className="text-xl text-slate font-light mb-6">Commencez gratuitement, payez moins quand vous grossissez.</p>
+              <div className="text-emerald font-bold bg-emerald/10 inline-flex items-center gap-2 px-6 py-3 rounded-full border border-emerald/20 shadow-sm animate-pulse-slow">
+                <Sparkles size={18} /> Le système ajuste votre palier automatiquement chaque mois selon votre C.A.
+              </div>
             </div>
 
             <div className="w-full overflow-x-auto pb-8 mb-4 hide-scrollbar">
               <div className="min-w-[1000px] flex items-stretch gap-4 md:grid md:grid-cols-5 md:min-w-0 px-2 pt-8">
                 
                 {/* Headers */}
-                <div className="w-48 shrink-0 md:w-auto flex flex-col sticky left-0 z-20 bg-pearl/90 backdrop-blur-sm self-stretch justify-end pb-8 pr-4">
+                <div className="w-48 shrink-0 md:w-auto flex flex-col sticky left-0 z-20 bg-pearl/90 backdrop-blur-sm self-stretch pt-[104px] pb-6 pr-4">
                   <div className="space-y-6">
                     <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Votre CA mensuel</div>
                     <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Commission PDV Pro</div>
@@ -465,89 +560,106 @@ export default async function LandingPage() {
                 </div>
 
                 {/* Card 1 */}
-                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-2 hover:shadow-xl transition-all duration-300 relative group overflow-visible">
+                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative group/tooltip overflow-hidden cursor-help">
+                  <div className="absolute inset-0 bg-ink/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
+                    <h4 className="font-bold text-gold mb-3 text-lg">Palier Débutant</h4>
+                    <p className="text-sm text-cream/90 leading-relaxed">Activé par défaut ou si votre chiffre d'affaires mensuel (N-1) est inférieur à 100 000 FCFA. Une commission unique de 7% s'applique. Zéro abonnement.</p>
+                  </div>
                   <div className="text-center pb-6 border-b border-line mb-6">
                     <h3 className="font-display font-black text-2xl text-ink">Débutant</h3>
                   </div>
-                  <div className="space-y-6 flex-1 text-center pb-8 border-b border-line mb-6">
+                  <div className="space-y-6 flex-1 text-center">
                     <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">0 - 100K FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink group-hover:text-emerald transition-colors">7%</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">7%</div>
                     <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">93%</div>
                     <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
                   </div>
-                  <Link href="/register" className="w-full text-center py-4 bg-pearl border border-line text-charcoal font-bold rounded-2xl hover:bg-emerald hover:text-white transition-colors">
-                    Démarrer gratuitement
-                  </Link>
-                </div>
+                  </div>
 
                 {/* Card 2 */}
-                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-2 hover:shadow-xl transition-all duration-300 relative group overflow-visible">
+                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative group/tooltip overflow-hidden cursor-help">
+                  <div className="absolute inset-0 bg-ink/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
+                    <h4 className="font-bold text-gold mb-3 text-lg">Palier Actif</h4>
+                    <p className="text-sm text-cream/90 leading-relaxed">Dès que vous dépassez les 100 000 FCFA de ventes le mois précédent, le système abaisse automatiquement votre commission à 6%. Vous gagnez plus.</p>
+                  </div>
                   <div className="text-center pb-6 border-b border-line mb-6">
                     <h3 className="font-display font-black text-2xl text-ink">Actif</h3>
                   </div>
-                  <div className="space-y-6 flex-1 text-center pb-8 border-b border-line mb-6">
+                  <div className="space-y-6 flex-1 text-center">
                     <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">100K - 500K FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink group-hover:text-emerald transition-colors">6%</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">6%</div>
                     <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">94%</div>
                     <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
                   </div>
-                  <Link href="/register" className="w-full text-center py-4 bg-pearl border border-line text-charcoal font-bold rounded-2xl hover:bg-emerald hover:text-white transition-colors">
-                    Démarrer gratuitement
-                  </Link>
-                </div>
+                  </div>
 
                 {/* Card 3 */}
-                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-2 hover:shadow-xl transition-all duration-300 relative group overflow-visible">
+                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative group/tooltip overflow-hidden cursor-help">
+                  <div className="absolute inset-0 bg-ink/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
+                    <h4 className="font-bold text-gold mb-3 text-lg">Palier Pro</h4>
+                    <p className="text-sm text-cream/90 leading-relaxed">Réservé aux e-commerçants confirmés avec plus de 500 000 FCFA de volumes mensuels (N-1). Vous passez à 5% et gardez 95% du chiffre d'affaires net.</p>
+                  </div>
                   <div className="text-center pb-6 border-b border-line mb-6">
                     <h3 className="font-display font-black text-2xl text-ink">Pro</h3>
                   </div>
-                  <div className="space-y-6 flex-1 text-center pb-8 border-b border-line mb-6">
+                  <div className="space-y-6 flex-1 text-center">
                     <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">500K - 1M FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink group-hover:text-emerald transition-colors">5%</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">5%</div>
                     <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">95%</div>
                     <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
                   </div>
-                  <Link href="/register" className="w-full text-center py-4 bg-pearl border border-line text-charcoal font-bold rounded-2xl hover:bg-emerald hover:text-white transition-colors">
-                    Démarrer gratuitement
-                  </Link>
-                </div>
+                  </div>
 
                 {/* Card 4 (Expert) */}
-                <div className="w-64 md:w-auto bg-pearl rounded-3xl border-2 border-emerald-rich shadow-lg p-6 flex flex-col transform md:scale-105 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald/20 transition-all duration-300 relative group z-10">
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald text-white text-[10px] uppercase tracking-widest font-black px-4 py-1.5 rounded-full shadow-md whitespace-nowrap">
+                <div className="w-64 md:w-auto bg-pearl rounded-3xl border-2 border-emerald-rich shadow-lg p-6 flex flex-col transform md:scale-105 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald/20 transition-all duration-300 relative group/tooltip overflow-hidden z-20 cursor-help">
+                  <div className="absolute inset-0 bg-emerald-deep/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
+                    <h4 className="font-bold text-emerald-light mb-3 text-lg">Palier Expert</h4>
+                    <p className="text-sm text-cream/90 leading-relaxed">Le grade d'élite. En dépassant 1 Million FCFA mensuels, vous obtenez notre meilleur taux de 4%. Frais Wave/Orange Money inclus. Zéro plafond de facturation.</p>
+                  </div>
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald text-white text-[10px] uppercase tracking-widest font-black px-4 py-1.5 rounded-full shadow-md whitespace-nowrap pointer-events-none z-10">
                     Meilleur taux (Populaire)
                   </div>
-                  <div className="text-center pb-6 border-b border-emerald/20 mb-6">
+                  <div className="text-center pb-6 border-b border-emerald/20 mb-6 relative z-0">
                     <h3 className="font-display font-black text-2xl text-emerald-rich">Expert</h3>
                   </div>
-                  <div className="space-y-6 flex-1 text-center pb-8 border-b border-emerald/20 mb-6">
+                  <div className="space-y-6 flex-1 text-center relative z-0">
                     <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">+ 1M FCFA</div>
                     <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-emerald scale-110">4%</div>
                     <div className="h-12 flex items-center justify-center font-bold text-emerald-rich text-2xl mt-2 bg-emerald/10 rounded-full scale-110 px-4">96%</div>
                     <div className="h-12 flex items-center justify-center text-sm font-bold text-emerald">Inclus</div>
                   </div>
-                  <Link href="/register" className="w-full text-center py-4 text-white font-bold rounded-2xl shadow-md transition-colors bg-emerald hover:bg-emerald-rich">
-                    Démarrer (Recommandé)
-                  </Link>
-                </div>
+                  </div>
 
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 mb-10 pb-6">
-              <div className="bg-white border border-line rounded-full px-5 py-2.5 text-xs font-bold text-charcoal shadow-sm flex items-center gap-2">
-                <span className="text-base leading-none">💳</span> Wave & Orange Money
-              </div>
-              <div className="bg-white border border-line rounded-full px-5 py-2.5 text-xs font-bold text-charcoal shadow-sm flex items-center gap-2">
-                <span className="text-base leading-none">📦</span> COD : 5% fixe
-              </div>
-              <div className="bg-white border border-line rounded-full px-5 py-2.5 text-xs font-bold text-charcoal shadow-sm flex items-center gap-2">
-                <span className="text-base leading-none">🏦</span> Retrait dès 5 000 FCFA
-              </div>
+            <div className="mt-8 text-center mb-16">
+              <Link href="/register" className="inline-block px-12 py-5 bg-emerald text-white rounded-xl font-bold text-lg hover:bg-emerald-rich transition shadow-xl shadow-emerald/20">
+                Créer ma boutique (Palier Débutant)
+              </Link>
+            </div>
+
+            <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 mb-16 mt-6 max-w-5xl mx-auto">
+               <div className="bg-white border-2 border-emerald/20 rounded-2xl p-6 text-center shadow-lg flex-1 hover:border-emerald transition-colors flex flex-col items-center justify-center">
+                 <div className="text-4xl leading-none mb-3">💳</div>
+                 <h4 className="font-display font-black text-ink text-xl mb-1">Mobile Money</h4>
+                 <p className="text-slate text-sm font-medium">Wave & Orange Money par défaut</p>
+               </div>
+               <div className="bg-white border-2 border-gold/40 rounded-2xl p-6 text-center shadow-lg flex-1 hover:border-gold transition-colors flex flex-col items-center justify-center relative overflow-hidden">
+                  <div className="absolute top-0 right-0 bg-gold text-white text-[10px] font-black uppercase px-3 py-1 rounded-bl-xl">Spécial E-commerce</div>
+                  <div className="text-4xl leading-none mb-3 mt-2">📦</div>
+                  <h4 className="font-display font-black text-ink text-xl mb-1">Service COD</h4>
+                  <p className="text-gold-dark font-bold text-sm">Paiement à la livraison : 5% fixe</p>
+               </div>
+               <div className="bg-white border-2 border-turquoise/30 rounded-2xl p-6 text-center shadow-lg flex-1 hover:border-turquoise transition-colors flex flex-col items-center justify-center">
+                  <div className="text-4xl leading-none mb-3">🏦</div>
+                  <h4 className="font-display font-black text-ink text-xl mb-1">Gains Express</h4>
+                  <p className="text-turquoise-dark font-bold text-sm">Retrait immédiat dès 5 000 FCFA</p>
+               </div>
             </div>
 
             <p className="text-center text-slate max-w-2xl mx-auto mb-16 bg-white py-4 px-6 rounded-2xl border border-line shadow-sm">
-              <span className="mr-2">💡</span> Vous ne payez qu&apos;une commission sur vos ventes réelles. Plus vous vendez, moins vous payez. De 7% pour les débutants à 4% pour les pros.
+              <span className="mr-2">💡</span> Vous ne payez qu&apos;une commission sur vos ventes réelles. Plus vous vendez, moins vous payez. Le système s'ajuste pour vous.
             </p>
 
             <PricingCalculator />
@@ -640,7 +752,7 @@ export default async function LandingPage() {
               <li><Link href="/conditions-utilisation" className="hover:text-emerald-light transition">Conditions d'utilisation</Link></li>
               <li><Link href="/politique-confidentialite" className="hover:text-emerald-light transition">Politique de confidentialité</Link></li>
               <li><Link href="/mentions-legales" className="hover:text-emerald-light transition">Mentions légales</Link></li>
-              <li><a href={`https://wa.me/${get('landing_whatsapp_support', '221770000000')}`} target="_blank" className="hover:text-emerald-light transition flex items-center gap-2">
+              <li><a href={`https://wa.me/${get('landing_whatsapp_support', '221780476393')}`} target="_blank" className="hover:text-emerald-light transition flex items-center gap-2">
                 <span className="w-2 h-2 bg-emerald rounded-full animate-pulse"></span>
                 Support WhatsApp
               </a></li>

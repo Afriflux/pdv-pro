@@ -47,6 +47,8 @@ interface CheckoutFormProps {
     activePromo: PromotionData | null
   }
   vendorPlan?: 'gratuit' | 'pro'
+  deliveryZones?: { id: string; name: string; fee: number; delay: string | null; active: boolean }[]
+  coachingSlots?: any[]
   // Props optionnelles pour pré-remplir depuis ProductPage
   defaultUseCOD?: boolean
   defaultVariantId?: string | null
@@ -64,6 +66,8 @@ export function CheckoutForm({
   defaultUseCOD = false,
   defaultVariantId,
   defaultQuantity,
+  deliveryZones = [],
+  coachingSlots = [],
 }: CheckoutFormProps) {
   const router = useRouter()
   const accent = product.store.primary_color || '#0F7A60'
@@ -83,6 +87,7 @@ export function CheckoutForm({
   const [useCOD, setUseCOD]       = useState(defaultUseCOD)
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string | null>(null)
+  const [selectedZoneId, setSelectedZoneId] = useState<string>('')
 
   const showCOD = product.type === 'physical' 
     && product.cash_on_delivery === true 
@@ -93,6 +98,10 @@ export function CheckoutForm({
   const [appliedPromo, setAppliedPromo] = useState<{ id: string; discount: number; code: string } | null>(null)
   const [promoLoading, setPromoLoading] = useState(false)
   const [promoError, setPromoError] = useState<string | null>(null)
+
+  // ── États Coaching ──────────────────────────────────────────────
+  const [selectedDate, setSelectedDate] = useState<string>('')
+  const [selectedSlotStr, setSelectedSlotStr] = useState<string>('')
 
   // ── États flow 2 étapes ───────────────────────────────────────
   type CheckoutStep = 'form' | 'payment'
@@ -110,8 +119,12 @@ export function CheckoutForm({
 
   const commissionRate = vendorPlan === 'pro' ? 0.05 : 0.07
   const platformFee    = Math.round(subtotal * commissionRate)
-  const vendorAmount   = subtotal - platformFee
-  const total          = subtotal
+  
+  const selectedZone   = deliveryZones?.find(z => z.id === selectedZoneId)
+  const deliveryFee    = selectedZone?.fee ?? 0
+
+  const vendorAmount   = (subtotal - platformFee) + deliveryFee
+  const total          = subtotal + deliveryFee
 
   // ── Géolocalisation ───────────────────────────────────────────
   const detectLocation = () => {
@@ -209,9 +222,21 @@ export function CheckoutForm({
       setError('Le numéro de téléphone est obligatoire.')
       return
     }
-    if (product.type === 'physical' && !address.trim() && !useCOD) {
-      setError('Adresse de livraison obligatoire.')
-      return
+    if (product.type === 'coaching') {
+      if (!selectedDate || !selectedSlotStr) {
+        setError('Veuillez sélectionner une date et une heure pour votre coaching.')
+        return
+      }
+    }
+    if (product.type === 'physical') {
+      if ((deliveryZones?.length ?? 0) > 0 && !selectedZoneId) {
+        setError('Veuillez sélectionner une zone de livraison.')
+        return
+      }
+      if (!address.trim() && !useCOD) {
+        setError('Adresse de livraison obligatoire.')
+        return
+      }
     }
 
     setLoading(true)
@@ -225,6 +250,8 @@ export function CheckoutForm({
         buyer_name:       name.trim() || (simulate ? "Client Simulation" : ""),
         buyer_phone:      phone.trim(),
         delivery_address: address.trim() || null,
+        delivery_zone_id: selectedZoneId || null,
+        delivery_fee:     deliveryFee,
         // Pour COD → 'cod', pour paiement en ligne → 'pending' (sera mis à jour par /api/payments/initiate)
         payment_method:   useCOD ? 'cod' : 'pending',
         subtotal:         grossSubtotal,
@@ -233,6 +260,9 @@ export function CheckoutForm({
         vendor_amount:    vendorAmount,
         total,
         applied_promo_id: appliedPromo?.id || null,
+        booking_date:     selectedDate || null,
+        booking_start_time: selectedSlotStr ? selectedSlotStr.split('-')[0] : null,
+        booking_end_time:   selectedSlotStr ? selectedSlotStr.split('-')[1] : null,
         simulate,
       }
 
@@ -313,6 +343,12 @@ export function CheckoutForm({
             <div className="flex justify-between text-sm font-bold pt-1" style={{ color: accent }}>
               <span>PROMO ({appliedPromo.code})</span>
               <span>-{appliedPromo.discount.toLocaleString('fr-FR')} F</span>
+            </div>
+          )}
+          {deliveryFee > 0 && (
+            <div className="flex justify-between text-sm text-gray-600 pt-1">
+              <span>Livraison ({selectedZone?.name})</span>
+              <span>{deliveryFee.toLocaleString('fr-FR')} F</span>
             </div>
           )}
           <div className="border-t border-gray-100 pt-2 mt-2 flex justify-between font-black">
@@ -455,6 +491,71 @@ export function CheckoutForm({
           </section>
         )}
 
+        {/* Coaching : Choix du créneau */}
+        {product.type === 'coaching' && (
+          <section className="bg-white rounded-2xl shadow-sm p-4 space-y-4 border border-gray-100">
+            <h2 className="font-semibold text-gray-800 text-sm">Réserver votre session</h2>
+            
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Sélectionnez une date <span className="text-red-500">*</span></label>
+              <input
+                type="date"
+                min={new Date().toISOString().split('T')[0]}
+                value={selectedDate}
+                onChange={(e) => {
+                  setSelectedDate(e.target.value)
+                  setSelectedSlotStr('') // reset time
+                }}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition appearance-none"
+                style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+              />
+            </div>
+
+            {selectedDate && (
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-2">Créneaux horaires disponibles <span className="text-red-500">*</span></label>
+                {(() => {
+                  const dateObj = new Date(selectedDate)
+                  // getDay(): 0=Dimanche, 1=Lundi -> Notre DB: 0=Lundi, 6=Dimanche
+                  const dayOfWeek = (dateObj.getDay() + 6) % 7
+                  const availableSlots = coachingSlots.filter(s => s.day_of_week === dayOfWeek && s.active)
+
+                  if (availableSlots.length === 0) {
+                    return <p className="text-sm font-medium text-amber-600 bg-amber-50 p-3 rounded-xl text-center">Aucune disponibilité pour ce jour.</p>
+                  }
+
+                  return (
+                    <div className="grid grid-cols-2 gap-2">
+                      {availableSlots.map((slot, i) => {
+                        const slotValue = `${slot.start_time}-${slot.end_time}`
+                        const isSelected = selectedSlotStr === slotValue
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => setSelectedSlotStr(slotValue)}
+                            className="py-2.5 px-2 rounded-xl border text-sm font-bold transition flex items-center justify-center"
+                            style={isSelected ? {
+                              backgroundColor: accent,
+                              borderColor: accent,
+                              color: '#fff'
+                            } : {
+                              borderColor: '#e5e7eb',
+                              color: '#374151'
+                            }}
+                          >
+                            {slot.start_time} - {slot.end_time}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+          </section>
+        )}
+
         {/* Coordonnées */}
         <section className="bg-white rounded-2xl shadow-sm p-4 space-y-4 border border-gray-100">
           <h2 className="font-semibold text-gray-800 text-sm">Vos coordonnées</h2>
@@ -484,11 +585,33 @@ export function CheckoutForm({
           </div>
 
           {product.type === 'physical' && (
-            <div>
-              <label className="text-xs text-gray-500 font-medium mb-1 block">
-                Adresse de livraison {!useCOD && <span className="text-red-500">*</span>}
-              </label>
-              <div className="relative">
+            <div className="space-y-4">
+              {deliveryZones && deliveryZones.length > 0 && (
+                <div>
+                  <label className="text-xs text-gray-500 font-medium mb-1 block">
+                    Zone de livraison <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={selectedZoneId}
+                    onChange={(e) => setSelectedZoneId(e.target.value)}
+                    className="w-full border border-gray-200 bg-white rounded-xl px-4 py-3 text-gray-800 focus:ring-2 outline-none text-sm transition appearance-none"
+                    style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+                  >
+                    <option value="" disabled>Sélectionnez votre zone</option>
+                    {deliveryZones.map(z => (
+                      <option key={z.id} value={z.id}>
+                        {z.name} — (+{z.fee.toLocaleString('fr-FR')} FCFA) {z.delay ? `(${z.delay})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label className="text-xs text-gray-500 font-medium mb-1 block">
+                  Détails de l'adresse (Quartier, Rue...) {!useCOD && <span className="text-red-500">*</span>}
+                </label>
+                <div className="relative">
                 <input
                   type="text"
                   value={address}
@@ -512,6 +635,7 @@ export function CheckoutForm({
                   )}
                 </button>
               </div>
+            </div>
             </div>
           )}
         </section>
@@ -587,6 +711,12 @@ export function CheckoutForm({
             <div className="flex justify-between text-sm font-bold pt-1" style={{ color: accent }}>
               <span>PROMO ({appliedPromo.code})</span>
               <span>-{appliedPromo.discount.toLocaleString('fr-FR')} F</span>
+            </div>
+          )}
+          {deliveryFee > 0 && (
+            <div className="flex justify-between text-sm text-gray-600 pt-1">
+              <span>Livraison ({selectedZone?.name})</span>
+              <span>{deliveryFee.toLocaleString('fr-FR')} F</span>
             </div>
           )}
           <div className="border-t border-gray-100 pt-3 flex justify-between items-end font-black">

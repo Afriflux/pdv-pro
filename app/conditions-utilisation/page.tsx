@@ -37,10 +37,10 @@ export default function TermsPage() {
                 <li>PDV Pro absorbe tous les frais de transaction et de retrait.</li>
                 <li>Fonds disponibles immédiatement après paiement.</li>
               </ul>
-              <p className="font-bold text-[#0F7A60]">Option COD (Paiement à la Livraison) :</p>
+              <p className="font-bold text-[#0F7A60]">Ventes en COD (Paiement à la livraison) :</p>
               <ul className="list-disc ml-6 space-y-1">
-                <li>9 900 FCFA / mois.</li>
-                <li>0% de commission sur les ventes COD.</li>
+                <li>Commission fixe de 5% sur les ventes COD terminées.</li>
+                <li>Zéro frais fixe mensuel.</li>
               </ul>
             </div>
           </section>

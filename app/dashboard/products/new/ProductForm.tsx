@@ -60,6 +60,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   // UI
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState<string | null>(null)
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null)
   
   // IA
   const [showAI, setShowAI]     = useState(false)
@@ -181,15 +182,80 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
 
       // 2. Upload fichier digital si applicable
       let digitalFileUrl: string | null = null
+      let bunnyVideoId: string | undefined = undefined
+
       if (type === 'digital' && digitalMode === 'file' && digitalFile) {
-        const ext  = digitalFile.name.split('.').pop()
-        const path = `digital/${storeId}/${Date.now()}.${ext}`
-        const { error: dfErr } = await supabase.storage
-          .from('pdvpro-digital')
-          .upload(path, digitalFile)
-        if (!dfErr) {
-          const { data } = supabase.storage.from('pdvpro-products').getPublicUrl(path)
-          digitalFileUrl = data.publicUrl
+        const ext = digitalFile.name.split('.').pop()?.toLowerCase() || ''
+        const isVideo = ['mp4', 'mov', 'mkv', 'webm', 'avi'].includes(ext)
+
+        if (isVideo) {
+          // --- UPLOAD VIA BUNNY.NET (TUS) ---
+          try {
+            // 2.1 Appel à notre API pour initialiser la vidéo Bunny
+            const initRes = await fetch('/api/bunny/create', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ title: name.trim() || 'Vidéo Produit' })
+            })
+            if (!initRes.ok) throw new Error('Erreur API Bunny')
+            const initData = await initRes.json()
+            const { libraryId, videoId, signature, expirationTime, uploadEndpoint } = initData
+
+            bunnyVideoId = videoId
+
+            // 2.2 Uploader via TUS asynchrone
+            await new Promise<void>((resolve, reject) => {
+              const { Upload } = require('tus-js-client')
+              const upload = new Upload(digitalFile, {
+                endpoint: uploadEndpoint,
+                retryDelays: [0, 3000, 5000, 10000, 20000],
+                headers: {
+                  AuthorizationSignature: signature,
+                  AuthorizationExpire: String(expirationTime),
+                  VideoId: videoId,
+                  LibraryId: libraryId,
+                },
+                metadata: {
+                  filetype: digitalFile.type || 'video/mp4',
+                  title: name.trim() || 'Video',
+                },
+                onError: (err: Error) => reject(err),
+                onProgress: (bytesUploaded: number, bytesTotal: number) => {
+                  const percentage = Math.round((bytesUploaded / bytesTotal) * 100)
+                  setUploadProgress(percentage)
+                },
+                onSuccess: () => {
+                   setUploadProgress(null)
+                   resolve()
+                }
+              })
+              
+              upload.findPreviousUploads().then((previousUploads: any) => {
+                 if (previousUploads.length) {
+                    upload.resumeFromPreviousUpload(previousUploads[0])
+                 }
+                 upload.start()
+              })
+            })
+
+            // La vidéo est chez Bunny
+            digitalFileUrl = `https://iframe.mediadelivery.net/embed/${process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID}/${videoId}`
+
+          } catch (e: any) {
+             setError('Erreur lors du transfert sécurisé Bunny CDN: ' + e.message)
+             setLoading(false)
+             return
+          }
+        } else {
+          // --- COMPORTEMENT ACTUEL SUPABASE (Fichiers normaux) ---
+          const path = `digital/${storeId}/${Date.now()}.${ext}`
+          const { error: dfErr } = await supabase.storage
+            .from('pdvpro-digital')
+            .upload(path, digitalFile)
+          if (!dfErr) {
+            const { data } = supabase.storage.from('pdvpro-products').getPublicUrl(path)
+            digitalFileUrl = data.publicUrl
+          }
         }
       }
 
@@ -201,10 +267,11 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
               digital_link: digitalMode === 'link' ? digitalLink.trim() || null : null,
               digital_files: [
                 {
-                  type: digitalMode === 'file' ? (digitalFile?.name.split('.').pop() === 'mp4' ? 'video' : 'pdf') : 'link',
+                  type: digitalMode === 'file' ? (['mp4', 'mov', 'mkv', 'webm', 'avi'].includes(digitalFile?.name.split('.').pop()?.toLowerCase() || '') ? 'video' : 'pdf') : 'link',
                   url: digitalMode === 'file' ? digitalFileUrl : digitalLink.trim(),
                   filename: digitalMode === 'file' ? digitalFile?.name : 'Lien externe',
-                  size: digitalMode === 'file' ? digitalFile?.size : 0
+                  size: digitalMode === 'file' ? digitalFile?.size : 0,
+                  ...(bunnyVideoId ? { bunny_video_id: bunnyVideoId } : {})
                 }
               ],
               access_duration_days: accessDurationDays ? parseInt(accessDurationDays) : null,
@@ -273,6 +340,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
       console.error(err)
     } finally {
       setLoading(false)
+      setUploadProgress(null)
     }
   }
 
@@ -285,6 +353,20 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
           {error}
+        </div>
+      )}
+
+      {/* Barre d'upload vidéo Bunny.net */}
+      {uploadProgress !== null && (
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl space-y-2">
+          <div className="flex justify-between items-center text-sm font-medium text-blue-800">
+            <span>Téléversement sécurisé de la vidéo...</span>
+            <span>{uploadProgress}%</span>
+          </div>
+          <div className="w-full bg-blue-100 rounded-full h-2">
+            <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+          </div>
+          <p className="text-xs text-blue-600">Veuillez patienter sans fermer la page.</p>
         </div>
       )}
 
@@ -443,14 +525,14 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                 onClick={() => digitalFileRef.current?.click()}
                 className="w-full border-2 border-dashed border-gray-200 rounded-xl py-5 text-sm text-gray-400 hover:border-gold/40 hover:text-gold transition"
               >
-                {digitalFile ? `✅ ${digitalFile.name}` : '📎 Sélectionner un fichier (PDF, ZIP, MP4, max 500MB)'}
+                {digitalFile ? `✅ ${digitalFile.name}` : '📎 Sélectionner un fichier (PDF, ZIP, Fichiers. Les vidéos MP4 font l\'objet d\'un flux VOD rapide BunnyCDN.)'}
               </button>
               <input
                 aria-label="Fichier expédié"
                 title="Fichier expédié"
                 ref={digitalFileRef}
                 type="file"
-                accept=".pdf,.zip,.mp4,.mp3,.epub,.docx"
+                accept=".pdf,.zip,.mp4,.mov,.mkv,.avi,.mp3,.epub,.docx"
                 onChange={e => setDigitalFile(e.target.files?.[0] ?? null)}
                 className="hidden"
               />

@@ -899,9 +899,10 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
                 📡 Pixels & Tracking
               </h2>
               <p className="text-sm text-gray-500 leading-relaxed">
-                Les pixels vous permettent de mesurer vos ventes,
-                optimiser vos publicités et recibler vos visiteurs.
-                Suivez le guide étape par étape.
+                Les pixels et outils de tracking sont essentiels pour vos campagnes <strong>Ads</strong>. 
+                Ils vous permettent de mesurer vos ventes avec précision (<strong>pin target</strong>), 
+                d'optimiser le budget publicitaire, et de mettre en place du <strong>re-targeting</strong> 
+                puissant pour reconvertir vos visiteurs.
               </p>
             </div>
 
@@ -910,7 +911,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
               name="Meta Pixel"
               logo="📘"
               color="#1877F2"
-              description="Mesure les conversions Facebook & Instagram"
+              description="Mesure les conversions Facebook & Instagram Ads et gère le re-targeting"
               value={store?.meta_pixel_id ?? ''}
               onChange={(val) => handleSaveField('meta_pixel_id', val)}
               guide={[
@@ -929,7 +930,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
               name="TikTok Pixel"
               logo="🎵"
               color="#010101"
-              description="Mesure les conversions TikTok Ads"
+              description="Capture les événements TikTok Ads pour optimiser l'algorithme"
               value={store?.tiktok_pixel_id ?? ''}
               onChange={(val) => handleSaveField('tiktok_pixel_id', val)}
               guide={[
@@ -948,7 +949,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
               name="Google Tag Manager"
               logo="🏷️"
               color="#4285F4"
-              description="Centralise tous vos tags Google (Analytics, Ads...)"
+              description="Centralise tous vos tags Google (Analytics, Google Ads, reciblage)"
               value={store?.google_tag_id ?? ''}
               onChange={(val) => handleSaveField('google_tag_id', val)}
               guide={[

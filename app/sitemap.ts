@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: products } = await supabase.from('Product').select('id, updated_at, store:Store(slug)')
 
   const storeUrls = (stores || []).map(store => ({
-    url: `https://pdvpro.com/p/${store.slug}`,
+    url: `https://pdvpro.com/${store.slug}`,
     lastModified: store.updated_at ? new Date(store.updated_at) : new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.8,
@@ -47,6 +47,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
+    },
+    {
+      url: 'https://pdvpro.com/vendeurs',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: 'https://pdvpro.com/conditions-utilisation',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
+    {
+      url: 'https://pdvpro.com/politique-confidentialite',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
+    {
+      url: 'https://pdvpro.com/mentions-legales',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.5,
     },
     ...storeUrls,
     ...productUrls,

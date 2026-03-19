@@ -11,7 +11,6 @@ import {
   Clock,
   Users,
 } from 'lucide-react'
-import VendeursFiltres from './VendeursFiltres'
 
 // ----------------------------------------------------------------
 // TYPES
@@ -166,48 +165,75 @@ export default async function AdminVendorsPage({ searchParams }: PageProps) {
   const totalPages = Math.ceil((count ?? 0) / pageSize)
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start animate-in fade-in duration-500">
 
-      {/* ── EN-TÊTE ── */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">Gestion des Vendeurs</h1>
-          <p className="text-gray-400 text-sm mt-1">
-            {count ?? 0} boutique{(count ?? 0) > 1 ? 's' : ''} enregistrée{(count ?? 0) > 1 ? 's' : ''} sur la plateforme
-          </p>
-        </div>
-      </header>
-
-      {/* ── BARRE FILTRES — Fond blanc, bordure grise ── */}
-      <div className="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm flex flex-col md:flex-row gap-4 items-center">
-        {/* Champ de recherche */}
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <form method="GET">
-            <input
-              type="text"
-              name="q"
-              defaultValue={query}
-              placeholder="Rechercher une boutique..."
-              className="w-full bg-[#FAFAF7] border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-sm
-                focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all"
-            />
-            {/* Conserver les filtres actifs lors de la recherche */}
-            <input type="hidden" name="kyc" value={kycFilter} />
-            <input type="hidden" name="status" value={statusFilter} />
-          </form>
-        </div>
-
-        {/* Filtres KYC et Statut (composant Client) */}
-        <VendeursFiltres
-          kycFilter={kycFilter}
-          statusFilter={statusFilter}
-          query={query}
-        />
+      {/* ── COLONNE GAUCHE : ONGLETS LATÉRAUX ── */}
+      <div className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-1 sticky top-6">
+        <h2 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Vues Vendeurs</h2>
+        
+        <Link 
+          href="/admin/vendeurs" 
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${kycFilter === 'all' && statusFilter === 'all' ? 'bg-[#0F7A60] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100'}`}
+        >
+          <Users className="w-4 h-4" /> Tous les vendeurs
+        </Link>
+        <Link 
+          href="/admin/vendeurs?kyc=pending" 
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${kycFilter === 'pending' ? 'bg-[#C9A84C] text-white shadow-sm' : 'text-gray-500 hover:bg-[#C9A84C]/10 hover:text-[#C9A84C]'}`}
+        >
+          <Clock className="w-4 h-4" /> En attente KYC
+        </Link>
+        <Link 
+          href="/admin/vendeurs?kyc=verified" 
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${kycFilter === 'verified' ? 'bg-[#0F7A60] text-white shadow-sm' : 'text-gray-500 hover:bg-[#0F7A60]/10 hover:text-[#0F7A60]'}`}
+        >
+          <CheckCircle2 className="w-4 h-4" /> KYC Vérifiés
+        </Link>
+        <Link 
+          href="/admin/vendeurs?status=suspended" 
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${statusFilter === 'suspended' ? 'bg-red-500 text-white shadow-sm' : 'text-gray-500 hover:bg-red-50 hover:text-red-500'}`}
+        >
+          <XCircle className="w-4 h-4" /> Suspendus
+        </Link>
+        <Link 
+          href="/admin/vendeurs?kyc=rejected" 
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${kycFilter === 'rejected' ? 'bg-gray-800 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100'}`}
+        >
+          <AlertCircle className="w-4 h-4" /> KYC Rejetés
+        </Link>
       </div>
 
-      {/* ── TABLEAU VENDEURS — Fond blanc, bordures grises ── */}
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+      {/* ── COLONNE DROITE : CONTENU PRINCIPAL ── */}
+      <div className="flex-1 w-full space-y-6">
+
+        {/* ── EN-TÊTE & BARRE DE RECHERCHE ── */}
+        <div className="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-bold text-[#1A1A1A]">Annuaire Vendeurs</h1>
+            <p className="text-gray-400 text-sm mt-0.5">
+              {count ?? 0} résultat{(count ?? 0) > 1 ? 's' : ''} sur la base
+            </p>
+          </div>
+
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <form method="GET">
+              <input
+                type="text"
+                name="q"
+                defaultValue={query}
+                placeholder="Rechercher une boutique..."
+                className="w-full bg-[#FAFAF7] border border-gray-200 rounded-xl py-2 pl-10 pr-4 text-sm
+                  focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all"
+              />
+              <input type="hidden" name="kyc" value={kycFilter} />
+              <input type="hidden" name="status" value={statusFilter} />
+            </form>
+          </div>
+        </div>
+
+        {/* ── TABLEAU VENDEURS — Fond blanc, bordures grises ── */}
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             {/* Header émeraude subtil */}
@@ -319,6 +345,7 @@ export default async function AdminVendorsPage({ searchParams }: PageProps) {
             ))}
           </div>
         )}
+      </div>
       </div>
     </div>
   )

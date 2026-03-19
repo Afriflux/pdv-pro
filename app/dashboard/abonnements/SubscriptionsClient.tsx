@@ -148,10 +148,10 @@ export default function SubscriptionsClient({ storeId, subscriptions }: Subscrip
               <span className="bg-emerald-rich text-turquoise px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Option Supplémentaire</span>
             </div>
             <div className="flex items-baseline gap-1">
-              <span className="text-4xl font-black text-white">9 900 F</span>
+              <span className="text-4xl font-black text-white">0 F</span>
               <span className="text-emerald-light/60 font-medium tracking-tight">/mois</span>
             </div>
-            <h2 className="text-2xl font-black text-turquoise mt-1">Option COD</h2>
+            <h2 className="text-2xl font-black text-turquoise mt-1">Ventes par COD</h2>
             <p className="text-sm text-emerald-light/80 mt-2 font-medium">Débloquez le paiement à la livraison et boostez vos ventes physiques.</p>
           </div>
 
@@ -160,29 +160,21 @@ export default function SubscriptionsClient({ storeId, subscriptions }: Subscrip
               <div className="w-5 h-5 bg-turquoise/20 rounded-full flex items-center justify-center text-turquoise">
                 <Check size={12} strokeWidth={3} />
               </div>
-              0% commission sur vos ventes COD
+              Commission fixe de 5% au succès
             </li>
             <li className="flex gap-3 text-sm font-medium text-emerald-light items-center">
               <div className="w-5 h-5 bg-turquoise/20 rounded-full flex items-center justify-center text-turquoise">
                 <Check size={12} strokeWidth={3} />
               </div>
-              Frais achat (1-2%) supportés par l'acheteur
+              Aucun frais d'activation mensuel
             </li>
             <li className="flex gap-3 text-sm font-medium text-emerald-light items-center text-turquoise font-bold">
               <div className="w-5 h-5 bg-turquoise/20 rounded-full flex items-center justify-center text-turquoise">
                 <TrendingUp size={12} strokeWidth={3} />
               </div>
-              Disponibilité immédiate après confirmation
+              Déjà actif sur votre boutique
             </li>
           </ul>
-          
-          <button 
-            onClick={() => setShowPaymentModal(true)}
-            disabled={loading}
-            className="w-full bg-[#0F7A60] text-white rounded-xl py-4 font-semibold text-center hover:bg-[#0F7A60]/90 transition-all flex items-center justify-center gap-2"
-          >
-            Activer l'option COD — 9 900 FCFA/mois →
-          </button>
         </div>
       </div>
 

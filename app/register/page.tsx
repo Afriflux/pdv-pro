@@ -68,7 +68,7 @@ export default function RegisterPage({ searchParams }: RegisterPageProps) {
             </div>
             <div className="flex items-start gap-4">
               <div className="bg-gold/20 border border-gold/30 text-gold-light rounded-full p-1 mt-0.5 shrink-0"><CheckCircle2 size={16}/></div>
-              <p className="font-light leading-relaxed text-white/80"><strong className="text-white font-semibold">Zéro abonnement</strong> pour démarrer. Nous ne gagnons que si vous gagnez.</p>
+              <p className="font-light leading-relaxed text-white/80"><strong className="text-white font-semibold">Zéro frais fixe</strong> pour démarrer. Nous ne gagnons que si vous gagnez.</p>
             </div>
           </div>
         </div>
@@ -90,8 +90,7 @@ export default function RegisterPage({ searchParams }: RegisterPageProps) {
           </div>
 
           <div className="text-center mb-8">
-            <h2 className="font-display font-black text-3xl text-ink mb-2">Créez votre espace de vente.</h2>
-            <p className="text-slate text-sm font-light">Prêt en 2 minutes. Zéro engagement financier.</p>
+            <h2 className="font-display font-black text-3xl text-ink mb-2">Créez votre boutique gratuite en 2 minutes</h2>
           </div>
 
           <RegisterForm errorMsg={errorMsg} />

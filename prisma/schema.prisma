@@ -3,12 +3,14 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  schemas  = ["public", "auth"]
 }
 
 enum Role {
@@ -17,18 +19,21 @@ enum Role {
   vendeur
   affilie
   acheteur
+  @@schema("public")
 }
 
 enum VendorType {
   digital
   physical
   hybrid
+  @@schema("public")
 }
 
 enum ProductType {
   digital
   physical
   coaching
+  @@schema("public")
 }
 
 enum OrderStatus {
@@ -45,6 +50,7 @@ enum OrderStatus {
   no_answer
   cancelled
   completed
+  @@schema("public")
 }
 
 enum WithdrawalStatus {
@@ -53,6 +59,7 @@ enum WithdrawalStatus {
   approved
   rejected
   paid
+  @@schema("public")
 }
 
 model User {
@@ -76,6 +83,7 @@ model User {
   tipReads    TipRead[]
   notifications Notification[]
   npsResponses  NpsResponse[]
+  @@schema("public")
 }
 
 model Store {
@@ -126,6 +134,13 @@ model Store {
   score      StoreScore?
   subscriptions Subscription[]
   withdrawals Withdrawal[]
+  deliveryZones DeliveryZone[]
+  coachingSlots CoachingSlot[]
+  bookings      Booking[]
+  closing_enabled Boolean @default(false)
+  closing_fee     Float   @default(500)
+  closingRequests ClosingRequest[]
+  @@schema("public")
 }
 
 model Product {
@@ -170,6 +185,8 @@ model Product {
   orders         Order[]
   digitalAccess  DigitalAccess[]
   shortLinks     ShortLink[]
+  bookings       Booking[]
+  @@schema("public")
 }
 
 model ProductVariant {
@@ -184,6 +201,7 @@ model ProductVariant {
 
   product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
   orders  Order[]
+  @@schema("public")
 }
 
 model SalePage {
@@ -202,6 +220,7 @@ model SalePage {
   analytics PageAnalytics[]
 
   @@unique([store_id, slug])
+  @@schema("public")
 }
 
 model Order {
@@ -216,6 +235,7 @@ model Order {
   subtotal         Float
   promo_discount   Float       @default(0)
   platform_fee     Float       // 10% PDV Pro — toujours calculé en premier
+  delivery_commission Float    @default(0)
   vendor_amount    Float       // subtotal - promo_discount - platform_fee
   total            Float
   status           OrderStatus @default(confirmed)
@@ -224,6 +244,8 @@ model Order {
   affiliate_token  String?
   applied_promo_id String?
   delivery_address String?
+  delivery_zone_id String?
+  delivery_fee     Float       @default(0)
   
   // ── Champs additionnels Phase 2 & 6 ──
   order_type       String    @default("physical")
@@ -243,12 +265,16 @@ model Order {
 
   buyer         User?           @relation(fields: [buyer_id], references: [id])
   store         Store           @relation(fields: [store_id], references: [id])
+  deliveryZone  DeliveryZone?   @relation(fields: [delivery_zone_id], references: [id])
   product       Product         @relation(fields: [product_id], references: [id])
   variant       ProductVariant? @relation(fields: [variant_id], references: [id])
   promo_code    PromoCode?      @relation(fields: [applied_promo_id], references: [id])
   digitalAccess DigitalAccess[]
   invoices      Invoice[]
   reports       Report[]
+  booking       Booking?
+  closing       ClosingRequest?
+  @@schema("public")
 }
 
 model Notification {
@@ -262,6 +288,7 @@ model Notification {
   created_at  DateTime @default(now())
 
   user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  @@schema("public")
 }
 
 model NpsResponse {
@@ -272,6 +299,7 @@ model NpsResponse {
   created_at DateTime @default(now())
 
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  @@schema("public")
 }
 
 model Wallet {
@@ -284,6 +312,7 @@ model Wallet {
 
   vendor      Store        @relation(fields: [vendor_id], references: [id], onDelete: Cascade)
   withdrawals Withdrawal[]
+  @@schema("public")
 }
 
 model Withdrawal {
@@ -300,6 +329,7 @@ model Withdrawal {
 
   wallet Wallet @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
   store  Store? @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  @@schema("public")
 }
 
 model Affiliate {
@@ -315,6 +345,7 @@ model Affiliate {
   created_at      DateTime @default(now())
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  @@schema("public")
 }
 
 model PromoCode {
@@ -335,6 +366,7 @@ model PromoCode {
   orders Order[]
 
   @@unique([store_id, code])
+  @@schema("public")
 }
 
 model PageAnalytics {
@@ -349,6 +381,7 @@ model PageAnalytics {
   page SalePage @relation(fields: [page_id], references: [id], onDelete: Cascade)
 
   @@unique([page_id, date])
+  @@schema("public")
 }
 
 model PlatformConfig {
@@ -356,6 +389,7 @@ model PlatformConfig {
   commission_rate Float    @default(0.10) // 10% par défaut
   updated_at      DateTime @updatedAt
   updated_by      String?
+  @@schema("public")
 }
 
 // ─── Livraison digitale ──────────────────────────────────────────────────────
@@ -374,6 +408,7 @@ model DigitalAccess {
   order        Order         @relation(fields: [order_id], references: [id])
   product      Product       @relation(fields: [product_id], references: [id])
   downloadLogs DownloadLog[]
+  @@schema("public")
 }
 
 model DownloadLog {
@@ -384,6 +419,7 @@ model DownloadLog {
   downloaded_at     DateTime      @default(now())
 
   digitalAccess DigitalAccess @relation(fields: [digital_access_id], references: [id])
+  @@schema("public")
 }
 
 // ─── Factures ────────────────────────────────────────────────────────────────
@@ -397,6 +433,7 @@ model Invoice {
   created_at  DateTime @default(now())
 
   order Order @relation(fields: [order_id], references: [id])
+  @@schema("public")
 }
 
 // ─── Marketing Hub ───────────────────────────────────────────────────────────
@@ -413,6 +450,7 @@ model ShortLink {
   store      Store?   @relation(fields: [store_id], references: [id])
   product    Product? @relation(fields: [product_id], references: [id])
   analytics  ClickAnalytics[]
+  @@schema("public")
 }
 
 model ClickAnalytics {
@@ -425,6 +463,7 @@ model ClickAnalytics {
   created_at    DateTime @default(now())
 
   shortLink     ShortLink @relation(fields: [short_link_id], references: [id])
+  @@schema("public")
 }
 
 // ─── Promotions (Advanced) ───────────────────────────────────────────────────
@@ -448,6 +487,7 @@ model Promotion {
   created_at        DateTime @default(now())
 
   store             Store    @relation(fields: [store_id], references: [id])
+  @@schema("public")
 }
 
 // ─── Super Admin ─────────────────────────────────────────────────────────────
@@ -462,6 +502,7 @@ model AdminLog {
   created_at  DateTime @default(now())
 
   admin       User     @relation(fields: [admin_id], references: [id])
+  @@schema("public")
 }
 
 model Report {
@@ -477,6 +518,7 @@ model Report {
 
   order       Order    @relation(fields: [order_id], references: [id])
   reporter    User     @relation(fields: [reporter_id], references: [id])
+  @@schema("public")
 }
 
 // ─── Marketplace Publique ────────────────────────────────────────────────────
@@ -489,6 +531,7 @@ model StoreScore {
   updated_at DateTime @default(now())
 
   store      Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  @@schema("public")
 }
 
 // ─── Abonnements & Plans ─────────────────────────────────────────────────────
@@ -502,6 +545,7 @@ model Subscription {
   created_at  DateTime  @default(now())
 
   vendor      Store     @relation(fields: [vendor_id], references: [id], onDelete: Cascade)
+  @@schema("public")
 }
 
 // ─── Astuces & Nouveautés ────────────────────────────────────────────────────
@@ -519,6 +563,7 @@ model Tip {
   created_at DateTime  @default(now())
 
   reads      TipRead[]
+  @@schema("public")
 }
 
 model TipRead {
@@ -531,4 +576,85 @@ model TipRead {
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([tip_id, user_id])
+  @@schema("public")
 }
+
+// ─── Livraisons & Zones ──────────────────────────────────────────────────────
+
+model DeliveryZone {
+  id          String   @id @default(uuid())
+  store_id    String
+  name        String
+  fee         Float
+  delay       String?
+  active      Boolean  @default(true)
+  created_at  DateTime @default(now())
+
+  store       Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  orders      Order[]
+  @@schema("public")
+}
+
+// ─── Coaching & Réservations ─────────────────────────────────────────────────
+
+model CoachingSlot {
+  id          String   @id @default(uuid())
+  store_id    String
+  day_of_week Int      // 0 = Lundi, 6 = Dimanche
+  start_time  String   // ex: "09:00"
+  end_time    String   // ex: "12:00"
+  active      Boolean  @default(true)
+  created_at  DateTime @default(now())
+
+  store       Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  @@schema("public")
+}
+
+model Booking {
+  id            String   @id @default(uuid())
+  order_id      String   @unique
+  store_id      String
+  product_id    String
+  booking_date  DateTime // Date exacte choisie
+  start_time    String   // Heure de début
+  end_time      String   // Heure de fin
+  status        String   @default("pending") // pending, confirmed, completed, cancelled
+  meet_link     String?  // Lien de la visio
+  created_at    DateTime @default(now())
+
+  order         Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  store         Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  product       Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  @@schema("public")
+}
+
+// ─── Closing & Anti-fraude COD ───────────────────────────────────────────────
+
+model ClosingRequest {
+  id              String   @id @default(uuid())
+  order_id        String   @unique
+  store_id        String
+  status          String   @default("PENDING") // PENDING, VALIDATED, REJECTED, NO_REPLY
+  call_attempts   Int      @default(0)
+  notes           String?
+  closing_fee     Float    @default(500)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  order           Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  store           Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  @@schema("public")
+}
+
+model BuyerScore {
+  id              String   @id @default(uuid())
+  phone           String   @unique
+  total_orders    Int      @default(0)
+  success_orders  Int      @default(0)
+  refused_orders  Int      @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  @@schema("public")
+}
+
+

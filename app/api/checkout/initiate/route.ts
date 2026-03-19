@@ -140,11 +140,16 @@ export async function POST(req: NextRequest) {
       buyer_name,
       buyer_phone,
       delivery_address,
+      delivery_zone_id,
+      delivery_fee,
       payment_method,
       subtotal,
       promo_discount,
       total,
       applied_promo_id,
+      booking_date,
+      booking_start_time,
+      booking_end_time,
       simulate,
     } = body as {
       product_id:       string
@@ -154,11 +159,16 @@ export async function POST(req: NextRequest) {
       buyer_name:       string
       buyer_phone:      string
       delivery_address?: string | null
+      delivery_zone_id?: string | null
+      delivery_fee?:    number
       payment_method:   string
       subtotal:         number
       promo_discount?:  number
       total:            number
       applied_promo_id?: string | null
+      booking_date?:    string | null
+      booking_start_time?: string | null
+      booking_end_time?:   string | null
       simulate?:        boolean
     }
 
@@ -171,14 +181,23 @@ export async function POST(req: NextRequest) {
 
     const supabase = await createClient()
 
+    // ── CONFIGURATION STORE (Closing) ─────────────────────────────
+    const { data: storeData } = await supabase
+      .from('Store')
+      .select('closing_enabled, closing_fee')
+      .eq('id', store_id)
+      .single()
+    const closingEnabled = storeData?.closing_enabled ?? false
+    const closingFee = storeData?.closing_fee ?? 500
+    const requiresClosing = closingEnabled && payment_method === 'cod'
+
     // ── CALCUL COMMISSION DÉGRESSIVE ──────────────────────────────
-    // Pour COD → taux fixe 5% via commission-service
-    // Pour ventes en ligne → taux dégressif selon CA mensuel (7→6→5→4%)
-    const { commission: finalPlatformFee, vendorAmount: finalVendorAmount } =
-      await resolveOrderCommission(store_id, total, payment_method)
+    const productBase = Math.max(0, subtotal - (promo_discount ?? 0))
+    const { platformFee: finalPlatformFee, deliveryCommission: finalDeliveryCommission, vendorAmount: finalVendorAmount } =
+      await resolveOrderCommission(store_id, productBase, delivery_fee ?? 0, payment_method)
 
     console.log(
-      `[Checkout] Commission calculée : ${finalPlatformFee} FCFA (method: ${payment_method}, total: ${total})`
+      `[Checkout] Commission calculée : PF=${finalPlatformFee} DC=${finalDeliveryCommission} (method: ${payment_method})`
     )
 
     // ── VÉRIFICATION COD ──────────────────────────────────────────
@@ -200,8 +219,9 @@ export async function POST(req: NextRequest) {
         )
       }
 
-      // 2. Vérifier que le wallet du vendeur couvre la commission COD (5%)
-      const { canAccept, walletBalance, commissionDue } = await canAcceptCOD(store_id, total)
+      // 2. Vérifier que le wallet du vendeur couvre la commission COD (5%) + Frais de closing si applicable
+      const feeToFreeze = requiresClosing ? closingFee : 0
+      const { canAccept, walletBalance, commissionDue } = await canAcceptCOD(store_id, total, feeToFreeze)
 
       if (!canAccept) {
         return NextResponse.json(
@@ -245,14 +265,37 @@ export async function POST(req: NextRequest) {
           buyer_name:       buyer_name ?? (simulate ? 'Client Simulation' : ''),
           buyer_phone,
           delivery_address: delivery_address ?? null,
+          delivery_zone_id: delivery_zone_id ?? null,
+          delivery_fee:     delivery_fee ?? 0,
           payment_method,
           subtotal,
           promo_discount:   promo_discount ?? 0,
           platform_fee:     finalPlatformFee,
+          delivery_commission: finalDeliveryCommission,
           vendor_amount:    finalVendorAmount,
           total,
           applied_promo_id: applied_promo_id ?? null,
-          status:           'pending',
+          status:           requiresClosing ? 'cod_pending_confirmation' : 'pending',
+          ...(booking_date && booking_start_time && booking_end_time && {
+            booking: {
+              create: {
+                store_id,
+                product_id,
+                booking_date: new Date(booking_date),
+                start_time: booking_start_time,
+                end_time: booking_end_time,
+              }
+            }
+          }),
+          ...(requiresClosing && {
+            closing: {
+              create: {
+                store_id,
+                closing_fee: closingFee,
+                status: 'PENDING'
+              }
+            }
+          }),
         },
       })
     } catch (dbErr: unknown) {

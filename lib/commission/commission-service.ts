@@ -87,18 +87,20 @@ export function getCommissionTierLabel(monthlyCA: number): string {
  * @returns Objet contenant le taux appliqué, la commission en FCFA, et le montant net vendeur
  */
 export function calculateCommission(
-  orderTotal:    number,
+  productBase:   number, // (subtotal - promo_discount)
+  deliveryFee:   number,
   paymentMethod: string,
   monthlyCA:     number
-): { rate: number; commission: number; vendorAmount: number } {
+): { rate: number; platformFee: number; deliveryCommission: number; vendorAmount: number } {
   // Déterminer le taux selon le type de paiement
   const isCOD = paymentMethod === 'cod'
   const rate   = isCOD ? COD_RATE : getCommissionRate(monthlyCA)
 
-  const commission   = Math.round(orderTotal * rate)
-  const vendorAmount = orderTotal - commission
+  const platformFee = Math.round(productBase * rate)
+  const deliveryCommission = Math.round(deliveryFee * rate)
+  const vendorAmount = (productBase + deliveryFee) - (platformFee + deliveryCommission)
 
-  return { rate, commission, vendorAmount }
+  return { rate, platformFee, deliveryCommission, vendorAmount }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -147,10 +149,11 @@ export async function getVendorMonthlyCA(storeId: string): Promise<number> {
  */
 export async function canAcceptCOD(
   storeId:    string,
-  orderTotal: number
+  orderTotal: number, // subtotal - discount + delivery_fee
+  closingFee: number = 0
 ): Promise<{ canAccept: boolean; walletBalance: number; commissionDue: number }> {
   const supabase        = createAdminClient()
-  const commissionDue   = Math.round(orderTotal * COD_RATE)
+  const commissionDue   = Math.round(orderTotal * COD_RATE) + closingFee
 
   const { data: wallet, error } = await supabase
     .from('Wallet')
@@ -180,11 +183,13 @@ export async function canAcceptCOD(
  */
 export async function resolveOrderCommission(
   storeId:       string,
-  orderTotal:    number,
+  productBase:   number,
+  deliveryFee:   number,
   paymentMethod: string
 ): Promise<{
   rate:         number
-  commission:   number
+  platformFee:   number
+  deliveryCommission: number
   vendorAmount: number
   monthlyCA:    number
 }> {
@@ -195,11 +200,12 @@ export async function resolveOrderCommission(
     ? 0
     : await getVendorMonthlyCA(storeId)
 
-  const { rate, commission, vendorAmount } = calculateCommission(
-    orderTotal,
+  const { rate, platformFee, deliveryCommission, vendorAmount } = calculateCommission(
+    productBase,
+    deliveryFee,
     paymentMethod,
     monthlyCA
   )
 
-  return { rate, commission, vendorAmount, monthlyCA }
+  return { rate, platformFee, deliveryCommission, vendorAmount, monthlyCA }
 }

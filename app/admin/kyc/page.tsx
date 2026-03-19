@@ -5,6 +5,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import Link from 'next/link'
 import KYCAdminActions from './KYCAdminActions'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -38,9 +39,13 @@ function formatDate(iso: string): string {
   })
 }
 
+import { ShieldAlert, ShieldCheck, ShieldX } from 'lucide-react'
+
 // ─── Page principale ──────────────────────────────────────────────────────────
 
-export default async function AdminKYCPage() {
+export default async function AdminKYCPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+  const params = await searchParams
+  const currentStatus = params.status || 'submitted'
   // 1. Auth admin
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -65,43 +70,71 @@ export default async function AdminKYCPage() {
       id, name, slug, kyc_status, kyc_document_type,
       kyc_documents, id_card_url, created_at, user_id
     `)
-    .eq('kyc_status', 'submitted')
+    .eq('kyc_status', currentStatus)
     .order('created_at', { ascending: true })
 
   const stores = (pendingKYC ?? []) as StoreKYC[]
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start animate-in fade-in duration-500">
+      
+      {/* ── COLONNE GAUCHE : ONGLETS LATÉRAUX ── */}
+      <div className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-1 sticky top-6">
+        <h2 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Statuts KYC</h2>
+        
+        <Link 
+          href="/admin/kyc?status=submitted" 
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${currentStatus === 'submitted' ? 'bg-[#C9A84C] text-white shadow-sm' : 'text-gray-500 hover:bg-[#C9A84C]/10 hover:text-[#C9A84C]'}`}
+        >
+          <ShieldAlert className="w-4 h-4" /> En attente
+        </Link>
+        <Link 
+          href="/admin/kyc?status=verified" 
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${currentStatus === 'verified' ? 'bg-[#0F7A60] text-white shadow-sm' : 'text-gray-500 hover:bg-[#0F7A60]/10 hover:text-[#0F7A60]'}`}
+        >
+          <ShieldCheck className="w-4 h-4" /> Vérifiés
+        </Link>
+        <Link 
+          href="/admin/kyc?status=rejected" 
+          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${currentStatus === 'rejected' ? 'bg-red-500 text-white shadow-sm' : 'text-gray-500 hover:bg-red-50 hover:text-red-500'}`}
+        >
+          <ShieldX className="w-4 h-4" /> Rejetés
+        </Link>
+      </div>
 
-      {/* ── En-tête ── */}
-      <header className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="p-2.5 rounded-xl bg-[#0F7A60]/10">
-              <span className="text-2xl">🛡️</span>
+      {/* ── COLONNE DROITE : CONTENU PRINCIPAL ── */}
+      <div className="flex-1 w-full space-y-6">
+
+        {/* ── En-tête ── */}
+        <header className="flex items-center justify-between border border-gray-200 bg-white p-5 rounded-2xl shadow-sm">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="p-2.5 rounded-xl bg-[#0F7A60]/10">
+                <span className="text-2xl">🛡️</span>
+              </div>
+              <h1 className="text-xl font-bold text-[#1A1A1A]">
+                Validation des Identités
+                {stores.length > 0 && (
+                  <span className="ml-2 text-sm font-black text-white bg-[#0F7A60] rounded-full px-2 py-0.5 align-middle">
+                    {stores.length}
+                  </span>
+                )}
+              </h1>
             </div>
-            <h1 className="text-2xl font-black text-[#1A1A1A]">
-              KYC — Dossiers en attente
-              {stores.length > 0 && (
-                <span className="ml-2 text-base font-black text-white bg-[#0F7A60] rounded-full px-2.5 py-0.5 align-middle">
-                  {stores.length}
-                </span>
-              )}
-            </h1>
+            <p className="text-sm text-gray-400 ml-14">
+              {currentStatus === 'submitted' ? 'Vérifiez les identités soumises par les vendeurs.' : 
+               currentStatus === 'verified' ? 'Identités validées par l\'équipe.' : 'Identités rejetées.'}
+            </p>
           </div>
-          <p className="text-sm text-gray-400 ml-12">
-            Vérifiez les identités soumises par les vendeurs PDV Pro.
-          </p>
-        </div>
-      </header>
+        </header>
 
       {/* ── État vide ── */}
       {stores.length === 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
-          <p className="text-5xl mb-4">✅</p>
-          <h2 className="text-xl font-black text-[#1A1A1A] mb-2">Aucun dossier en attente</h2>
+          <p className="text-5xl mb-4">{currentStatus === 'submitted' ? '✅' : '📭'}</p>
+          <h2 className="text-xl font-black text-[#1A1A1A] mb-2">Aucun dossier trouvé</h2>
           <p className="text-sm text-gray-400">
-            Tous les dossiers KYC soumis ont été traités. Revenez plus tard !
+            Il n&apos;y a aucun dossier dans la catégorie sélectionnée.
           </p>
         </div>
       )}
@@ -152,8 +185,12 @@ export default async function AdminKYCPage() {
                   </p>
                 </div>
                 <div className="flex-shrink-0">
-                  <span className="text-xs font-bold text-[#C9A84C] bg-[#FDF9F0] border border-[#C9A84C]/20 rounded-full px-3 py-1">
-                    ⏳ En attente
+                  <span className={`text-xs font-bold rounded-full px-3 py-1 ${
+                    currentStatus === 'submitted' ? 'text-[#C9A84C] bg-[#FDF9F0] border border-[#C9A84C]/20' : 
+                    currentStatus === 'verified' ? 'text-[#0F7A60] bg-[#0F7A60]/10 border border-[#0F7A60]/20' : 
+                    'text-red-500 bg-red-50 border border-red-500/20'
+                  }`}>
+                    {currentStatus === 'submitted' ? '⏳ En attente' : currentStatus === 'verified' ? '✅ Vérifié' : '❌ Rejeté'}
                   </span>
                 </div>
               </div>
@@ -225,6 +262,7 @@ export default async function AdminKYCPage() {
           )
         })}
       </div>
+     </div>
     </div>
   )
 }

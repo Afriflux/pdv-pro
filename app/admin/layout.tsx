@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   Mail,
   LayoutTemplate,
+  PhoneCall
 } from 'lucide-react'
 import { signOut } from '@/app/auth/actions'
 
@@ -43,6 +44,7 @@ const navItems: NavItem[] = [
   { href: '/admin/vendeurs',      label: 'Vendeurs',        icon: Users },
   { href: '/admin/ambassadeurs',  label: 'Ambassadeurs',    icon: Handshake },
   { href: '/admin/orders',        label: 'Commandes',       icon: ShoppingBag },
+  { href: '/admin/closing',       label: 'Validation COD',  icon: PhoneCall },
   { href: '/admin/retraits',      label: 'Retraits',        icon: Wallet },
   { href: '/admin/complaints',    label: 'Plaintes',        icon: AlertTriangle },
   { href: '/admin/roles',         label: 'Rôles & Admins',  icon: ShieldCheck },

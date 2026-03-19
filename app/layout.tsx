@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'),
   title: "PDV Pro — Vendez en ligne en Afrique de l'Ouest",
   description: "Créez votre boutique en ligne en 10 minutes. Zéro abonnement. PDV Pro, la plateforme e-commerce pour l'Afrique de l'Ouest.",
+  icons: {
+    icon: '/icon-192x192.png',
+  },
 }
 
 export default function RootLayout({

@@ -7,6 +7,7 @@ import type { Metadata } from 'next'
 import { getStorePromotions } from '@/lib/promotions/promotionActions'
 import { ProductGrid } from '@/components/storefront/ProductGrid'
 import { PixelTracker } from '@/components/tracking/PixelTracker'
+import { BadgeCheck } from 'lucide-react'
 import SocialProofBanner from '@/components/widgets/SocialProofBanner'
 import { PoweredByBadge } from '@/components/branding/PoweredByBadge'
 import NewsletterWidget from '@/components/brevo/NewsletterWidget'
@@ -28,7 +29,7 @@ const getStoreBySlug = cache(async (slug: string) => {
       id, name, slug, description, logo_url, banner_url,
       primary_color, category, whatsapp, social_links,
       meta_pixel_id, tiktok_pixel_id, google_tag_id,
-      is_active, user:User(phone)
+      is_active, kyc_status, user:User(phone)
     `)
     .eq('slug', slug)
     .single()
@@ -136,7 +137,10 @@ export default async function StorePage({ params }: StorePageProps) {
                   )}
                 </div>
                 <div className="text-white pb-1">
-                  <h1 className="text-2xl md:text-3xl font-black">{store.name}</h1>
+                  <h1 className="text-2xl md:text-3xl font-black flex items-center gap-2">
+                    {store.name}
+                    {store.kyc_status === 'verified' && <span title="Vendeur vérifié"><BadgeCheck className="text-blue-400 w-6 h-6 shrink-0" /></span>}
+                  </h1>
                   {store.category && (
                     <span className="inline-block mt-1 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold font-mono tracking-widest border border-white/30">
                       {store.category}
@@ -165,7 +169,10 @@ export default async function StorePage({ params }: StorePageProps) {
                   )}
                 </div>
                 <div>
-                  <h1 className="text-3xl font-black text-gray-900 tracking-tight">{store.name}</h1>
+                  <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center justify-center gap-2">
+                    {store.name}
+                    {store.kyc_status === 'verified' && <span title="Vendeur vérifié"><BadgeCheck className="text-blue-500 w-6 h-6 shrink-0" /></span>}
+                  </h1>
                   {store.category && (
                     <span className="inline-block mt-3 px-4 py-1.5 bg-gray-200 text-gray-600 rounded-full text-xs font-bold font-mono tracking-widest uppercase">
                       {store.category}

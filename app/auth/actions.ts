@@ -200,7 +200,7 @@ export async function signUp(formData: FormData): Promise<void> {
   })
 
   revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  redirect('/onboarding')
 }
 
 // ----------------------------------------------------------------

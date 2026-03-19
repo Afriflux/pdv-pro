@@ -44,6 +44,7 @@ export default function PricingCalculator() {
           onChange={(e) => setMonthlySales(Number(e.target.value))}
           className="w-full h-4 rounded-full appearance-none outline-none shadow-inner cursor-pointer 
             [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:h-8 [&::-webkit-slider-thumb]:bg-emerald [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-lg hover:[&::-webkit-slider-thumb]:scale-110 [&::-webkit-slider-thumb]:transition-transform"
+          // eslint-disable-next-line
           style={{
             background: `linear-gradient(to right, #10B981 0%, #047857 ${(monthlySales / 2000000) * 100}%, #F1F5F9 ${(monthlySales / 2000000) * 100}%, #F1F5F9 100%)`
           }}
@@ -88,10 +89,12 @@ export default function PricingCalculator() {
         <div className="w-full h-4 rounded-full overflow-hidden flex bg-pearl shadow-inner p-0.5 border border-line">
           <div 
             className="h-full bg-emerald rounded-full transition-all duration-500 ease-out shadow-sm"
+            // eslint-disable-next-line
             style={{ width: `${monthlySales > 0 ? vendorPercent : 100}%` }}
           ></div>
           <div 
             className="h-full bg-amber-400 rounded-r-lg transition-all duration-500 ease-out"
+            // eslint-disable-next-line
             style={{ width: `${monthlySales > 0 ? (currentRate * 100) : 0}%` }}
           ></div>
         </div>

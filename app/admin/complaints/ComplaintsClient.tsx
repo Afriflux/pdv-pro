@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, AlertTriangle, AlertCircle, RefreshCw, CheckCircle2, XCircle } from 'lucide-react'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface ComplaintRow {
@@ -73,26 +73,67 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
     { id: 'dismissed',     label: `Rejetées (${complaints.filter(c => c.status === 'dismissed').length})` },
   ]
 
+  const ICONS: Record<StatusFilter, any> = {
+    all: AlertTriangle,
+    pending: AlertCircle,
+    investigating: RefreshCw,
+    resolved: CheckCircle2,
+    dismissed: XCircle
+  }
+
   return (
-    <div className="space-y-4">
-      {/* Filtres par statut */}
-      <div className="flex gap-2 flex-wrap">
-        {FILTERS.map(f => (
-          <button
-            key={f.id}
-            onClick={() => setStatusFilter(f.id)}
-            className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
-              statusFilter === f.id
-                ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
-                : 'border-gray-200 text-gray-500 hover:border-gray-400'
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+      {/* ── COLONNE GAUCHE : ONGLETS LATÉRAUX ── */}
+      <div className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-1 sticky top-6">
+        <h2 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Filtrer par Statut</h2>
+        
+        {FILTERS.map(f => {
+          const Icon = ICONS[f.id]
+          const isSelected = statusFilter === f.id
+          
+          let activeClass = 'bg-[#1A1A1A] text-white shadow-sm'
+          if (f.id === 'pending') activeClass = 'bg-amber-500 text-white shadow-sm'
+          else if (f.id === 'investigating') activeClass = 'bg-blue-500 text-white shadow-sm'
+          else if (f.id === 'resolved') activeClass = 'bg-[#0F7A60] text-white shadow-sm'
+          else if (f.id === 'dismissed') activeClass = 'bg-gray-200 text-gray-600 shadow-sm'
+
+          return (
+            <button
+              key={f.id}
+              onClick={() => setStatusFilter(f.id)}
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                isSelected ? activeClass : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+            >
+              <Icon className="w-4 h-4" /> {f.label}
+            </button>
+          )
+        })}
       </div>
 
-      {/* Tableau */}
+      {/* ── COLONNE DROITE : CONTENU ── */}
+      <div className="flex-1 w-full space-y-6">
+        {/* En-tête de page intégré */}
+        <header className="flex items-center justify-between border border-gray-200 bg-white p-5 rounded-2xl shadow-sm">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="p-2.5 rounded-xl bg-red-50 text-red-500">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <h1 className="text-xl font-bold text-[#1A1A1A]">
+                Plaintes & Signalements
+                {filtered.length > 0 && (
+                  <span className="ml-2 text-sm font-black text-white bg-red-500 rounded-full px-2 py-0.5 align-middle">
+                    {filtered.length}
+                  </span>
+                )}
+              </h1>
+            </div>
+            <p className="text-sm text-gray-400 ml-14">Traitez les signalements de fraude, plagiat et contenus inappropriés.</p>
+          </div>
+        </header>
+
+        {/* Tableau */}
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
@@ -162,6 +203,7 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
             </tbody>
           </table>
         </div>
+      </div>
       </div>
     </div>
   )

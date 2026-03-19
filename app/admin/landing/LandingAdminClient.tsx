@@ -337,9 +337,9 @@ export default function LandingAdminClient(props: Props) {
            
            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
              <div>
-               <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Prix option COD (Mensuel)</label>
-               <input type="text" value={tarifs.landing_cod_price} onChange={e => setTarifs(p => ({...p, landing_cod_price: e.target.value}))} className={inputClass} placeholder="9 900" />
-               <p className="text-xs text-gray-400 mt-1">Ex: &quot;9 900&quot; FCFA</p>
+               <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Commission COD (%)</label>
+               <input type="text" value={tarifs.landing_cod_price} onChange={e => setTarifs(p => ({...p, landing_cod_price: e.target.value}))} className={inputClass} placeholder="5" />
+               <p className="text-xs text-gray-400 mt-1">Ex: &quot;5&quot; pour 5%</p>
              </div>
              <div>
                <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Retrait minimum</label>

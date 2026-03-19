@@ -55,6 +55,8 @@ interface ProductPageProps {
   }
   vendorPlan?: 'gratuit' | 'pro'
   storeId: string
+  deliveryZones?: { id: string; name: string; fee: number; delay: string | null; active: boolean }[]
+  coachingSlots?: any[]
 }
 
 // ─── Composant Galerie ────────────────────────────────────────────────────────
@@ -171,6 +173,8 @@ export default function ProductPage({
   computedPrice,
   vendorPlan = 'gratuit',
   storeId,
+  deliveryZones = [],
+  coachingSlots = [],
 }: ProductPageProps) {
   const accent = product.store.primary_color || '#0F7A60'
 
@@ -524,6 +528,8 @@ export default function ProductPage({
                     defaultUseCOD={formMode === 'cod'}
                     defaultVariantId={selectedVariantId}
                     defaultQuantity={quantity}
+                    deliveryZones={deliveryZones}
+                    coachingSlots={coachingSlots}
                   />
                 </div>
               )}

@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Check, X } from 'lucide-react'
+import { Check, X, CheckCircle2, MessageCircle } from 'lucide-react'
 
 interface SuccessPageProps {
   searchParams: { order?: string; cod?: string; status?: string; simulated?: string }
@@ -27,7 +27,7 @@ async function SuccessContent({
     .select(`
       id, buyer_name, total, payment_method, status,
       product:Product(name, type, images),
-      store:Store(name, primary_color, slug)
+      store:Store(name, primary_color, slug, whatsapp, closing_enabled)
     `)
     .eq('id', orderId)
     .single()
@@ -91,14 +91,14 @@ async function SuccessContent({
     <div className="min-h-screen bg-[#FAFAF7] flex items-center justify-center p-6">
       <div className="bg-white border border-line rounded-2xl shadow-lg p-10 max-w-md w-full text-center">
         
-        {/* Icône succès */}
-        <div className="w-20 h-20 border-2 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: `${accent}11`, borderColor: `${accent}33`, color: accent }}>
-          <Check size={40} strokeWidth={2.5} />
+        {/* Icône succès animée */}
+        <div className="w-20 h-20 border-2 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce" style={{ backgroundColor: `${accent}11`, borderColor: `${accent}33`, color: accent }}>
+          <CheckCircle2 size={40} strokeWidth={2.5} />
         </div>
         
         {/* Titre */}
         <h1 className="font-display text-ink text-2xl font-bold mb-2">
-          {isCod ? 'Commande confirmée !' : 'Paiement reçu !'}
+          Commande confirmée !
         </h1>
         
         {/* Sous-titre dynamique */}
@@ -108,11 +108,13 @@ async function SuccessContent({
               ⚡ Commande de test (Simulation)
             </span>
           )}
-          {isCod 
-            ? "Le vendeur prépare votre commande. Paiement à la réception."
-            : product?.type === 'digital' 
-              ? "Vous allez recevoir votre accès par WhatsApp ou email très bientôt."
-              : "Vous serez contacté par WhatsApp pour le suivi de votre livraison."}
+          Merci pour votre achat. Le vendeur a été notifié. {isCod && (store as any)?.closing_enabled 
+            ? " Un de nos agents téléphoniques vous contactera sous peu pour confirmer l'expédition de votre commande."
+            : isCod 
+              ? " Paiement à la réception de votre commande."
+              : product?.type === 'digital' 
+                ? " Vous recevrez votre accès ou produit numérique très bientôt."
+                : " Vous serez contacté pour le suivi de votre livraison."}
         </p>
         
         {/* Récap commande */}
@@ -139,10 +141,18 @@ async function SuccessContent({
           </div>
         </div>
         
-        {/* CTA */}
-        <Link href={`/${(store as any)?.slug || ''}`} className="block w-full text-white py-3 rounded-xl font-medium text-center transition shadow-lg" style={{ backgroundColor: accent }}>
-          Retour à l'espace de vente
-        </Link>
+        {/* CTAs */}
+        <div className="space-y-3">
+          <Link href={`/${(store as any)?.slug || ''}`} className="block w-full text-white py-3 rounded-xl font-medium text-center transition shadow-lg" style={{ backgroundColor: accent }}>
+            Retour à l'espace de vente
+          </Link>
+          {(store as any)?.whatsapp && (
+             <a href={`https://wa.me/${(store as any).whatsapp}?text=Bonjour, concernant ma commande ${formattedOrderId}...`} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#25D366] text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-[#20b858] transition shadow-lg">
+               <MessageCircle size={18} />
+               Contacter sur WhatsApp
+             </a>
+          )}
+        </div>
       </div>
     </div>
   )

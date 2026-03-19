@@ -106,6 +106,7 @@ export default function ProductImageViewer({ images, productName, initialIndex =
                 <div
                   key={i}
                   className="absolute text-white/10 font-display font-bold text-lg md:text-2xl rotate-[-30deg] whitespace-nowrap select-none drop-shadow-sm"
+                  // eslint-disable-next-line
                   style={{
                     top: `${Math.max(10, (i % 3) * 40)}%`,
                     left: `${Math.max(10, Math.floor(i / 3) * 60)}%`,

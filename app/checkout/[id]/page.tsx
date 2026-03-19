@@ -4,6 +4,7 @@ import ProductPage from './ProductPage'
 import { getStorePromotions } from '@/lib/promotions/promotionActions'
 import { computeProductPrice } from '@/lib/promotions/promotionUtils'
 import { PixelTracker } from '@/components/tracking/PixelTracker'
+import { prisma } from '@/lib/prisma'
 
 interface CheckoutPageProps {
   params: { id: string }
@@ -55,6 +56,21 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
 
   const vendorPlan = subData && subData.length > 0 ? 'pro' : 'gratuit'
 
+  // Récupérer les zones de livraison de la boutique
+  const deliveryZones = await prisma.deliveryZone.findMany({
+    where: { store_id: store.id, active: true },
+    orderBy: { created_at: 'asc' }
+  })
+
+  // Récupérer les créneaux si produit_type === "coaching"
+  let coachingSlots: any[] = []
+  if (product.type === 'coaching') {
+    coachingSlots = await prisma.coachingSlot.findMany({
+      where: { store_id: store.id, active: true },
+      orderBy: [{ day_of_week: 'asc' }, { start_time: 'asc' }]
+    })
+  }
+
   // Blocage élégant si le vendeur n'a pas signé son contrat partenaire
   if (!store.contract_accepted) {
     return (
@@ -96,6 +112,8 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         computedPrice={computed}
         vendorPlan={vendorPlan}
         storeId={store.id}
+        deliveryZones={deliveryZones}
+        coachingSlots={coachingSlots}
       />
     </>
   )
