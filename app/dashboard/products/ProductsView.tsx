@@ -6,6 +6,7 @@ import ProductCard from '@/components/dashboard/ProductCard'
 import { toggleProductStatus } from '@/app/actions/products'
 import { useTransition } from 'react'
 import CopyButton from '@/components/dashboard/CopyButton'
+import { Package } from 'lucide-react'
 
 // ----------------------------------------------------------------
 // Types
@@ -277,17 +278,19 @@ export default function ProductsView({ products, storeName, baseUrl }: ProductsV
       {/* Contenu de la liste */}
       <div className="w-full p-6 pt-0">
         {products.length === 0 ? (
-          <div className="bg-white border border-line rounded-2xl p-16 text-center">
-            <div className="text-6xl mb-4">📦</div>
-            <h3 className="font-display text-ink text-xl font-bold mb-2">Aucun produit encore</h3>
-            <p className="text-slate text-sm mb-6 max-w-xs mx-auto">
-              Créez votre premier produit et partagez le lien de paiement à vos clients.
+          <div className="bg-white border border-line rounded-2xl p-16 text-center flex flex-col items-center justify-center">
+            <div className="text-gray-300 mb-4">
+              <Package size={64} strokeWidth={1.5} />
+            </div>
+            <h3 className="font-display text-ink text-xl font-bold mb-2">Aucun produit pour le moment</h3>
+            <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">
+              Ajoutez votre premier produit pour commencer à vendre
             </p>
             <Link
               href="/dashboard/products/new"
-              className="inline-flex items-center gap-2 bg-gold text-white px-6 py-3 rounded-xl font-medium hover:bg-gold-light transition shadow-md shadow-gold/20"
+              className="inline-flex items-center gap-2 bg-emerald hover:bg-emerald-rich text-white px-6 py-3 rounded-xl font-medium transition shadow-md shadow-emerald/20"
             >
-              + Créer mon premier produit
+              Créer mon premier produit →
             </Link>
           </div>
         ) : (

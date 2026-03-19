@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { sendWelcomeEmail } from '@/lib/brevo/brevo-service'
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient()
@@ -44,6 +45,11 @@ export async function POST(req: NextRequest) {
 
   if (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+  }
+
+  const { data: userData } = await supabase.from('User').select('email').eq('id', user.id).single()
+  if (userData?.email) {
+    sendWelcomeEmail(userData.email, (updateData.name as string) || 'votre boutique').catch(console.error)
   }
 
   return NextResponse.json({ success: true, redirectTo: '/dashboard' })

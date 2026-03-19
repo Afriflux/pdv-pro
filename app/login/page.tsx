@@ -88,8 +88,8 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
           </div>
 
           <div className="text-center mb-10">
-            <h2 className="font-display font-black text-3xl text-ink mb-2">Bon retour parmi nous.</h2>
-            <p className="text-slate text-sm font-light">Accédez à votre espace marchand et gérez vos ventes.</p>
+            <h2 className="font-display font-black text-3xl text-ink mb-2">Accédez à votre tableau de bord</h2>
+            <p className="text-slate text-sm font-light">Gérez votre boutique en ligne et vos ventes.</p>
           </div>
 
           {/* Carte RTL / LTR form */}
@@ -166,7 +166,7 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
             <p className="text-center text-sm text-slate mt-8">
               Pas encore de compte ?{' '}
               <Link href="/register" className="text-emerald font-bold hover:text-emerald-rich transition-colors underline decoration-emerald/30 underline-offset-4">
-                Créer mon lien (Gratuit)
+                Créer ma boutique gratuite
               </Link>
             </p>
           </div>

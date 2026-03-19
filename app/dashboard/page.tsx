@@ -5,6 +5,7 @@ import ChartLazyWrapper from './ChartLazyWrapper'
 import { CopyLinkQuickAction, WhatsAppQuickAction } from './DashboardActions'
 import { Package, ShoppingBag, ArrowRight } from 'lucide-react'
 import { Check360Widget } from '@/components/dashboard/Check360Widget'
+import WelcomeGuide from '@/components/dashboard/WelcomeGuide'
 
 // ── TYPES & HELPERS ──────────────────────────────────────────────────────────
 
@@ -182,6 +183,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-[#FAFAF7] font-sans pb-20">
+      <WelcomeGuide />
       
       {/* ── SECTION 1 : HEADER ───────────────────────────────────────────── */}
       <header className="bg-white border-b border-gray-100 px-6 lg:px-10 py-8">

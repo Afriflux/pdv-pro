@@ -197,6 +197,12 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
             message: 'Recommanderiez-vous PDV Pro à un ami vendeur ? Donnez-nous votre avis !',
             link: '/dashboard/settings#nps',
           })
+
+          const { data: vendorUser } = await supabase.from('User').select('email').eq('id', store.user_id).single()
+          if (vendorUser?.email) {
+            const { sendFirstSaleEmail } = await import('@/lib/brevo/brevo-service')
+            sendFirstSaleEmail(vendorUser.email, product.name, order.total).catch(console.error)
+          }
         }
       } catch (err) {
         console.error('[NPS Check]', err)
