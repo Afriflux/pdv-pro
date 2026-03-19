@@ -19,6 +19,12 @@ enum Role {
   acheteur
 }
 
+enum VendorType {
+  digital
+  physical
+  hybrid
+}
+
 enum ProductType {
   digital
   physical
@@ -26,26 +32,36 @@ enum ProductType {
 }
 
 enum OrderStatus {
+  pending
+  paid
   confirmed
   preparing
+  processing
   shipped
   delivered
+  cod_pending_confirmation
+  cod_confirmed
+  cod_fraud_suspected
+  no_answer
   cancelled
+  completed
 }
 
 enum WithdrawalStatus {
   pending
+  processing
   approved
   rejected
   paid
 }
 
 model User {
-  id           String   @id @default(uuid())
+  id           String   @id
   role         Role     @default(acheteur)
   name         String
-  phone        String   @unique
+  phone        String?  @unique
   email        String?
+  avatar_url   String?
   address      String?
   location_lat Float?
   location_lng Float?
@@ -55,42 +71,105 @@ model User {
   store       Store?
   orders      Order[]
   affiliates  Affiliate[]
+  adminLogs   AdminLog[]
+  reports     Report[]
+  tipReads    TipRead[]
+  notifications Notification[]
+  npsResponses  NpsResponse[]
 }
 
 model Store {
   id            String  @id @default(uuid())
   user_id       String  @unique
   name          String
-  slug          String  @unique
-  logo_url      String?
-  primary_color String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  slug               String   @unique
+  vendor_type        VendorType @default(digital)
+  logo_url           String?
+  primary_color      String?
+  category           String?  // Secteur activité (onboarding étape 2)
+  whatsapp           String?  // Numéro WhatsApp de la boutique
+  description        String?  // Description courte (vitrine publique)
+  affiliate_active   Boolean  @default(false)
+  affiliate_margin   Float    @default(0.10) // Taux commission (ex: 10%)
+  
+  // ── KYC & Sécurité ──
+  kyc_status         String   @default("unverified") // unverified | pending | verified | rejected
+  kyc_document_type  String?
+  kyc_documents      Json?    // { recto: string, verso: string, selfie: string }
+  id_card_url        String?
+  security_pin       String?
+
+  onboarding_completed Boolean @default(false)
+
+  // ── Notifications ──
+  notif_new_order      Boolean @default(true)
+  notif_weekly_report  Boolean @default(false)
+  notif_stock_alert    Boolean @default(true)
+
+  banner_url         String?
+  social_links       Json?    // { instagram, tiktok, facebook, youtube, linkedin, whatsapp, website }
+  meta_pixel_id      String?
+  tiktok_pixel_id    String?
+  google_tag_id      String?
+
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 
   user     User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
   products Product[]
-  pages    SalePage[]
-  orders   Order[]
-  wallet   Wallet?
-  promos   Promo[]
+  pages      SalePage[]
+  orders     Order[]
+  wallet     Wallet?
+  promos     PromoCode[]
+  shortLinks ShortLink[]
+  promotions Promotion[]
+  score      StoreScore?
+  subscriptions Subscription[]
+  withdrawals Withdrawal[]
 }
 
 model Product {
-  id          String      @id @default(uuid())
-  store_id    String
-  type        ProductType
-  name        String
-  description String?
-  price       Float
-  images      String[]
-  category    String?
-  active      Boolean     @default(true)
-  created_at  DateTime    @default(now())
-  updated_at  DateTime    @updatedAt
+  id               String      @id @default(uuid())
+  store_id         String
+  type             ProductType
+  name             String
+  description      String?
+  price            Float
+  images           String[]
+  category         String?
+  active           Boolean     @default(true)
+  cash_on_delivery Boolean     @default(false)
 
-  store    Store            @relation(fields: [store_id], references: [id], onDelete: Cascade)
-  variants ProductVariant[]
-  orders   Order[]
+  // ── Champs spécifiques Digital ──
+  digital_file_url String?
+  digital_link     String?
+  digital_files    Json?     // [{ type, url, filename, size, bunny_video_id }]
+  access_duration_days Int?  // null = à vie
+  max_downloads    Int?      // null = illimité
+  video_download_allowed Boolean @default(false)
+  
+  // ── Licence & droits ──
+  license_type     String?   // personal|resell|mrr|plr|whitelabel
+  license_notes    String?
+
+  // ── Champs spécifiques Physique ──
+  shipping_fee     Float?
+  shipping_delay   String?
+
+  // ── Champs spécifiques Coaching ──
+  session_duration String?
+  session_mode     String?
+  booking_link     String?
+
+  created_at       DateTime    @default(now())
+  updated_at       DateTime    @updatedAt
+  views            Int         @default(0)
+
+  store          Store            @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  variants       ProductVariant[]
+  orders         Order[]
+  digitalAccess  DigitalAccess[]
+  shortLinks     ShortLink[]
 }
 
 model ProductVariant {
@@ -143,14 +222,56 @@ model Order {
   payment_method   String
   payment_ref      String?
   affiliate_token  String?
+  applied_promo_id String?
   delivery_address String?
+  
+  // ── Champs additionnels Phase 2 & 6 ──
+  order_type       String    @default("physical")
+  tracking_number  String?
+  download_token   String?
+  download_expires_at DateTime?
+  cod_confirmed_at DateTime?
+  slot_reserved_until DateTime?
+  
+  // ── Sécurité COD ──
+  cod_cash_collected Boolean @default(false)
+  cod_fraud_suspected Boolean @default(false)
+  commission_frozen_amount Int @default(0)
+
   created_at       DateTime    @default(now())
   updated_at       DateTime    @updatedAt
 
-  buyer   User?          @relation(fields: [buyer_id], references: [id])
-  store   Store          @relation(fields: [store_id], references: [id])
-  product Product        @relation(fields: [product_id], references: [id])
-  variant ProductVariant? @relation(fields: [variant_id], references: [id])
+  buyer         User?           @relation(fields: [buyer_id], references: [id])
+  store         Store           @relation(fields: [store_id], references: [id])
+  product       Product         @relation(fields: [product_id], references: [id])
+  variant       ProductVariant? @relation(fields: [variant_id], references: [id])
+  promo_code    PromoCode?      @relation(fields: [applied_promo_id], references: [id])
+  digitalAccess DigitalAccess[]
+  invoices      Invoice[]
+  reports       Report[]
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  user_id     String
+  type        String   @default("order")
+  title       String
+  message     String
+  link        String?
+  read        Boolean  @default(false)
+  created_at  DateTime @default(now())
+
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model NpsResponse {
+  id         String   @id @default(uuid())
+  user_id    String
+  score      Int
+  comment    String?
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Wallet {
@@ -168,43 +289,50 @@ model Wallet {
 model Withdrawal {
   id             String           @id @default(uuid())
   wallet_id      String
+  store_id       String?
   amount         Float
   status         WithdrawalStatus @default(pending)
   payment_method String
+  phone_or_iban  String?
   requested_at   DateTime         @default(now())
   processed_at   DateTime?
   notes          String?
 
   wallet Wallet @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
+  store  Store? @relation(fields: [store_id], references: [id], onDelete: Cascade)
 }
 
 model Affiliate {
-  id              String @id @default(uuid())
+  id              String   @id @default(uuid())
   vendor_id       String
   user_id         String
-  token           String @unique
+  token           String   @unique
+  status          String   @default("pending") // pending | active | rejected
   commission_rate Float
-  clicks          Int    @default(0)
-  conversions     Int    @default(0)
-  total_earned    Float  @default(0)
+  clicks          Int      @default(0)
+  conversions     Int      @default(0)
+  total_earned    Float    @default(0)
   created_at      DateTime @default(now())
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
-model Promo {
-  id         String    @id @default(uuid())
-  store_id   String
-  code       String
-  type       String    // percent | fixed
-  value      Float
-  max_uses   Int?
-  uses       Int       @default(0)
-  expires_at DateTime?
-  active     Boolean   @default(true)
-  created_at DateTime  @default(now())
+model PromoCode {
+  id             String    @id @default(uuid())
+  store_id       String
+  code           String
+  type           String    // percentage | fixed
+  value          Float
+  min_order      Float?
+  max_uses       Int?
+  uses           Int       @default(0)
+  expires_at     DateTime?
+  active         Boolean   @default(true)
+  product_ids    String[]  // S'applique à tous si vide
+  created_at     DateTime  @default(now())
 
-  store Store @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  store  Store   @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  orders Order[]
 
   @@unique([store_id, code])
 }
@@ -228,4 +356,179 @@ model PlatformConfig {
   commission_rate Float    @default(0.10) // 10% par défaut
   updated_at      DateTime @updatedAt
   updated_by      String?
+}
+
+// ─── Livraison digitale ──────────────────────────────────────────────────────
+
+model DigitalAccess {
+  id              String        @id @default(uuid())
+  order_id        String
+  product_id      String
+  token           String        @unique
+  downloads_used  Int           @default(0)
+  downloads_max   Int?
+  expires_at      DateTime?
+  revoked         Boolean       @default(false)
+  created_at      DateTime      @default(now())
+
+  order        Order         @relation(fields: [order_id], references: [id])
+  product      Product       @relation(fields: [product_id], references: [id])
+  downloadLogs DownloadLog[]
+}
+
+model DownloadLog {
+  id                String        @id @default(uuid())
+  digital_access_id String
+  ip_address        String?
+  user_agent        String?
+  downloaded_at     DateTime      @default(now())
+
+  digitalAccess DigitalAccess @relation(fields: [digital_access_id], references: [id])
+}
+
+// ─── Factures ────────────────────────────────────────────────────────────────
+
+model Invoice {
+  id          String   @id @default(uuid())
+  order_id    String
+  numero      String   @unique
+  pdf_url     String?
+  white_label Boolean  @default(false)
+  created_at  DateTime @default(now())
+
+  order Order @relation(fields: [order_id], references: [id])
+}
+
+// ─── Marketing Hub ───────────────────────────────────────────────────────────
+
+model ShortLink {
+  id         String   @id @default(uuid())
+  code       String   @unique
+  target_url String
+  store_id   String?
+  product_id String?
+  clicks     Int      @default(0)
+  created_at DateTime @default(now())
+
+  store      Store?   @relation(fields: [store_id], references: [id])
+  product    Product? @relation(fields: [product_id], references: [id])
+  analytics  ClickAnalytics[]
+}
+
+model ClickAnalytics {
+  id            String   @id @default(uuid())
+  short_link_id String
+  source        String?
+  city          String?
+  country       String?
+  converted     Boolean  @default(false)
+  created_at    DateTime @default(now())
+
+  shortLink     ShortLink @relation(fields: [short_link_id], references: [id])
+}
+
+// ─── Promotions (Advanced) ───────────────────────────────────────────────────
+
+model Promotion {
+  id                String   @id @default(uuid())
+  store_id          String
+  type              String   // flash, seasonal, bundle, conditional, first_order, ai
+  title             String
+  discount_type     String   // percentage, fixed
+  discount_value    Int?
+  min_order_amount  Int?
+  product_ids       String[] // Liste des IDs de produits concernés
+  bundle_config     Json?    // Configuration spécifique au bundle (ex: { buy: 2, pay: 1 })
+  starts_at         DateTime
+  ends_at           DateTime?
+  active            Boolean  @default(true)
+  views             Int      @default(0)
+  conversions       Int      @default(0)
+  revenue_generated Int      @default(0)
+  created_at        DateTime @default(now())
+
+  store             Store    @relation(fields: [store_id], references: [id])
+}
+
+// ─── Super Admin ─────────────────────────────────────────────────────────────
+
+model AdminLog {
+  id          String   @id @default(uuid())
+  admin_id    String
+  action      String
+  target_type String?
+  target_id   String?
+  details     Json?
+  created_at  DateTime @default(now())
+
+  admin       User     @relation(fields: [admin_id], references: [id])
+}
+
+model Report {
+  id          String   @id @default(uuid())
+  order_id    String
+  reporter_id String
+  type        String
+  description String
+  status      String   @default("open")
+  admin_notes String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  order       Order    @relation(fields: [order_id], references: [id])
+  reporter    User     @relation(fields: [reporter_id], references: [id])
+}
+
+// ─── Marketplace Publique ────────────────────────────────────────────────────
+
+model StoreScore {
+  id         String   @id @default(uuid())
+  store_id   String   @unique
+  score      Int      @default(0)
+  featured   Boolean  @default(false)
+  updated_at DateTime @default(now())
+
+  store      Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+}
+
+// ─── Abonnements & Plans ─────────────────────────────────────────────────────
+
+model Subscription {
+  id          String    @id @default(uuid())
+  vendor_id   String
+  plan        String    @default("free") // free | pro
+  expires_at  DateTime?
+  payment_ref String?
+  created_at  DateTime  @default(now())
+
+  vendor      Store     @relation(fields: [vendor_id], references: [id], onDelete: Cascade)
+}
+
+// ─── Astuces & Nouveautés ────────────────────────────────────────────────────
+
+model Tip {
+  id         String    @id @default(uuid())
+  type       String    // guide | news | alert
+  title      String
+  content    String
+  cta_label  String?
+  cta_url    String?
+  target_plan String?  // Si null, s'adresse à tous
+  pinned     Boolean   @default(false)
+  active     Boolean   @default(true)
+  created_at DateTime  @default(now())
+
+  reads      TipRead[]
+}
+
+model TipRead {
+  id         String   @id @default(uuid())
+  tip_id     String
+  user_id    String
+  read_at    DateTime @default(now())
+
+  tip        Tip      @relation(fields: [tip_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([tip_id, user_id])
 }

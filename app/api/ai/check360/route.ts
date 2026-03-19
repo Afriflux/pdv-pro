@@ -1,0 +1,180 @@
+import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+
+// Rate limiting en mémoire : 1 appel max / 30s par utilisateur
+const rateLimitMap = new Map<string, number>()
+
+interface Check360Body {
+  storeName: string
+  caToday: number
+  countToday: number
+  pendingCount: number
+  walletBalance: number
+  productCount: number
+  caWeek: number
+  level: string
+}
+
+interface AnthropicResponse {
+  content: Array<{ type: string; text: string }>
+}
+
+const FALLBACK_ACTIONS = {
+  summary: "Voici quelques actions recommandées pour démarrer votre analyse.",
+  actions: [
+    {
+      icon: "🛍️",
+      title: "Ajouter un produit",
+      description: "Ajoutez un nouveau produit pour enrichir votre catalogue.",
+      priority: "medium" as const,
+      cta: "Créer un produit",
+      ctaHref: "/dashboard/products/new"
+    },
+    {
+      icon: "📣",
+      title: "Booster vos ventes",
+      description: "Publiez le lien de votre boutique en statut WhatsApp.",
+      priority: "high" as const,
+      cta: "Marketing",
+      ctaHref: "/dashboard/marketing"
+    },
+    {
+      icon: "📦",
+      title: "Gérer vos commandes",
+      description: "Assurez-vous qu'aucune commande n'est en attente prolongée.",
+      priority: "low" as const,
+      cta: "Mes commandes",
+      ctaHref: "/dashboard/orders"
+    }
+  ]
+}
+
+export async function POST(req: Request): Promise<Response> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+  }
+
+  // Vérification rate limit
+  const lastCall = rateLimitMap.get(user.id) ?? 0
+  if (Date.now() - lastCall < 30000) {
+    return NextResponse.json(FALLBACK_ACTIONS, { status: 200 })
+  }
+  rateLimitMap.set(user.id, Date.now())
+
+  let body: Check360Body
+  try {
+    body = (await req.json()) as Check360Body
+  } catch {
+    return NextResponse.json({ error: 'Body JSON invalide' }, { status: 400 })
+  }
+
+  const supabaseAdmin = createAdminClient()
+  const { data: config } = await supabaseAdmin
+    .from('PlatformConfig')
+    .select('value')
+    .eq('key', 'ANTHROPIC_API_KEY')
+    .single<{ value: string }>()
+
+  const apiKey = config?.value || process.env.ANTHROPIC_API_KEY
+
+  if (!apiKey) {
+    return NextResponse.json(
+      { error: 'Clé API Claude non configurée. Configurez-la dans /admin/integrations.' },
+      { status: 500 }
+    )
+  }
+
+  const systemPrompt = `Tu es l'assistant IA de PDV Pro, plateforme e-commerce africaine.
+Tu analyses les données d'un vendeur et génères EXACTEMENT 3 actions.
+Les actions sont concrètes, actionnables aujourd'hui, adaptées au marché africain (Wave, Orange Money, WhatsApp, COD).
+Priorité high = urgent à faire maintenant.
+Priorité medium = important cette semaine.
+Priorité low = amélioration long terme.
+ctaHref doit être un lien dashboard valide parmi : /dashboard/products/new, /dashboard/orders, /dashboard/marketing, /dashboard/wallet, /dashboard/settings, /dashboard/promotions.
+Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks, avec cette structure exacte :
+{
+  "summary": "phrase de résumé globale max 20 mots",
+  "actions": [
+    {
+      "icon": "emoji string",
+      "title": "court, max 6 mots",
+      "description": "1 phrase concrète, max 15 mots",
+      "priority": "high" | "medium" | "low",
+      "cta": "texte du bouton optionnel",
+      "ctaHref": "lien interne optionnel"
+    }
+  ]
+}`
+
+  const userPrompt = `Analyse les données du vendeur:
+- Boutique : ${body.storeName} (Niveau ${body.level})
+- CA Aujourd'hui : ${body.caToday} FCFA
+- Ventes Aujourd'hui : ${body.countToday}
+- Commandes en attente : ${body.pendingCount}
+- Solde Wallet : ${body.walletBalance} FCFA
+- Nombre de produits : ${body.productCount}
+- CA 7 derniers jours : ${body.caWeek} FCFA
+
+Génère les 3 actions recommandées au format JSON.`
+
+  try {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000)
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }],
+      }),
+      signal: controller.signal
+    })
+
+    clearTimeout(timeoutId)
+
+    if (!response.ok) {
+      console.error('[AI/Check360] Anthropic API Error:', await response.text())
+      return NextResponse.json(FALLBACK_ACTIONS, { status: 200 })
+    }
+
+    const data = (await response.json()) as AnthropicResponse
+    let rawText = data.content
+      .filter((c) => c.type === 'text')
+      .map((c) => c.text)
+      .join('')
+      .trim()
+
+    // Nettoyage markdown éventuel
+    if (rawText.startsWith('```json')) {
+      rawText = rawText.replace(/^```json\s*/, '').replace(/\s*```$/, '')
+    } else if (rawText.startsWith('```')) {
+      rawText = rawText.replace(/^```\s*/, '').replace(/\s*```$/, '')
+    }
+
+    try {
+      const parsed = JSON.parse(rawText)
+      if (parsed.actions && Array.isArray(parsed.actions)) {
+        return NextResponse.json(parsed, { status: 200 })
+      }
+      throw new Error("Structure JSON invalide")
+    } catch (e) {
+      console.error('[AI/Check360] JSON parse error:', e, 'Raw JSON:', rawText.slice(0, 150))
+      return NextResponse.json(FALLBACK_ACTIONS, { status: 200 })
+    }
+
+  } catch (error) {
+    console.error('[AI/Check360] Fetch Error or Timeout:', error)
+    return NextResponse.json(FALLBACK_ACTIONS, { status: 200 })
+  }
+}

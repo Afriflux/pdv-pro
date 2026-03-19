@@ -1,0 +1,163 @@
+'use client'
+
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Loader2, Lock, Eye, EyeOff } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
+
+// ----------------------------------------------------------------
+// SECTION SÉCURITÉ — Changement de mot de passe
+// Utilise supabase.auth.updateUser({ password: newPassword })
+// ----------------------------------------------------------------
+export default function SecuritySection() {
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword,     setNewPassword]     = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPasswords,   setShowPasswords]   = useState(false)
+  const [loading,         setLoading]         = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    // Validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('Tous les champs sont obligatoires.')
+      return
+    }
+    if (newPassword.length < 8) {
+      toast.error('Le nouveau mot de passe doit comporter au moins 8 caractères.')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('Le nouveau mot de passe et la confirmation ne correspondent pas.')
+      return
+    }
+    if (newPassword === currentPassword) {
+      toast.error('Le nouveau mot de passe doit être différent de l\'actuel.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const supabase = createClient()
+
+      // Mise à jour du mot de passe via Supabase Auth
+      const { error } = await supabase.auth.updateUser({ password: newPassword })
+
+      if (error) throw error
+
+      toast.success('Mot de passe mis à jour avec succès ✅')
+
+      // Réinitialiser les champs
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      toast.error('Erreur : ' + msg)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const inputCls =
+    'w-full bg-[#FAFAF7] border border-gray-200 rounded-xl py-2.5 px-4 text-sm text-[#1A1A1A] pr-11 ' +
+    'focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all ' +
+    'placeholder:text-gray-400'
+
+  const labelCls = 'block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider'
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Bouton toggle visibilité globale */}
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => setShowPasswords(v => !v)}
+          className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#0F7A60] transition-colors font-medium"
+        >
+          {showPasswords ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+          {showPasswords ? 'Masquer' : 'Afficher'} les mots de passe
+        </button>
+      </div>
+
+      {/* Mot de passe actuel */}
+      <div>
+        <label className={labelCls}>Mot de passe actuel</label>
+        <div className="relative">
+          <input
+            type={showPasswords ? 'text' : 'password'}
+            value={currentPassword}
+            onChange={e => setCurrentPassword(e.target.value)}
+            placeholder="Votre mot de passe actuel"
+            className={inputCls}
+            required
+            autoComplete="current-password"
+          />
+          <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Nouveau mot de passe */}
+        <div>
+          <label className={labelCls}>Nouveau mot de passe</label>
+          <div className="relative">
+            <input
+              type={showPasswords ? 'text' : 'password'}
+              value={newPassword}
+              onChange={e => setNewPassword(e.target.value)}
+              placeholder="Min. 8 caractères"
+              className={inputCls}
+              required
+              minLength={8}
+              autoComplete="new-password"
+            />
+            <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+          </div>
+        </div>
+
+        {/* Confirmation */}
+        <div>
+          <label className={labelCls}>Confirmer le mot de passe</label>
+          <div className="relative">
+            <input
+              type={showPasswords ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              placeholder="Répétez le nouveau mot de passe"
+              className={`${inputCls} ${
+                confirmPassword && confirmPassword !== newPassword
+                  ? 'border-red-300 ring-2 ring-red-100'
+                  : confirmPassword && confirmPassword === newPassword
+                  ? 'border-[#0F7A60] ring-2 ring-[#0F7A60]/10'
+                  : ''
+              }`}
+              required
+              autoComplete="new-password"
+            />
+            <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+          </div>
+          {/* Indicateur correspondance */}
+          {confirmPassword && confirmPassword !== newPassword && (
+            <p className="mt-1 text-[10px] text-red-500 font-medium">
+              Les mots de passe ne correspondent pas.
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-end pt-2">
+        <button
+          type="submit"
+          disabled={loading}
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0F7A60] hover:bg-[#0D5C4A]
+            disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-all shadow-sm"
+        >
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+          {loading ? 'Mise à jour...' : 'Changer le mot de passe'}
+        </button>
+      </div>
+    </form>
+  )
+}
