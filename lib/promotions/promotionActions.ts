@@ -41,7 +41,7 @@ export async function getStorePromotions(storeId: string): Promise<PromotionData
     discount_value: row.discount_value as number | null,
     min_order_amount: row.min_order_amount as number | null,
     product_ids: row.product_ids as string[] ?? [],
-    bundle_config: row.bundle_config as any ?? null,
+    bundle_config: (row.bundle_config as Record<string, unknown>) ?? null,
     starts_at: row.starts_at as string,
     ends_at: row.ends_at as string | null,
     active: row.active as boolean,

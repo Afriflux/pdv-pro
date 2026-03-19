@@ -33,6 +33,7 @@ interface InvoiceData {
  * Génère le buffer PDF d'une facture
  */
 export async function generateInvoicePdfBuffer(data: InvoiceData): Promise<Buffer> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- jsPDF autoTable plugin extends prototype dynamically
   const doc = new jsPDF() as any
 
   const primaryColor = [249, 115, 22] // #f97316
@@ -48,7 +49,7 @@ export async function generateInvoicePdfBuffer(data: InvoiceData): Promise<Buffe
       doc.setFontSize(24)
       doc.setTextColor(darkColor[0], darkColor[1], darkColor[2])
       doc.text(data.store.name, 20, 30)
-    } catch (e) {
+    } catch {
       doc.setFontSize(24)
       doc.text(data.store.name, 20, 30)
     }
@@ -129,6 +130,7 @@ export async function generateInvoicePdfBuffer(data: InvoiceData): Promise<Buffe
   })
 
   // ─── Totaux ───────────────────────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- jsPDF autoTable plugin property
   let finalY = (doc as any).lastAutoTable.finalY + 10
   
   doc.setFontSize(10)

@@ -205,6 +205,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
 
             // 2.2 Uploader via TUS asynchrone
             await new Promise<void>((resolve, reject) => {
+              // eslint-disable-next-line @typescript-eslint/no-require-imports
               const { Upload } = require('tus-js-client')
               const upload = new Upload(digitalFile, {
                 endpoint: uploadEndpoint,

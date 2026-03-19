@@ -122,9 +122,9 @@ export async function getAdminVendors(): Promise<AdminVendor[]> {
     let revenue = 0
     if (user.orders && Array.isArray(user.orders)) {
       const ordersArray = user.orders as Record<string, unknown>[]
-      revenue = ordersArray.reduce((sum, o: any) => {
-        if (validStatuses.includes(o.status)) {
-           return sum + (o.platform_fee || 0)
+      revenue = ordersArray.reduce((sum, o: Record<string, unknown>) => {
+        if (validStatuses.includes(o.status as string)) {
+           return sum + ((o.platform_fee as number) || 0)
         }
         return sum
       }, 0)
@@ -206,10 +206,10 @@ export async function getAdminOrders(): Promise<AdminOrder[]> {
     status: o.status as string,
     total_amount: o.total_amount as number,
     platform_fee: (o.platform_fee as number) || 0,
-    buyer_email: (o.buyer as any)?.email || 'Inconnu',
-    buyer_phone: (o.buyer as any)?.phone || 'Inconnu',
-    store: o.store && !Array.isArray(o.store) ? (o.store as any) : null,
-    product_titles: o.items ? (o.items as any[]).map((i: Record<string, unknown>) => i.product_title as string) : []
+    buyer_email: (o.buyer as Record<string, unknown>)?.email as string || 'Inconnu',
+    buyer_phone: (o.buyer as Record<string, unknown>)?.phone as string || 'Inconnu',
+    store: o.store && !Array.isArray(o.store) ? (o.store as Record<string, unknown>) : null,
+    product_titles: o.items ? (o.items as Record<string, unknown>[]).map((i: Record<string, unknown>) => i.product_title as string) : []
   }))
 }
 
@@ -255,8 +255,8 @@ export async function getAdminReports(): Promise<AdminReport[]> {
     type: r.type as string,
     description: r.description as string,
     admin_notes: r.admin_notes as string | null,
-    reporter: r.reporter && !Array.isArray(r.reporter) ? (r.reporter as any) : null,
-    order: r.order && !Array.isArray(r.order) ? (r.order as any) : null
+    reporter: r.reporter && !Array.isArray(r.reporter) ? (r.reporter as Record<string, unknown>) : null,
+    order: r.order && !Array.isArray(r.order) ? (r.order as Record<string, unknown>) : null
   }))
 }
 
@@ -508,9 +508,10 @@ export async function getAdminWithdrawals(): Promise<AdminWithdrawal[]> {
   const withdrawals = await Promise.all(data.map(async (w: Record<string, unknown>) => {
     let vendorPhone = ''
     let vendorName = 'Inconnu'
-    const wallet = w.wallet as any
-    const userId = wallet?.vendor?.user_id
-    
+    const wallet = w.wallet as Record<string, unknown> | null
+    const vendor = wallet?.vendor as Record<string, unknown> | undefined
+    const userId = vendor?.user_id as string | undefined
+
     if (userId) {
       const { data: ud } = await supabase.from('User').select('name, phone').eq('id', userId).single()
       if (ud) {
@@ -529,7 +530,7 @@ export async function getAdminWithdrawals(): Promise<AdminWithdrawal[]> {
       notes: w.notes as string | null,
       vendor_phone: vendorPhone,
       vendor_name: vendorName,
-      store_name: wallet?.vendor?.name || 'Boutique introuvable'
+      store_name: (vendor?.name as string) || 'Boutique introuvable'
     }
   }))
 
