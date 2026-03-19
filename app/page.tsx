@@ -451,54 +451,98 @@ export default async function LandingPage() {
               <p className="text-xl text-slate font-light">Commencez gratuitement, payez moins quand vous grossissez.</p>
             </div>
 
-            <div className="flex justify-center mb-10 px-4">
-              {/* Plan Gratuit */}
-              <div className="w-full max-w-xl bg-white border border-line rounded-[2rem] p-8 xl:p-12 transition-all duration-500 flex flex-col hover:border-emerald/30 hover:shadow-2xl hover:shadow-emerald/5 hover:-translate-y-2 relative group overflow-hidden">
-                <div className="absolute -right-12 -top-12 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500">
-                  <Store size={240} className="text-emerald" />
+            <div className="w-full overflow-x-auto pb-8 mb-4 hide-scrollbar">
+              <div className="min-w-[1000px] flex items-stretch gap-4 md:grid md:grid-cols-5 md:min-w-0 px-2 pt-8">
+                
+                {/* Headers */}
+                <div className="w-48 shrink-0 md:w-auto flex flex-col sticky left-0 z-20 bg-pearl/90 backdrop-blur-sm self-stretch justify-end pb-8 pr-4">
+                  <div className="space-y-6">
+                    <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Votre CA mensuel</div>
+                    <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Commission PDV Pro</div>
+                    <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start mt-2">Vous recevez</div>
+                    <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Frais passerelle</div>
+                  </div>
                 </div>
-                <div className="relative z-10 flex-1 flex flex-col">
-                  <h3 className="text-3xl font-display font-black text-ink mb-3 group-hover:text-emerald transition-colors">Notre modèle</h3>
-                  <p className="text-slate font-light mb-8 min-h-[48px] leading-relaxed italic">
-                    "Zéro abonnement, zéro frais fixe. PDV Pro ne gagne que quand vous vendez."
-                  </p>
-                  
-                  <div className="flex flex-col mb-8 pb-8 relative">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-6xl font-display font-black text-ink tracking-tight">0</span>
-                      <span className="text-xl text-slate font-mono font-medium">F/mois</span>
-                    </div>
-                    <span className="text-emerald font-bold mt-2">Aucun abonnement — jamais</span>
-                    <div className="absolute bottom-0 left-0 w-12 h-1 bg-emerald/20 rounded-full group-hover:w-full transition-all duration-500"></div>
+
+                {/* Card 1 */}
+                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-2 hover:shadow-xl transition-all duration-300 relative group overflow-visible">
+                  <div className="text-center pb-6 border-b border-line mb-6">
+                    <h3 className="font-display font-black text-2xl text-ink">Débutant</h3>
                   </div>
-                  
-                  <div className="space-y-5 mb-10 flex-1">
-                    <div className="flex items-start gap-4">
-                      <div className="mt-1 bg-emerald/10 rounded-full p-1"><CheckCircle2 className="text-emerald" size={16}/></div>
-                      <span className="text-ink font-bold">Commission dégressive : 7% → 4%</span>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="mt-1 bg-emerald/10 rounded-full p-1"><CheckCircle2 className="text-emerald" size={16}/></div>
-                      <span className="text-ink font-bold">COD (livraison) : 5% fixe pour les vendeurs physiques</span>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="mt-1 bg-emerald/10 rounded-full p-1"><CheckCircle2 className="text-emerald" size={16}/></div>
-                      <span className="text-slate italic text-sm">PDV Pro absorbe tous les frais passerelles & retraits</span>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="mt-1 bg-emerald/10 rounded-full p-1"><CheckCircle2 className="text-emerald" size={16}/></div>
-                      <span className="text-slate">Paiements Wave, Orange Money, Carte Bancaire</span>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="mt-1 bg-emerald/10 rounded-full p-1"><CheckCircle2 className="text-emerald" size={16}/></div>
-                      <span className="text-slate">Fonds disponibles <strong>immédiatement</strong></span>
-                    </div>
+                  <div className="space-y-6 flex-1 text-center pb-8 border-b border-line mb-6">
+                    <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">0 - 100K FCFA</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink group-hover:text-emerald transition-colors">7%</div>
+                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">93%</div>
+                    <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
                   </div>
-                  
-                  <Link href="/register" className="block w-full text-center py-4 bg-pearl border border-line hover:border-emerald hover:bg-emerald hover:text-white text-charcoal font-bold rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md">
+                  <Link href="/register" className="w-full text-center py-4 bg-pearl border border-line text-charcoal font-bold rounded-2xl hover:bg-emerald hover:text-white transition-colors">
                     Démarrer gratuitement
                   </Link>
                 </div>
+
+                {/* Card 2 */}
+                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-2 hover:shadow-xl transition-all duration-300 relative group overflow-visible">
+                  <div className="text-center pb-6 border-b border-line mb-6">
+                    <h3 className="font-display font-black text-2xl text-ink">Actif</h3>
+                  </div>
+                  <div className="space-y-6 flex-1 text-center pb-8 border-b border-line mb-6">
+                    <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">100K - 500K FCFA</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink group-hover:text-emerald transition-colors">6%</div>
+                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">94%</div>
+                    <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
+                  </div>
+                  <Link href="/register" className="w-full text-center py-4 bg-pearl border border-line text-charcoal font-bold rounded-2xl hover:bg-emerald hover:text-white transition-colors">
+                    Démarrer gratuitement
+                  </Link>
+                </div>
+
+                {/* Card 3 */}
+                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-2 hover:shadow-xl transition-all duration-300 relative group overflow-visible">
+                  <div className="text-center pb-6 border-b border-line mb-6">
+                    <h3 className="font-display font-black text-2xl text-ink">Pro</h3>
+                  </div>
+                  <div className="space-y-6 flex-1 text-center pb-8 border-b border-line mb-6">
+                    <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">500K - 1M FCFA</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink group-hover:text-emerald transition-colors">5%</div>
+                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">95%</div>
+                    <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
+                  </div>
+                  <Link href="/register" className="w-full text-center py-4 bg-pearl border border-line text-charcoal font-bold rounded-2xl hover:bg-emerald hover:text-white transition-colors">
+                    Démarrer gratuitement
+                  </Link>
+                </div>
+
+                {/* Card 4 (Expert) */}
+                <div className="w-64 md:w-auto bg-pearl rounded-3xl border-2 border-emerald-rich shadow-lg p-6 flex flex-col transform md:scale-105 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald/20 transition-all duration-300 relative group z-10">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald text-white text-[10px] uppercase tracking-widest font-black px-4 py-1.5 rounded-full shadow-md whitespace-nowrap">
+                    Meilleur taux (Populaire)
+                  </div>
+                  <div className="text-center pb-6 border-b border-emerald/20 mb-6">
+                    <h3 className="font-display font-black text-2xl text-emerald-rich">Expert</h3>
+                  </div>
+                  <div className="space-y-6 flex-1 text-center pb-8 border-b border-emerald/20 mb-6">
+                    <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">+ 1M FCFA</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-emerald scale-110">4%</div>
+                    <div className="h-12 flex items-center justify-center font-bold text-emerald-rich text-2xl mt-2 bg-emerald/10 rounded-full scale-110 px-4">96%</div>
+                    <div className="h-12 flex items-center justify-center text-sm font-bold text-emerald">Inclus</div>
+                  </div>
+                  <Link href="/register" className="w-full text-center py-4 text-white font-bold rounded-2xl shadow-md transition-colors bg-emerald hover:bg-emerald-rich">
+                    Démarrer (Recommandé)
+                  </Link>
+                </div>
+
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-10 pb-6">
+              <div className="bg-white border border-line rounded-full px-5 py-2.5 text-xs font-bold text-charcoal shadow-sm flex items-center gap-2">
+                <span className="text-base leading-none">💳</span> Wave & Orange Money
+              </div>
+              <div className="bg-white border border-line rounded-full px-5 py-2.5 text-xs font-bold text-charcoal shadow-sm flex items-center gap-2">
+                <span className="text-base leading-none">📦</span> COD : 5% fixe
+              </div>
+              <div className="bg-white border border-line rounded-full px-5 py-2.5 text-xs font-bold text-charcoal shadow-sm flex items-center gap-2">
+                <span className="text-base leading-none">🏦</span> Retrait dès 5 000 FCFA
               </div>
             </div>
 
