@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { sendTelegramCommunityAccess } from '@/lib/telegram/send-community-access'
 import {
   sendWhatsApp,
   msgOrderConfirmed,
@@ -239,6 +240,16 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
         console.error('[confirmOrder] Erreur livraison digitale:', err)
       }
     })()
+  }
+
+  // ── 7.bis Accès communauté Telegram (si produit lié) ────────────────────
+  if (order.buyer_phone) {
+    sendTelegramCommunityAccess({
+      orderId:    orderId,
+      productId:  order.product_id,
+      buyerPhone: order.buyer_phone,
+      buyerName:  order.buyer_name,
+    }).catch(e => console.error('[TelegramAccess]', e))
   }
 
   // ── 8. WhatsApp physique : confirmation acheteur ──────────────────────────

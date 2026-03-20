@@ -46,6 +46,18 @@ async function SuccessContent({
   const product = (Array.isArray(order.product) ? order.product[0] : order.product) as { name: string; type: string; images: string[] } | null
   const store   = (Array.isArray(order.store)   ? order.store[0]   : order.store)   as { name: string } | null
   
+  // Vérifier communauté Telegram
+  let telegramCommunity: { chat_title: string } | null = null
+  if (order?.product_id) {
+    const { data: community } = await supabase
+      .from('TelegramCommunity')
+      .select('chat_title')
+      .eq('product_id', order.product_id)
+      .eq('is_active', true)
+      .maybeSingle()
+    telegramCommunity = community
+  }
+
   const formattedOrderId = order.id.split('-')[0].toUpperCase()
 
   if (isFailed) {
@@ -107,7 +119,9 @@ async function SuccessContent({
             : isCod 
               ? " Paiement à la réception de votre commande."
               : product?.type === 'digital' 
-                ? " Vous recevrez votre accès ou produit numérique très bientôt."
+                ? telegramCommunity 
+                  ? " Votre invitation au groupe privé arrive par WhatsApp."
+                  : " Vous recevrez votre accès ou produit numérique très bientôt."
                 : " Vous serez contacté pour le suivi de votre livraison."}
         </p>
         
@@ -134,6 +148,24 @@ async function SuccessContent({
             )}
           </div>
         </div>
+        
+        {/* Notification accès Telegram */}
+        {telegramCommunity && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-left flex items-start gap-3">
+            <div className="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mt-0.5">
+              <span className="text-white text-lg">🔐</span>
+            </div>
+            <div>
+              <p className="font-bold text-blue-900 text-sm">
+                Accès au groupe "{telegramCommunity.chat_title}"
+              </p>
+              <p className="text-blue-700 text-xs mt-1 leading-relaxed">
+                Vous allez recevoir votre lien d'invitation par <strong>WhatsApp</strong> dans les prochaines minutes. 
+                Le lien est à usage unique et valable 1 heure.
+              </p>
+            </div>
+          </div>
+        )}
         
         {/* CTAs */}
         <div className="space-y-3">

@@ -31,7 +31,6 @@ import {
   MapPin,
   Calendar,
   PhoneCall,
-  Bot,
   Send
 } from 'lucide-react'
 import { NotificationBell } from './NotificationBell'

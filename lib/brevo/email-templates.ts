@@ -192,7 +192,7 @@ export function welcomeBuyerEmail(buyerName: string): string {
  * Email envoyé à l'acheteur après confirmation de son paiement.
  * @param order - Détails de la commande
  */
-export function orderConfirmationEmail(order: OrderInfo): string {
+export function orderConfirmationEmail(order: OrderInfo, telegramGroupName?: string): string {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
 
   // Formatage du montant en FCFA
@@ -247,6 +247,17 @@ export function orderConfirmationEmail(order: OrderInfo): string {
         </td>
       </tr>
     </table>
+
+    ${telegramGroupName ? `
+    <div style="background-color:#EFF6FF;border-left:4px solid #3B82F6;border-radius:4px;padding:16px 20px;margin:0 0 24px;">
+      <p style="margin:0 0 6px;font-size:14px;color:#1E40AF;font-weight:700;">🔐 Accès groupe privé inclus</p>
+      <p style="margin:0;font-size:14px;color:#1E3A8A;line-height:1.6;">
+        Votre achat inclut l'accès au groupe <strong>"${telegramGroupName}"</strong>.
+        <br/>Vous recevrez votre lien d'invitation par <strong>WhatsApp</strong> dans les prochaines minutes.
+        <br/><em style="font-size:12px;color:#6B7280;">Le lien est à usage unique et valable 1 heure.</em>
+      </p>
+    </div>
+    ` : ''}
 
     <p style="margin:0 0 20px;font-size:14px;color:#666666;line-height:1.6;">
       Vous serez notifié par WhatsApp et email dès que votre commande évolue.

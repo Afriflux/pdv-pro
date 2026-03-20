@@ -1,6 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import Link from 'next/link'
-import { Store, Star, Award, TrendingUp, Compass, Search } from 'lucide-react'
 import { Metadata } from 'next'
 
 import MarketplaceClient from './MarketplaceClient'

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { confirmOrder } from '@/lib/payments/confirmOrder'
-import { createAdminClient } from '@/lib/supabase/admin'
-import { sendTelegramCommunityAccess } from '@/lib/telegram/send-community-access'
 
 /**
  * IPN Wave — reçoit un webhook JSON signé
@@ -50,23 +48,6 @@ export async function POST(req: NextRequest) {
     }
 
     await confirmOrder(orderId, body.id ?? orderId)
-
-    const admin = createAdminClient()
-    const { data: order } = await admin
-      .from('Order')
-      .select('id, product_id, buyer_phone, buyer_name')
-      .eq('id', orderId)
-      .single()
-
-    if (order) {
-      // Fire-and-forget — ne jamais bloquer le paiement
-      sendTelegramCommunityAccess({
-        orderId: order.id,
-        productId: order.product_id,
-        buyerPhone: order.buyer_phone || '',
-        buyerName: order.buyer_name || 'Client',
-      }).catch(console.error)
-    }
 
     return NextResponse.json({ ok: true })
   } catch (err: unknown) {
