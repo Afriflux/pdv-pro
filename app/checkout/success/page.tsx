@@ -4,19 +4,17 @@ import Link from 'next/link'
 import { Check, X, CheckCircle2, MessageCircle } from 'lucide-react'
 
 interface SuccessPageProps {
-  searchParams: { order?: string; cod?: string; status?: string; simulated?: string }
+  searchParams: { order?: string; cod?: string; status?: string }
 }
 
 async function SuccessContent({ 
   orderId, 
   isCod, 
-  statusParam, 
-  isSimulated 
+  statusParam
 }: { 
   orderId: string; 
   isCod: boolean; 
   statusParam: string;
-  isSimulated: boolean;
 }) {
   const isFailed = statusParam === 'failed'
   
@@ -103,11 +101,6 @@ async function SuccessContent({
         
         {/* Sous-titre dynamique */}
         <p className="text-slate text-sm mb-6">
-          {isSimulated && (
-            <span className="block mb-2 text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 py-1 px-2 rounded-lg uppercase tracking-widest">
-              ⚡ Commande de test (Simulation)
-            </span>
-          )}
           Merci pour votre achat. Le vendeur a été notifié. {isCod && (store as any)?.closing_enabled 
             ? " Un de nos agents téléphoniques vous contactera sous peu pour confirmer l'expédition de votre commande."
             : isCod 
@@ -162,7 +155,6 @@ export default function CheckoutSuccessPage({ searchParams }: SuccessPageProps) 
   // Les services de paiement tiers renvoient parfois order_id ou order
   const orderId = (searchParams as any).order_id || searchParams.order
   const isCod   = searchParams.cod === 'true'
-  const isSimulated = searchParams.simulated === 'true'
   const status  = searchParams.status || 'success'
 
   if (!orderId) {
@@ -192,7 +184,6 @@ export default function CheckoutSuccessPage({ searchParams }: SuccessPageProps) 
         orderId={orderId as string} 
         isCod={isCod} 
         statusParam={status} 
-        isSimulated={isSimulated} 
       />
     </Suspense>
   )

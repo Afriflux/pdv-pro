@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -26,6 +26,7 @@ interface ComplaintsClientProps {
 }
 
 type StatusFilter = 'all' | 'pending' | 'investigating' | 'resolved' | 'dismissed'
+type DateFilter = 'all' | '7days' | '30days'
 
 // ─── Badges statut ─────────────────────────────────────────────────────────────
 function StatusBadge({ status }: { status: ComplaintRow['status'] }) {
@@ -59,11 +60,28 @@ const TYPE_LABELS: Record<string, string> = {
 // ─── COMPOSANT PRINCIPAL ───────────────────────────────────────────────────────
 export default function ComplaintsClient({ complaints }: ComplaintsClientProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 20
+
+  useEffect(() => { setCurrentPage(1) }, [statusFilter, dateFilter])
 
   // Filtrage
-  const filtered = statusFilter === 'all'
-    ? complaints
-    : complaints.filter(c => c.status === statusFilter)
+  const now = new Date()
+  const filtered = complaints.filter(c => {
+    if (statusFilter !== 'all' && c.status !== statusFilter) return false
+    if (dateFilter !== 'all') {
+      const created = new Date(c.created_at)
+      const diffTime = Math.abs(now.getTime() - created.getTime())
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      if (dateFilter === '7days' && diffDays > 7) return false
+      if (dateFilter === '30days' && diffDays > 30) return false
+    }
+    return true
+  })
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
+  const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
 
   const FILTERS: Array<{ id: StatusFilter; label: string }> = [
     { id: 'all',           label: `Toutes (${complaints.length})` },
@@ -109,6 +127,25 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
             </button>
           )
         })}
+
+        <h2 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-4 mb-3 mt-8">Période</h2>
+        <div className="flex flex-col gap-1">
+          {[
+            { id: 'all', label: 'Toutes les dates' },
+            { id: '7days', label: '7 derniers jours' },
+            { id: '30days', label: '30 derniers jours' }
+          ].map(df => (
+            <button
+              key={df.id}
+              onClick={() => setDateFilter(df.id as DateFilter)}
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                dateFilter === df.id ? 'bg-[#1A1A1A] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+            >
+              {df.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── COLONNE DROITE : CONTENU ── */}
@@ -148,7 +185,7 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {filtered.map(complaint => (
+              {paginated.map(complaint => (
                 <tr key={complaint.id} className="hover:bg-[#FAFAF7] transition-colors">
                   {/* Type */}
                   <td className="px-5 py-4">
@@ -196,13 +233,39 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-5 py-16 text-center text-gray-400 text-sm">
-                    Aucune plainte {statusFilter !== 'all' ? `avec le statut "${statusFilter}"` : ''}.
+                    Aucune plainte trouvée avec ces filtres.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center px-5 py-4 border-t border-gray-100 bg-white">
+            <span className="text-sm text-gray-500">
+              Page {currentPage} sur {totalPages}
+            </span>
+            <div className="flex gap-2">
+              <button 
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                className="px-3 py-1.5 text-sm font-semibold border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                title="Page Précédente"
+              >
+                Précédent
+              </button>
+              <button 
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                className="px-3 py-1.5 text-sm font-semibold border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                title="Page Suivante"
+              >
+                Suivant
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       </div>
     </div>

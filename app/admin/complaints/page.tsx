@@ -25,6 +25,11 @@ export default async function AdminComplaintsPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const { data: userData } = await supabase.from('User').select('role').eq('id', user.id).single()
+  if (!userData || !['super_admin', 'gestionnaire'].includes(userData.role)) {
+    redirect('/dashboard')
+  }
+
   const supabaseAdmin = createAdminClient()
 
   // Toutes les plaintes, triées par date décroissante

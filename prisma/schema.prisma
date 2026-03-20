@@ -162,6 +162,10 @@ model Product {
   access_duration_days Int?  // null = à vie
   max_downloads    Int?      // null = illimité
   video_download_allowed Boolean @default(false)
+
+  // ── Droits de revente ──
+  resale_allowed   Boolean     @default(false)
+  resale_commission Float      @default(0)
   
   // ── Licence & droits ──
   license_type     String?   // personal|resell|mrr|plr|whitelabel
@@ -186,6 +190,8 @@ model Product {
   digitalAccess  DigitalAccess[]
   shortLinks     ShortLink[]
   bookings       Booking[]
+
+  @@index([store_id])
   @@schema("public")
 }
 
@@ -274,6 +280,10 @@ model Order {
   reports       Report[]
   booking       Booking?
   closing       ClosingRequest?
+
+  @@index([store_id])
+  @@index([buyer_id])
+  @@index([created_at])
   @@schema("public")
 }
 

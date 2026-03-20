@@ -214,7 +214,7 @@ export function CheckoutForm({
   }
 
   // ── Étape 1 : Création de la commande ────────────────────────
-  const handleSubmit = async (e?: React.FormEvent, simulate = false) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     setError(null)
 
@@ -247,7 +247,7 @@ export function CheckoutForm({
         store_id:         product.store.id,
         variant_id:       selectedVariant,
         quantity,
-        buyer_name:       name.trim() || (simulate ? "Client Simulation" : ""),
+        buyer_name:       name.trim(),
         buyer_phone:      phone.trim(),
         delivery_address: address.trim() || null,
         delivery_zone_id: selectedZoneId || null,
@@ -263,7 +263,6 @@ export function CheckoutForm({
         booking_date:     selectedDate || null,
         booking_start_time: selectedSlotStr ? selectedSlotStr.split('-')[0] : null,
         booking_end_time:   selectedSlotStr ? selectedSlotStr.split('-')[1] : null,
-        simulate,
       }
 
       const res = await fetch('/api/checkout/initiate', {
@@ -281,12 +280,6 @@ export function CheckoutForm({
       if (!res.ok) {
         setError(data.error ?? 'Erreur lors de la commande.')
         setLoading(false)
-        return
-      }
-
-      // Simulation réussie
-      if (data.simulated) {
-        router.push(`/checkout/success?order=${data.order_id}&simulated=true`)
         return
       }
 
@@ -310,8 +303,6 @@ export function CheckoutForm({
   const handlePaymentSuccess = (checkoutUrl: string) => {
     window.location.href = checkoutUrl
   }
-
-  const isDev = process.env.NODE_ENV === 'development' || (typeof window !== 'undefined' && window.location.hostname === 'localhost')
 
   // ================================================================
   // ÉTAPE 2 — Sélection du moyen de paiement
@@ -726,30 +717,17 @@ export function CheckoutForm({
         </section>
 
         {/* Boutons */}
-        <div className="space-y-3">
-          <button
-            type="submit" disabled={loading}
-            className="w-full text-white font-black py-4 rounded-2xl transition text-base shadow-xl"
-            style={{ backgroundColor: accent, opacity: loading ? 0.5 : 1 }}
-          >
-            {loading
-              ? 'CHARGEMENT...'
-              : useCOD
-                ? 'COMMANDER SANS PAYER'
-                : `CONTINUER → PAIEMENT`}
-          </button>
-
-          {isDev && !useCOD && (
-            <button
-              type="button"
-              onClick={() => handleSubmit(undefined, true)}
-              disabled={loading}
-              className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-2xl transition shadow-lg shadow-amber-200 text-sm uppercase tracking-wider"
-            >
-              ⚡ Simuler paiement réussi (DEV)
-            </button>
-          )}
-        </div>
+        <button
+          type="submit" disabled={loading}
+          className="w-full text-white font-black py-4 rounded-2xl transition text-base shadow-xl"
+          style={{ backgroundColor: accent, opacity: loading ? 0.5 : 1 }}
+        >
+          {loading
+            ? 'CHARGEMENT...'
+            : useCOD
+              ? 'COMMANDER SANS PAYER'
+              : `CONTINUER → PAIEMENT`}
+        </button>
 
         <p className="text-center text-[10px] text-gray-400 pb-2 uppercase tracking-widest font-bold">
           🔒 Sécurisé par PDV PRO

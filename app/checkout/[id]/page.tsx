@@ -17,7 +17,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
   const { data: product } = await supabase
     .from('Product')
     .select(`
-      id, name, description, price, type, images, category, cash_on_delivery,
+      id, name, description, price, type, images, category, resale_allowed, resale_commission, cash_on_delivery,
       store:Store(id, name, slug, logo_url, primary_color, meta_pixel_id, tiktok_pixel_id, google_tag_id, contract_accepted, vendor_type)
     `)
     .eq('id', params.id)

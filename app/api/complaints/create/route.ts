@@ -26,6 +26,10 @@ interface ComplaintBody {
 
 export async function POST(req: NextRequest) {
   try {
+    const escapeHtml = (text: string) => {
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
+    }
+
     const body = await req.json() as ComplaintBody
     const { store_id, product_id, type, description, evidence_url } = body
 
@@ -56,7 +60,7 @@ export async function POST(req: NextRequest) {
         product_id:  product_id ?? null,
         reporter_id: reporterId,
         type,
-        description: description.trim(),
+        description: escapeHtml(description.trim()),
         evidence_url: evidence_url?.trim() || null,
         status:      'pending',
         created_at:  now,

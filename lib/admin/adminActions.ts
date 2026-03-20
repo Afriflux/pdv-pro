@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
 
 /**
  * Fonction métier pour tracer toutes les actions critiques des admins/gestionnaires
@@ -208,14 +209,14 @@ export async function getAdminOrders(): Promise<AdminOrder[]> {
     platform_fee: (o.platform_fee as number) || 0,
     buyer_email: (o.buyer as Record<string, unknown>)?.email as string || 'Inconnu',
     buyer_phone: (o.buyer as Record<string, unknown>)?.phone as string || 'Inconnu',
-    store: o.store && !Array.isArray(o.store) ? (o.store as Record<string, unknown>) : null,
+    store: o.store && !Array.isArray(o.store) ? (o.store as { name: string }) : null,
     product_titles: o.items ? (o.items as Record<string, unknown>[]).map((i: Record<string, unknown>) => i.product_title as string) : []
   }))
 }
 
 // ─── GESTION DES SIGNALEMENTS / LITIGES ──────────────────────────────────────
 
-export interface AdminReport {
+export interface AdminComplaint {
   id: string
   created_at: string
   status: string
@@ -223,26 +224,20 @@ export interface AdminReport {
   description: string
   admin_notes: string | null
   reporter: { name: string; email: string; phone: string } | null
-  order: { 
-    id: string
-    status: string
-    total_amount: number
-    store: { name: string } | null
-  } | null
+  store: { name: string } | null
+  order?: { id: string; total_amount: number; store?: { name: string } | null } | null
 }
 
-export async function getAdminReports(): Promise<AdminReport[]> {
+export async function getAdminReports(): Promise<AdminComplaint[]> {
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from('Report')
+    .from('Complaint')
     .select(`
       id, created_at, status, type, description, admin_notes,
       reporter:User!reporter_id(name, email, phone),
-      order:Order!order_id(
-        id, status, total_amount,
-        store:Store(name)
-      )
+      store:Store!store_id(name),
+      order:Order!order_id(id, total_amount, store:Store!store_id(name))
     `)
     .order('created_at', { ascending: false })
 
@@ -255,19 +250,44 @@ export async function getAdminReports(): Promise<AdminReport[]> {
     type: r.type as string,
     description: r.description as string,
     admin_notes: r.admin_notes as string | null,
-    reporter: r.reporter && !Array.isArray(r.reporter) ? (r.reporter as Record<string, unknown>) : null,
-    order: r.order && !Array.isArray(r.order) ? (r.order as Record<string, unknown>) : null
+    reporter: r.reporter && !Array.isArray(r.reporter) ? (r.reporter as { name: string; email: string; phone: string }) : null,
+    store: r.store && !Array.isArray(r.store) ? (r.store as { name: string }) : null,
+    order: (r.order && !Array.isArray(r.order)) ? (r.order as { id: string; total_amount: number; store?: { name: string } | null }) : null
   }))
 }
 
 export async function resolveReport(reportId: string, status: string, notes: string) {
   const supabase = await createClient()
 
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error("Non authentifié")
+  const { data: userData } = await supabase.from('User').select('role').eq('id', user.id).single()
+  if (!userData || !['super_admin', 'gestionnaire'].includes(userData.role)) {
+    throw new Error("Accès refusé")
+  }
+
+  const { data: complaint } = await supabase.from('Complaint').select('status, store_id, reporter_id, type').eq('id', reportId).single()
+  if (!complaint) throw new Error("Plainte introuvable")
+
+  const currentStatus = complaint.status
+  const allowedTransitions: Record<string, string[]> = {
+    pending: ['investigating', 'resolved', 'dismissed'],
+    investigating: ['resolved', 'dismissed'],
+    resolved: [],
+    dismissed: []
+  }
+
+  if (!allowedTransitions[currentStatus]?.includes(status)) {
+    throw new Error(`Transition impossible de '${currentStatus}' vers '${status}'`)
+  }
+
+  const safeNotes = notes.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
+
   const { error } = await supabase
-    .from('Report')
+    .from('Complaint')
     .update({ 
       status: status, 
-      admin_notes: notes,
+      admin_notes: safeNotes,
       updated_at: new Date().toISOString()
     })
     .eq('id', reportId)
@@ -276,10 +296,34 @@ export async function resolveReport(reportId: string, status: string, notes: str
 
   await logAdminAction(
     `Signalement marqué comme: ${status.toUpperCase()}`,
-    'Report',
+    'Complaint',
     reportId,
-    { notes }
+    { notes: safeNotes }
   )
+
+  if (status === 'resolved' || status === 'dismissed') {
+     if (complaint.reporter_id) {
+       const { data: reporterObj } = await supabase.from('User').select('phone').eq('id', complaint.reporter_id).single()
+       if (reporterObj?.phone) {
+         await sendWhatsApp({
+           to: reporterObj.phone,
+           body: `📢 *Mise à jour de votre signalement*\n\nVotre réclamation concernant "${complaint.type}" vient d'être traitée et son statut est passé à : *${status === 'resolved' ? '✅ Résolu' : '❌ Rejeté'}*.\n\nMerci pour votre vigilance.\n_Support PDV Pro_`
+         })
+       }
+     }
+     if (complaint.store_id) {
+       const { data: storeObj } = await supabase.from('Store').select('user_id').eq('id', complaint.store_id).single()
+       if (storeObj?.user_id) {
+         const { data: storeOwner } = await supabase.from('User').select('phone').eq('id', storeObj.user_id).single()
+         if (storeOwner?.phone) {
+            await sendWhatsApp({
+              to: storeOwner.phone,
+              body: `⚠️ *Info de l'administration PDV Pro*\n\nLe signalement ("${complaint.type}") vous concernant a été analysé et clôturé avec le statut: *${status === 'resolved' ? '✅ Résolu' : '❌ Rejeté'}*.\n\nConsultez l'historique de votre boutique si nécessaire.`
+            })
+         }
+       }
+     }
+  }
 }
 
 // ─── CONFIGURATION GLOBALE ───────────────────────────────────────────────────
@@ -464,7 +508,7 @@ export async function getAdminAnalytics(): Promise<AdminAnalyticsData> {
 
 // ─── GESTION DES RETRAITS (PAYTECH) ──────────────────────────────────────────
 
-import { sendWhatsApp, msgWithdrawalApproved, msgWithdrawalFailed, msgWithdrawalRejected } from '@/lib/whatsapp/sendWhatsApp'
+import { msgWithdrawalApproved, msgWithdrawalFailed, msgWithdrawalRejected } from '@/lib/whatsapp/sendWhatsApp'
 
 export interface AdminWithdrawal {
   id: string

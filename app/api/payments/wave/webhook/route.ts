@@ -42,12 +42,12 @@ export async function POST(req: Request): Promise<Response> {
   const signature = req.headers.get('Wave-Signature') ?? ''
 
   if (!signature) {
-    console.warn('[Wave Webhook] Header Wave-Signature absent')
+    // console.warn('[Wave Webhook] Header Wave-Signature absent')
     return new Response('Signature manquante', { status: 401 })
   }
 
   if (!verifyWaveSignature(rawBody, signature)) {
-    console.warn('[Wave Webhook] Signature invalide')
+    // console.warn('[Wave Webhook] Signature invalide')
     return new Response('Signature invalide', { status: 401 })
   }
 
@@ -64,9 +64,9 @@ export async function POST(req: Request): Promise<Response> {
 
   // 4. Ignorer les événements non finalisés
   if (payload.data.checkout_status !== 'complete') {
-    console.log(
-      `[Wave Webhook] Statut ignoré : ${payload.data.checkout_status} pour ${payload.data.client_reference}`
-    )
+    // console.log(
+    //   `[Wave Webhook] Statut ignoré : ${payload.data.checkout_status} pour ${payload.data.client_reference}`
+    // )
     return new Response('OK', { status: 200 })
   }
 
@@ -82,7 +82,7 @@ export async function POST(req: Request): Promise<Response> {
   // 6. Confirmer la commande
   try {
     await confirmOrder(orderId, transactionId)
-    console.log(`[Wave Webhook] ✅ Commande confirmée — orderId: ${orderId}, txId: ${transactionId}`)
+    // console.log(`[Wave Webhook] ✅ Commande confirmée — orderId: ${orderId}, txId: ${transactionId}`)
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Erreur inconnue'
     console.error(`[Wave Webhook] ❌ Erreur confirmOrder pour ${orderId}:`, message)

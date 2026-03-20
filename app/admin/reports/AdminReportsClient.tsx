@@ -1,16 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { AdminReport, resolveReport } from '@/lib/admin/adminActions'
+import { AdminComplaint, resolveReport } from '@/lib/admin/adminActions'
 
 interface Props {
-  initialReports: AdminReport[]
+  initialReports: AdminComplaint[]
 }
 
 export default function AdminReportsClient({ initialReports }: Props) {
   const [reports, setReports] = useState(initialReports)
   const [filter, setFilter] = useState('open')
-  const [selectedReport, setSelectedReport] = useState<AdminReport | null>(null)
+  const [selectedReport, setSelectedReport] = useState<AdminComplaint | null>(null)
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -20,7 +20,7 @@ export default function AdminReportsClient({ initialReports }: Props) {
 
   const filteredReports = reports.filter(r => filter === 'all' || r.status === filter)
 
-  const handleOpenModal = (report: AdminReport) => {
+  const handleOpenModal = (report: AdminComplaint) => {
     setSelectedReport(report)
     setResolutionStatus('resolved')
     setNotes(report.admin_notes || '')

@@ -1,61 +1,104 @@
-import { verifyCronSecret, cronResponse, isOlderThan } from '@/lib/cron/cron-helpers'
+import { verifyCronSecret, cronResponse } from '@/lib/cron/cron-helpers'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-interface StuckWithdrawal {
-  id: string
-  created_at: string
-  amount: number
-  vendor_id: string
-}
-
 export async function POST(req: Request) {
-  // 1. Vérifier le secret CRON
+  // 1. Secret vérification
   if (!verifyCronSecret(req)) {
     return cronResponse({ error: 'Unauthorized' }, 401)
   }
 
   const supabase = createAdminClient()
 
-  // 2. Récupérer tous les retraits en status 'processing'
-  const { data: stuckWithdrawals, error: fetchError } = await supabase
+  // 2. Fetch min_withdrawal config (Fallback: 5000)
+  const { data: configAll } = await supabase.from('PlatformConfig').select('*').limit(1).single()
+  const minWithdrawal = (configAll as any)?.min_withdrawal ?? 5000
+
+  // 3. Fetch ONLY pending withdrawals (Idempotency: don't touch processing/paid)
+  const { data: pendingWithdrawals, error: fetchError } = await supabase
     .from('Withdrawal')
-    .select('id, created_at, amount, vendor_id')
-    .eq('status', 'processing')
+    .select('id, amount, vendor_id, wallet_id, store_id, payment_method, phone_or_iban, Store (user_id, whatsapp, User (phone))')
+    .eq('status', 'pending')
 
   if (fetchError) {
-    console.error('[CRON retrait-auto] Erreur lors de la récupération des retraits :', fetchError.message)
+    console.error('[CRON retrait-auto] Erreur fetch withdrawals:', fetchError.message)
     return cronResponse({ error: fetchError.message }, 500)
   }
 
-  const withdrawals = (stuckWithdrawals ?? []) as StuckWithdrawal[]
-  let fixed = 0
+  const withdrawals = pendingWithdrawals ?? []
+  let processed = 0
+  let failed = 0
 
-  // 3. Filtrer ceux bloqués depuis plus d'1h et les débloquer
-  for (const withdrawal of withdrawals) {
-    if (!isOlderThan(withdrawal.created_at, 1)) continue
-
-    const { error: updateError } = await supabase
-      .from('Withdrawal')
-      .update({
-        status: 'approved',
-        processed_at: new Date().toISOString(),
-      })
-      .eq('id', withdrawal.id)
-
-    if (updateError) {
-      console.error(
-        `[CRON retrait-auto] Échec mise à jour retrait ${withdrawal.id} :`,
-        updateError.message
-      )
+  // 4. Process each pending withdrawal
+  for (const w of withdrawals) {
+    // A. Validation du montant minimum
+    if (w.amount < minWithdrawal) {
+      console.error(`[CRON] Retrait ${w.id} rejeté: Montant (${w.amount}) < minimum (${minWithdrawal})`)
+      await supabase.from('Withdrawal').update({ status: 'rejected', notes: 'Montant inférieur au minimum' }).eq('id', w.id)
+      
+      // Restauration atomique: Balance +, Pending -
+      await supabase.rpc('unfreeze_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
+      failed++
       continue
     }
 
-    console.warn(
-      `[CRON retrait-auto] ⚠️ Retrait bloqué débloqué — id: ${withdrawal.id}, montant: ${withdrawal.amount} FCFA, vendor: ${withdrawal.vendor_id}`
-    )
-    fixed++
+    // B. Verrouillage Optimiste (Atomic row lock)
+    // Sélection avec UPDATE pour s'assurer que personne d'autre n'a pris ce retrait (double-retrait)
+    const { data: locked, error: lockErr } = await supabase
+      .from('Withdrawal')
+      .update({ status: 'processing', processed_at: new Date().toISOString() })
+      .eq('id', w.id)
+      .eq('status', 'pending')
+      .select('id')
+
+    if (lockErr || !locked || locked.length === 0) {
+      console.error(`[CRON] Retrait ${w.id} ignoré: Déjà verrouillé.`)
+      continue
+    }
+
+    // C. Configuration du Payout
+    const storeData = w.Store as any
+    const vendorPhone = w.phone_or_iban || storeData?.whatsapp || storeData?.User?.[0]?.phone || storeData?.User?.phone
+
+    if (!vendorPhone) {
+      console.error(`[CRON] Retrait ${w.id} échoué: phone_or_iban introuvable.`)
+      await supabase.from('Withdrawal').update({ status: 'rejected', notes: 'Téléphone introuvable' }).eq('id', w.id)
+      await supabase.rpc('unfreeze_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
+      failed++
+      continue
+    }
+
+    // D. Exécution du Payout avec Catch
+    try {
+      const { executePayout } = await import('@/lib/payouts/payout-service')
+      const payoutResult = await executePayout({
+        phone: vendorPhone,
+        amount: w.amount,
+        reference: w.id,
+        method: w.payment_method
+      })
+
+      if (payoutResult.success) {
+        // Succès: Statut paid
+        await supabase.from('Withdrawal').update({ status: 'paid', notes: payoutResult.transactionId }).eq('id', w.id)
+        
+        // Nettoyage: la demande de retrait a déjà débité la balance pour geler dans 'pending'. Il faut déduire 'pending'
+        await supabase.rpc('release_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
+        processed++
+      } else {
+        // Réfus API (CinetPay / Wave error)
+        console.error(`[CRON] Payout refusé pr ${w.id}: ${payoutResult.error}`)
+        await supabase.from('Withdrawal').update({ status: 'rejected', notes: payoutResult.error }).eq('id', w.id)
+        await supabase.rpc('unfreeze_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
+        failed++
+      }
+    } catch (error: any) {
+      // Timeout / Crash Critique
+      console.error(`[CRON] Exception réseau sur ${w.id}:`, error)
+      await supabase.from('Withdrawal').update({ status: 'rejected', notes: 'Exception: ' + error.message }).eq('id', w.id)
+      await supabase.rpc('unfreeze_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
+      failed++
+    }
   }
 
-  // 4. Retourner le résultat
-  return cronResponse({ checked: withdrawals.length, fixed })
+  return cronResponse({ checked: withdrawals.length, processed, failed })
 }
