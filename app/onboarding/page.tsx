@@ -56,11 +56,29 @@ export default function OnboardingPage() {
         setNameAvailable(true)
         nextStep = 3 // Saute étapes 1 & 2
         
-        // Vérifier le Wallet
         const { data: wallet } = await supabase.from('Wallet').select('*').eq('vendor_id', store.id).maybeSingle()
         if (wallet && wallet.payout_method) {
           setPayoutMethod(wallet.payout_method as any)
-          if (wallet.payout_details) setPayoutDetails(wallet.payout_details)
+          if (wallet.payout_details) {
+            setPayoutDetails(wallet.payout_details)
+            if (wallet.payout_method === 'bank') {
+              const parts = wallet.payout_details.split(' - ')
+              if (parts.length > 1) {
+                setBankName(parts[0])
+                setBankIban(parts.slice(1).join(' - '))
+              } else {
+                setBankIban(wallet.payout_details)
+              }
+            } else {
+              const parts = wallet.payout_details.split(' ')
+              if (parts.length > 1 && parts[0].startsWith('+')) {
+                setCountryCode(parts[0])
+                setPhoneNumber(parts.slice(1).join(''))
+              } else {
+                setPhoneNumber(wallet.payout_details)
+              }
+            }
+          }
           nextStep = 4 // Saute étape 3
         }
       }
@@ -87,6 +105,10 @@ export default function OnboardingPage() {
   // -- Step 3: Payment Method
   const [payoutMethod, setPayoutMethod] = useState<'wave' | 'orange_money' | 'bank' | null>(null)
   const [payoutDetails, setPayoutDetails] = useState('')
+  const [countryCode, setCountryCode] = useState('+221')
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [bankName, setBankName] = useState('')
+  const [bankIban, setBankIban] = useState('')
   
   // -- Step 4: Business Model
   const [commissionAccepted, setCommissionAccepted] = useState(false)
@@ -156,8 +178,18 @@ export default function OnboardingPage() {
         if (!res.success) throw new Error(res.error)
       }
       else if (step === 3) {
-        if (!payoutMethod || !payoutDetails.trim()) throw new Error("Veuillez renseigner un moyen de paiement complet")
-        const res = await savePaymentMethod(payoutMethod, payoutDetails.trim())
+        if (!payoutMethod) throw new Error("Veuillez choisir un moyen de paiement")
+        
+        let finalDetails = ''
+        if (payoutMethod === 'bank') {
+          if (!bankName.trim() || !bankIban.trim()) throw new Error("Veuillez renseigner le nom de la banque et l'IBAN")
+          finalDetails = `${bankName.trim()} - ${bankIban.trim()}`
+        } else {
+          if (!phoneNumber.trim()) throw new Error("Veuillez renseigner le numéro de téléphone")
+          finalDetails = `${countryCode} ${phoneNumber.trim()}`
+        }
+        
+        const res = await savePaymentMethod(payoutMethod as any, finalDetails)
         if (!res.success) throw new Error(res.error)
       }
       else if (step === 4) {
@@ -411,22 +443,65 @@ export default function OnboardingPage() {
                 ))}
               </div>
 
-              <div className="bg-cream p-6 rounded-2xl border border-line">
-                <label className="block text-sm font-bold text-ink mb-2">
-                  {payoutMethod === 'bank' ? 'IBAN ou N° Compte Bancaire' : 'Numéro de téléphone (Format international)'}
-                </label>
-                <input 
-                  type="text" 
-                  value={payoutDetails}
-                  onChange={e => setPayoutDetails(e.target.value)}
-                  placeholder={payoutMethod === 'bank' ? 'SN010 010... etc.' : '+221 77 ...'}
-                  className="w-full bg-white border border-line rounded-xl px-4 py-4 text-ink font-bold focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all"
-                />
-                <p className="text-xs text-dust mt-3 flex items-center gap-1.5 font-medium">
-                  <span className="w-5 h-5 rounded-full bg-emerald/10 text-emerald flex items-center justify-center font-bold">i</span>
-                  Important : Vérifiez bien ces informations, elles serviront à vos retraits express.
-                </p>
-              </div>
+              {payoutMethod && (
+                <div className="bg-cream p-6 rounded-2xl border border-line animate-in slide-in-from-top-4 duration-300">
+                  {payoutMethod === 'bank' ? (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-bold text-ink mb-2">Nom de la Banque</label>
+                        <input 
+                          type="text" 
+                          value={bankName}
+                          onChange={e => setBankName(e.target.value)}
+                          placeholder="Ex: Ecobank, UBA..."
+                          className="w-full bg-white border border-line rounded-xl px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-ink mb-2">IBAN ou N° de Compte</label>
+                        <input 
+                          type="text" 
+                          value={bankIban}
+                          onChange={e => setBankIban(e.target.value)}
+                          placeholder="SN010 010..."
+                          className="w-full bg-white border border-line rounded-xl px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-sm font-bold text-ink mb-2">Numéro de téléphone</label>
+                      <div className="flex gap-2">
+                        <select
+                          value={countryCode}
+                          onChange={e => setCountryCode(e.target.value)}
+                          className="bg-white border text-center border-line rounded-xl px-2 py-3 text-ink font-bold focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald appearance-none min-w-[100px]"
+                        >
+                          <option value="+221">🇸🇳 +221</option>
+                          <option value="+225">🇨🇮 +225</option>
+                          <option value="+223">🇲🇱 +223</option>
+                          <option value="+224">🇬🇳 +224</option>
+                          <option value="+228">🇹🇬 +228</option>
+                          <option value="+226">🇧🇫 +226</option>
+                          <option value="+33">🇫🇷 +33</option>
+                        </select>
+                        <input 
+                          type="tel" 
+                          value={phoneNumber}
+                          onChange={e => setPhoneNumber(e.target.value.replace(/[^0-9]/g, ''))}
+                          placeholder={payoutMethod === 'orange_money' ? "77 123 45 67" : "76 123 45 67"}
+                          className="flex-1 bg-white border border-line rounded-xl px-4 py-3 text-ink font-bold focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-xs text-dust mt-4 flex items-center gap-1.5 font-medium">
+                    <span className="w-5 h-5 rounded-full bg-emerald/10 text-emerald flex items-center justify-center font-bold">i</span>
+                    Important : Vérifiez bien ces informations, elles serviront à vos retraits express.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
