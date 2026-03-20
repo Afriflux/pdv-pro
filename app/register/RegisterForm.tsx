@@ -76,7 +76,7 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
 
   const canSubmit =
     role === 'acheteur' ||
-    (role === 'vendeur' && codeStatus === 'valid')
+    (role === 'vendeur' && (codeStatus === 'valid' || codeStatus === 'idle'))
 
   return (
     <div className="bg-white rounded-3xl shadow-xl shadow-ink/5 p-8 border border-line relative">
@@ -165,9 +165,9 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
             alert('Veuillez entrer votre numéro WhatsApp.')
             return
           }
-          if (role === 'vendeur' && codeStatus !== 'valid') {
+          if (role === 'vendeur' && ambassadorCode.trim() && codeStatus === 'invalid') {
             e.preventDefault()
-            alert('Veuillez entrer un code ambassadeur valide.')
+            alert('Veuillez entrer un code ambassadeur valide ou laisser le champ vide.')
           }
         }}
       >
@@ -213,8 +213,10 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
         {role === 'vendeur' && (
           <div>
             <label htmlFor="ambassadorCodeInput" className="block text-sm font-medium text-charcoal mb-1.5">
-              Code Ambassadeur <span className="text-red-500">*</span>
-              <span className="ml-1 text-[10px] text-gray-400 font-normal">(obligatoire pour vendre)</span>
+              Code Ambassadeur
+              <span className="ml-1 text-[10px] text-gray-400 font-normal block leading-tight mt-0.5">
+                (optionnel — vous bénéficierez d'un accompagnement si un ambassadeur vous parraine)
+              </span>
             </label>
             <div className="relative">
               <input

@@ -21,6 +21,10 @@ import PricingCalculator from './PricingCalculator'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { HeroStats } from './components/HeroStats'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { CountdownBanner } from '@/components/landing/CountdownBanner'
+import { LiveCounters } from '@/components/landing/LiveCounters'
+import { TestimonialSlider } from '@/components/landing/TestimonialSlider'
+import { Package, Wallet } from 'lucide-react'
 
 export const metadata = {
   title: 'PDV Pro — Vendez en ligne en Afrique de l\'Ouest',
@@ -159,9 +163,20 @@ export default async function LandingPage() {
     ? h1Lines
     : ['Votre boutique pro.', 'Vos premiers paiements.', 'Ce soir.']
 
+  // Counts en temps réel
+  const [
+    { count: vendorsCount },
+    { count: productsCount },
+    { count: ordersCount }
+  ] = await Promise.all([
+    supabaseAdmin.from('User').select('*', { count: 'exact', head: true }).eq('role', 'vendeur'),
+    supabaseAdmin.from('Product').select('*', { count: 'exact', head: true }).eq('active', true),
+    supabaseAdmin.from('Order').select('*', { count: 'exact', head: true })
+  ])
+
   return (
     <div className="bg-cream min-h-screen text-ink font-body selection:bg-emerald/20 selection:text-ink">
-      
+      <CountdownBanner />
       {/* ── HEADER NAVIGATION ── */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-line shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -298,19 +313,19 @@ export default async function LandingPage() {
                 <h2 className="text-4xl md:text-6xl font-display font-black mb-6 text-ink leading-tight">Passez au niveau <span className="text-emerald">supérieur</span>.</h2>
                 <p className="text-xl text-slate font-light mb-16 leading-relaxed">Avec PDV Pro, centralisez votre activité et offrez une expérience <span className="font-medium text-emerald bg-emerald/10 px-2 py-0.5 rounded-md">premium</span> à vos clients.</p>
                 
-                <div className="space-y-0 relative before:absolute before:inset-y-4 before:left-[23px] before:w-[2px] before:bg-emerald/20">
+                <div className="flex flex-col gap-8 relative before:absolute before:inset-y-4 before:left-[35px] md:before:left-[43px] before:w-[2px] before:bg-emerald/20">
                   {[
-                    { num: '01', title: 'En 2 minutes : votre boutique est live', desc: "Choisissez pdvpro.com/votreboutique, ajoutez votre logo. Votre vitrine professionnelle est accessible immédiatement." },
-                    { num: '02', title: 'Ajoutez vos produits, générez vos liens', desc: "Photos, prix, variantes, stock. Chaque produit a son lien de paiement direct à partager sur WhatsApp ou Instagram." },
-                    { num: '03', title: 'Encaissez. L\'argent arrive dans votre wallet.', desc: "Wave, Orange Money ou carte bancaire. Dès confirmation, les fonds sont dans votre wallet PDV Pro. Retrait en 1 clic dès 5 000 FCFA." },
+                    { icon: <Store size={32} strokeWidth={2.5} />, title: 'Créez votre boutique en 2 minutes', desc: "Ajoutez votre logo, choisissez pdvpro.com/votre-nom. Votre vitrine professionnelle est disponible immédiatement." },
+                    { icon: <Package size={32} strokeWidth={2.5} />, title: 'Ajoutez vos produits et fixez vos prix', desc: "Photos, prix, variantes. Chacun aura son propre lien d'achat direct sans plus jamais répondre 'c'est combien ?'." },
+                    { icon: <Wallet size={32} strokeWidth={2.5} />, title: 'Vendez et recevez votre argent', desc: "Encaissez par Wave ou Orange Money, recevez directement votre argent sur votre wallet. Gagnez en autonomie." },
                   ].map((step, i) => (
-                    <div key={i} className="flex gap-6 relative group pb-14 last:pb-0">
-                      <div className="shrink-0 w-12 h-12 bg-white border-4 border-pearl text-emerald font-black flex items-center justify-center rounded-full shadow-md relative z-10 group-hover:bg-emerald group-hover:text-white transition-colors duration-300">
-                        {step.num}
+                    <div key={i} className="flex gap-6 relative group z-10">
+                      <div className="shrink-0 w-16 md:w-20 h-16 md:h-20 bg-white border-4 border-pearl text-emerald font-black flex items-center justify-center rounded-2xl shadow-lg group-hover:bg-emerald group-hover:text-white group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300">
+                        {step.icon}
                       </div>
-                      <div className="pt-2">
-                        <h3 className="text-2xl font-display font-black mb-3 text-ink group-hover:text-emerald transition-colors">{step.title}</h3>
-                        <p className="text-slate leading-relaxed font-light text-lg">{step.desc}</p>
+                      <div className="pt-2 md:pt-4">
+                        <h3 className="text-xl md:text-2xl font-display font-black mb-2 text-ink group-hover:text-emerald transition-colors">{step.title}</h3>
+                        <p className="text-slate leading-relaxed font-light text-base md:text-lg">{step.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -504,33 +519,7 @@ export default async function LandingPage() {
         <section className="py-24 px-6 bg-cream border-b border-line">
           <div className="max-w-7xl mx-auto relative z-10">
             <h2 className="text-3xl md:text-5xl font-display font-black text-center mb-16 tracking-tight text-ink">Avis des précurseurs.</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonialData.map((test, i) => (
-                <div key={i} className="bg-white p-8 rounded-2xl border border-line relative shadow-sm hover:border-emerald/30 transition flex flex-col">
-                  {/* Decorative quote */}
-                  <div className="font-display text-9xl text-emerald/5 absolute top-4 right-8 leading-none select-none">"</div>
-                  
-                  <div className="flex gap-1 mb-6">
-                    {[1,2,3,4,5].map(s => <StarIcon key={s} />)}
-                  </div>
-                  <p className="text-charcoal font-light mb-8 relative z-10 text-lg leading-relaxed italic flex-1">"{test.quote}"</p>
-                  
-                  <div className="bg-cream border border-line rounded-lg px-3 py-1.5 text-xs font-bold text-slate w-max mb-6">
-                    {test.badge}
-                  </div>
-
-                  <div className="flex items-center gap-4 border-t border-line pt-6 mt-auto">
-                    <div className="w-10 h-10 rounded-full bg-emerald/10 text-emerald font-display font-bold flex items-center justify-center text-lg shrink-0">
-                      {test.name.charAt(0)}
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-ink">{test.name}</h4>
-                      <p className="text-slate text-sm font-body">{test.biz}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <TestimonialSlider testimonials={testimonialData} />
           </div>
         </section>
 
@@ -690,30 +679,33 @@ export default async function LandingPage() {
             </div>
         </section>
 
-        {/* 9. CTA FINAL */}
-        <section className="py-32 px-6 bg-white relative overflow-hidden border-t border-line">
+        {/* 9. REAL-TIME SOCIAL PROOF */}
+        <LiveCounters 
+          vendorsCount={vendorsCount ?? 200} 
+          productsCount={productsCount ?? 1200} 
+          ordersCount={ordersCount ?? 8500} 
+        />
+
+        {/* 10. CTA FINAL */}
+        <section className="py-32 px-6 bg-ink relative overflow-hidden border-t border-line/10">
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-600/10 blur-[150px] rounded-full pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gold/10 blur-[120px] rounded-full pointer-events-none" />
+
           <div className="max-w-4xl mx-auto text-center relative z-10">
-            <h2 className="text-4xl md:text-5xl font-display font-black mb-6 tracking-tight text-ink">
-              {get('landing_cta_title', 'Votre boutique peut être live ce soir.')}
+            <h2 className="text-4xl md:text-6xl font-display font-black mb-6 tracking-tight text-white leading-tight">
+              Prêt à lancer votre business en ligne ?
             </h2>
-            <div className="text-xl text-slate font-light mb-12 max-w-2xl mx-auto space-y-2">
-              <p>2 minutes pour créer votre compte.</p>
-              <p>0 F pour commencer.</p>
-              <p className="font-medium text-emerald">Les premiers paiements arrivent dès aujourd&apos;hui.</p>
+            <div className="text-xl text-cream/80 font-light mb-12 max-w-2xl mx-auto space-y-2">
+              <p>Rejoignez PDV Pro gratuitement.</p>
+              <p>Aucun abonnement, vous ne payez que quand vous vendez.</p>
             </div>
-            <Link href="/register" className="inline-block px-14 py-5 bg-emerald text-white rounded-xl font-bold text-lg hover:bg-emerald-rich transition shadow-xl shadow-emerald/20 mb-8">
-              {get('landing_cta_button', "Créer ma boutique maintenant — C'est gratuit")}
+            <Link href="/register" className="inline-block px-14 py-6 bg-red-600 text-white rounded-2xl font-black text-xl hover:bg-red-700 hover:scale-105 transition-all shadow-2xl shadow-red-600/20 mb-8 animate-pulse">
+              Créer ma boutique maintenant
             </Link>
-            <div className="flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-slate font-medium">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="text-emerald" size={18} /> Aucune carte bancaire requise
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="text-emerald" size={18} /> Fonds disponibles immédiatement
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="text-emerald" size={18} /> Support WhatsApp 7j/7
-              </div>
+            <div className="mt-8 pt-8 border-t border-white/10">
+              <Link href="/login" className="text-cream/60 hover:text-white transition font-medium text-lg">
+                Déjà vendeur ? Connectez-vous →
+              </Link>
             </div>
           </div>
         </section>
@@ -765,13 +757,5 @@ export default async function LandingPage() {
         </div>
       </footer>
     </div>
-  )
-}
-
-function StarIcon() {
-  return (
-    <svg className="w-5 h-5 text-gold" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-    </svg>
   )
 }

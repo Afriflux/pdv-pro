@@ -1,7 +1,8 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Check, X, CheckCircle2, MessageCircle } from 'lucide-react'
+import { Check, X, CheckCircle2, MessageCircle, Star, Share2 } from 'lucide-react'
+import { PromoCopyButton } from './PromoCopyButton'
 
 interface SuccessPageProps {
   searchParams: { order?: string; cod?: string; status?: string }
@@ -23,7 +24,7 @@ async function SuccessContent({
   const { data: order } = await supabase
     .from('Order')
     .select(`
-      id, buyer_name, total, payment_method, status,
+      id, buyer_name, total, payment_method, status, product_id,
       product:Product(name, type, images),
       store:Store(name, primary_color, slug, whatsapp, closing_enabled)
     `)
@@ -143,12 +144,46 @@ async function SuccessContent({
             Retour à l'espace de vente
           </Link>
           {(store as any)?.whatsapp && (
-             <a href={`https://wa.me/${(store as any).whatsapp}?text=Bonjour, concernant ma commande ${formattedOrderId}...`} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#25D366] text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-[#20b858] transition shadow-lg">
+             <a href={`https://wa.me/${(store as any).whatsapp}?text=Bonjour, concernant ma commande ${formattedOrderId}...`} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#25D366] text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-[#20b858] transition shadow-lg mb-8">
                <MessageCircle size={18} />
                Contacter sur WhatsApp
              </a>
           )}
         </div>
+
+        {/* ── ENCARTS POST-ACHAT ── */}
+        <div className="mt-8 space-y-4 pt-8 border-t border-line text-left">
+          
+          {/* 1. Laissez un avis */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center transition hover:shadow-md">
+            <h4 className="font-bold text-amber-900 mb-1">Satisfait de votre achat ?</h4>
+            <p className="text-xs text-amber-700 mb-3">Laissez un avis au vendeur pour l'encourager.</p>
+            <Link href={`/${(store as any)?.slug}/${order.product_id}#reviews`} className="flex justify-center gap-1 group">
+              {[1, 2, 3, 4, 5].map(i => (
+                <Star key={i} size={28} className="text-amber-300 group-hover:text-amber-500 fill-amber-300 group-hover:fill-amber-500 transition-colors cursor-pointer" />
+              ))}
+            </Link>
+          </div>
+
+          {/* 2. Partagez votre trouvaille */}
+          <div className="bg-[#FAFAF7] border border-line rounded-xl p-5 text-center">
+            <h4 className="font-bold text-ink mb-1 flex items-center justify-center gap-2"><Share2 size={16}/> Partagez votre trouvaille</h4>
+            <p className="text-xs text-slate mb-4">Recommandez ce produit à vos amis.</p>
+            <div className="flex justify-center gap-3">
+              <a href={`https://wa.me/?text=Je viens d'acheter sur ${(store as any)?.name || 'cette boutique'} via PDV Pro ! Regarde : https://pdvpro.com/${(store as any)?.slug}/${order.product_id}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#25D366]/10 text-[#25D366] flex items-center justify-center hover:bg-[#25D366] hover:text-white transition">WA</a>
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=https://pdvpro.com/${(store as any)?.slug}/${order.product_id}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center hover:bg-[#1877F2] hover:text-white transition">FB</a>
+            </div>
+          </div>
+
+          {/* 3. Promo code */}
+          <div className="bg-emerald/5 border border-emerald/20 rounded-xl p-5 text-center">
+             <h4 className="font-bold text-emerald-rich mb-1">Cadeau pour votre prochaine commande</h4>
+             <p className="text-xs text-emerald/80 mb-3">Profitez de -5% sur tous les produits de la boutique.</p>
+             <PromoCopyButton code="MERCI5" />
+          </div>
+
+        </div>
+
       </div>
     </div>
   )

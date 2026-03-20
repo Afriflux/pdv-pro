@@ -6,6 +6,7 @@ import { CopyLinkQuickAction, WhatsAppQuickAction } from './DashboardActions'
 import { Package, ShoppingBag, ArrowRight } from 'lucide-react'
 import { Check360Widget } from '@/components/dashboard/Check360Widget'
 import WelcomeGuide from '@/components/dashboard/WelcomeGuide'
+import { GettingStartedChecklist } from '@/components/dashboard/GettingStartedChecklist'
 
 // ── TYPES & HELPERS ──────────────────────────────────────────────────────────
 
@@ -180,6 +181,8 @@ export default async function DashboardPage() {
 
   const safeProductCount = productCount ?? 0
 
+  // --- Check si le vendeur est nouveau ---
+  const isNewVendor = safeProductCount === 0 || countToday === 0
 
   return (
     <main className="min-h-screen bg-[#FAFAF7] font-sans pb-20">
@@ -199,7 +202,7 @@ export default async function DashboardPage() {
           
           {/* Alerte Contrat */}
           {!storeRaw.contract_accepted && (
-            <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm">
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm mt-4 md:mt-0">
               <span className="text-xl">⚠️</span>
               <div>
                 <p className="text-sm font-bold">Vos ventes sont désactivées</p>
@@ -213,6 +216,14 @@ export default async function DashboardPage() {
       </header>
 
       <div className="max-w-7xl mx-auto p-6 lg:p-10 space-y-8">
+
+        {isNewVendor && (
+          <GettingStartedChecklist 
+            hasProducts={safeProductCount > 0} 
+            isPersonalized={!!storeRaw.logo_url} 
+            storeSlug={storeSlug} 
+          />
+        )}
 
         {/* ── SECTION 2 : 4 KPI CARDS ──────────────────────────────────────── */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">

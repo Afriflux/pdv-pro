@@ -151,7 +151,7 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
                   className="w-full px-4 py-3.5 rounded-xl bg-cream border border-line text-ink placeholder:text-dust focus:outline-none focus:border-emerald focus:ring-2 focus:ring-emerald/15 transition-all text-sm"
                 />
                 <div className="flex justify-end mt-2">
-                  <a href="#" className="flex-none text-xs text-dust hover:text-emerald transition-colors font-medium">Mot de passe oublié ?</a>
+                  <Link href="/auth/reset-password" className="flex-none text-xs text-dust hover:text-emerald transition-colors font-medium">Mot de passe oublié ?</Link>
                 </div>
               </div>
 
