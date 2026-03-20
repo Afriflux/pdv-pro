@@ -88,6 +88,7 @@ const NAV: NavSection[] = [
     title: 'COMMUNAUTÉS',
     items: [
       { name: 'Communauté', href: '/dashboard/communautes', icon: MessageSquare },
+      { name: 'Questions clients', href: '/dashboard/questions', icon: MessageSquare },
     ]
   },
   {

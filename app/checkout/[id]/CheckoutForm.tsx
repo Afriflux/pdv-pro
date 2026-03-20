@@ -74,6 +74,7 @@ export function CheckoutForm({
 
   // ── États formulaire ──────────────────────────────────────────
   const [name, setName]           = useState('')
+  const [email, setEmail]         = useState('')
   const [phone, setPhone]         = useState('')
   const [address, setAddress]     = useState('')
   const [locating, setLocating]   = useState(false)
@@ -248,6 +249,7 @@ export function CheckoutForm({
         variant_id:       selectedVariant,
         quantity,
         buyer_name:       name.trim(),
+        buyer_email:      email.trim() || undefined,
         buyer_phone:      phone.trim(),
         delivery_address: address.trim() || null,
         delivery_zone_id: selectedZoneId || null,
@@ -562,6 +564,18 @@ export function CheckoutForm({
               />
             </div>
           )}
+
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Adresse email (pour le reçu et suivi)
+            </label>
+            <input
+              type="email" value={email} onChange={e => setEmail(e.target.value)}
+              placeholder="Ex: votre@email.com"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition"
+              style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+            />
+          </div>
 
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">

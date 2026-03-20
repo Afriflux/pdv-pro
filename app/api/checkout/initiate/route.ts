@@ -6,6 +6,7 @@ import {
   canAcceptCOD,
 } from '@/lib/commission/commission-service'
 import { notifyNewOrder } from '@/lib/notifications/createNotification'
+import { sendTransactionalEmail } from '@/lib/brevo/brevo-service'
 
 function roundTo5(amount: number): number {
   return Math.ceil(amount / 5) * 5
@@ -70,7 +71,7 @@ export async function POST(req: NextRequest) {
 
     const {
       product_id, store_id, variant_id, quantity = 1,
-      buyer_name, buyer_phone, delivery_address, delivery_zone_id,
+      buyer_name, buyer_email, buyer_phone, delivery_address, delivery_zone_id,
       payment_method, applied_promo_id,
       booking_date, booking_start_time, booking_end_time
     } = body
@@ -203,7 +204,7 @@ export async function POST(req: NextRequest) {
         prisma.order.create({
           data: {
             product_id, store_id, variant_id: variant_id ?? null, quantity,
-            buyer_name, buyer_phone, delivery_address: delivery_address ?? null,
+            buyer_name, buyer_email: buyer_email?.trim() || null, buyer_phone, delivery_address: delivery_address ?? null,
             delivery_zone_id: delivery_zone_id ?? null, delivery_fee: deliveryFee,
             payment_method, subtotal: grossSubtotal, promo_discount: promoDiscountAmount,
             platform_fee: finalPlatformFee, delivery_commission: finalDeliveryCommission,
@@ -241,6 +242,43 @@ export async function POST(req: NextRequest) {
 
     if (applied_promo_id) {
       await supabase.rpc('increment_promo_uses', { p_promo_id: applied_promo_id, delta: 1 })
+    }
+
+    // ── 5.5. ENVOI DE L'EMAIL DE CONFIRMATION ────────────────────
+    if (buyer_email && buyer_email.trim()) {
+      const storeRecordData = await prisma.store.findUnique({ where: { id: store_id }, select: { name: true, whatsapp: true } })
+      const trackingUrl = `${req.nextUrl.protocol}//${req.nextUrl.host}/track?ref=${orderRecord.id}`
+      const whatsappContact = storeRecordData?.whatsapp ? `https://wa.me/${storeRecordData.whatsapp}` : ''
+      
+      // On n'attend pas la fin de l'envoi pour ne pas ralentir le checkout
+      sendTransactionalEmail({
+        to: [{ email: buyer_email.trim(), name: buyer_name }],
+        subject: `Votre commande #${orderRecord.id.split('-')[0].toUpperCase()} sur ${storeRecordData?.name || 'PDV Pro'} est confirmée !`,
+        htmlContent: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2>Merci pour votre commande ! 🎉</h2>
+            <p>Bonjour ${buyer_name}, votre commande <strong>#${orderRecord.id.split('-')[0].toUpperCase()}</strong> a bien été enregistrée.</p>
+            
+            <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
+              <h3 style="margin-top: 0;">Résumé de votre commande</h3>
+              <p><strong>Produit :</strong> ${product.name}</p>
+              <p><strong>Quantité :</strong> ${quantity}</p>
+              ${delivery_address ? `<p><strong>Adresse de livraison :</strong> ${delivery_address}</p>` : ''}
+              <p><strong>Total :</strong> ${total.toLocaleString('fr-FR')} FCFA</p>
+            </div>
+
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="${trackingUrl}" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Suivre ma commande en temps réel</a>
+            </p>
+
+            ${whatsappContact ? `
+            <p style="text-align: center;">
+              <a href="${whatsappContact}" style="color: #25D366; text-decoration: none; font-weight: bold;">Contacter le vendeur sur WhatsApp</a>
+            </p>
+            ` : ''}
+          </div>
+        `
+      }).catch(err => console.error('[Brevo Confirmation Email Error]', err))
     }
 
     // ── 6. REPONSE FINALE ─────────────────────────────────────────

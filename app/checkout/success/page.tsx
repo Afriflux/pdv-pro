@@ -136,7 +136,10 @@ async function SuccessContent({
         
         {/* CTAs */}
         <div className="space-y-3">
-          <Link href={`/${(store as any)?.slug || ''}`} className="block w-full text-white py-3 rounded-xl font-medium text-center transition shadow-lg" style={{ backgroundColor: accent }}>
+          <Link href={`/track?ref=${orderId}`} className="block w-full bg-slate-900 text-white py-3 rounded-xl font-medium text-center hover:bg-black transition shadow-lg">
+            Suivre ma commande
+          </Link>
+          <Link href={`/${(store as any)?.slug || ''}`} className="block w-full text-slate border border-line py-3 rounded-xl font-medium text-center hover:bg-gray-50 transition">
             Retour à l'espace de vente
           </Link>
           {(store as any)?.whatsapp && (
