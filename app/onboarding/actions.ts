@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { sendWelcomeEmail } from '@/lib/brevo/brevo-service'
-import { randomUUID } from 'crypto'
 
 export async function checkStoreName(name: string): Promise<{ exists: boolean }> {
   const supabase = await createClient()
@@ -15,25 +14,29 @@ export async function saveStoreInfo(payload: any) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { success: false, error: 'Unauthorized' }
   
-  const { data: existingStore } = await supabase.from('Store').select('id').eq('user_id', user.id).maybeSingle()
+  const { data: existingStore } = await supabase.from('Store').select('id').eq('user_id', user.id).limit(1).maybeSingle()
   
   if (existingStore) {
     const { error } = await supabase.from('Store').update(payload).eq('id', existingStore.id)
     if (error) return { success: false, error: error.message }
   } else {
-    const storeId = randomUUID()
-    const name = payload.name || `Boutique de ${user.id.slice(0, 4)}`
-    const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '-') + '-' + storeId.slice(0, 4)
-    
-    const { error } = await supabase.from('Store').insert({
-      id: storeId,
-      user_id: user.id,
-      name,
-      slug,
-      onboarding_completed: false,
-      ...payload
-    })
-    if (error) return { success: false, error: error.message }
+    try {
+      const storeId = crypto.randomUUID()
+      const name = payload.name || `Boutique de ${user.id.slice(0, 4)}`
+      const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '-') + '-' + storeId.slice(0, 4)
+      
+      const { error } = await supabase.from('Store').insert({
+        id: storeId,
+        user_id: user.id,
+        name,
+        slug,
+        onboarding_completed: false,
+        ...payload
+      })
+      if (error) return { success: false, error: error.message }
+    } catch (e: any) {
+      return { success: false, error: e.message }
+    }
   }
   
   return { success: true }
@@ -44,7 +47,7 @@ export async function savePaymentMethod(method: string, details: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { success: false, error: 'Unauthorized' }
   
-  const { data: store } = await supabase.from('Store').select('id').eq('user_id', user.id).single()
+  const { data: store } = await supabase.from('Store').select('id').eq('user_id', user.id).limit(1).single()
   if (!store) return { success: false, error: 'Boutique introuvable' }
   
   const { error } = await supabase.from('Wallet').upsert({

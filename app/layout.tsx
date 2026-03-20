@@ -48,6 +48,8 @@ export const metadata: Metadata = {
   }
 }
 
+import FooterWrapper from '@/components/FooterWrapper'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -57,6 +59,7 @@ export default function RootLayout({
     <html lang="fr" className={`${cormorant.variable} ${dm.variable} ${mono.variable}`}>
       <body className={`antialiased font-body bg-cream text-ink selection:bg-gold/30 selection:text-ink`}>
         {children}
+        <FooterWrapper />
       </body>
     </html>
   );

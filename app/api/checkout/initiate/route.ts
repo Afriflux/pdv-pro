@@ -7,6 +7,7 @@ import {
 } from '@/lib/commission/commission-service'
 import { notifyNewOrder } from '@/lib/notifications/createNotification'
 import { sendTransactionalEmail } from '@/lib/brevo/brevo-service'
+import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
 
 function roundTo5(amount: number): number {
   return Math.ceil(amount / 5) * 5
@@ -279,6 +280,36 @@ export async function POST(req: NextRequest) {
           </div>
         `
       }).catch(err => console.error('[Brevo Confirmation Email Error]', err))
+    }
+
+    // ── 5.6. NOTIFICATION EMAIL + WHATSAPP AU VENDEUR ──────────────
+    const storeRecordData = await prisma.store.findUnique({ 
+      where: { id: store_id }, 
+      select: { name: true, whatsapp: true, user: { select: { email: true, phone: true } } } 
+    })
+    
+    if (storeRecordData?.user?.email) {
+      sendTransactionalEmail({
+        to: [{ email: storeRecordData.user.email }],
+        subject: "Nouvelle commande reçue sur votre boutique !",
+        htmlContent: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2>Nouvelle commande reçue ! 🎉</h2>
+            <p>Félicitations, vous avez reçu une nouvelle commande de <strong>${total.toLocaleString('fr-FR')} FCFA</strong> pour le produit <strong>${product.name}</strong>.</p>
+            <p><strong>Acheteur :</strong> ${buyer_name} ${buyer_phone}</p>
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="${req.nextUrl.protocol}//${req.nextUrl.host}/dashboard/orders" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Traiter la commande</a>
+            </p>
+          </div>
+        `
+      }).catch(err => console.error('[Brevo Vendeur Email Error]', err))
+    }
+
+    if (storeRecordData?.user?.phone) {
+      sendWhatsApp({ 
+        to: storeRecordData.user.phone, 
+        body: `Vous avez reçu une nouvelle commande de ${total} FCFA pour ${product.name}. Connectez-vous pour la traiter.` 
+      }).catch(err => console.error('[WhatsApp Vendeur Error]', err))
     }
 
     // ── 6. REPONSE FINALE ─────────────────────────────────────────

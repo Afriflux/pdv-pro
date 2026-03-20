@@ -19,8 +19,9 @@ export const metadata: Metadata = {
   }
 }
 
-export default async function MarketplacePage() {
+export default async function MarketplacePage({ searchParams }: { searchParams: { sort?: string } }) {
   const supabase = await createClient()
+  const sort = searchParams.sort || 'best'
 
   // On récupère les boutiques avec leurs scores et leurs infos de base.
   const { data: storesData } = await supabase
@@ -53,7 +54,11 @@ export default async function MarketplacePage() {
       productCount: s.products?.length || 0,
       joinedAt: new Date(s.created_at)
     }
-  }).filter(Boolean) as any[] // eslint-disable-line @typescript-eslint/no-explicit-any
+  }).filter(Boolean) as any[]
+
+  if (sort === 'best') validatedStores.sort((a, b) => b.score - a.score)
+  else if (sort === 'products') validatedStores.sort((a, b) => b.productCount - a.productCount)
+  else if (sort === 'newest') validatedStores.sort((a, b) => b.joinedAt.getTime() - a.joinedAt.getTime())
 
   return (
     <div className="bg-gray-50 min-h-screen text-gray-900 font-sans selection:bg-orange-500 selection:text-white">
@@ -121,9 +126,19 @@ export default async function MarketplacePage() {
 
       {/* ── GRID BOUTIQUES ── */}
       <section className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex items-center gap-2 font-display font-black text-xl text-ink mb-8 border-b border-line pb-4">
-          <Compass className="text-emerald" />
-          Découvrir les espaces
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-line pb-4 mb-8 gap-4">
+          <div className="flex items-center gap-2 font-display font-black text-xl text-ink">
+            <Compass className="text-emerald" />
+            Découvrir les espaces
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-dust font-medium">Trier par :</span>
+            <div className="flex bg-pearl p-1 rounded-xl">
+              <Link href="?sort=best" className={`px-4 py-1.5 rounded-lg font-bold text-xs transition-colors ${sort === 'best' ? 'bg-white text-emerald shadow-sm' : 'text-slate hover:text-ink'}`}>Mieux notés</Link>
+              <Link href="?sort=products" className={`px-4 py-1.5 rounded-lg font-bold text-xs transition-colors ${sort === 'products' ? 'bg-white text-emerald shadow-sm' : 'text-slate hover:text-ink'}`}>Plus de produits</Link>
+              <Link href="?sort=newest" className={`px-4 py-1.5 rounded-lg font-bold text-xs transition-colors ${sort === 'newest' ? 'bg-white text-emerald shadow-sm' : 'text-slate hover:text-ink'}`}>Plus récents</Link>
+            </div>
+          </div>
         </div>
 
         {validatedStores.length === 0 ? (
@@ -163,7 +178,10 @@ export default async function MarketplacePage() {
                   </div>
                   
                   <div className="text-center mb-4">
-                    <h3 className="font-display font-black text-ink text-lg group-hover:text-emerald transition truncate">{s.name}</h3>
+                    <h3 className="font-display font-black text-ink text-lg group-hover:text-emerald transition truncate flex items-center justify-center gap-1">
+                      {s.name}
+                      {s.score >= 50 && <span title="Vendeur Vérifié" className="flex items-center"><Award size={14} className="text-blue-500 shrink-0" /></span>}
+                    </h3>
                     <div className="flex flex-col gap-0.5">
                       <p className="text-gold text-[10px] font-mono font-black uppercase tracking-wider">{s.category}</p>
                       <p className="text-slate text-[10px] font-mono">pdvpro.com/p/{s.slug}</p>
@@ -191,6 +209,14 @@ export default async function MarketplacePage() {
             ))}
           </div>
         )}
+
+        <div className="mt-20 bg-emerald/10 border border-emerald/20 rounded-3xl p-10 text-center">
+          <h2 className="text-2xl font-display font-black text-ink mb-3">Vous êtes vendeur ?</h2>
+          <p className="text-slate max-w-md mx-auto mb-6">Rejoignez PDV Pro gratuitement et commencez à vendre vos produits et services en moins de 5 minutes.</p>
+          <Link href="/register" className="inline-block bg-emerald text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-emerald/20 hover:bg-emerald-rich hover:-translate-y-1 transition-all">
+            Créer ma boutique maintenant
+          </Link>
+        </div>
       </section>
 
       {/* FOOTER */}

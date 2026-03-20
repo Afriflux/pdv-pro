@@ -1,0 +1,60 @@
+import Link from 'next/link'
+import { Instagram, Send, Facebook } from 'lucide-react'
+
+export default function Footer() {
+  return (
+    <footer className="bg-gray-900 text-white pt-16 pb-8 border-t border-gray-800">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        {/* Colonne 1 : Brand */}
+        <div className="space-y-4">
+          <Link href="/" className="inline-block">
+             <span className="text-2xl font-black tracking-tighter text-white">PDV<span className="text-emerald">Pro</span></span>
+          </Link>
+          <p className="text-gray-400 text-sm leading-relaxed">
+            La plateforme e-commerce #1 en Afrique de l'Ouest. Créez votre boutique gratuitement et vendez sans limite.
+          </p>
+        </div>
+
+        {/* Colonne 2 : Plateforme */}
+        <div>
+          <h4 className="font-bold text-lg mb-4">Plateforme</h4>
+          <ul className="space-y-3 text-sm text-gray-400">
+            <li><Link href="/" className="hover:text-white transition-colors">Accueil</Link></li>
+            <li><Link href="/vendeurs" className="hover:text-white transition-colors">Vendeurs</Link></li>
+            <li><Link href="/#pricing" className="hover:text-white transition-colors">Tarifs</Link></li>
+            <li><Link href="/register" className="hover:text-white transition-colors">S'inscrire</Link></li>
+          </ul>
+        </div>
+
+        {/* Colonne 3 : Ressources */}
+        <div>
+          <h4 className="font-bold text-lg mb-4">Ressources</h4>
+          <ul className="space-y-3 text-sm text-gray-400">
+            <li><Link href="/terms" className="hover:text-white transition-colors">Conditions d'utilisation</Link></li>
+            <li><Link href="/privacy" className="hover:text-white transition-colors">Politique de confidentialité</Link></li>
+            <li><Link href="/legal" className="hover:text-white transition-colors">Mentions légales</Link></li>
+          </ul>
+        </div>
+
+        {/* Colonne 4 : Contact */}
+        <div>
+          <h4 className="font-bold text-lg mb-4">Contact</h4>
+          <ul className="space-y-3 text-sm text-gray-400 mb-6">
+            <li><a href="mailto:support@pdvpro.com" className="hover:text-white transition-colors">support@pdvpro.com</a></li>
+            <li><a href="https://wa.me/221770000000" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-2">WhatsApp Support</a></li>
+          </ul>
+          <div className="flex items-center gap-4">
+            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Instagram size={18} /></a>
+            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Send size={18} /></a>
+            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Facebook size={18} /></a>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
+        <p>© 2026 PDV Pro — Tous droits réservés.</p>
+        <p className="mt-2 md:mt-0">Fait avec ❤️ au Sénégal</p>
+      </div>
+    </footer>
+  )
+}

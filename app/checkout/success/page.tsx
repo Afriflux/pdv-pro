@@ -24,7 +24,7 @@ async function SuccessContent({
   const { data: order } = await supabase
     .from('Order')
     .select(`
-      id, buyer_name, total, payment_method, status, product_id,
+      id, buyer_name, buyer_phone, total, payment_method, status, product_id,
       product:Product(name, type, images),
       store:Store(name, primary_color, slug, whatsapp, closing_enabled)
     `)
@@ -143,6 +143,22 @@ async function SuccessContent({
           <Link href={`/${(store as any)?.slug || ''}`} className="block w-full text-slate border border-line py-3 rounded-xl font-medium text-center hover:bg-gray-50 transition">
             Retour à l'espace de vente
           </Link>
+          
+          {/* Micro-affiliation */}
+          <div className="mt-8 bg-emerald/5 border border-emerald/20 rounded-xl p-5 text-left text-sm">
+            <h3 className="font-bold text-ink mb-1 flex items-center gap-2">
+              <Share2 className="text-emerald" size={18} />
+              Gagnez de l'argent en partageant !
+            </h3>
+            <p className="text-slate mb-4 leading-snug">Partagez ce lien avec vos amis. Pour chaque achat via votre lien, vous gagnez une commission.</p>
+            <div className="flex gap-2">
+              <input type="text" readOnly value={`https://pdvpro.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} className="flex-1 text-xs px-3 py-2 bg-white border border-line rounded-lg text-dust outline-none truncate" />
+              <a href={`https://wa.me/?text=Découvre %20${encodeURIComponent(product?.name || '')}%20sur%20PDV%20Pro:%20https://pdvpro.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-[#25D366] text-white rounded-lg flex items-center justify-center hover:bg-[#20b858] transition">
+                <Share2 size={16} />
+              </a>
+            </div>
+          </div>
+          
           {(store as any)?.whatsapp && (
              <a href={`https://wa.me/${(store as any).whatsapp}?text=Bonjour, concernant ma commande ${formattedOrderId}...`} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#25D366] text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-[#20b858] transition shadow-lg mb-8">
                <MessageCircle size={18} />
