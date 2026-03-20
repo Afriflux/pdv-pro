@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import AIProductGenerator from '@/components/dashboard/AIProductGenerator'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react'
 
 // ----------------------------------------------------------------
 // Types
@@ -64,6 +64,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   
   // IA
   const [showAI, setShowAI]     = useState(false)
+  const [showAdvanced, setShowAdvanced] = useState(false)
 
   // Ref fichier digital
   const digitalFileRef = useRef<HTMLInputElement>(null)
@@ -426,7 +427,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           <textarea
             value={description}
             onChange={e => setDescription(e.target.value)}
-            placeholder="Décrivez votre produit..."
+            placeholder="Décrivez votre produit en quelques lignes. Qu'est-ce qui le rend unique ? Pourquoi vos clients vont l'adorer ?"
             rows={4}
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition resize-none"
           />
@@ -589,80 +590,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <label className="block text-sm font-medium text-gray-700">Type de licence</label>
-              <div className="grid grid-cols-3 gap-2">
-                {([
-                  { v: 'personal', label: '🔒 Perso' },
-                  { v: 'resell',   label: '📤 Resell' },
-                  { v: 'mrr',      label: '💼 MRR' },
-                  { v: 'plr',      label: '✏️ PLR' },
-                  { v: 'whitelabel', label: '🏢 White' },
-                ] as const).map(opt => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => setLicenseType(opt.v)}
-                    className={`py-2 px-1 rounded-lg border text-[11px] font-bold transition ${
-                      licenseType === opt.v ? 'border-gold bg-gold/10 text-gold' : 'border-gray-100 bg-white text-gray-400'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Notes de licence</label>
-              <textarea
-                value={licenseNotes}
-                onChange={e => setLicenseNotes(e.target.value)}
-                placeholder="Conditions spécifiques de la licence..."
-                rows={2}
-                className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-xs transition resize-none"
-              />
-            </div>
-          </div>
-
-          {/* ── DROIT DE REVENTE ── */}
-          <div className="pt-4 border-t border-gray-100 space-y-4">
-            <h3 className="text-sm font-semibold text-ink">🔄 Droit de revente</h3>
-            <p className="text-xs text-gray-400">Uniquement pour les produits digitaux. Permet à l&apos;acheteur de revendre ce produit.</p>
-
-            {/* Toggle resale_allowed */}
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <div>
-                <p className="text-sm font-medium text-ink">Autoriser la revente</p>
-                <p className="text-[10px] text-gray-400">L&apos;acheteur peut revendre ce produit à ses propres clients.</p>
-              </div>
-              <div
-                onClick={() => setResaleAllowed(v => !v)}
-                className={`w-10 h-6 rounded-full transition-all cursor-pointer relative ${resaleAllowed ? 'bg-[#0F7A60]' : 'bg-gray-200'}`}
-              >
-                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${resaleAllowed ? 'left-5' : 'left-1'}`} />
-              </div>
-            </div>
-
-            {/* Commission au créateur */}
-            {resaleAllowed && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Commission créateur sur revente (%)
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  max={30}
-                  step={0.5}
-                  value={resaleCommission}
-                  onChange={e => setResaleCommission(e.target.value)}
-                  placeholder="Ex : 10"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
-                />
-                <p className="text-[10px] text-gray-400 mt-1">% reversé au créateur à chaque revente par l&apos;acheteur (max 30%).</p>
-              </div>
-            )}
           </div>
         </section>
       )}
@@ -812,117 +740,206 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
         />
       </section>
 
-      {/* ── VARIÉTÉS ── */}
-      <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-ink">Variétés</h2>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <div
-              onClick={() => setHasVariants(v => !v)}
-              className={`w-10 h-6 rounded-full transition-colors ${hasVariants ? 'bg-gold' : 'bg-gray-200'} relative`}
-            >
-              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${hasVariants ? 'left-5' : 'left-1'}`} />
-            </div>
-            <span className="text-sm text-gray-500">{hasVariants ? 'Activées' : 'Désactivées'}</span>
-          </label>
-        </div>
+      {/* ── OPTIONS AVANCÉES ── */}
+      <section className="bg-white rounded-2xl shadow-sm overflow-visible">
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="w-full p-5 flex items-center justify-between font-semibold text-ink hover:bg-gray-50 transition-colors"
+        >
+          <span>⚙️ Options avancées</span>
+          {showAdvanced ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+        </button>
+        
+        {showAdvanced && (
+          <div className="p-5 border-t border-gray-100 space-y-8">
+            
+            {/* DIGITAL OPTIONS */}
+            {type === 'digital' && (
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <label className="block text-sm font-medium text-gray-700">Type de licence</label>
+                    <div className="group relative">
+                      <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                        Définissez comment vos clients peuvent utiliser votre produit digital
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      { v: 'personal', label: '🔒 Perso' },
+                      { v: 'resell',   label: '📤 Resell' },
+                      { v: 'mrr',      label: '💼 MRR' },
+                      { v: 'plr',      label: '✏️ PLR' },
+                      { v: 'whitelabel', label: '🏢 White' },
+                    ] as const).map(opt => (
+                      <button
+                        key={opt.v}
+                        type="button"
+                        onClick={() => setLicenseType(opt.v)}
+                        className={`py-2 px-1 rounded-lg border text-[11px] font-bold transition ${
+                          licenseType === opt.v ? 'border-gold bg-gold/10 text-gold' : 'border-gray-100 bg-white text-gray-400 hover:bg-gray-50'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notes de licence</label>
+                    <textarea
+                      value={licenseNotes}
+                      onChange={e => setLicenseNotes(e.target.value)}
+                      placeholder="Conditions spécifiques de la licence..."
+                      rows={2}
+                      className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-xs transition resize-none"
+                    />
+                  </div>
+                </div>
 
-        {hasVariants && (
-          <div className="space-y-4">
-            <p className="text-xs text-gray-400">
-              Ex: Taille S/M/L ou Couleur Rouge/Bleu — max 2 dimensions par variété.
-            </p>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-sm font-semibold text-ink">🔄 Droit de revente</h3>
+                    <div className="group relative">
+                      <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                        Permettez à vos clients de revendre votre produit et gagnez une commission
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                    <div>
+                      <p className="text-sm font-medium text-ink">Autoriser la revente</p>
+                      <p className="text-[10px] text-gray-400">L&apos;acheteur peut revendre ce produit à ses propres clients.</p>
+                    </div>
+                    <div
+                      onClick={() => setResaleAllowed(v => !v)}
+                      className={`w-10 h-6 rounded-full transition-all cursor-pointer relative ${resaleAllowed ? 'bg-[#0F7A60]' : 'bg-gray-200'}`}
+                    >
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${resaleAllowed ? 'left-5' : 'left-1'}`} />
+                    </div>
+                  </div>
+                  {resaleAllowed && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Commission créateur sur revente (%)
+                      </label>
+                      <input
+                        type="number" min={0} max={30} step={0.5}
+                        value={resaleCommission} onChange={e => setResaleCommission(e.target.value)}
+                        placeholder="Ex : 10"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                      />
+                      <p className="text-[10px] text-gray-400 mt-1">% reversé au créateur à chaque revente (max 30%).</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
-            {variants.map((variant, i) => (
-              <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3 bg-cream">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">Variété {i + 1}</span>
-                  {variants.length > 1 && (
+            {/* VARIETIES */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-ink">Variétés</h3>
+                  <div className="group relative">
+                    <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                    <div className="absolute bottom-full left-0 mb-2 w-48 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                      Ajoutez des options comme taille, couleur, etc.
+                    </div>
+                  </div>
+                </div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <div
+                    onClick={() => setHasVariants(v => !v)}
+                    className={`w-10 h-6 rounded-full transition-colors ${hasVariants ? 'bg-gold' : 'bg-gray-200'} relative`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${hasVariants ? 'left-5' : 'left-1'}`} />
+                  </div>
+                  <span className="text-sm text-gray-500">{hasVariants ? 'Activées' : 'Désactivées'}</span>
+                </label>
+              </div>
+
+              {hasVariants && (
+                <div className="space-y-4 pt-2">
+                  <p className="text-xs text-gray-400">
+                    Ex: Taille S/M/L ou Couleur Rouge/Bleu — max 2 dimensions par variété.
+                  </p>
+
+                  {variants.map((variant, i) => (
+                    <div key={i} className="border border-gray-100 rounded-xl p-4 space-y-3 bg-cream">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Variété {i + 1}</span>
+                        {variants.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeVariant(i)}
+                            className="text-red-400 hover:text-red-600 text-xs font-bold"
+                          >
+                            Supprimer
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="text" value={variant.dimension_1} onChange={e => updateVariant(i, 'dimension_1', e.target.value)}
+                          placeholder="Dimension (ex: Taille)"
+                          className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
+                        />
+                        <input
+                          type="text" value={variant.value_1} onChange={e => updateVariant(i, 'value_1', e.target.value)}
+                          placeholder="Valeur (ex: L)"
+                          className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="text" value={variant.dimension_2} onChange={e => updateVariant(i, 'dimension_2', e.target.value)}
+                          placeholder="Dimension 2 (optionnel)"
+                          className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
+                        />
+                        <input
+                          type="text" value={variant.value_2} onChange={e => updateVariant(i, 'value_2', e.target.value)}
+                          placeholder="Valeur 2 (optionnel)"
+                          className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-400 mb-1 block">Stock</label>
+                          <input
+                            aria-label="Stock" type="number" value={variant.stock} onChange={e => updateVariant(i, 'stock', e.target.value)} min="0"
+                            className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-400 mb-1 block">± Prix (FCFA)</label>
+                          <input
+                            aria-label="Ajustement de prix" type="number" value={variant.price_adjust} onChange={e => updateVariant(i, 'price_adjust', e.target.value)} placeholder="0"
+                            className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {variants.length < 50 && (
                     <button
                       type="button"
-                      onClick={() => removeVariant(i)}
-                      className="text-red-400 hover:text-red-600 text-xs"
+                      onClick={addVariant}
+                      className="w-full border border-dashed border-gray-200 rounded-xl py-3 text-sm text-gray-400 hover:border-gold/40 hover:text-gold transition"
                     >
-                      Supprimer
+                      + Ajouter une variété
                     </button>
                   )}
                 </div>
+              )}
+            </div>
 
-                {/* Dimension 1 */}
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    value={variant.dimension_1}
-                    onChange={e => updateVariant(i, 'dimension_1', e.target.value)}
-                    placeholder="Dimension (ex: Taille)"
-                    className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
-                  />
-                  <input
-                    type="text"
-                    value={variant.value_1}
-                    onChange={e => updateVariant(i, 'value_1', e.target.value)}
-                    placeholder="Valeur (ex: L)"
-                    className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
-                  />
-                </div>
-
-                {/* Dimension 2 */}
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    value={variant.dimension_2}
-                    onChange={e => updateVariant(i, 'dimension_2', e.target.value)}
-                    placeholder="Dimension 2 (optionnel)"
-                    className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
-                  />
-                  <input
-                    type="text"
-                    value={variant.value_2}
-                    onChange={e => updateVariant(i, 'value_2', e.target.value)}
-                    placeholder="Valeur 2 (optionnel)"
-                    className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
-                  />
-                </div>
-
-                {/* Stock + ajustement prix */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="text-xs text-gray-400 mb-1 block">Stock</label>
-                    <input
-                      aria-label="Stock"
-                      title="Stock"
-                      type="number"
-                      value={variant.stock}
-                      onChange={e => updateVariant(i, 'stock', e.target.value)}
-                      min="0"
-                      className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-400 mb-1 block">± Prix (FCFA)</label>
-                    <input
-                      aria-label="Ajustement de prix"
-                      title="Ajustement de prix"
-                      type="number"
-                      value={variant.price_adjust}
-                      onChange={e => updateVariant(i, 'price_adjust', e.target.value)}
-                      placeholder="0"
-                      className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {variants.length < 50 && (
-              <button
-                type="button"
-                onClick={addVariant}
-                className="w-full border border-dashed border-gray-200 rounded-xl py-3 text-sm text-gray-400 hover:border-gold/40 hover:text-gold transition"
-              >
-                + Ajouter une variété
-              </button>
-            )}
           </div>
         )}
       </section>

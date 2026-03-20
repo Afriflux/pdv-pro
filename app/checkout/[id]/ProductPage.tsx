@@ -519,7 +519,7 @@ export default function ProductPage({
             )}
 
             {/* ── Badges de confiance (améliorés) ─────────────────────── */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               <div className="flex flex-col items-center justify-center gap-1.5 bg-white rounded-xl p-3 border border-gray-100 text-center shadow-sm">
                 <Lock className="w-5 h-5 text-gray-400" />
                 <span className="text-[10px] font-bold text-gray-500 leading-tight">Paiement sécurisé</span>

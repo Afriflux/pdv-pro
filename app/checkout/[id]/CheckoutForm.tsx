@@ -3,6 +3,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Mail } from 'lucide-react'
 import { PromotionData } from '@/lib/promotions/promotionType'
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector'
 
@@ -567,14 +568,17 @@ export function CheckoutForm({
 
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">
-              Adresse email (pour le reçu et suivi)
+              Adresse email <span className="text-red-500">*</span>
             </label>
-            <input
-              type="email" value={email} onChange={e => setEmail(e.target.value)}
-              placeholder="Ex: votre@email.com"
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition"
-              style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
-            />
+            <div className="relative">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <input
+                type="email" value={email} onChange={e => setEmail(e.target.value)} required
+                placeholder="votre@email.com (pour recevoir le reçu)"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition"
+                style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+              />
+            </div>
           </div>
 
           <div>
@@ -703,12 +707,14 @@ export function CheckoutForm({
         )}
 
         {/* Récapitulatif */}
-        <section className="bg-white rounded-2xl shadow-sm p-4 space-y-2 border border-gray-100">
+        <section className="bg-gray-50 rounded-2xl shadow-sm p-5 space-y-3 border-2 border-dashed border-gray-200">
+          <h2 className="font-extrabold text-gray-800 text-lg mb-4 text-center">Récapitulatif de votre commande</h2>
+          
           <div className="flex justify-between text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-2">
             <span>Détails</span>
             <span>Prix</span>
           </div>
-          <div className="flex justify-between text-sm text-gray-600">
+          <div className="flex justify-between text-base font-medium text-gray-700">
             <span>{product.name} × {quantity}</span>
             <span>{grossSubtotal.toLocaleString('fr-FR')} F</span>
           </div>
