@@ -30,7 +30,7 @@ export async function PATCH(req: Request) {
     const { data: store, error: storeError } = await supabase
       .from('Store')
       .select('id, name')
-      .eq('vendor_id', user.id)
+      .eq('user_id', user.id)
       .single()
 
     if (storeError || !store) {
