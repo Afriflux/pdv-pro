@@ -9,7 +9,8 @@ import {
   checkStoreName, 
   saveStoreInfo, 
   savePaymentMethod, 
-  completeOnboarding 
+  completeOnboarding,
+  skipOnboarding
 } from './actions'
 import { ArrowRight, Check, UploadCloud, Copy, Store, Pickaxe, CheckCircle2, DollarSign, Wallet } from 'lucide-react'
 
@@ -209,6 +210,19 @@ export default function OnboardingPage() {
 
   const handleBack = () => setStep(s => Math.max(s - 1, 1))
 
+  const handleSkip = async () => {
+    setIsSaving(true)
+    try {
+      const res = await skipOnboarding()
+      if (!res.success) throw new Error(res.error)
+      router.push('/dashboard')
+    } catch (err: any) {
+      console.error("[SKIP ERROR]", err)
+      toast.error(err.message || 'Erreur lors du passage')
+      setIsSaving(false)
+    }
+  }
+
   if (isInitializing) {
     return (
       <div className="min-h-screen bg-cream flex flex-col items-center justify-center">
@@ -252,7 +266,19 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      {/* ── MAIN CARD ── */}
+      {/* ── SKIP BUTTON & MAIN CARD ── */}
+      <div className="w-full max-w-3xl flex justify-end mb-4 pr-2">
+        {step < TOTAL_STEPS && (
+          <button 
+            onClick={handleSkip} 
+            disabled={isSaving} 
+            className="text-dust hover:text-ink text-sm font-bold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+          >
+            Passer pour l'instant <ArrowRight size={14} />
+          </button>
+        )}
+      </div>
+
       <div className="w-full max-w-3xl bg-white rounded-[2rem] shadow-xl border border-line overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
         
         {isSaving && (

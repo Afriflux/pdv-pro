@@ -106,3 +106,56 @@ export async function completeOnboarding(storeName: string) {
   }
   return { success: true }
 }
+
+export async function skipOnboarding() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'Unauthorized' }
+  
+  const now = new Date().toISOString()
+  
+  // 1. Assurer que User existe
+  const authUserPhone = user.phone || user.user_metadata?.phone || null
+  const authUserEmail = user.email || user.user_metadata?.email || null
+  const authUserName = user.user_metadata?.name || user.user_metadata?.full_name || authUserEmail?.split('@')[0] || 'Vendeur'
+  
+  await supabase.from('User').upsert({
+    id: user.id,
+    name: authUserName,
+    email: authUserEmail,
+    phone: authUserPhone,
+    role: 'vendeur',
+    updated_at: now
+  }, { onConflict: 'id' })
+  
+  // 2. Vérifier si Store existe
+  const { data: existingStore } = await supabase.from('Store').select('id').eq('user_id', user.id).limit(1).maybeSingle()
+  
+  if (existingStore) {
+    // Marquer comme complété
+    await supabase.from('Store').update({ onboarding_completed: true }).eq('id', existingStore.id)
+  } else {
+    // Créer store par défaut complété
+    const generateUUID = () => {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    };
+    const storeId = generateUUID();
+    const rHex = storeId.slice(0, 6)
+    const name = `Boutique de ${user.id.slice(0, 4)}`
+    const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + rHex
+    
+    await supabase.from('Store').insert({
+      id: storeId,
+      user_id: user.id,
+      name,
+      slug,
+      onboarding_completed: true,
+      updated_at: now
+    })
+  }
+
+  return { success: true }
+}
