@@ -11,6 +11,7 @@ interface ReviewBody {
   buyer_name: string
   rating:     number
   comment?:   string | null
+  image_url?: string | null
 }
 
 export async function POST(req: Request) {
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
         buyer_name: body.buyer_name.trim(),
         rating:     body.rating,
         comment:    body.comment?.trim() || null,
+        image_url:  body.image_url ?? null,
         verified,
       })
 

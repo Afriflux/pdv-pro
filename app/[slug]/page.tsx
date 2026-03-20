@@ -13,6 +13,7 @@ import { PoweredByBadge } from '@/components/branding/PoweredByBadge'
 import NewsletterWidget from '@/components/brevo/NewsletterWidget'
 import WhatsAppFloat from '@/components/storefront/WhatsAppFloat'
 import StoreSocialLinks from '@/components/storefront/StoreSocialLinks'
+import { ShoppingBag, Star } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,7 +27,7 @@ const getStoreBySlug = cache(async (slug: string) => {
   const { data } = await supabase
     .from('Store')
     .select(`
-      id, name, slug, description, logo_url, banner_url,
+      id, name, slug, description, logo_url, banner_url, created_at,
       primary_color, category, whatsapp, social_links,
       meta_pixel_id, tiktok_pixel_id, google_tag_id,
       is_active, kyc_status, user:User(phone)
@@ -82,8 +83,8 @@ export default async function StorePage({ params }: StorePageProps) {
 
   const supabase = await createClient()
 
-  // 3. Charger produits + pages + promotions en parallèle (P4)
-  const [{ data: products }, { data: pages }, promotions] = await Promise.all([
+  // 3. Charger produits + pages + promotions en parallèle
+  const [{ data: products }, { data: pages }, promotions, { count: salesCount }, { data: reviews }] = await Promise.all([
     supabase
       .from('Product')
       .select('id, name, description, price, images, type, category, cash_on_delivery')
@@ -99,7 +100,21 @@ export default async function StorePage({ params }: StorePageProps) {
       .order('created_at', { ascending: false })
       .limit(12),
     getStorePromotions(store.id),
+    supabase
+      .from('Order')
+      .select('*', { count: 'exact', head: true })
+      .eq('store_id', store.id)
+      .eq('status', 'delivered'),
+    supabase
+      .from('Review')
+      .select('rating')
+      .eq('store_id', store.id)
   ])
+
+  const avgRating = reviews && reviews.length > 0
+    ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length
+    : 0
+  const reviewCount = reviews?.length || 0
 
   const accent = store.primary_color ?? '#0F7A60'
 
@@ -118,88 +133,84 @@ export default async function StorePage({ params }: StorePageProps) {
       />
 
       {/* Header Section */}
-      <div className="relative">
+      <div className="w-full bg-white pb-6 border-b border-gray-150 shadow-sm relative z-10">
         {store.banner_url ? (
-          <div className="relative h-48 md:h-64 w-full overflow-hidden">
+          <div className="w-full h-48 md:h-64 overflow-hidden bg-gray-100 relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={store.banner_url} alt="" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
-            
-            {/* Infos sur bannière */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 max-w-2xl mx-auto flex items-end justify-between gap-4">
-               <div className="flex items-center gap-4">
-                 <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-white shadow-xl flex-shrink-0">
-                  {store.logo_url ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={store.logo_url} alt={store.name} className="w-full h-full object-contain" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-3xl font-black" style={{ color: accent, backgroundColor: '#fff' }}>{store.name[0]}</div>
-                  )}
-                </div>
-                <div className="text-white pb-1">
-                  <h1 className="text-2xl md:text-3xl font-black flex items-center gap-2">
-                    {store.name}
-                    {store.kyc_status === 'verified' && <span title="Vendeur vérifié"><BadgeCheck className="text-blue-400 w-6 h-6 shrink-0" /></span>}
-                  </h1>
-                  {store.category && (
-                    <span className="inline-block mt-1 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold font-mono tracking-widest border border-white/30">
-                      {store.category}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+            <div className="absolute inset-0 bg-black/15" />
           </div>
         ) : (
-          <div className="relative">
-            <div 
-              className="h-44 w-full" 
-              style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}
-            />
-            <div className="absolute top-0 left-0 w-full h-full bg-[url('/noise.png')] opacity-20 pointer-events-none mix-blend-overlay" />
-            
-            <div className="max-w-2xl mx-auto px-4 relative z-10">
-              <div className="flex flex-col items-center text-center -mt-14 space-y-4">
-                <div className="w-28 h-28 rounded-full border-[6px] border-gray-50 shadow-2xl overflow-hidden bg-white flex-shrink-0 group hover:scale-105 transition-transform duration-500">
-                  {store.logo_url ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={store.logo_url} alt={store.name} className="w-full h-full object-contain" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl font-black" style={{ color: accent }}>{store.name[0]}</div>
-                  )}
+          <div 
+            className="w-full h-40 md:h-48"
+            style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}
+          />
+        )}
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
+          <div className="flex flex-col md:flex-row items-center md:items-end gap-5 -mt-16 md:-mt-20">
+            {/* Logo */}
+            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-[6px] border-white overflow-hidden bg-white shadow-lg flex-shrink-0 z-10 transition-transform duration-300 hover:scale-105">
+              {store.logo_url ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={store.logo_url} alt={store.name} className="w-full h-full object-contain" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-5xl font-black" style={{ color: accent, backgroundColor: '#f9f9f9' }}>
+                  {store.name[0]}
                 </div>
-                <div>
-                  <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center justify-center gap-2">
-                    {store.name}
-                    {store.kyc_status === 'verified' && <span title="Vendeur vérifié"><BadgeCheck className="text-blue-500 w-6 h-6 shrink-0" /></span>}
-                  </h1>
-                  {store.category && (
-                    <span className="inline-block mt-3 px-4 py-1.5 bg-gray-200 text-gray-600 rounded-full text-xs font-bold font-mono tracking-widest uppercase">
-                      {store.category}
-                    </span>
-                  )}
+              )}
+            </div>
+
+            {/* Infos (Title, Category, Badges, Stats) */}
+            <div className="flex-1 text-center md:text-left pt-2 pb-1 md:pb-5">
+              <h1 className="text-3xl md:text-4xl font-black text-gray-900 flex flex-col md:flex-row items-center md:justify-start gap-3">
+                {store.name}
+                {store.kyc_status === 'verified' && (
+                  <span title="Vendeur vérifié" className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold uppercase tracking-widest mt-2 md:mt-0 shadow-sm border border-blue-100">
+                    <BadgeCheck className="w-4 h-4 shrink-0" /> Vérifié
+                  </span>
+                )}
+              </h1>
+              
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-3">
+                {store.category && (
+                  <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-md text-sm font-bold border border-gray-200">
+                    {store.category}
+                  </span>
+                )}
+                <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-gray-300" />
+                <div className="flex items-center gap-1.5 text-gray-700 font-bold bg-amber-50 px-3 py-1 rounded-md border border-amber-100">
+                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                  <span>{avgRating > 0 ? avgRating.toFixed(1) : 'Nouveau'}</span>
+                  <span className="text-gray-500 font-medium ml-1">({reviewCount} avis)</span>
                 </div>
+                <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-gray-300" />
+                <div className="text-gray-700 font-bold text-sm bg-gray-50 px-3 py-1 rounded-md border border-gray-200">
+                  {salesCount ?? 0} ventes
+                </div>
+                <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-gray-300" />
+                <div className="text-gray-500 font-medium text-sm">
+                  Depuis {new Date(store.created_at).getFullYear()}
+                </div>
+              </div>
+
+              {/* Description */}
+              {store.description && (
+                <p className="mt-4 text-gray-600 text-sm max-w-2xl text-center md:text-left leading-relaxed font-medium">
+                  {store.description}
+                </p>
+              )}
+
+              {/* Social Links */}
+              <div className="mt-5 flex justify-center md:justify-start">
+                <StoreSocialLinks socialLinks={socialLinks} />
               </div>
             </div>
           </div>
-        )}
-
-        {/* Liens sociaux via le Composant */}
-        <div className="mt-4">
-          <StoreSocialLinks socialLinks={socialLinks} />
         </div>
-
-        {/* Description */}
-        {store.description && (
-          <div className="max-w-xl mx-auto px-6 mt-6">
-            <p className="text-sm md:text-base text-gray-600 leading-relaxed text-center font-medium opacity-90">
-              {store.description}
-            </p>
-          </div>
-        )}
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 pb-12 mt-10 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 pb-12 mt-10 space-y-12">
 
         {/* Pages de vente */}
         {(pages ?? []).length > 0 && (
@@ -283,6 +294,28 @@ export default async function StorePage({ params }: StorePageProps) {
         {/* Widget newsletter */}
         <div className="pt-6 border-t border-gray-200/60 mt-8">
           <NewsletterWidget storeId={store.id} storeName={store.name} />
+        </div>
+
+        {/* Footer CTA Vendeur */}
+        <div className="pt-16 pb-10">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+            <div className="absolute top-0 right-0 -mt-10 -mr-10 xl:mr-10 opacity-10 pointer-events-none">
+              <ShoppingBag className="w-64 h-64 text-white" />
+            </div>
+            <div className="relative z-10 flex-1">
+              <h2 className="text-2xl md:text-3xl font-black text-white mb-4">
+                Vous êtes créateur ou commerçant ?
+              </h2>
+              <p className="text-gray-300 text-sm md:text-base max-w-xl">
+                Rejoignez des centaines d'entrepreneurs et créez votre boutique gratuitement sur PDV Pro en quelques clics, sans compétence technique.
+              </p>
+            </div>
+            <div className="relative z-10 w-full md:w-auto flex-shrink-0">
+              <Link href="/register" className="inline-block w-full text-center bg-white text-gray-900 hover:bg-gray-100 font-black py-4 px-8 rounded-xl transition-all shadow-xl hover:scale-105 active:scale-95">
+                Ouvrir ma boutique gratuite
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Bouton WhatsApp Flottant via Composant */}

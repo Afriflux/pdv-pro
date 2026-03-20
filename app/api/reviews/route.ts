@@ -17,10 +17,10 @@ export async function GET(req: Request) {
 
   let query = supabase
     .from('Review')
-    .select('id, buyer_name, rating, comment, verified, created_at')
+    .select('id, buyer_name, rating, comment, verified, created_at, image_url')
     .eq('store_id', storeId)
     .order('created_at', { ascending: false })
-    .limit(50)
+    .limit(100)
 
   if (productId) {
     query = query.eq('product_id', productId)
