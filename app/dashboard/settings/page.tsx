@@ -18,7 +18,7 @@ export default async function SettingsPage() {
       meta_pixel_id, tiktok_pixel_id, google_tag_id,
       telegram_chat_id, telegram_notifications,
       withdrawal_method, withdrawal_number, withdrawal_name,
-      contract_accepted, contract_accepted_at
+      contract_accepted, contract_accepted_at, vendor_type
     `)
     .eq('user_id', user.id)
     .single()

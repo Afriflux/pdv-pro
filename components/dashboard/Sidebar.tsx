@@ -30,7 +30,9 @@ import {
   Truck,
   MapPin,
   Calendar,
-  PhoneCall
+  PhoneCall,
+  Bot,
+  Send
 } from 'lucide-react'
 import { NotificationBell } from './NotificationBell'
 
@@ -42,6 +44,7 @@ interface NavItem {
   href: string
   icon: LucideIcon
   for?: ('digital' | 'physical' | 'hybrid')[]
+  badge?: string
 }
 
 interface NavSection {
@@ -87,6 +90,7 @@ const NAV: NavSection[] = [
   {
     title: 'COMMUNAUTÉS',
     items: [
+      { name: 'Telegram', href: '/dashboard/telegram', icon: Send, badge: '🔥 NEW' },
       { name: 'Communauté', href: '/dashboard/communautes', icon: MessageSquare },
       { name: 'Questions clients', href: '/dashboard/questions', icon: MessageSquare },
     ]
@@ -125,6 +129,11 @@ function NavLink({ item, active, onClick, collapsed }: { item: NavItem, active: 
       >
         <Icon className={`${collapsed ? 'w-[22px] h-[22px]' : 'w-5 h-5'} flex-shrink-0 transition-transform duration-200`} />
         {!collapsed && <span className="text-sm truncate">{item.name}</span>}
+        {!collapsed && item.badge && (
+          <span className="ml-auto text-[10px] font-bold bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full">
+            {item.badge}
+          </span>
+        )}
       </Link>
       
       {/* Tooltip for collapsed mode */}

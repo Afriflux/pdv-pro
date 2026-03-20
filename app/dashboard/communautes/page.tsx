@@ -46,7 +46,11 @@ export interface CurrentStore {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function CommunautesPage() {
+export default async function CommunautesPage({
+  searchParams,
+}: {
+  searchParams: { tab?: string }
+}) {
   const supabase = await createClient()
 
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -106,6 +110,7 @@ export default async function CommunautesPage() {
       initialPosts={initialPosts}
       initialLeaderboard={initialLeaderboard}
       store={store}
+      initialTab={(searchParams.tab as 'feed' | 'classement' | 'groupes' | 'ressources') || undefined}
     />
   )
 }

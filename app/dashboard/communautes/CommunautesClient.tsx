@@ -20,6 +20,7 @@ interface CommunautesClientProps {
   initialPosts:       PostItem[]
   initialLeaderboard: LeaderboardEntry[]
   store:              CurrentStore
+  initialTab?:        TabId
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -267,12 +268,13 @@ export default function CommunautesClient({
   initialPosts,
   initialLeaderboard,
   store,
+  initialTab,
 }: CommunautesClientProps) {
 
   // ── État global ─────────────────────────────────────────────────────────────
   const [posts,        setPosts]        = useState<PostItem[]>(initialPosts)
   const [leaderboard,  setLeaderboard]  = useState<LeaderboardEntry[]>(initialLeaderboard)
-  const [activeTab,    setActiveTab]    = useState<TabId>('feed')
+  const [activeTab,    setActiveTab]    = useState<TabId>(initialTab || 'feed')
   const [activeFilter, setActiveFilter] = useState<FilterId>('all')
   const [postContent,  setPostContent]  = useState('')
   const [postCategory, setPostCategory] = useState('general')

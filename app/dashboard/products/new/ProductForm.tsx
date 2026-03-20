@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import AIProductGenerator from '@/components/dashboard/AIProductGenerator'
 import { Sparkles, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react'
@@ -92,6 +93,24 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   const [sessionDuration, setSessionDuration] = useState('')
   const [sessionMode,     setSessionMode]     = useState<'online' | 'onsite' | 'both'>('online')
   const [bookingLink,     setBookingLink]     = useState('')
+
+  // ── États Telegram ──
+  const [telegramCommunities, setTelegramCommunities] = useState<any[]>([])
+  const [selectedCommunityId, setSelectedCommunityId] = useState<string>('')
+
+  // Fetch Telegram Communities
+  useEffect(() => {
+    const fetchCommunities = async () => {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('TelegramCommunity')
+        .select('id, chat_title, members_count')
+        .eq('store_id', storeId)
+        .not('chat_id', 'is', null)
+      if (data) setTelegramCommunities(data)
+    }
+    fetchCommunities()
+  }, [storeId])
 
   // ----------------------------------------------------------------
   // Gestion des images
@@ -333,6 +352,14 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
               price_adjust: Number(v.price_adjust) || 0,
             })))
         }
+      }
+
+      // 4. Lier à la communauté Telegram si sélectionnée
+      if (selectedCommunityId) {
+         await supabase
+           .from('TelegramCommunity')
+           .update({ product_id: product.id })
+           .eq('id', selectedCommunityId)
       }
 
       router.push('/dashboard/products')
@@ -754,6 +781,34 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
         {showAdvanced && (
           <div className="p-5 border-t border-gray-100 space-y-8">
             
+            {/* TELEGRAM COMMUNAUTÉS */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-ink flex items-center gap-2">
+                <span className="text-blue-500">✈️</span> Lier à un groupe Telegram privé
+              </h3>
+              <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
+                <label className="block text-sm font-medium text-blue-900 mb-2">Choisir un groupe à lier</label>
+                <select
+                  value={selectedCommunityId}
+                  onChange={(e) => setSelectedCommunityId(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition bg-white"
+                >
+                  <option value="">— Aucun groupe lié —</option>
+                  {telegramCommunities.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.chat_title} ({c.members_count || 0} membres)
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-blue-700/80 mt-3 font-medium">
+                  Les acheteurs seront invités automatiquement après achat.{' '}
+                  <Link href="/dashboard/telegram" className="text-blue-600 hover:underline font-bold" target="_blank">
+                    Gérer vos groupes →
+                  </Link>
+                </p>
+              </div>
+            </div>
+
             {/* DIGITAL OPTIONS */}
             {type === 'digital' && (
               <div className="space-y-6">

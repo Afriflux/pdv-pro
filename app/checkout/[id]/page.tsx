@@ -71,11 +71,18 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
 
   if (!product) notFound()
 
-  // Charger les variantes
   const { data: variants } = await supabase
     .from('ProductVariant')
     .select('id, dimension_1, value_1, dimension_2, value_2, stock, price_adjust')
     .eq('product_id', params.id)
+
+  // Charger la communauté Telegram potentiellement liée
+  const { data: telegramCommunity } = await supabase
+    .from('TelegramCommunity')
+    .select('chat_title, members_count')
+    .eq('product_id', params.id)
+    .eq('is_active', true)
+    .maybeSingle()
 
   const store = (Array.isArray(product.store) ? product.store[0] : product.store) as {
     id: string; name: string; slug: string
@@ -183,6 +190,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         deliveryZones={deliveryZones}
         coachingSlots={coachingSlots}
         similarProducts={similarProducts}
+        telegramCommunity={telegramCommunity}
       />
     </>
   )

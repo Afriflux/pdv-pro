@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import AIProductGenerator from '@/components/dashboard/AIProductGenerator'
 import { Sparkles } from 'lucide-react'
@@ -128,6 +129,28 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
   // ── États Coaching — pré-remplis ──
   const [sessionDuration, setSessionDuration] = useState(product.session_duration ?? '')
   const [sessionMode,     setSessionMode]     = useState<'online' | 'onsite' | 'both'>(product.session_mode ?? 'online')
+
+  // ── États Telegram ──
+  const [telegramCommunities, setTelegramCommunities] = useState<any[]>([])
+  const [selectedCommunityId, setSelectedCommunityId] = useState<string>('')
+
+  // Fetch Telegram Communities
+  useEffect(() => {
+    const fetchCommunities = async () => {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('TelegramCommunity')
+        .select('id, chat_title, members_count, product_id')
+        .eq('store_id', storeId)
+        .not('chat_id', 'is', null)
+      if (data) {
+        setTelegramCommunities(data)
+        const linked = data.find(c => c.product_id === product.id)
+        if (linked) setSelectedCommunityId(linked.id)
+      }
+    }
+    fetchCommunities()
+  }, [storeId, product.id])
 
   // ─── Helpers variétés ───────────────────────────────────────────
   const updateVariant = (i: number, field: keyof Variant, value: string | number) =>
@@ -282,6 +305,20 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
         }
       }
 
+      // 6. Lier à la communauté Telegram
+      // Reset existing link for this product
+      await supabase
+         .from('TelegramCommunity')
+         .update({ product_id: null })
+         .eq('product_id', product.id)
+
+      if (selectedCommunityId) {
+         await supabase
+           .from('TelegramCommunity')
+           .update({ product_id: product.id })
+           .eq('id', selectedCommunityId)
+      }
+
       router.push('/dashboard/products')
       router.refresh()
     } catch {
@@ -406,6 +443,35 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
                 </button>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ── COMMUNAUTÉ TELEGRAM ── */}
+        <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+          <h2 className="font-semibold text-ink flex items-center gap-2">
+            <span className="text-blue-500">✈️</span> Lier à un groupe Telegram privé
+          </h2>
+          <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
+            <label className="block text-sm font-medium text-blue-900 mb-2">Choisir un groupe à lier</label>
+            <select
+              value={selectedCommunityId}
+              onChange={(e) => setSelectedCommunityId(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition bg-white"
+              title="Groupe Telegram"
+            >
+              <option value="">— Aucun groupe lié —</option>
+              {telegramCommunities.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.chat_title} ({c.members_count || 0} membres)
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-blue-700/80 mt-3 font-medium">
+              Les acheteurs seront invités automatiquement après achat.{' '}
+              <Link href="/dashboard/telegram" className="text-blue-600 hover:underline font-bold" target="_blank">
+                Gérer vos groupes →
+              </Link>
+            </p>
           </div>
         </section>
 

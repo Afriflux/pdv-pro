@@ -77,6 +77,10 @@ interface ProductPageProps {
       activePromo: PromotionData | null
     }
   }[]
+  telegramCommunity?: {
+    chat_title: string
+    members_count: number
+  } | null
 }
 
 // ─── Composant Galerie ────────────────────────────────────────────────────────
@@ -216,6 +220,7 @@ export default function ProductPage({
   deliveryZones = [],
   coachingSlots = [],
   similarProducts = [],
+  telegramCommunity,
 }: ProductPageProps) {
   const accent = product.store.primary_color || '#0F7A60'
 
@@ -591,6 +596,24 @@ export default function ProductPage({
                     {product.resale_commission && product.resale_commission > 0
                       ? ` ${product.resale_commission}% reversé au créateur.`
                       : ' Aucune commission au créateur.'}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* ── Badge Telegram Communauté ──
+                Visible uniquement si telegramCommunity existe */}
+            {telegramCommunity && (
+              <div className="flex items-center gap-3 bg-blue-50/50 border border-blue-100 rounded-2xl p-4">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-xl shadow-inner">
+                  ✈️
+                </div>
+                <div>
+                  <p className="text-sm font-black text-blue-900 leading-tight">Inclut l&apos;accès au groupe privé</p>
+                  <p className="text-xs font-bold text-blue-700/80 mt-1 flex items-center gap-1.5">
+                    <span className="truncate max-w-[150px] inline-block">{telegramCommunity.chat_title}</span>
+                    <span className="w-1 h-1 bg-blue-300 rounded-full"></span>
+                    <span className="flex items-center gap-1">👥 {telegramCommunity.members_count || 0} membres</span>
                   </p>
                 </div>
               </div>

@@ -11,7 +11,8 @@ const ALLOWED_FIELDS = [
   'description',
   'primary_color',
   'logo_url',
-  'banner_url'
+  'banner_url',
+  'vendor_type'
 ]
 
 export async function PATCH(request: Request) {

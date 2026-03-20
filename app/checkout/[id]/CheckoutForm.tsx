@@ -1,7 +1,7 @@
 /* eslint-disable react/forbid-dom-props */
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Mail } from 'lucide-react'
 import { PromotionData } from '@/lib/promotions/promotionType'
@@ -109,6 +109,12 @@ export function CheckoutForm({
   type CheckoutStep = 'form' | 'payment'
   const [step, setStep]                   = useState<CheckoutStep>('form')
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null)
+
+  // ── États Scarcity ──────────────────────────────────────────────
+  const [activeViewers, setActiveViewers] = useState(12)
+  useEffect(() => {
+    setActiveViewers(Math.floor(Math.random() * 35) + 12)
+  }, [])
 
   // ── Calculs prix ──────────────────────────────────────────────
   const baseProductPrice = computedPrice.hasDiscount ? computedPrice.finalPrice : product.price
@@ -707,6 +713,24 @@ export function CheckoutForm({
         )}
 
         {/* Récapitulatif */}
+        <div className="mt-8">
+          <div className="bg-red-50 border border-red-100 rounded-xl p-3 mb-3 flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
+            <p className="text-xs md:text-sm font-medium text-red-800">
+              <span className="font-bold">🔥 Forte demande :</span> {activeViewers} personnes consultent ce produit actuellement.
+            </p>
+          </div>
+          {variant?.stock !== undefined ? (
+            <p className="text-[11px] md:text-xs text-amber-700 font-bold mb-4 text-center">
+               ⏳ Il ne reste que {variant.stock > 0 ? variant.stock : 3} exemplaires disponibles
+            </p>
+          ) : (
+            <p className="text-[11px] md:text-xs text-amber-700 font-bold mb-4 text-center">
+               ⏳ Il ne reste que 3 exemplaires disponibles
+            </p>
+          )}
+        </div>
+
         <section className="bg-gray-50 rounded-2xl shadow-sm p-5 space-y-3 border-2 border-dashed border-gray-200">
           <h2 className="font-extrabold text-gray-800 text-lg mb-4 text-center">Récapitulatif de votre commande</h2>
           
@@ -749,9 +773,21 @@ export function CheckoutForm({
               : `CONTINUER → PAIEMENT`}
         </button>
 
-        <p className="text-center text-[10px] text-gray-400 pb-2 uppercase tracking-widest font-bold">
-          🔒 Sécurisé par PDV PRO
-        </p>
+        {/* Badges de Paiement Sécurisé Ouest-Africains */}
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <p className="text-center text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
+            Garantie Acheteur PDV Pro
+          </p>
+          <div className="flex flex-wrap justify-center gap-2 mb-3">
+            <span className="px-3 py-1 bg-[#15BEF0]/10 text-[#15BEF0] text-[10px] font-black rounded-md border border-[#15BEF0]/20">WAVE</span>
+            <span className="px-3 py-1 bg-[#FF7900]/10 text-[#FF7900] text-[10px] font-black rounded-md border border-[#FF7900]/20">ORANGE MONEY</span>
+            <span className="px-3 py-1 bg-green-500/10 text-green-600 text-[10px] font-black rounded-md border border-green-500/20">CINETPAY</span>
+            <span className="px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-black rounded-md border border-gray-200">MASTERCARD</span>
+          </div>
+          <p className="text-center text-[10px] text-gray-400 font-medium">
+            Vos fonds sont sécurisés par nos partenaires jusqu'à la livraison complète.
+          </p>
+        </div>
       </form>
     </div>
   )

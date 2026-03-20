@@ -215,12 +215,14 @@ export default async function LandingPage() {
           </svg>
 
           <div className="max-w-5xl mx-auto text-center space-y-8 relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald/10 border border-emerald/20 text-emerald-rich font-mono text-xs tracking-widest uppercase mb-4 animate-in fade-in slide-in-from-bottom-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald"></span>
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-full px-4 py-1.5 mb-6 animate-in fade-in slide-in-from-bottom-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
               </span>
-              {get('landing_hero_badge', "Lancement Sénégal · Côte d'Ivoire · Mali")}
+              <span className="text-sm font-semibold text-amber-700">
+                🚀 Launch Week — Commission à 4% pour les 100 premiers vendeurs
+              </span>
             </div>
             
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-tight text-ink leading-[1.1]">
@@ -245,6 +247,45 @@ export default async function LandingPage() {
             <HeroStats />
           </div>
         </section>
+
+        {/* BARRE DE SOCIAL PROOF ANIMÉE */}
+        <div className="bg-gray-900 text-white py-3 overflow-hidden flex whitespace-nowrap">
+          <style>{`
+            @keyframes marqueeHero {
+              from { transform: translateX(0); }
+              to { transform: translateX(-50%); }
+            }
+            .animate-marqueeHero {
+              animation: marqueeHero 20s linear infinite;
+            }
+          `}</style>
+          <div className="animate-marqueeHero flex items-center gap-8 text-sm">
+            <span>🔒 Paiements sécurisés Wave & Orange Money</span>
+            <span>•</span>
+            <span>💰 Zéro abonnement — ne payez que sur vos ventes</span>
+            <span>•</span>
+            <span>🚀 Boutique en ligne en 2 minutes</span>
+            <span>•</span>
+            <span>📦 Gestion des livraisons intégrée</span>
+            <span>•</span>
+            <span>🤖 IA marketing incluse</span>
+            <span>•</span>
+            <span>🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l'Afrique de l'Ouest</span>
+            <span>•</span>
+            <span>🔒 Paiements sécurisés Wave & Orange Money</span>
+            <span>•</span>
+            <span>💰 Zéro abonnement — ne payez que sur vos ventes</span>
+            <span>•</span>
+            <span>🚀 Boutique en ligne en 2 minutes</span>
+            <span>•</span>
+            <span>📦 Gestion des livraisons intégrée</span>
+            <span>•</span>
+            <span>🤖 IA marketing incluse</span>
+            <span>•</span>
+            <span>🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l'Afrique de l'Ouest</span>
+            <span>•</span>
+          </div>
+        </div>
 
         {/* 2. LE PROBLÈME (Douleurs vendeurs WhatsApp) */}
         <section className="py-24 bg-ink border-y border-line/10 relative overflow-hidden">
@@ -656,6 +697,65 @@ export default async function LandingPage() {
           </div>
         </section>
 
+        {/* ── Section Communautés Telegram ──────────────────────────────── */}
+        <section className="py-20 bg-gradient-to-br from-gray-900 to-gray-800">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <span className="inline-block bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold px-3 py-1 rounded-full mb-4 shadow-sm">
+                EXCLUSIF PDV PRO
+              </span>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                Vendez l&apos;accès à vos groupes<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+                  Telegram privés
+                </span>
+              </h2>
+              <p className="text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                Formations, coaching, contenus exclusifs — créez un produit, liez-le à votre groupe Telegram, 
+                et vos clients reçoivent automatiquement leur invitation après paiement.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-12">
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-colors">
+                <span className="text-4xl block mb-3">🔐</span>
+                <h3 className="font-bold text-white mb-2 text-lg">Accès automatique</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">Le client paie → reçoit son lien d&apos;invitation par WhatsApp en quelques secondes</p>
+              </div>
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-colors">
+                <span className="text-4xl block mb-3">💰</span>
+                <h3 className="font-bold text-white mb-2 text-lg">Monétisez votre expertise</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">Fixez votre prix, recevez vos paiements via Wave ou Orange Money directement</p>
+              </div>
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-colors">
+                <span className="text-4xl block mb-3">📊</span>
+                <h3 className="font-bold text-white mb-2 text-lg">Gérez vos membres</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">Suivez les invitations, le nombre de membres, et révoquez les accès si nécessaire</p>
+              </div>
+            </div>
+
+            {/* Cas d'usage concrets */}
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -translate-y-32 translate-x-32 pointer-events-none blur-3xl"></div>
+              <h3 className="font-black text-white text-xl mb-6 text-center relative z-10">Qui utilise cette fonctionnalité ?</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+                {[
+                  { emoji: '🎓', label: 'Formateurs', desc: 'Cours en ligne + groupe de suivi' },
+                  { emoji: '💪', label: 'Coachs', desc: 'Coaching sportif, business, dev perso' },
+                  { emoji: '📈', label: 'Traders', desc: 'Signaux, analyses, communauté VIP' },
+                  { emoji: '🎨', label: 'Créateurs', desc: 'Contenus exclusifs, backstage' },
+                ].map(u => (
+                  <div key={u.label} className="text-center group cursor-default">
+                    <span className="text-3xl block mb-2 group-hover:scale-110 transition-transform">{u.emoji}</span>
+                    <p className="font-bold text-white text-sm mb-1">{u.label}</p>
+                    <p className="text-blue-200/60 text-xs">{u.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* 8. FAQ */}
         <section id="faq" className="py-24 bg-cream px-6">
             <div className="max-w-4xl mx-auto">
@@ -685,6 +785,50 @@ export default async function LandingPage() {
           productsCount={productsCount ?? 1200} 
           ordersCount={ordersCount ?? 8500} 
         />
+
+        {/* COMPARAISON WHATSAPP VS PDV PRO */}
+        <section className="py-16 bg-gray-50 border-t border-line">
+          <div className="max-w-4xl mx-auto px-4">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-center mb-10 text-ink">
+              Pourquoi passer de WhatsApp à PDV Pro ?
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Colonne WhatsApp */}
+              <div className="bg-white rounded-2xl p-6 border-2 border-red-100 flex flex-col">
+                <div className="text-center mb-6">
+                  <span className="text-4xl block mb-2">📱</span>
+                  <h3 className="font-bold text-xl text-red-600">Vendre sur WhatsApp</h3>
+                </div>
+                <ul className="space-y-4 text-sm text-gray-600 flex-1">
+                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Pas de vitrine professionnelle</li>
+                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Gestion des stocks manuelle</li>
+                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Pas de paiement en ligne automatisé</li>
+                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Pas de suivi de commandes direct</li>
+                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Pas d'analytics ni d'IA</li>
+                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Confiance client limitée</li>
+                </ul>
+              </div>
+              {/* Colonne PDV Pro */}
+              <div className="bg-white rounded-2xl p-6 border-2 border-[#0F7A60] shadow-xl shadow-emerald/10 relative flex flex-col">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#0F7A60] text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
+                  Recommandé
+                </div>
+                <div className="text-center mb-6">
+                  <span className="text-4xl block mb-2">🏪</span>
+                  <h3 className="font-bold text-xl text-[#0F7A60]">Vendre sur PDV Pro</h3>
+                </div>
+                <ul className="space-y-4 text-sm text-gray-700 font-medium flex-1">
+                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Boutique pro avec votre marque</li>
+                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Stock et commandes automatisés</li>
+                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Wave, Orange Money, carte bancaire</li>
+                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Suivi en temps réel pour vos clients</li>
+                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Analytics + IA marketing intégrés</li>
+                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Badge vendeur vérifié (KYC)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* 10. CTA FINAL */}
         <section className="py-32 px-6 bg-ink relative overflow-hidden border-t border-line/10">
