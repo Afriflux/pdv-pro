@@ -26,8 +26,7 @@ export const metadata: Metadata = {
   title: "PDV Pro — Vendez en ligne en Afrique de l'Ouest",
   description: "Créez votre boutique en ligne en 10 minutes. Zéro abonnement. PDV Pro, la plateforme e-commerce pour l'Afrique de l'Ouest.",
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
+    icon: '/icon-192x192.png',
     apple: '/icon-192x192.png',
   },
   manifest: '/manifest.json',
