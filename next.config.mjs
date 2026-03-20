@@ -22,8 +22,17 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'ui-avatars.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'iframe.mediadelivery.net',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.b-cdn.net',
+      },
     ],
   },
+  compress: true,
   eslint: {
     ignoreDuringBuilds: true,
   },

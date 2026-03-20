@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { 
@@ -21,9 +22,53 @@ const STEP_LABELS = ['Type', 'Boutique', 'Paiement', 'Modèle', 'Fin']
 
 export default function OnboardingPage() {
   const supabase = createClient()
+  const router = useRouter()
   
   const [step, setStep] = useState(1)
   const [isSaving, setIsSaving] = useState(false)
+  const [isInitializing, setIsInitializing] = useState(true)
+
+  // -- Redirection et Onboarding Intelligent
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) {
+        setIsInitializing(false)
+        return
+      }
+      
+      const { data: store } = await supabase.from('Store').select('*').eq('user_id', user.id).maybeSingle()
+      
+      if (store?.onboarding_completed) {
+        return router.push('/dashboard')
+      }
+      
+      let nextStep = 1
+      
+      if (store && store.name && !store.name.startsWith('Boutique de')) {
+        // Pré-remplir
+        if (store.vendor_type) setVendorType(store.vendor_type as any)
+        setStoreName(store.name)
+        if (store.logo_url) setLogoUrl(store.logo_url)
+        if (store.primary_color) setPrimaryColor(store.primary_color)
+        if (store.category) setCategory(store.category)
+        if (store.description) setDescription(store.description)
+        
+        setNameAvailable(true)
+        nextStep = 3 // Saute étapes 1 & 2
+        
+        // Vérifier le Wallet
+        const { data: wallet } = await supabase.from('Wallet').select('*').eq('vendor_id', store.id).maybeSingle()
+        if (wallet && wallet.payout_method) {
+          setPayoutMethod(wallet.payout_method as any)
+          if (wallet.payout_details) setPayoutDetails(wallet.payout_details)
+          nextStep = 4 // Saute étape 3
+        }
+      }
+      
+      setStep(nextStep)
+      setIsInitializing(false)
+    })
+  }, [router, supabase])
   
   // -- Step 1: Vendor Type
   const [vendorType, setVendorType] = useState<'digital' | 'physical' | 'hybrid' | null>(null)
@@ -95,30 +140,35 @@ export default function OnboardingPage() {
     try {
       if (step === 1) {
         if (!vendorType) throw new Error("Veuillez choisir un type de vendeur")
-        await saveStoreInfo({ vendor_type: vendorType })
+        const res = await saveStoreInfo({ vendor_type: vendorType })
+        if (!res.success) throw new Error(res.error)
       } 
       else if (step === 2) {
         if (!storeName.trim()) throw new Error("Le nom est obligatoire")
         if (nameAvailable === false) throw new Error("Ce nom est déjà pris")
-        await saveStoreInfo({ 
+        const res = await saveStoreInfo({ 
           name: storeName.trim(), 
           primary_color: primaryColor, 
           logo_url: logoUrl || null,
           category: category || null,
           description: description.trim() || null
         })
+        if (!res.success) throw new Error(res.error)
       }
       else if (step === 3) {
         if (!payoutMethod || !payoutDetails.trim()) throw new Error("Veuillez renseigner un moyen de paiement complet")
-        await savePaymentMethod(payoutMethod, payoutDetails.trim())
+        const res = await savePaymentMethod(payoutMethod, payoutDetails.trim())
+        if (!res.success) throw new Error(res.error)
       }
       else if (step === 4) {
         if (!commissionAccepted) throw new Error("Veuillez accepter le modèle de commission")
-        await completeOnboarding(storeName)
+        const res = await completeOnboarding(storeName)
+        if (!res.success) throw new Error(res.error)
       }
       
       setStep(s => Math.min(s + 1, TOTAL_STEPS))
     } catch (err: any) {
+      console.error("[ONBOARDING ERROR]", err)
       toast.error(err.message || 'Erreur lors de la sauvegarde')
     } finally {
       setIsSaving(false)
@@ -126,7 +176,15 @@ export default function OnboardingPage() {
   }
 
   const handleBack = () => setStep(s => Math.max(s - 1, 1))
-  
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-cream flex flex-col items-center justify-center">
+        <div className="w-12 h-12 rounded-full border-4 border-emerald/20 border-t-emerald animate-spin"></div>
+      </div>
+    )
+  }
+
   // ─── RENDU ───────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-cream flex flex-col items-center py-12 px-4 transition-all duration-500">
@@ -459,9 +517,12 @@ export default function OnboardingPage() {
               </div>
 
               <div className="pt-8">
-                <Link href="/dashboard" className="inline-block w-full sm:w-auto px-12 py-5 bg-ink text-white font-black rounded-2xl shadow-xl shadow-ink/20 hover:bg-slate hover:scale-105 transition-all">
+                <button 
+                  onClick={() => router.push('/dashboard')}
+                  className="inline-block w-full sm:w-auto px-12 py-5 bg-ink text-white font-black rounded-2xl shadow-xl shadow-ink/20 hover:bg-slate hover:scale-105 transition-all"
+                >
                   Aller sur mon Dashboard Marchand
-                </Link>
+                </button>
               </div>
             </div>
           )}
