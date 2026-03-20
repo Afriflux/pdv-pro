@@ -15,6 +15,7 @@ import SocialProofBanner from '@/components/widgets/SocialProofBanner'
 import { ReviewWidget } from '@/components/reviews/ReviewWidget'
 import { ProductQA } from '@/components/reviews/ProductQA'
 import { PoweredByBadge } from '@/components/branding/PoweredByBadge'
+import { ProductJsonLd } from '@/components/seo/JsonLd'
 import type { PromotionData } from '@/lib/promotions/promotionType'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -280,6 +281,7 @@ export default function ProductPage({
 
   return (
     <div className="min-h-screen bg-[#FAFAF7]">
+      <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
 
       {/* ── Header boutique ────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">

@@ -48,6 +48,7 @@ export const metadata: Metadata = {
 }
 
 import FooterWrapper from '@/components/FooterWrapper'
+import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
 
 export default function RootLayout({
   children,
@@ -57,6 +58,8 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${cormorant.variable} ${dm.variable} ${mono.variable}`}>
       <body className={`antialiased font-body bg-cream text-ink selection:bg-gold/30 selection:text-ink`}>
+        <OrganizationJsonLd />
+        <WebSiteJsonLd />
         {children}
         <FooterWrapper />
       </body>
