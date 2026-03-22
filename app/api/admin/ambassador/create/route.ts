@@ -148,8 +148,8 @@ export async function POST(req: Request): Promise<Response> {
     )
 
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    console.error('[Admin/Ambassador Create] ❌', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+
+    console.error('[Admin/Ambassador Create] ❌', error)
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

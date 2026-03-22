@@ -98,9 +98,6 @@ export async function GET(request: NextRequest) {
 
   } catch (err: unknown) {
     console.error('[Community] verify error:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur serveur' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

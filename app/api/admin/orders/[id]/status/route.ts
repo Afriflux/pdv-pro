@@ -55,15 +55,12 @@ export async function PATCH(
       .eq('id', params.id)
 
     if (updateErr) {
-      return NextResponse.json({ success: false, error: updateErr.message }, { status: 500 })
+      return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true }, { status: 200 })
 
   } catch (err: unknown) {
-    return NextResponse.json(
-      { success: false, error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

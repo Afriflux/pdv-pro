@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
 
     if (insertError) {
       console.error('[Batch API] Insert error:', insertError)
-      return NextResponse.json({ error: "Erreur lors de l'insertion en base de données" }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     // Succès
@@ -137,6 +137,6 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('[Batch API] Internal error:', error)
-    return NextResponse.json({ error: 'Erreur interne du serveur' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

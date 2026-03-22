@@ -57,17 +57,14 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('[Community] GET error:', error)
-      return NextResponse.json({ error: 'Erreur récupération' }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     return NextResponse.json({ communities: communities || [] })
 
   } catch (err: unknown) {
     console.error('[Community] GET error:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur serveur' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }
 
@@ -120,17 +117,14 @@ export async function DELETE(request: Request) {
 
     if (deleteError) {
       console.error('[Community] DELETE error:', deleteError)
-      return NextResponse.json({ error: 'Erreur suppression' }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
 
   } catch (err: unknown) {
     console.error('[Community] DELETE error:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur serveur' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }
 
@@ -185,16 +179,13 @@ export async function PATCH(request: Request) {
       .eq('id', community_id)
 
     if (updateError) {
-      return NextResponse.json({ error: 'Erreur mise à jour' }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
 
   } catch (err: unknown) {
     console.error('[Community] PATCH error:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur serveur' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

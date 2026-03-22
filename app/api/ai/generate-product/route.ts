@@ -181,8 +181,8 @@ Réponds avec ce JSON exact :
     return NextResponse.json({ product: generated }, { status: 200 })
 
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    console.error('[AI/GenerateProduct] ❌', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+
+    console.error('[AI/GenerateProduct] ❌', error)
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

@@ -82,10 +82,7 @@ export async function POST(req: Request): Promise<Response> {
   const apiKey = config?.value || process.env.ANTHROPIC_API_KEY
 
   if (!apiKey) {
-    return NextResponse.json(
-      { error: 'Clé API Claude non configurée. Configurez-la dans /admin/integrations.' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 
   const systemPrompt = `Tu es l'assistant IA de PDV Pro, plateforme e-commerce africaine.

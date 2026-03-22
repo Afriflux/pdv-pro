@@ -48,15 +48,15 @@ export async function GET() {
     const stats = await getAffiliateStats(store.id)
 
     if (!stats) {
-      return NextResponse.json({ error: 'Impossible de charger les statistiques' }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     return NextResponse.json(stats)
 
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Erreur interne'
+
     console.error('[Affiliate Profile GET Error]:', error)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }
 
@@ -101,8 +101,8 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ success: true })
 
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Erreur interne'
+
     console.error('[Affiliate Profile PATCH Error]:', error)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

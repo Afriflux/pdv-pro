@@ -47,8 +47,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error)
-    console.error('[Admin Landing POST] Erreur:', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+
+    console.error('[Admin Landing POST] Erreur:', error)
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

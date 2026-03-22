@@ -98,7 +98,7 @@ export async function POST(request: Request) {
 
       if (insertError) {
         console.error('[Community] Insert error:', insertError)
-        return NextResponse.json({ error: 'Erreur création communauté' }, { status: 500 })
+        return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
       }
     }
 
@@ -114,9 +114,6 @@ export async function POST(request: Request) {
 
   } catch (err: unknown) {
     console.error('[Community] generate-code error:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur serveur' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

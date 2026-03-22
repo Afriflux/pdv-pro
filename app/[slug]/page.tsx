@@ -137,7 +137,7 @@ export default async function StorePage({ params }: StorePageProps) {
         {store.banner_url ? (
           <div className="w-full h-48 md:h-64 overflow-hidden bg-gray-100 relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={store.banner_url} alt="" className="w-full h-full object-cover" />
+            <img src={store.banner_url} alt={store.name || "Bannière de la boutique"} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/15" />
           </div>
         ) : (

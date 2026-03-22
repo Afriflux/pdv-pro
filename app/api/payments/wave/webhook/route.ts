@@ -56,8 +56,8 @@ export async function POST(req: Request): Promise<Response> {
   try {
     payload = JSON.parse(rawBody) as WaveWebhookPayload
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'JSON invalide'
-    console.error('[Wave Webhook] Erreur parsing JSON:', message)
+
+    console.error('[Wave Webhook] Erreur parsing JSON:', error)
     // Retourner 200 pour éviter les retentatives Wave (l'erreur est côté format)
     return new Response('OK', { status: 200 })
   }
@@ -84,8 +84,8 @@ export async function POST(req: Request): Promise<Response> {
     await confirmOrder(orderId, transactionId)
     // console.log(`[Wave Webhook] ✅ Commande confirmée — orderId: ${orderId}, txId: ${transactionId}`)
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur inconnue'
-    console.error(`[Wave Webhook] ❌ Erreur confirmOrder pour ${orderId}:`, message)
+
+    console.error(`[Wave Webhook] ❌ Erreur confirmOrder pour ${orderId}:`, error)
     // Toujours 200 : Wave ne réessaie pas si on renvoie 200.
     // Les erreurs internes sont loggées et traitées séparément.
   }

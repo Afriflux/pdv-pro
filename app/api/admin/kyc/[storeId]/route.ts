@@ -237,10 +237,7 @@ export async function PATCH(
 
       if (updateError) {
         console.error('[KYC approve] Erreur update:', updateError.message)
-        return NextResponse.json(
-          { success: false, error: 'Erreur lors de la validation' },
-          { status: 500 }
-        )
+        return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
       }
 
       console.log(`[KYC approve] Boutique "${storeData.name}" (${storeId}) → verified ✅`)
@@ -275,10 +272,7 @@ export async function PATCH(
 
       if (updateError) {
         console.error('[KYC reject] Erreur update:', updateError.message)
-        return NextResponse.json(
-          { success: false, error: 'Erreur lors du rejet' },
-          { status: 500 }
-        )
+        return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
       }
 
       console.log(
@@ -298,8 +292,8 @@ export async function PATCH(
     return NextResponse.json({ success: true }, { status: 200 })
 
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    console.error('[KYC admin PATCH] Erreur non gérée:', message)
-    return NextResponse.json({ success: false, error: message }, { status: 500 })
+
+    console.error('[KYC admin PATCH] Erreur non gérée:', error)
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

@@ -220,7 +220,7 @@ export function TelegramSettings({
                   
                   {timeLeft > 0 ? (
                     <a
-                      href={botUrl || '#'}
+                      href={botUrl || 'https://t.me/PDVProBot'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full py-4 bg-[#0F7A60] text-white rounded-2xl font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20 hover:scale-[1.02] transition-transform"

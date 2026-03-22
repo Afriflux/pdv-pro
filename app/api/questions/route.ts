@@ -28,7 +28,7 @@ export async function GET(req: Request) {
   const questions = data || []
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 
   // Optionnel : Récupérer les noms des acheteurs via prisma si on veut
@@ -68,6 +68,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, question: data })
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

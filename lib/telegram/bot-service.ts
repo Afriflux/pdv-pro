@@ -152,7 +152,7 @@ export async function notifyNewOrder(storeId: string, order: OrderNotificationDa
       `📦 Articles : ${order.itemCount}\n` +
       `💳 Paiement : ${order.paymentMethod}\n` +
       `🔖 Réf : <code>${orderIdToCode(order.orderId)}</code>\n\n` +
-      `👉 <a href="https://pdv-pro.vercel.app/dashboard/orders/${order.orderId}">Voir sur PDV Pro</a>`
+      `👉 <a href="https://pdvpro.com/dashboard/orders/${order.orderId}">Voir sur PDV Pro</a>`
 
     await sendMessage(info.telegram_chat_id, message)
   } catch (error) {
@@ -196,7 +196,7 @@ export async function notifyNewWhatsApp(storeId: string, from: string, message: 
     const telegramMessage = `💬 <b>Nouveau message WhatsApp</b>\n\n` +
       `👤 De : <b>${from}</b>\n` +
       `✉️ "<i>${message}</i>"\n\n` +
-      `👉 <a href="https://pdv-pro.vercel.app/dashboard/messages">Répondre sur PDV Pro</a>`
+      `👉 <a href="https://pdvpro.com/dashboard/messages">Répondre sur PDV Pro</a>`
 
     await sendMessage(info.telegram_chat_id, telegramMessage)
   } catch (error) {
@@ -218,7 +218,7 @@ export async function notifyLowStock(storeId: string, productName: string, stock
     const message = `⚠️ <b>Stock faible !</b>\n\n` +
       `📦 Produit : <b>${productName}</b>\n` +
       `🔢 Stock restant : <b>${stock} unités</b>\n\n` +
-      `👉 <a href="https://pdv-pro.vercel.app/dashboard/products">Réapprovisionner</a>`
+      `👉 <a href="https://pdvpro.com/dashboard/products">Réapprovisionner</a>`
 
     await sendMessage(info.telegram_chat_id, message)
   } catch (error) {

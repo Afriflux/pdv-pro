@@ -236,8 +236,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         }
 
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Erreur inconnue'
-        errors.push(`Store ${store.id} : ${msg}`)
+
+        errors.push(`Store ${store.id} : ${err instanceof Error ? err.message : 'Erreur'}`)
       }
     }
 
@@ -249,7 +249,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     )
 
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    return NextResponse.json({ error: message }, { status: 500 })
+
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

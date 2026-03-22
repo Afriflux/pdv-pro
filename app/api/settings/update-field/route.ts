@@ -43,12 +43,12 @@ export async function PATCH(request: Request) {
 
     if (updateError) {
       console.error('Erreur Supabase update-field:', updateError)
-      return NextResponse.json({ error: 'Erreur lors de la mise à jour' }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
   } catch (err: unknown) {
     console.error('Erreur API update-field:', err)
-    return NextResponse.json({ error: 'Erreur serveur interne' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

@@ -84,8 +84,8 @@ export async function PATCH(
     })
 
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Erreur interne'
+
     console.error('[Admin Vendor Action Error]:', error)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

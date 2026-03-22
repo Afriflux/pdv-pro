@@ -80,7 +80,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const { data: ordersRaw, error: ordersError } = await query
 
     if (ordersError) {
-      return NextResponse.json({ error: ordersError.message }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     const orders = (ordersRaw ?? []) as OrderRow[]
@@ -147,9 +147,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   } catch (err: unknown) {
     console.error('[community/leaderboard GET]', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

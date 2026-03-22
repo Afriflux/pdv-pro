@@ -260,9 +260,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   } catch (err: unknown) {
     console.error('[analytics/export]', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

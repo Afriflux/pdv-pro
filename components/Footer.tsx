@@ -30,9 +30,9 @@ export default function Footer() {
         <div>
           <h4 className="font-bold text-lg mb-4">Ressources</h4>
           <ul className="space-y-3 text-sm text-gray-400">
-            <li><Link href="/terms" className="hover:text-white transition-colors">Conditions d'utilisation</Link></li>
-            <li><Link href="/privacy" className="hover:text-white transition-colors">Politique de confidentialité</Link></li>
-            <li><Link href="/legal" className="hover:text-white transition-colors">Mentions légales</Link></li>
+            <li><Link href="/conditions-utilisation" className="hover:text-white transition-colors">Conditions d'utilisation</Link></li>
+            <li><Link href="/politique-confidentialite" className="hover:text-white transition-colors">Politique de confidentialité</Link></li>
+            <li><Link href="/mentions-legales" className="hover:text-white transition-colors">Mentions légales</Link></li>
           </ul>
         </div>
 
@@ -44,9 +44,9 @@ export default function Footer() {
             <li><a href="https://wa.me/221770000000" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-2">WhatsApp Support</a></li>
           </ul>
           <div className="flex items-center gap-4">
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Instagram size={18} /></a>
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Send size={18} /></a>
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Facebook size={18} /></a>
+            <a href="https://www.instagram.com/pdvpro" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Instagram size={18} /></a>
+            <a href="https://t.me/pdvpro" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Send size={18} /></a>
+            <a href="https://www.facebook.com/pdvpro" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Facebook size={18} /></a>
           </div>
         </div>
       </div>

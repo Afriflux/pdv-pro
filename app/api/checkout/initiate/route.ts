@@ -183,7 +183,7 @@ export async function POST(req: NextRequest) {
       const { error: freezeErr } = await supabase.rpc('freeze_commission', {
         p_vendor_id: store_id, p_commission: commissionDue,
       })
-      if (freezeErr) return NextResponse.json({ error: 'Erreur au gel du solde COD.' }, { status: 500 })
+      if (freezeErr) return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     // ── 5. TRANSACTION ATOMIQUE ───────────────────────────────────
@@ -239,7 +239,7 @@ export async function POST(req: NextRequest) {
         const commissionDue = Math.round(total * 0.05) + feeToFreeze
         await supabase.rpc('unfreeze_commission', { p_vendor_id: store_id, p_commission: commissionDue })
       }
-      return NextResponse.json({ error: "Erreur serveur ou stock épuisé." }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     if (applied_promo_id) {
@@ -332,6 +332,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ order_id: orderRecord.id, payment_url: paymentUrl })
   } catch (error: any) {
     console.error('[CHECKOUT ERROR]:', error)
-    return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

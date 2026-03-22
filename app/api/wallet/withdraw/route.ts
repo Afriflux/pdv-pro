@@ -167,8 +167,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     )
 
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne du serveur'
-    console.error('[Withdraw API]', message)
-    return NextResponse.json({ success: false, error: message }, { status: 500 })
+
+    console.error('[Withdraw API]', error)
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

@@ -54,8 +54,8 @@ export async function POST(req: Request): Promise<Response> {
   try {
     payload = (await req.json()) as OrangeWebhookPayload
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'JSON invalide'
-    console.error('[Orange Webhook] Erreur parsing JSON:', message)
+
+    console.error('[Orange Webhook] Erreur parsing JSON:', error)
     // 200 pour éviter les retentatives sur une erreur de format
     return new Response('OK', { status: 200 })
   }
@@ -94,8 +94,8 @@ export async function POST(req: Request): Promise<Response> {
       `[Orange Webhook] ✅ Commande confirmée — orderId: ${orderId}, txnid: ${transactionId}`
     )
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur inconnue'
-    console.error(`[Orange Webhook] ❌ Erreur confirmOrder pour ${orderId}:`, message)
+
+    console.error(`[Orange Webhook] ❌ Erreur confirmOrder pour ${orderId}:`, error)
     // Toujours 200 : les erreurs internes sont traitées séparément (logs / cron)
   }
 

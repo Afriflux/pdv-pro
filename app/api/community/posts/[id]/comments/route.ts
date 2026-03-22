@@ -44,7 +44,7 @@ export async function GET(
       .limit(50)
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     const comments = (commentsRaw as unknown) as CommentRow[]
@@ -63,10 +63,7 @@ export async function GET(
 
   } catch (err: unknown) {
     console.error('[community/comments GET]', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }
 
@@ -148,7 +145,7 @@ export async function POST(
       .single()
 
     if (insertError) {
-      return NextResponse.json({ error: insertError.message }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     const comment = newComment as { id: string; content: string; created_at: string }
@@ -168,9 +165,6 @@ export async function POST(
 
   } catch (err: unknown) {
     console.error('[community/comments POST]', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

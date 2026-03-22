@@ -98,7 +98,7 @@ export async function POST() {
 
     if (insertError) {
       console.error('[Telegram Link] Erreur insertion token:', insertError)
-      return NextResponse.json({ error: 'Erreur lors de la génération du code' }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     // 6. Retour des infos
@@ -113,7 +113,7 @@ export async function POST() {
 
   } catch (error) {
     console.error('[Telegram Link] Erreur POST:', error)
-    return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }
 
@@ -148,13 +148,13 @@ export async function DELETE() {
 
     if (updateError) {
       console.error('[Telegram Link] Erreur déliaison:', updateError)
-      return NextResponse.json({ error: 'Erreur lors de la déconnexion' }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
 
   } catch (error) {
     console.error('[Telegram Link] Erreur DELETE:', error)
-    return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

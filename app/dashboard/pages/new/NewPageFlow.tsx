@@ -394,7 +394,7 @@ export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
                   <div className="w-10 h-10 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden">
                     {p.images?.[0] ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={p.images[0]} alt="" className="w-full h-full object-cover" />
+                      <img src={p.images[0]} alt={p.name || "Image produit"} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">📦</div>
                     )}

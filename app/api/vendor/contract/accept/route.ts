@@ -231,7 +231,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (updateErr) {
       console.error('[vendor/contract/accept] Erreur UPDATE:', updateErr.message)
-      return NextResponse.json({ success: false, error: updateErr.message }, { status: 500 })
+      return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     // 6. Récupérer email + nom vendeur
@@ -271,9 +271,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   } catch (err: unknown) {
     console.error('[vendor/contract/accept]', err)
-    return NextResponse.json(
-      { success: false, error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

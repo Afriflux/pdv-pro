@@ -75,6 +75,6 @@ export async function POST(req: Request) {
 
   } catch (err: any) {
     console.error('Erreur API Promo:', err)
-    return NextResponse.json({ error: 'Erreur interne au serveur.' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

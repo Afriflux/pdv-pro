@@ -146,7 +146,7 @@ Réponds UNIQUEMENT avec le JSON, sans texte autour.`
     } satisfies ScriptResult)
   } catch (err: unknown) {
     console.error('[generate-script]', err)
-    const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: msg }, { status: 500 })
+
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

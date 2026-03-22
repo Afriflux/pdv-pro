@@ -89,10 +89,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
 
     if (updateErr) {
       console.error('[settings/withdrawal] Erreur update:', updateErr.message)
-      return NextResponse.json(
-        { success: false, error: 'Erreur lors de la sauvegarde.' },
-        { status: 500 }
-      )
+      return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     console.log(
@@ -103,8 +100,8 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ success: true }, { status: 200 })
 
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    console.error('[settings/withdrawal]', message)
-    return NextResponse.json({ success: false, error: message }, { status: 500 })
+
+    console.error('[settings/withdrawal]', error)
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

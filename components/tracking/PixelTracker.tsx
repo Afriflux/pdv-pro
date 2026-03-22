@@ -40,7 +40,7 @@ export function PixelTracker({
               width="1"
               className="hidden"
               src={`https://www.facebook.com/tr?id=${metaId}&ev=PageView&noscript=1`}
-              alt=""
+              alt="Pixel de tracking Facebook"
             />
           </noscript>
           <Script id="meta-pixel" strategy="afterInteractive">

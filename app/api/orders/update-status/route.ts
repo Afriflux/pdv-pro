@@ -115,6 +115,6 @@ export async function PATCH(req: Request) {
 
   } catch (err: any) {
     console.error('Update order status error:', err)
-    return NextResponse.json({ error: err.message || 'Erreur interne du serveur' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

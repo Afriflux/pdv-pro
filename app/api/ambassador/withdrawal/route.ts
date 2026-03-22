@@ -121,7 +121,7 @@ export async function POST(req: Request): Promise<Response> {
       if (newTx) {
         await supabaseAdmin.from('AmbassadorTransaction').update({ status: 'failed' }).eq('id', newTx.id)
       }
-      return NextResponse.json({ error: payoutResult.error || 'Erreur technique lors du transfert' }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     // Succès
@@ -139,8 +139,8 @@ export async function POST(req: Request): Promise<Response> {
     )
 
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    console.error('[Ambassador Withdrawal] ❌', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+
+    console.error('[Ambassador Withdrawal] ❌', error)
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

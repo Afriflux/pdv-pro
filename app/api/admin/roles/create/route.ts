@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
           { status: 409 }
         )
       }
-      return NextResponse.json({ error: authError.message }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     const newUserId = authData.user.id
@@ -119,10 +119,7 @@ export async function POST(req: NextRequest) {
     if (insertError) {
       // Rollback : supprimer l'utilisateur Supabase Auth si l'insert échoue
       await supabaseAdmin.auth.admin.deleteUser(newUserId)
-      return NextResponse.json(
-        { error: 'Erreur lors de la création du profil admin : ' + insertError.message },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     console.log(`[Admin Roles] Nouveau ${role} créé : ${email} (${newUserId}) par ${user.id}`)
@@ -132,8 +129,8 @@ export async function POST(req: NextRequest) {
       user: { id: newUserId, email: email.trim(), role },
     })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error)
-    console.error('[Admin Roles Create] Erreur fatale:', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+
+    console.error('[Admin Roles Create] Erreur fatale:', error)
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

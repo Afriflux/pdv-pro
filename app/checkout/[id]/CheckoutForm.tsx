@@ -323,7 +323,7 @@ export function CheckoutForm({
         <div className="flex items-center gap-3 pt-2">
           {product.store.logo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={product.store.logo_url} alt="" className="w-10 h-10 rounded-full object-cover" />
+            <img src={product.store.logo_url} alt={product.store.name || "Logo boutique"} className="w-10 h-10 rounded-full object-cover" />
           ) : (
             <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold" style={{ backgroundColor: `${accent}11`, color: accent }}>
               {product.store.name[0]}
@@ -395,7 +395,7 @@ export function CheckoutForm({
       <div className="flex items-center gap-3 pt-2">
         {product.store.logo_url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={product.store.logo_url} alt="" className="w-10 h-10 rounded-full object-cover" />
+          <img src={product.store.logo_url} alt={product.store.name || "Logo boutique"} className="w-10 h-10 rounded-full object-cover" />
         ) : (
           <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold" style={{ backgroundColor: `${accent}11`, color: accent }}>
             {product.store.name[0]}

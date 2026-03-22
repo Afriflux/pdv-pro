@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     .eq('user_id', user.id)
 
   if (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 
   const { data: userData } = await supabase.from('User').select('email').eq('id', user.id).single()

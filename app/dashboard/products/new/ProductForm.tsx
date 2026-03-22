@@ -723,7 +723,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
             {imagePreviews.map((src, i) => (
               <div key={i} className="relative w-23 h-23 group">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="" className="w-20 h-20 rounded-xl object-cover border border-gray-200" />
+                <img src={src} alt="Miniature du produit" className="w-20 h-20 rounded-xl object-cover border border-gray-200" />
                 {/* Badge GIF animé */}
                 {imageFiles[i]?.type === 'image/gif' && (
                   <span className="absolute bottom-1 left-1 bg-purple-500 text-white text-[9px] font-black px-1 rounded animate-pulse">

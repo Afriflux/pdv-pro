@@ -201,7 +201,7 @@ function ImageGallery({
               style={i === activeIndex ? { borderColor: accent } : {}}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" className="w-full h-full object-cover" />
+              <img src={src} alt={productName || "Image produit"} className="w-full h-full object-cover" />
             </button>
           ))}
         </div>

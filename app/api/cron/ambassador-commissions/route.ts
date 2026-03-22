@@ -42,8 +42,8 @@ export async function POST(req: Request) {
 
     return cronResponse({ processed, paid, totalAmount, month })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur inconnue'
-    console.error('[CRON ambassador-commissions] ❌ Erreur:', message)
-    return cronResponse({ error: message, month }, 500)
+
+    console.error('[CRON ambassador-commissions] ❌ Erreur:', error)
+    return cronResponse({ error: error instanceof Error ? error.message : 'Erreur interne', month }, 500)
   }
 }

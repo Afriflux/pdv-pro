@@ -47,8 +47,8 @@ export default function OrderCard({ order }: OrderCardProps) {
       <div className="aspect-[16/9] bg-cream relative overflow-hidden border-b border-line">
         {order.product?.images?.[0] ? (
           <img 
-            src={order.product.images[0]} 
-            alt="" 
+            src={order.product?.images?.[0]} 
+            alt={order.product?.name || "Image produit"} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
           />
         ) : (

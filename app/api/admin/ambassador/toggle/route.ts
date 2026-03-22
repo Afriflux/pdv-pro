@@ -67,10 +67,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (updateError) {
       console.error('[ambassador/toggle] Erreur update:', updateError.message)
-      return NextResponse.json(
-        { error: 'Erreur lors de la mise à jour du statut.' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     console.log(
@@ -84,9 +81,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   } catch (err: unknown) {
     console.error('[ambassador/toggle]', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

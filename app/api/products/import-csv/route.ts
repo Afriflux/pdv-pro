@@ -127,7 +127,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ imported, errors })
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ imported: 0, errors: [msg] }, { status: 500 })
+
+    return NextResponse.json({ imported: 0, errors: [err instanceof Error ? err.message : 'Erreur'] }, { status: 500 })
   }
 }

@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const apiKey = process.env.BUNNY_API_KEY // MUST be server-side only!
 
     if (!libraryId || !apiKey) {
-      return NextResponse.json({ error: 'Configuration Bunny.net manquante sur le serveur.' }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     // 1. Créer la vidéo vide sur Bunny Stream
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     if (!createRes.ok) {
       const errorText = await createRes.text()
       console.error('[Bunny API Error]', errorText)
-      return NextResponse.json({ error: 'Erreur lors de la création de la vidéo sur Bunny.' }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     const videoData = await createRes.json()
@@ -60,6 +60,6 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error('[Bunny Create Upload Error]', error)
-    return NextResponse.json({ error: 'Erreur serveur interne' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

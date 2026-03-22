@@ -737,7 +737,7 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
               {existingImages.map((src, i) => (
                 <div key={`ex-${i}`} className="relative w-20 h-20 group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" className="w-20 h-20 rounded-xl object-cover border border-gray-200" />
+                  <img src={src} alt="Image du produit" className="w-20 h-20 rounded-xl object-cover border border-gray-200" />
                   <button type="button" onClick={() => removeExisting(i)}
                     className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
                     ×
@@ -747,7 +747,7 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
               {newPreviews.map((src, i) => (
                 <div key={`new-${i}`} className="relative w-20 h-20 group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" className="w-20 h-20 rounded-xl object-cover border border-gold/30" />
+                  <img src={src} alt="Image du produit sélectionnée" className="w-20 h-20 rounded-xl object-cover border border-gold/30" />
                   {/* Badge GIF animé */}
                   {newFiles[i]?.type === 'image/gif' && (
                     <span className="absolute bottom-1 left-1 bg-purple-500 text-white text-[9px] font-black px-1 rounded animate-pulse">

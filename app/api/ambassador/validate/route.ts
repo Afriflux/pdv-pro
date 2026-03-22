@@ -34,8 +34,8 @@ export async function GET(req: Request): Promise<Response> {
       { status: 200 }
     )
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur serveur'
-    console.error('[API/ambassador/validate]', message)
+
+    console.error('[API/ambassador/validate]', error)
     return NextResponse.json(
       { valid: false, message: 'Erreur lors de la validation' },
       { status: 500 }

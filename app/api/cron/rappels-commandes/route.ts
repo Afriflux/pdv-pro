@@ -98,8 +98,8 @@ export async function POST(req: NextRequest) {
     return cronResponse({ reminders_sent: remindersSent })
 
   } catch (error: unknown) {
-    const errorMsg = error instanceof Error ? error.message : 'Erreur inconnue'
-    console.error('[CRON Rappels] Global Error:', errorMsg)
-    return cronResponse({ error: errorMsg }, 500)
+
+    console.error('[CRON Rappels] Global Error:', error)
+    return cronResponse({ error: error instanceof Error ? error.message : 'Erreur interne' }, 500)
   }
 }

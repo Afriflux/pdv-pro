@@ -101,10 +101,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     if (updateError) {
       console.error('[KYC /submit] Erreur mise à jour Store:', updateError.message)
-      return NextResponse.json(
-        { success: false, error: 'Erreur lors de la soumission du dossier' },
-        { status: 500 }
-      )
+      return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     console.log(
@@ -136,11 +133,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ success: true }, { status: 200 })
 
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    console.error('[KYC /submit] Erreur non gérée:', message)
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    )
+
+    console.error('[KYC /submit] Erreur non gérée:', error)
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

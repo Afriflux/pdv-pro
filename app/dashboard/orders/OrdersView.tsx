@@ -357,7 +357,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
                         {order.product?.images?.[0] ? (
                           <>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={order.product!.images[0]} alt="" className="w-full h-full object-cover" />
+                            <img src={order.product!.images[0]} alt={order.product?.name || "Image produit"} className="w-full h-full object-cover" />
                           </>
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">📦</div>

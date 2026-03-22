@@ -20,6 +20,6 @@ export async function GET(request: Request) {
 
   } catch (error: any) {
     console.error('CRON DOMAINS ERROR:', error)
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

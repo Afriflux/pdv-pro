@@ -52,6 +52,6 @@ export async function GET(request: Request) {
     })
   } catch (err: any) {
     console.error('Erreur API de suivi de commande:', err)
-    return NextResponse.json({ error: 'Erreur interne du serveur. Veuillez réessayer plus tard.' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

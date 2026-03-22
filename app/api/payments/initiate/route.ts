@@ -108,7 +108,7 @@ export async function POST(req: Request) {
 
   if (updateError) {
     console.error('[payments/initiate] Erreur mise à jour Order:', updateError.message)
-    return NextResponse.json({ error: 'Erreur lors de la mise à jour de la commande' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 
   // 7. Construire le PaymentIntent
@@ -158,8 +158,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ checkoutUrl, fees, vendorAmount }, { status: 200 })
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : `Erreur lors de l'initiation du paiement`
-    console.error('[payments/initiate] Erreur passerelle:', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+
+    console.error('[payments/initiate] Erreur passerelle:', error)
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

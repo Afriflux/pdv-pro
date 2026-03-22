@@ -53,13 +53,10 @@ export async function GET(): Promise<NextResponse> {
       { status: 200 }
     )
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    console.error('[Brevo /campaign GET] Erreur:', message)
 
-    return NextResponse.json(
-      { success: false, error: message, campaigns: [] },
-      { status: 500 }
-    )
+    console.error('[Brevo /campaign GET] Erreur:', error)
+
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }
 
@@ -177,12 +174,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       { status: 201 }
     )
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    console.error('[Brevo /campaign POST] Erreur:', message)
 
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    )
+    console.error('[Brevo /campaign POST] Erreur:', error)
+
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

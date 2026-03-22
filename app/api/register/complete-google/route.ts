@@ -124,8 +124,7 @@ export async function POST(req: NextRequest) {
       await linkVendorToAmbassador(code, storeId, registrationMonth)
       console.log(`[OAUTH GOOGLE] Vendeur ${storeId} lié à l'ambassadeur ${code}`)
     } catch (ambassadorError: unknown) {
-      const msg = ambassadorError instanceof Error ? ambassadorError.message : 'Erreur lien ambassadeur'
-      console.error('[OAUTH GOOGLE] Erreur linkVendorToAmbassador:', msg)
+      console.error('[OAUTH GOOGLE] Erreur linkVendorToAmbassador:', ambassadorError)
       // Ne pas throw l'erreur, la boutique est créée
     }
 
@@ -133,10 +132,7 @@ export async function POST(req: NextRequest) {
 
   } catch (error: unknown) {
     console.error('[OAUTH GOOGLE COMPLETE] Erreur interne:', error)
-    const msg = error instanceof Error ? error.message : 'Une erreur interne est survenue.'
-    return NextResponse.json(
-      { success: false, error: msg },
-      { status: 500 }
-    )
+
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

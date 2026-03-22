@@ -78,7 +78,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const { data: postsRaw, error: postsError } = await query
 
     if (postsError) {
-      return NextResponse.json({ error: postsError.message }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     const posts = (postsRaw as unknown) as PostRow[]
@@ -132,10 +132,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   } catch (err: unknown) {
     console.error('[community/posts GET]', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }
 
@@ -198,16 +195,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       .single()
 
     if (insertError) {
-      return NextResponse.json({ error: insertError.message }, { status: 500 })
+      return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true, post: newPost }, { status: 201 })
 
   } catch (err: unknown) {
     console.error('[community/posts POST]', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

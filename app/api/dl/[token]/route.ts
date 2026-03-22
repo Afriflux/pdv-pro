@@ -83,7 +83,7 @@ export async function GET(
 
   if (error || !signed?.signedUrl) {
     console.error('[dl/route] Erreur signed URL:', error?.message)
-    return NextResponse.json({ error: 'Fichier temporairement inaccessible.' }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 
   return NextResponse.redirect(signed.signedUrl)

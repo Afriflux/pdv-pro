@@ -75,7 +75,7 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
 
     if (updateErr) {
       console.error('[ambassador/contract] Erreur update:', updateErr.message)
-      return NextResponse.json({ success: false, error: updateErr.message }, { status: 500 })
+      return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
     console.log(`[ambassador/contract] ✅ Contrat signé pour l'ambassadeur ${id}`)
@@ -84,9 +84,6 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
 
   } catch (err: unknown) {
     console.error('[ambassador/contract]', err)
-    return NextResponse.json(
-      { success: false, error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

@@ -557,7 +557,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
                   {avatarPreview ? (
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={avatarPreview} alt="" className="w-full h-full object-cover" />
+                      <img src={avatarPreview} alt="Logo de la boutique" className="w-full h-full object-cover" />
                     </>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-emerald/5 text-emerald text-3xl font-black">

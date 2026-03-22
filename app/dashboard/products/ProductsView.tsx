@@ -53,7 +53,7 @@ function ProductListRow({ product, baseUrl }: { product: Product; baseUrl: strin
       {/* Image miniature */}
       <div className="w-12 h-12 rounded-lg bg-cream flex-shrink-0 overflow-hidden border border-line">
         {product.images?.[0] ? (
-          <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
+          <img src={product.images[0]} alt={product.name || "Image du produit"} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-xl">📦</div>
         )}
@@ -138,7 +138,7 @@ function LargeProductCard({ product, baseUrl }: { product: Product; baseUrl: str
       {/* Image large */}
       <div className="md:w-2/5 aspect-[16/10] md:aspect-auto relative bg-cream border-b md:border-b-0 md:border-r border-line overflow-hidden">
         {product.images?.[0] ? (
-          <img src={product.images[0]} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src={product.images[0]} alt={product.name || "Image du produit"} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-6xl">📦</div>
         )}

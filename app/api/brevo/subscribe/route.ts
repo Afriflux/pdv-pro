@@ -185,12 +185,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       { status: 200 }
     )
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    console.error('[Brevo /subscribe] Erreur non gérée:', message)
 
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    )
+    console.error('[Brevo /subscribe] Erreur non gérée:', error)
+
+    return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

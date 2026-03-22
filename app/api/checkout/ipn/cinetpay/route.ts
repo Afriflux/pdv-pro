@@ -60,10 +60,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true })
   } catch (err: unknown) {
     console.error('[IPN CinetPay] Erreur:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }
 

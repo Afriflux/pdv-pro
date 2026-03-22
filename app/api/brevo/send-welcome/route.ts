@@ -126,11 +126,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     )
   } catch (error: unknown) {
     // Erreur non prévue — on logge mais on répond success pour ne pas bloquer l'UX
-    const message = error instanceof Error ? error.message : 'Erreur interne'
-    console.error('[Brevo /send-welcome] Erreur non gérée:', message)
+
+    console.error('[Brevo /send-welcome] Erreur non gérée:', error)
 
     return NextResponse.json(
-      { success: true, warning: message },
+      { success: true, warning: error instanceof Error ? error.message : 'Erreur interne' },
       { status: 200 }
     )
   }

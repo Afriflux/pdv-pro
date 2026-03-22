@@ -113,8 +113,8 @@ export async function POST(request: Request) {
     })
 
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : 'Erreur interne lors de l\'enregistrement'
+
     console.error('[Affiliate Register Error]:', error)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

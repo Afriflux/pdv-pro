@@ -73,7 +73,7 @@ export async function POST(
         .eq('store_id', storeId)
 
       if (deleteError) {
-        return NextResponse.json({ error: deleteError.message }, { status: 500 })
+        return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
       }
 
       // Décrémentation atomique via RPC (pas de race condition)
@@ -113,7 +113,7 @@ export async function POST(
             likes_count: (current as { likes_count: number } | null)?.likes_count ?? 0,
           })
         }
-        return NextResponse.json({ error: insertError.message }, { status: 500 })
+        return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
       }
 
       // Incrémentation atomique via RPC (pas de race condition)
@@ -135,9 +135,6 @@ export async function POST(
 
   } catch (err: unknown) {
     console.error('[community/like POST]', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Erreur interne' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }
