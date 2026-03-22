@@ -41,6 +41,7 @@ interface ProductPageProps {
     cash_on_delivery: boolean
     resale_allowed?: boolean
     resale_commission?: number | null
+    digital_files?: any[]
     store: {
       id: string
       name: string
@@ -224,6 +225,12 @@ export default function ProductPage({
 }: ProductPageProps) {
   const accent = product.store.primary_color || '#0F7A60'
 
+  const bunnyVideoId = product.digital_files?.find(
+    (f: any) => f.bunny_video_id
+  )?.bunny_video_id as string | undefined
+
+  const bunnyLibraryId = process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID
+
   // États UI
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
     variants.length > 0 ? variants[0].id : null
@@ -341,6 +348,19 @@ export default function ProductPage({
 
           {/* ═══ Colonne gauche — Galerie ════════════════════════════════════ */}
           <div className="lg:sticky lg:top-24 lg:self-start mb-6 lg:mb-0">
+            {/* Player vidéo Bunny.net */}
+            {bunnyVideoId && bunnyLibraryId && (
+              <div className="rounded-2xl overflow-hidden bg-black aspect-video mb-4">
+                <iframe
+                  src={`https://iframe.mediadelivery.net/embed/${bunnyLibraryId}/${bunnyVideoId}?autoplay=false&preload=true`}
+                  title="Aperçu vidéo du produit"
+                  loading="lazy"
+                  className="w-full h-full border-0"
+                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            )}
             <ImageGallery
               images={product.images ?? []}
               productName={product.name}

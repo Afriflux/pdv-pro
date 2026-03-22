@@ -302,35 +302,82 @@ export default function OnboardingPage() {
                 {/* Numérique */}
                 <button
                   onClick={() => setVendorType('digital')}
-                  className={`p-6 rounded-2xl border-2 text-center transition-all ${
-                    vendorType === 'digital' ? 'border-emerald bg-emerald/5 shadow-md scale-105' : 'border-line hover:border-emerald/30'
+                  className={`p-6 rounded-2xl border-2 text-left transition-all ${
+                    vendorType === 'digital' ? 'border-emerald bg-emerald/5 shadow-md scale-[1.02]' : 'border-line hover:border-emerald/30'
                   }`}
                 >
-                  <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">💾</div>
-                  <h3 className="font-bold text-ink mb-1 text-lg">Digital</h3>
-                  <p className="text-xs text-dust leading-relaxed">Formations, eBooks, PDF, accès Telegram, Coachings</p>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl flex-shrink-0">💾</div>
+                    <h3 className="font-bold text-ink text-lg">Digital</h3>
+                  </div>
+                  <p className="text-sm text-dust leading-relaxed mb-3">
+                    Formations, eBooks, PDF, vidéos, coachings en ligne
+                  </p>
+                  <div className="space-y-1.5">
+                    <p className="text-xs text-emerald font-medium flex items-center gap-1.5">
+                      <span>🔐</span> Groupes Telegram privés — accès automatique
+                    </p>
+                    <p className="text-xs text-emerald font-medium flex items-center gap-1.5">
+                      <span>🎬</span> Vidéos hébergées en streaming (Bunny CDN)
+                    </p>
+                    <p className="text-xs text-emerald font-medium flex items-center gap-1.5">
+                      <span>📥</span> Livraison numérique instantanée
+                    </p>
+                  </div>
                 </button>
+
                 {/* Physique */}
                 <button
                   onClick={() => setVendorType('physical')}
-                  className={`p-6 rounded-2xl border-2 text-center transition-all ${
-                    vendorType === 'physical' ? 'border-emerald bg-emerald/5 shadow-md scale-105' : 'border-line hover:border-emerald/30'
+                  className={`p-6 rounded-2xl border-2 text-left transition-all ${
+                    vendorType === 'physical' ? 'border-emerald bg-emerald/5 shadow-md scale-[1.02]' : 'border-line hover:border-emerald/30'
                   }`}
                 >
-                  <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">📦</div>
-                  <h3 className="font-bold text-ink mb-1 text-lg">Physique</h3>
-                  <p className="text-xs text-dust leading-relaxed">Prêt-à-porter, cosmétiques, électronique, alimentation</p>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-xl flex-shrink-0">📦</div>
+                    <h3 className="font-bold text-ink text-lg">Physique</h3>
+                  </div>
+                  <p className="text-sm text-dust leading-relaxed mb-3">
+                    Prêt-à-porter, cosmétiques, électronique, alimentation
+                  </p>
+                  <div className="space-y-1.5">
+                    <p className="text-xs text-orange-600 font-medium flex items-center gap-1.5">
+                      <span>🚚</span> Zones de livraison personnalisables
+                    </p>
+                    <p className="text-xs text-orange-600 font-medium flex items-center gap-1.5">
+                      <span>📍</span> Suivi de commande en temps réel
+                    </p>
+                    <p className="text-xs text-orange-600 font-medium flex items-center gap-1.5">
+                      <span>💵</span> Paiement à la livraison (COD) disponible
+                    </p>
+                  </div>
                 </button>
+
                 {/* Hybride */}
                 <button
                   onClick={() => setVendorType('hybrid')}
-                  className={`p-6 rounded-2xl border-2 text-center transition-all ${
-                    vendorType === 'hybrid' ? 'border-emerald bg-emerald/5 shadow-md scale-105' : 'border-line hover:border-emerald/30'
+                  className={`p-6 rounded-2xl border-2 text-left transition-all ${
+                    vendorType === 'hybrid' ? 'border-emerald bg-emerald/5 shadow-md scale-[1.02]' : 'border-line hover:border-emerald/30'
                   }`}
                 >
-                  <div className="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">🔀</div>
-                  <h3 className="font-bold text-ink mb-1 text-lg">Hybride</h3>
-                  <p className="text-xs text-dust leading-relaxed">Vous proposez des produits physiques ET numériques</p>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl flex-shrink-0">🔀</div>
+                    <h3 className="font-bold text-ink text-lg">Hybride</h3>
+                  </div>
+                  <p className="text-sm text-dust leading-relaxed mb-3">
+                    Vous proposez des produits physiques ET numériques
+                  </p>
+                  <div className="space-y-1.5">
+                    <p className="text-xs text-purple-600 font-medium flex items-center gap-1.5">
+                      <span>✨</span> Toutes les fonctionnalités Digital + Physique
+                    </p>
+                    <p className="text-xs text-purple-600 font-medium flex items-center gap-1.5">
+                      <span>🏪</span> Une seule boutique pour tout votre catalogue
+                    </p>
+                    <p className="text-xs text-purple-600 font-medium flex items-center gap-1.5">
+                      <span>📊</span> Analytics unifiés sur tous vos produits
+                    </p>
+                  </div>
                 </button>
               </div>
             </div>
@@ -591,19 +638,43 @@ export default function OnboardingPage() {
                 🎉
               </div>
               <h2 className="text-4xl font-display font-black text-ink mb-4">Votre boutique est prête !</h2>
-              <p className="text-slate text-lg max-w-lg mx-auto mb-8">Félicitations, vous venez de poser la première pierre de votre empire. Voici ce qu'il vous reste à faire aujourd'hui :</p>
+              <p className="text-slate text-lg max-w-lg mx-auto mb-8">
+                Félicitations ! Voici vos prochaines étapes :
+              </p>
 
               <div className="max-w-md mx-auto space-y-3 text-left">
                 <Link href="/dashboard/products/new" className="flex items-center gap-4 p-4 rounded-xl border border-line hover:border-emerald hover:bg-emerald/5 transition-all group">
-                  <div className="w-8 h-8 rounded-full bg-white border border-line flex items-center justify-center group-hover:bg-emerald group-hover:text-white group-hover:border-emerald transition-colors">1</div>
-                  <span className="font-bold text-ink group-hover:text-emerald transition-colors">Ajouter votre premier produit</span>
-                  <ArrowRight size={16} className="ml-auto text-dust group-hover:text-emerald group-hover:translate-x-1 transition-all" />
+                  <div className="w-8 h-8 rounded-full bg-emerald text-white flex items-center justify-center font-bold text-sm">1</div>
+                  <div className="flex-1">
+                    <span className="font-bold text-ink group-hover:text-emerald transition-colors block">Ajouter votre premier produit</span>
+                    <span className="text-xs text-dust">Photos, prix, description — 3 min max</span>
+                  </div>
+                  <ArrowRight size={16} className="text-dust group-hover:text-emerald group-hover:translate-x-1 transition-all" />
                 </Link>
+
+                {/* CTA Telegram pour vendeurs digitaux */}
+                {(vendorType === 'digital' || vendorType === 'hybrid') && (
+                  <Link href="/dashboard/telegram" className="flex items-center gap-4 p-4 rounded-xl border border-blue-200 bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-all group">
+                    <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">2</div>
+                    <div className="flex-1">
+                      <span className="font-bold text-blue-900 block">Lier un groupe Telegram</span>
+                      <span className="text-xs text-blue-600">Vendez l'accès à votre groupe privé</span>
+                    </div>
+                    <ArrowRight size={16} className="text-blue-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+                  </Link>
+                )}
+
                 <Link href="/dashboard/settings" className="flex items-center gap-4 p-4 rounded-xl border border-line hover:border-emerald hover:bg-emerald/5 transition-all group">
-                  <div className="w-8 h-8 rounded-full bg-white border border-line flex items-center justify-center group-hover:bg-emerald group-hover:text-white group-hover:border-emerald transition-colors">2</div>
-                  <span className="font-bold text-ink group-hover:text-emerald transition-colors">Personnaliser votre vitrine</span>
+                  <div className="w-8 h-8 rounded-full bg-white border border-line flex items-center justify-center group-hover:bg-emerald group-hover:text-white group-hover:border-emerald transition-colors font-bold text-sm">
+                    {vendorType === 'digital' || vendorType === 'hybrid' ? '3' : '2'}
+                  </div>
+                  <div className="flex-1">
+                    <span className="font-bold text-ink group-hover:text-emerald transition-colors block">Personnaliser votre vitrine</span>
+                    <span className="text-xs text-dust">Logo, couleurs, bannière</span>
+                  </div>
                   <ArrowRight size={16} className="ml-auto text-dust group-hover:text-emerald group-hover:translate-x-1 transition-all" />
                 </Link>
+
                 <div 
                   onClick={() => {
                     navigator.clipboard.writeText(`https://pdvpro.com/${storeName.toLowerCase().replace(/\s+/g, '-')}`)
@@ -612,8 +683,11 @@ export default function OnboardingPage() {
                   className="flex items-center gap-4 p-4 rounded-xl border border-line hover:border-emerald hover:bg-emerald/5 transition-all group cursor-pointer"
                 >
                   <div className="w-8 h-8 rounded-full bg-white border border-line flex items-center justify-center group-hover:bg-emerald group-hover:text-white group-hover:border-emerald transition-colors"><Copy size={14}/></div>
-                  <span className="font-bold text-ink group-hover:text-emerald transition-colors">Copier le lien public</span>
-                  <span className="ml-auto text-[10px] font-black uppercase text-white bg-gold px-2 py-1 rounded-md">Pour Bio Insta</span>
+                  <div className="flex-1">
+                    <span className="font-bold text-ink group-hover:text-emerald transition-colors block">Copier le lien public</span>
+                    <span className="text-xs text-dust">Partagez-le sur WhatsApp, Instagram, TikTok</span>
+                  </div>
+                  <span className="text-[10px] font-black uppercase text-white bg-gold px-2 py-1 rounded-md">Bio Insta</span>
                 </div>
               </div>
 
@@ -622,7 +696,7 @@ export default function OnboardingPage() {
                   onClick={() => router.push('/dashboard')}
                   className="inline-block w-full sm:w-auto px-12 py-5 bg-ink text-white font-black rounded-2xl shadow-xl shadow-ink/20 hover:bg-slate hover:scale-105 transition-all"
                 >
-                  Aller sur mon Dashboard Marchand
+                  Aller sur mon Dashboard
                 </button>
               </div>
             </div>
