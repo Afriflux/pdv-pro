@@ -25,7 +25,8 @@ import {
   Share2,
   Target,
   Wallet,
-  Store as StoreIcon
+  Store as StoreIcon,
+  ExternalLink
 } from 'lucide-react'
 import { TelegramSettings } from '@/components/settings/TelegramSettings'
 
@@ -543,6 +544,20 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
               {message.type === 'success' ? <Check size={16}/> : '!'}
             </div>
             {message.text}
+          </div>
+        )}
+
+        {store?.slug && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+            <span className="text-sm text-emerald-800 font-medium">Votre boutique est en ligne :</span>
+            <a
+              href={`/${store.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-bold text-[#0F7A60] hover:underline flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-emerald-100 shadow-sm"
+            >
+              pdvpro.com/{store.slug} <ExternalLink size={14} />
+            </a>
           </div>
         )}
 

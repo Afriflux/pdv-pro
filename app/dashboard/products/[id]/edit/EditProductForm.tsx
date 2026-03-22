@@ -735,13 +735,57 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
           {(existingImages.length > 0 || newPreviews.length > 0) && (
             <div className="flex gap-2 flex-wrap">
               {existingImages.map((src, i) => (
-                <div key={`ex-${i}`} className="relative w-20 h-20 group">
+                <div
+                  key={`ex-${i}`}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('text/plain', `ex-${i}`)
+                    e.currentTarget.classList.add('opacity-50')
+                  }}
+                  onDragEnd={(e) => {
+                    e.currentTarget.classList.remove('opacity-50')
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                    e.currentTarget.classList.add('ring-2', 'ring-[#0F7A60]')
+                  }}
+                  onDragLeave={(e) => {
+                    e.currentTarget.classList.remove('ring-2', 'ring-[#0F7A60]')
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    e.currentTarget.classList.remove('ring-2', 'ring-[#0F7A60]')
+                    const transferData = e.dataTransfer.getData('text/plain')
+                    if (!transferData.startsWith('ex-')) return // Prevent mixing new and existing for now
+                    
+                    const fromIndex = parseInt(transferData.replace('ex-', ''))
+                    const toIndex = i
+                    if (fromIndex === toIndex || isNaN(fromIndex)) return
+                    
+                    const newExisting = [...existingImages]
+                    const [moved] = newExisting.splice(fromIndex, 1)
+                    newExisting.splice(toIndex, 0, moved)
+                    setExistingImages(newExisting)
+                  }}
+                  className="relative w-20 h-20 group cursor-grab active:cursor-grabbing transition-all rounded-xl"
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="Image du produit" className="w-20 h-20 rounded-xl object-cover border border-gray-200" />
+                  <img src={src} alt={`Image du produit ${i+1}`} className="w-full h-full rounded-xl object-cover border border-gray-200" />
+                  
+                  {i === 0 && (
+                    <span className="absolute -top-1.5 -left-1.5 bg-[#0F7A60] text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm z-10">
+                      COUV
+                    </span>
+                  )}
+                  
                   <button type="button" onClick={() => removeExisting(i)}
-                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10">
                     ×
                   </button>
+
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[9px] text-center py-1 rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+                    Glissez/Réorganiser
+                  </div>
                 </div>
               ))}
               {newPreviews.map((src, i) => (

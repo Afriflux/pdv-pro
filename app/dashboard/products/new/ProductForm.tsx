@@ -721,22 +721,72 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
         {imagePreviews.length > 0 && (
           <div className="flex gap-2 flex-wrap">
             {imagePreviews.map((src, i) => (
-              <div key={i} className="relative w-23 h-23 group">
+              <div
+                key={i}
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('text/plain', String(i))
+                  e.currentTarget.classList.add('opacity-50')
+                }}
+                onDragEnd={(e) => {
+                  e.currentTarget.classList.remove('opacity-50')
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  e.currentTarget.classList.add('ring-2', 'ring-[#0F7A60]')
+                }}
+                onDragLeave={(e) => {
+                  e.currentTarget.classList.remove('ring-2', 'ring-[#0F7A60]')
+                }}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  e.currentTarget.classList.remove('ring-2', 'ring-[#0F7A60]')
+                  const fromIndex = parseInt(e.dataTransfer.getData('text/plain'))
+                  const toIndex = i
+                  if (fromIndex === toIndex || isNaN(fromIndex)) return
+                  
+                  // Réorganiser les fichiers ET les previews
+                  const newFiles = [...imageFiles]
+                  const newPreviews = [...imagePreviews]
+                  const [movedFile] = newFiles.splice(fromIndex, 1)
+                  const [movedPreview] = newPreviews.splice(fromIndex, 1)
+                  newFiles.splice(toIndex, 0, movedFile)
+                  newPreviews.splice(toIndex, 0, movedPreview)
+                  setImageFiles(newFiles)
+                  setImagePreviews(newPreviews)
+                }}
+                className="relative w-20 h-20 group cursor-grab active:cursor-grabbing transition-all rounded-xl"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="Miniature du produit" className="w-20 h-20 rounded-xl object-cover border border-gray-200" />
+                <img src={src} alt={`Image produit ${i + 1}`} className="w-full h-full rounded-xl object-cover border border-gray-200" />
+                
+                {/* Badge "Couverture" sur la première image */}
+                {i === 0 && (
+                  <span className="absolute -top-1.5 -left-1.5 bg-[#0F7A60] text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm z-10">
+                    COUV
+                  </span>
+                )}
+                
                 {/* Badge GIF animé */}
                 {imageFiles[i]?.type === 'image/gif' && (
-                  <span className="absolute bottom-1 left-1 bg-purple-500 text-white text-[9px] font-black px-1 rounded animate-pulse">
+                  <span className="absolute bottom-1 left-1 bg-purple-500 text-white text-[9px] font-black px-1 rounded animate-pulse z-10">
                     GIF
                   </span>
                 )}
+                
+                {/* Bouton supprimer */}
                 <button
                   type="button"
                   onClick={() => removeImage(i)}
-                  className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 >
                   ×
                 </button>
+                
+                {/* Indicateur de drag */}
+                <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[9px] text-center py-1 rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+                  Glissez/Réorganiser
+                </div>
               </div>
             ))}
           </div>

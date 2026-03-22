@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import ChartLazyWrapper from './ChartLazyWrapper'
 import { CopyLinkQuickAction, WhatsAppQuickAction } from './DashboardActions'
-import { Package, ShoppingBag, ArrowRight } from 'lucide-react'
+import { Package, ShoppingBag, ArrowRight, Eye } from 'lucide-react'
 import { Check360Widget } from '@/components/dashboard/Check360Widget'
 import WelcomeGuide from '@/components/dashboard/WelcomeGuide'
 import { GettingStartedChecklist } from '@/components/dashboard/GettingStartedChecklist'
@@ -286,23 +286,39 @@ export default async function DashboardPage() {
           </div>
 
           {/* Actions Rapides (5 cols) */}
-          <div className="lg:col-span-5 grid grid-cols-2 gap-4">
-            <Link href="/dashboard/products/new" className="bg-[#0F7A60] hover:bg-[#0D6B53] text-white p-6 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors shadow-sm group">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <span className="text-xl leading-none">+</span>
-              </div>
-              <span className="text-xs font-bold text-center">Nouveau produit</span>
-            </Link>
+          <div className="lg:col-span-5 flex flex-col gap-4">
+            
+            {/* Bouton Aperçu mis en évidence */}
+            {storeSlug && (
+              <a
+                href={`/${storeSlug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 px-4 py-3.5 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm font-bold hover:border-[#0F7A60] hover:bg-[#0F7A60]/5 hover:text-[#0F7A60] transition-all group shadow-sm w-full"
+              >
+                <Eye size={18} className="group-hover:text-[#0F7A60] transition-colors" />
+                Aperçu ma boutique
+              </a>
+            )}
 
-            <Link href="/dashboard/orders" className="bg-white border border-gray-100 p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-[#0F7A60] transition-colors shadow-sm group text-[#1A1A1A]">
-              <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:bg-[#0F7A60]/10 group-hover:text-[#0F7A60] transition-all">
-                 <Package size={20} />
-              </div>
-              <span className="text-xs font-bold text-center">Mes commandes</span>
-            </Link>
+            <div className="grid grid-cols-2 gap-4 flex-1">
+              <Link href="/dashboard/products/new" className="bg-[#0F7A60] hover:bg-[#0D6B53] text-white p-6 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors shadow-sm group">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="text-xl leading-none">+</span>
+                </div>
+                <span className="text-xs font-bold text-center">Nouveau produit</span>
+              </Link>
 
-            <CopyLinkQuickAction slug={storeSlug} />
-            <WhatsAppQuickAction slug={storeSlug} />
+              <Link href="/dashboard/orders" className="bg-white border border-gray-100 p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-[#0F7A60] transition-colors shadow-sm group text-[#1A1A1A]">
+                <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:bg-[#0F7A60]/10 group-hover:text-[#0F7A60] transition-all">
+                   <Package size={20} />
+                </div>
+                <span className="text-xs font-bold text-center">Mes commandes</span>
+              </Link>
+
+              <CopyLinkQuickAction slug={storeSlug} />
+              <WhatsAppQuickAction slug={storeSlug} />
+            </div>
           </div>
 
         </section>
