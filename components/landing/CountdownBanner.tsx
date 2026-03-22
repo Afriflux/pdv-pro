@@ -8,6 +8,8 @@ import { Timer, ArrowRight } from 'lucide-react'
 const TARGET_DATE = new Date('2026-03-24T00:00:00Z').getTime()
 
 export function CountdownBanner() {
+  const LAUNCH_DATE = new Date('2026-03-24T00:00:00+00:00')
+  const [mounted, setMounted] = useState(false)
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -16,6 +18,7 @@ export function CountdownBanner() {
   })
 
   useEffect(() => {
+    setMounted(true)
     const updateTimer = () => {
       const now = new Date().getTime()
       const distance = TARGET_DATE - now
@@ -36,6 +39,9 @@ export function CountdownBanner() {
     const interval = setInterval(updateTimer, 1000)
     return () => clearInterval(interval)
   }, [])
+
+  if (!mounted) return null
+  if (new Date() >= LAUNCH_DATE) return null
 
   return (
     <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-md relative z-[60]">

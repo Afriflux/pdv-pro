@@ -215,15 +215,17 @@ export default async function LandingPage() {
           </svg>
 
           <div className="max-w-5xl mx-auto text-center space-y-8 relative z-10">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-full px-4 py-1.5 mb-6 animate-in fade-in slide-in-from-bottom-2">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
-              </span>
-              <span className="text-sm font-semibold text-amber-700">
-                🚀 Launch Week — Commission à 4% pour les 100 premiers vendeurs
-              </span>
-            </div>
+            {new Date() < new Date('2026-03-31T00:00:00+00:00') && (
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-full px-4 py-1.5 mb-6 animate-in fade-in slide-in-from-bottom-2">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
+                </span>
+                <span className="text-sm font-semibold text-amber-700">
+                  🚀 Launch Week — Commission à 4% pour les 100 premiers vendeurs
+                </span>
+              </div>
+            )}
             
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-tight text-ink leading-[1.1]">
               {h1L1}<br />

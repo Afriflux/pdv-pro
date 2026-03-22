@@ -45,55 +45,52 @@ export async function sendWhatsApp({ to, body }: { to: string; body: string }): 
 
 // ── Templates de messages ──────────────────────────────────────────
 
-export function msgOrderConfirmed(params: {
-  buyerName: string
-  productName: string
-  amount: number
-  orderId: string
-  vendorName: string
+export function msgOrderConfirmed({ buyerName, productName, amount, orderId, vendorName }: {
+  buyerName: string; productName: string; amount: number; orderId: string; vendorName: string
 }) {
-  return `✅ Commande confirmée !
-Bonjour ${params.buyerName.split(' ')[0]},
-Votre commande *${params.productName}* a bien été reçue.
-Montant : *${params.amount.toLocaleString('fr-FR')} FCFA*
-Référence : #${params.orderId.split('-')[0].toUpperCase()}
-Nous vous contacterons sous peu.
-— ${params.vendorName}`
+  const ref = orderId.split('-')[0].toUpperCase()
+  return `✅ *Commande confirmée !*
+
+Bonjour ${buyerName},
+
+Votre commande *${productName}* de *${amount.toLocaleString('fr-FR')} FCFA* a bien été reçue par ${vendorName}.
+
+📦 Réf : #${ref}
+📍 Suivez votre commande : https://pdvpro.com/track?ref=${orderId}
+
+Le vendeur vous contactera pour la livraison.
+
+Merci d'avoir choisi PDV Pro ! 🙏`
 }
 
-export function msgVendorNewOrder(params: {
-  productName: string
-  buyerName: string
-  buyerPhone: string
-  amount: number
-  vendorAmount: number
-  address?: string
+export function msgVendorNewOrder({ productName, buyerName, buyerPhone, amount, vendorAmount, address }: {
+  productName: string; buyerName: string; buyerPhone: string; amount: number; vendorAmount: number; address?: string
 }) {
-  return `🛍️ Nouvelle commande !
-*${params.productName}*
-👤 ${params.buyerName}
-📱 ${params.buyerPhone}
-💰 ${params.amount.toLocaleString('fr-FR')} FCFA (vous recevez *${params.vendorAmount.toLocaleString('fr-FR')} FCFA*)${params.address ? `\n📍 ${params.address}` : ''}
-Connectez-vous pour gérer : pdvpro.com/dashboard`
+  return `🛍️ *Nouvelle commande !*
+
+Client : *${buyerName}* (${buyerPhone})
+Produit : *${productName}*
+Montant : *${amount.toLocaleString('fr-FR')} FCFA*
+Votre part : *${vendorAmount.toLocaleString('fr-FR')} FCFA*
+${address ? `📍 Livraison : ${address}\n` : ''}
+👉 Gérez vos commandes : https://pdvpro.com/dashboard/orders`
 }
 
-export function msgDigitalDelivery(params: {
-  buyerName: string
-  productName: string
-  downloadUrl: string
-  expiresInDays: number
+export function msgDigitalDelivery({ buyerName, productName, downloadUrl, expiresInDays }: {
+  buyerName: string; productName: string; downloadUrl: string; expiresInDays: number
 }) {
-  return `📥 *Votre produit est prêt !*
+  return `📥 *Votre produit numérique est prêt !*
 
-Bonjour ${params.buyerName.split(' ')[0]},
+Bonjour ${buyerName},
 
-*${params.productName}* est disponible au téléchargement :
+Votre achat *${productName}* est disponible au téléchargement :
 
-👉 ${params.downloadUrl}
+🔗 ${downloadUrl}
 
-⚠️ Lien valable *${params.expiresInDays} jours*
+⏰ Ce lien est valable ${expiresInDays} jours.
 
-_Propulsé par PDV Pro 🚀_`
+Merci pour votre confiance ! 🙏
+— PDV Pro`
 }
 
 export function msgVendorCodReminder(params: {
