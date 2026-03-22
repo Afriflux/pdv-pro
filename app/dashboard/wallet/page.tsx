@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import WithdrawForm from './WithdrawForm'
+import { DepositModal } from '@/components/dashboard/DepositModal'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -103,16 +104,22 @@ export default async function WalletPage() {
     <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in duration-500">
 
       {/* ── En-tête ── */}
-      <header>
-        <div className="flex items-center gap-3 mb-1">
-          <div className="p-2 rounded-xl bg-[#0F7A60]/10">
-            <span className="text-xl">💰</span>
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3 mb-1">
+            <div className="p-2 rounded-xl bg-[#0F7A60]/10">
+              <span className="text-xl">💰</span>
+            </div>
+            <h1 className="text-2xl font-black text-[#1A1A1A]">Mon Portefeuille</h1>
           </div>
-          <h1 className="text-2xl font-black text-[#1A1A1A]">Mon Portefeuille</h1>
+          <p className="text-sm text-gray-400 ml-12">
+            Suivez vos revenus et effectuez vos retraits.
+          </p>
         </div>
-        <p className="text-sm text-gray-400 ml-12">
-          Suivez vos revenus et effectuez vos retraits.
-        </p>
+        
+        <div className="shrink-0 w-full sm:w-auto">
+          <DepositModal />
+        </div>
       </header>
 
       {/* ── Alerte : compte de retrait non configuré ── */}
