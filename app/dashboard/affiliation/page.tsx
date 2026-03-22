@@ -25,7 +25,7 @@ export default async function AffiliatePage() {
     .single()
 
   if (storeError || !store) {
-    redirect('/dashboard/onboarding')
+    redirect('/')
   }
 
   // 2. Vérifier l'existence du profil affilié, sinon le créer

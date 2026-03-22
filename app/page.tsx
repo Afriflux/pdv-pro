@@ -161,7 +161,7 @@ export default async function LandingPage() {
   const h1Lines = h1Raw.split('\n').filter(Boolean)
   const [h1L1, h1L2, h1L3] = h1Lines.length >= 3
     ? h1Lines
-    : ['Votre boutique pro.', 'Vos premiers paiements.', 'Ce soir.']
+    : ['Commencez à vendre', 'aujourd\'hui.', 'Encaissez sur Wave/OM.']
 
   // Counts en temps réel
   const [
@@ -234,12 +234,12 @@ export default async function LandingPage() {
             </h1>
             
             <p className="text-xl md:text-2xl text-slate font-light max-w-3xl mx-auto leading-relaxed">
-              {get('landing_hero_subtitle', 'PDV Pro est la seule plateforme conçue pour le commerce mobile en Afrique de l\'Ouest. Wave, Orange Money — tout est intégré. Zéro frais fixe, vous ne payez qu\'une commission sur vos ventes.')}
+              {get('landing_hero_subtitle', 'PDV Pro est la seule plateforme conçue pour encaisser rapidement en Afrique. Retrait possible dès 5 000 FCFA sur Wave ou Orange Money. Zéro frais fixe.')}
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
               <Link href="/register" className="w-full sm:w-auto px-8 py-4 bg-emerald hover:bg-emerald-rich text-white font-semibold rounded-full text-lg transition shadow-xl shadow-emerald/20 flex items-center justify-center gap-2">
-                {get('landing_hero_cta_primary', 'Créer ma boutique gratuite')} <ArrowRight size={20} />
+                {get('landing_hero_cta_primary', 'Lancer ma boutique')} <ArrowRight size={20} />
               </Link>
               <Link href="/vendeurs" className="w-full sm:w-auto px-8 py-4 bg-white border border-emerald text-emerald hover:bg-emerald/5 rounded-full font-medium text-lg transition flex items-center justify-center shadow-sm">
                 Voir les boutiques actives →
@@ -563,6 +563,45 @@ export default async function LandingPage() {
           <div className="max-w-7xl mx-auto relative z-10">
             <h2 className="text-3xl md:text-5xl font-display font-black text-center mb-16 tracking-tight text-ink">Avis des précurseurs.</h2>
             <TestimonialSlider testimonials={testimonialData} />
+          </div>
+        </section>
+
+        {/* 6.5 PREUVES DE RETRAITS (Mode Cash) */}
+        <section className="py-20 px-6 bg-white overflow-hidden relative">
+          <div className="max-w-5xl mx-auto text-center">
+            <span className="inline-block bg-emerald/10 text-emerald font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 border border-emerald/20">Transparence Totale</span>
+            <h2 className="text-3xl md:text-4xl font-display font-black mb-6 text-ink">L'argent va <span className="text-emerald">directement</span> sur votre téléphone.</h2>
+            <p className="text-lg text-slate font-light max-w-2xl mx-auto mb-12">Retraits traités tous les jours vers Wave et Orange Money. Pas de blocage, pas de délai artificiel. C'est votre argent, vous en disposez quand vous voulez (dès 5 000 FCFA).</p>
+            
+            <div className="flex justify-center gap-4 flex-wrap">
+               {/* Mockup Preuve de retrait Wave */}
+               <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 w-72 text-left shadow-sm hover:shadow-md transition-shadow transform hover:-translate-y-1">
+                 <div className="flex justify-between items-center mb-4">
+                   <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-black text-xs">W</div>
+                   <span className="text-[10px] text-gray-400 font-medium">Aujourd'hui, 09:42</span>
+                 </div>
+                 <p className="text-xs text-blue-900/60 font-bold mb-1 uppercase tracking-wider">Transfert reçu avec succès</p>
+                 <p className="text-2xl font-black text-blue-600 mb-2">+ 45 000 F</p>
+                 <p className="text-xs text-gray-500 font-medium">De: PDV PRO</p>
+                 <p className="text-[10px] text-gray-400 mt-2">Nouveau solde: 124 500 F</p>
+               </div>
+
+               {/* Mockup Preuve de retrait OM */}
+               <div className="bg-orange-50/50 border border-orange-100 rounded-2xl p-5 w-72 text-left shadow-sm hover:shadow-md transition-shadow transform hover:-translate-y-1">
+                 <div className="flex justify-between items-center mb-4">
+                   <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-black text-xs">OM</div>
+                   <span className="text-[10px] text-gray-400 font-medium">Hier, 18:15</span>
+                 </div>
+                 <p className="text-xs text-orange-900/60 font-bold mb-1 uppercase tracking-wider">Paiement reçu</p>
+                 <p className="text-2xl font-black text-orange-600 mb-2">+ 120 000 F</p>
+                 <p className="text-xs text-gray-500 font-medium">De: PDV PRO PAYMENTS</p>
+                 <p className="text-[10px] text-gray-400 mt-2">Nouveau solde: 450 000 F</p>
+               </div>
+            </div>
+            <div className="mt-10 flex items-center justify-center gap-2 text-sm text-gray-500 font-medium bg-gray-50 inline-flex px-6 py-2 rounded-full border border-gray-100 mx-auto">
+               <Shield className="w-4 h-4 text-emerald" />
+               Vos fonds sont sécurisés et garantis.
+            </div>
           </div>
         </section>
 

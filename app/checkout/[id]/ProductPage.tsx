@@ -250,6 +250,14 @@ export default function ProductPage({
     && product.cash_on_delivery === true 
     && (product.store.vendor_type === 'physical' || product.store.vendor_type === 'hybrid')
 
+  // --- NOUVEAU : WhatsApp direct ---
+  const rawWhatsapp = product.store.social_links?.whatsapp
+  const whatsappNumber = rawWhatsapp ? rawWhatsapp.replace(/[^0-9]/g, '') : null
+  const isWhatsappCallable = !!whatsappNumber
+  const whatsappMessage = encodeURIComponent(`Bonjour, je veux commander "${product.name}" à ${finalPrice.toLocaleString('fr-FR')} FCFA. (Quantité souhaitée : ${quantity})`)
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`
+
+
   // Variant sélectionné
   const selectedVariant = variants.find((v) => v.id === selectedVariantId) ?? null
   const variantStock    = selectedVariant?.stock ?? 99
@@ -522,14 +530,34 @@ export default function ProductPage({
                 ) : null}
 
                 <div className="space-y-3">
+                  
+                  {/* BANNERE CONVERSION (Mode Cash) */}
+                  <div className="bg-emerald-50 text-emerald-800 text-xs font-bold px-4 py-2.5 rounded-xl mb-4 flex items-center justify-center gap-2 border border-emerald-100 shadow-sm leading-tight text-center">
+                    <span className="flex-shrink-0 text-base">✅</span>
+                    Paiement à la livraison disponible + Mobile Money
+                  </div>
+
                   <button
                     type="button"
                     onClick={() => handleOpenForm('online')}
-                    className="w-full text-white font-black py-4 rounded-2xl text-base transition-all shadow-xl hover:shadow-2xl hover:scale-[1.01] active:scale-[0.99]"
+                    className="w-full text-white font-black py-4 rounded-2xl text-base transition-all shadow-xl hover:shadow-2xl hover:scale-[1.01] active:scale-[0.99] flex justify-center items-center gap-2"
                     style={{ backgroundColor: accent }}
                   >
-                    🛒 Commander maintenant
+                    <ShoppingBag className="w-5 h-5" />
+                    Commander maintenant
                   </button>
+
+                  {isWhatsappCallable && (
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full font-black py-4 flex items-center justify-center gap-2 rounded-2xl text-base transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 bg-[#25D366] text-white"
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                      Commander sur WhatsApp
+                    </a>
+                  )}
 
                   {showCOD && (
                     <button
@@ -541,6 +569,17 @@ export default function ProductPage({
                       💵 Payer à la livraison
                     </button>
                   )}
+                </div>
+
+                {/* Badge Sécurité Mobile Money & Wave (Mode Cash) */}
+                <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col items-center justify-center gap-2 mt-4 shadow-inner">
+                  <div className="flex items-center gap-3">
+                     <span className="text-xl px-2 py-1 bg-white shadow-sm border border-gray-100 rounded font-black text-blue-500">Wave</span>
+                     <span className="text-xl px-2 py-1 bg-white shadow-sm border border-gray-100 rounded font-black text-orange-500">Orange💸</span>
+                  </div>
+                  <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase flex items-center gap-1">
+                    <Lock className="w-3 h-3" /> Paiement 100% sécurisé mobile money
+                  </p>
                 </div>
               </div>
             )}

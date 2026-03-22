@@ -90,7 +90,7 @@ export default function RegisterPage({ searchParams }: RegisterPageProps) {
           </div>
 
           <div className="text-center mb-8">
-            <h2 className="font-display font-black text-3xl text-ink mb-2">Créez votre boutique gratuite en 2 minutes</h2>
+            <h2 className="font-display font-black text-3xl text-ink mb-2">Lancez votre boutique en 2 minutes</h2>
           </div>
 
           <RegisterForm errorMsg={errorMsg} />

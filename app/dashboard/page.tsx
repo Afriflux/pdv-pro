@@ -39,7 +39,7 @@ export default async function DashboardPage() {
     .single()
 
   if (!storeRaw) {
-    redirect('/onboarding')
+    redirect('/')
   }
 
   const storeId   = storeRaw.id
