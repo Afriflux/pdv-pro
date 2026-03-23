@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { MapPin } from 'lucide-react'
 import { ZoneList } from './ZoneList'
 
 export const metadata = {
@@ -25,21 +26,24 @@ export default async function ZonesPage() {
   const zones = store.deliveryZones
 
   return (
-    <main className="min-h-screen bg-[#FAFAF7] font-sans pb-20">
-      <header className="bg-white border-b border-gray-100 px-6 lg:px-10 py-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-black text-[#1A1A1A] tracking-tight">
+    <div className="space-y-6 w-full pb-32">
+      <div className="flex items-center justify-between bg-white p-6 rounded-3xl shadow-sm border border-line pt-10">
+        <div>
+          <h1 className="text-2xl font-black text-ink flex items-center gap-3">
+            <span className="w-10 h-10 rounded-xl bg-emerald/10 text-[#0F7A60] flex items-center justify-center">
+              <MapPin className="w-6 h-6" />
+            </span>
             Zones Tarifaires
           </h1>
-          <p className="text-sm font-medium text-gray-400 mt-2">
-            Définissez vos frais de livraison et permettez à l&apos;acheteur de choisir.
+          <p className="text-dust text-sm mt-1 font-medium">
+            Définissez vos frais de livraison et permettez à l'acheteur de choisir.
           </p>
         </div>
-      </header>
+      </div>
 
-      <div className="max-w-7xl mx-auto p-6 lg:p-10">
+      <div className="bg-transparent border-0 p-0">
         <ZoneList initialZones={zones} />
       </div>
-    </main>
+    </div>
   )
 }

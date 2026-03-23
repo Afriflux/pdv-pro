@@ -62,10 +62,16 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState<number | null>(null)
+  const [canSubmitTimeout, setCanSubmitTimeout] = useState(false)
   
   // IA
   const [showAI, setShowAI]     = useState(false)
   const [showAdvanced, setShowAdvanced] = useState(false)
+
+  // NOUVEAU: Wizard & SEO
+  const [currentStep, setCurrentStep] = useState(1)
+  const [seoTitle, setSeoTitle] = useState('')
+  const [seoDescription, setSeoDescription] = useState('')
 
   // Ref fichier digital
   const digitalFileRef = useRef<HTMLInputElement>(null)
@@ -90,13 +96,22 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   const [cashOnDelivery, setCashOnDelivery] = useState(false)
 
   // ── États Coaching ──
-  const [sessionDuration, setSessionDuration] = useState('')
+  const [sessionDuration] = useState('')
   const [sessionMode,     setSessionMode]     = useState<'online' | 'onsite' | 'both'>('online')
   const [bookingLink,     setBookingLink]     = useState('')
+  const [coachingType,    setCoachingType]    = useState<'individual' | 'group'>('individual')
+  const [maxParticipants, setMaxParticipants] = useState('10')
+  const [coachingDurations, setCoachingDurations] = useState<number[]>([60])
+  const [coachingIsPack, setCoachingIsPack] = useState(false)
+  const [coachingPackCount, setCoachingPackCount] = useState('1')
 
   // ── États Telegram ──
   const [telegramCommunities, setTelegramCommunities] = useState<any[]>([])
   const [selectedCommunityId, setSelectedCommunityId] = useState<string>('')
+
+  // ── États Affiliation ──
+  const [affiliateActive, setAffiliateActive] = useState<boolean | null>(null)
+  const [affiliateMargin, setAffiliateMargin] = useState<string>('')
 
   // Fetch Telegram Communities
   useEffect(() => {
@@ -306,7 +321,16 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
             }
           : type === 'physical'
           ? { shipping_fee: shippingFee ? parseFloat(shippingFee) : null, shipping_delay: shippingDelay.trim() || null, cash_on_delivery: cashOnDelivery }
-          : { session_duration: sessionDuration.trim() || null, session_mode: sessionMode, booking_link: bookingLink.trim() || null }
+          : { 
+              session_duration: sessionDuration.trim() || null, 
+              session_mode: sessionMode, 
+              booking_link: bookingLink.trim() || null,
+              coaching_type: coachingType,
+              max_participants: coachingType === 'group' ? (parseInt(maxParticipants) || 10) : 1,
+              coaching_durations: coachingDurations.length > 0 ? coachingDurations : [60],
+              coaching_is_pack: coachingIsPack,
+              coaching_pack_count: coachingIsPack ? parseInt(coachingPackCount) || 1 : 1
+            }
 
       const productId = crypto.randomUUID()
 
@@ -321,7 +345,11 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           type,
           category:    category.trim() || null,
           images:      imageUrls,
-          active,
+          active:          active,
+          affiliate_active: affiliateActive,
+          affiliate_margin: affiliateMargin ? parseFloat(affiliateMargin) / 100 : null,
+          seo_title:       seoTitle.trim() || null,
+          seo_description: seoDescription.trim() || null,
           created_at:  new Date().toISOString(),
           updated_at:  new Date().toISOString(),
           ...typeExtra,
@@ -376,8 +404,43 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   // ----------------------------------------------------------------
   // Render
   // ----------------------------------------------------------------
+  const steps = [
+    { num: 1, label: 'Général' },
+    { num: 2, label: 'Spécificités' },
+    { num: 3, label: 'Médias' },
+    { num: 4, label: 'Avancé & SEO' }
+  ]
+
+  const handleNext = () => setCurrentStep(prev => Math.min(prev + 1, 4))
+  const handlePrev = () => setCurrentStep(prev => Math.max(prev - 1, 1))
+
+  useEffect(() => {
+    let t: NodeJS.Timeout
+    if (currentStep === 4) {
+      setCanSubmitTimeout(false)
+      t = setTimeout(() => setCanSubmitTimeout(true), 500)
+    }
+    return () => {
+      if (t) clearTimeout(t)
+    }
+  }, [currentStep])
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6 pb-20">
+      {/* --- FORM WIZARD STEPPER (Glassmorphism) --- */}
+      <div className="bg-white/80 backdrop-blur-xl border border-white max-w-2xl mx-auto shadow-sm shadow-black/5 rounded-[20px] p-2 flex items-center justify-between overflow-x-auto hide-scrollbar sticky top-[80px] z-20">
+        {steps.map(step => (
+          <div key={step.num} className="flex items-center gap-2.5 px-3 py-1.5 min-w-max">
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${currentStep === step.num ? 'bg-gold text-white shadow-md shadow-gold/30' : currentStep > step.num ? 'bg-ink text-white' : 'bg-gray-100 text-gray-400'}`}>
+              {currentStep > step.num ? '✓' : step.num}
+            </div>
+            <span className={`text-[13px] font-semibold transition-colors ${currentStep === step.num ? 'text-ink' : currentStep > step.num ? 'text-ink/70' : 'text-gray-400'}`}>
+              {step.label}
+            </span>
+          </div>
+        ))}
+      </div>
+
       {/* Erreur globale */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
@@ -400,7 +463,9 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
       )}
 
       {/* ── IA GENERATOR TOGGLE ── */}
-      <div className="flex justify-end">
+      {currentStep === 1 && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex justify-end">
         <button
           type="button"
           onClick={() => setShowAI(v => !v)}
@@ -418,10 +483,19 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
       {showAI && (
         <AIProductGenerator
           category={category}
-          onGenerated={(data) => {
-            if (data.name) setName(data.name)
-            if (data.description) setDescription(data.description)
+          onGenerated={(data: any) => {
+            if (data.title || data.name) setName(data.title || data.name)
+            
+            if (data.benefits || data.faq) {
+              const formattedDesc = `${data.description}\n\n✨ Pourquoi vous allez l'adorer :\n${(data.benefits || []).map((b: string) => `- ${b}`).join('\n')}\n\n❓ Questions Fréquentes :\n${(data.faq || []).map((f: any) => `Q: ${f.question}\nR: ${f.answer}`).join('\n\n')}\n\n🚀 ${data.callToAction || ''}`
+              setDescription(formattedDesc)
+            } else if (data.description) {
+              setDescription(data.description)
+            }
+            
             if (data.price) setPrice(String(data.price))
+            if (data.seoTitle) setSeoTitle(data.seoTitle)
+            if (data.metaDescription) setSeoDescription(data.metaDescription)
             
             // On ferme le widget après import
             setShowAI(false)
@@ -499,7 +573,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
             {([
               { v: 'physical', label: '📦 Physique' },
               { v: 'digital',  label: '📥 Digital'  },
-              { v: 'coaching', label: '🎓 Coaching' },
+              { v: 'coaching', label: '🎓 Service / Coaching' },
             ] as const)
             .filter(opt => {
               if (vendorType === 'digital') return opt.v !== 'physical'
@@ -523,8 +597,12 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           </div>
         </div>
       </section>
+      </div>
+      )}
 
-      {/* ── CHAMPS SPÉCIFIQUES PAR TYPE ── */}
+      {/* ── STEP 2 : CHAMPS SPÉCIFIQUES PAR TYPE ── */}
+      {currentStep === 2 && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
       {/* DIGITAL */}
       {type === 'digital' && (
@@ -671,19 +749,83 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
       {/* COACHING */}
       {type === 'coaching' && (
         <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
-          <h2 className="font-semibold text-ink">🎓 Détails de session</h2>
+          <h2 className="font-semibold text-ink">🎓 Paramètres de consultation</h2>
+
+          {/* Coaching Type Selection */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <button
+              type="button"
+              onClick={() => setCoachingType('individual')}
+              className={`p-4 rounded-xl border-2 text-left transition-all ${coachingType === 'individual' ? 'border-[#0F7A60] bg-[#0F7A60]/5' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+            >
+              <h3 className="font-bold text-[#0F7A60] text-sm mb-1">👤 Individuel (1-on-1)</h3>
+              <p className="text-[11px] text-gray-500 leading-tight">1 client par créneau. Le créneau se bloque après réservation.</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCoachingType('group')}
+              className={`p-4 rounded-xl border-2 text-left transition-all ${coachingType === 'group' ? 'border-gold bg-gold/5' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+            >
+              <h3 className="font-bold text-gold text-sm mb-1">👥 Session de Groupe</h3>
+              <p className="text-[11px] text-gray-500 leading-tight">Webinaire/Masterclass. Plusieurs clients sur le même créneau.</p>
+            </button>
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Durée de session</label>
-              <input
-                type="text" value={sessionDuration} onChange={e => setSessionDuration(e.target.value)}
-                placeholder="Ex : 1h, 45min"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
-              />
+            {coachingType === 'group' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Places maximum</label>
+                <input
+                  type="number" value={maxParticipants} onChange={e => setMaxParticipants(e.target.value)}
+                  min="2"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                />
+              </div>
+            )}
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Durées proposées (Minutes)</label>
+              <div className="flex flex-wrap gap-2">
+                {[15, 30, 45, 60, 90, 120].map(dur => (
+                  <label key={dur} className={`cursor-pointer px-4 py-2 rounded-xl border text-sm font-bold transition-all ${
+                    coachingDurations.includes(dur) ? 'border-gold bg-gold/10 text-gold' : 'border-gray-200 bg-white text-gray-500 hover:border-gold/50'
+                  }`}>
+                    <input type="checkbox" className="hidden" 
+                      title={`Durée ${dur} minutes`}
+                      checked={coachingDurations.includes(dur)} 
+                      onChange={(e) => {
+                        if (e.target.checked) setCoachingDurations([...coachingDurations, dur])
+                        else if (coachingDurations.length > 1) setCoachingDurations(coachingDurations.filter(d => d !== dur))
+                      }} 
+                    />
+                    {dur >= 60 ? (dur % 60 === 0 ? `${Math.floor(dur/60)}h` : `${Math.floor(dur/60)}h${dur%60}`) : `${dur} min`}
+                  </label>
+                ))}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1">Sélectionnez au moins une durée.</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Mode</label>
+            
+            <div className="col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-100 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-ink">Pack de sessions</p>
+                <p className="text-xs text-gray-500">Vendre plusieurs sessions en une seule fois.</p>
+              </div>
+              <div onClick={() => setCoachingIsPack(!coachingIsPack)} className={`w-10 h-6 rounded-full transition-all cursor-pointer relative ${coachingIsPack ? 'bg-gold' : 'bg-gray-200'}`}>
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${coachingIsPack ? 'left-5' : 'left-1'}`} />
+              </div>
+            </div>
+            {coachingIsPack && (
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de sessions incluses dans ce pack</label>
+                <input
+                  type="number" min="2" value={coachingPackCount} onChange={e => setCoachingPackCount(e.target.value)}
+                  title="Nombre de sessions"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                />
+              </div>
+            )}
+
+            <div className={coachingType !== 'group' ? 'col-span-1' : 'col-span-2'}>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Mode de Session</label>
               <select
                 aria-label="Mode de session"
                 title="Mode de session"
@@ -707,9 +849,13 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           </div>
         </section>
       )}
+      </div>
+      )}
 
-      {/* ── IMAGES ── */}
-      <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+      {/* ── STEP 3 : IMAGES ── */}
+      {currentStep === 3 && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-ink">Images</h2>
           <span className={`text-xs font-medium px-2 py-1 rounded-lg ${imageFiles.length >= 50 ? 'bg-red-50 text-red-500' : 'bg-gray-50 text-gray-500'}`}>
@@ -816,9 +962,13 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           className="hidden"
         />
       </section>
+      </div>
+      )}
 
-      {/* ── OPTIONS AVANCÉES ── */}
-      <section className="bg-white rounded-2xl shadow-sm overflow-visible">
+      {/* ── STEP 4 : OPTIONS AVANCÉES ── */}
+      {currentStep === 4 && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <section className="bg-white rounded-2xl shadow-sm overflow-visible">
         <button
           type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
@@ -1045,6 +1195,53 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
               )}
             </div>
 
+            {/* AFFILIATION */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-sm font-semibold text-ink">🤝 Programme d'Affiliation</h3>
+                <div className="group relative">
+                  <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                  <div className="absolute bottom-full left-0 mb-2 w-56 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                    Définissez des règles de commission spécifiques pour ce produit, ou laissez vide pour hériter de la boutique.
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Statut de l'affiliation</label>
+                  <select
+                    value={affiliateActive === null ? 'default' : affiliateActive ? 'true' : 'false'}
+                    onChange={(e) => {
+                      if (e.target.value === 'default') setAffiliateActive(null)
+                      else setAffiliateActive(e.target.value === 'true')
+                    }}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition bg-white"
+                  >
+                    <option value="default">Par défaut (Hériter de la boutique)</option>
+                    <option value="true">Activer pour ce produit</option>
+                    <option value="false">Désactiver pour ce produit</option>
+                  </select>
+                </div>
+
+                {affiliateActive !== false && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Commission spécifique (%)
+                    </label>
+                    <input
+                      type="number"
+                      min={0} max={100} step="0.1"
+                      value={affiliateMargin}
+                      onChange={(e) => setAffiliateMargin(e.target.value)}
+                      placeholder="Ex : 20. Laisser vide pour hériter de la boutique"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
           </div>
         )}
       </section>
@@ -1067,14 +1264,66 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
         </div>
       </section>
 
-      {/* ── BOUTON SUBMIT ── */}
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-gold hover:bg-gold-light disabled:opacity-50 text-white font-semibold py-4 rounded-2xl transition text-base"
-      >
-        {loading ? 'Création en cours…' : 'Créer le produit'}
-      </button>
+      {/* ── SEO ── */}
+      <section className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <h3 className="w-full p-5 font-semibold text-ink bg-gray-50 border-b border-gray-100 flex items-center gap-2">
+          <span>🔎 Référencement (SEO / Meta)</span>
+        </h3>
+        <div className="p-5 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Méta-Titre (Google)</label>
+            <input
+              type="text" value={seoTitle} onChange={e => setSeoTitle(e.target.value)}
+              placeholder="Ex: Acheter Formation XYZ au Sénégal"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Méta-Description</label>
+            <textarea
+              value={seoDescription} onChange={e => setSeoDescription(e.target.value)}
+              placeholder="Description courte qui s'affichera dans les résultats Google..." rows={2}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition resize-none"
+            />
+          </div>
+        </div>
+      </section>
+      </div>
+      )}
+
+      {/* ── NAVIGATION WIZARD ── */}
+      <div className="flex items-center justify-between gap-4 pt-4 mt-8 sticky bottom-6 z-20">
+        <button
+          type="button"
+          onClick={handlePrev}
+          disabled={currentStep === 1 || loading}
+          className={`px-8 py-4 rounded-2xl font-bold transition-colors shadow-sm backdrop-blur-md ${currentStep === 1 ? 'opacity-0 cursor-default pointer-events-none' : 'bg-white/80 border border-gray-200 text-gray-700 hover:bg-white hover:shadow-md'}`}
+        >
+          ← Retour
+        </button>
+
+        {currentStep < 4 ? (
+          <button
+            type="button"
+            onClick={handleNext}
+            className="flex-1 max-w-sm bg-ink text-white hover:bg-[#1A1A1A] font-bold py-4 rounded-2xl transition shadow-lg flex items-center justify-center gap-2"
+          >
+            Étape Suivante →
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={loading || !canSubmitTimeout}
+            className={`flex-1 max-w-sm font-bold py-4 rounded-2xl transition shadow-lg flex items-center justify-center gap-2 text-base ${
+              loading || !canSubmitTimeout 
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none' 
+                : 'bg-gold hover:bg-gold-light text-white shadow-gold/20'
+            }`}
+          >
+            {loading ? 'Création en cours…' : 'Créer le produit ✔'}
+          </button>
+        )}
+      </div>
     </form>
   )
 }

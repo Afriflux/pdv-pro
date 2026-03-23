@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
 
 // Rate limiting en mémoire : 1 appel max / 30s par utilisateur
 const rateLimitMap = new Map<string, number>()
@@ -72,17 +71,10 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ error: 'Body JSON invalide' }, { status: 400 })
   }
 
-  const supabaseAdmin = createAdminClient()
-  const { data: config } = await supabaseAdmin
-    .from('PlatformConfig')
-    .select('value')
-    .eq('key', 'ANTHROPIC_API_KEY')
-    .single<{ value: string }>()
-
-  const apiKey = config?.value || process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
 
   if (!apiKey) {
-    return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
+    return NextResponse.json(FALLBACK_ACTIONS, { status: 200 })
   }
 
   const systemPrompt = `Tu es l'assistant IA de PDV Pro, plateforme e-commerce africaine.

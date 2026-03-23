@@ -9,13 +9,14 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { format, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Minus, Plus, Lock, ShieldCheck, BadgeCheck, MessageCircle, ChevronDown, Facebook, Link2, Check } from 'lucide-react'
+import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Minus, Plus, Lock, ShieldCheck, BadgeCheck, MessageCircle, ChevronDown, Facebook, Link2, Check, Timer, Gift } from 'lucide-react'
 import { CheckoutForm } from './CheckoutForm'
 import SocialProofBanner from '@/components/widgets/SocialProofBanner'
 import { ReviewWidget } from '@/components/reviews/ReviewWidget'
 import { ProductQA } from '@/components/reviews/ProductQA'
 import { PoweredByBadge } from '@/components/branding/PoweredByBadge'
 import { ProductJsonLd } from '@/components/seo/JsonLd'
+import { FortuneWheelPopup } from '@/components/storefront/FortuneWheelPopup'
 import type { PromotionData } from '@/lib/promotions/promotionType'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -39,9 +40,14 @@ interface ProductPageProps {
     type: string
     images: string[]
     cash_on_delivery: boolean
+    coaching_type?: 'individual' | 'group' | null
+    max_participants?: number | null
     resale_allowed?: boolean
     resale_commission?: number | null
     digital_files?: any[]
+    coaching_durations?: number[] | null
+    coaching_is_pack?: boolean | null
+    coaching_pack_count?: number | null
     store: {
       id: string
       name: string
@@ -53,6 +59,11 @@ interface ProductPageProps {
       created_at: string
       productsCount: number
       social_links?: any
+      coaching_max_per_day?: number | null
+      coaching_min_notice?: number | null
+      free_shipping_threshold?: number | null
+      gamification_active?: boolean
+      gamification_config?: any | null
     }
   }
   variants: Variant[]
@@ -66,6 +77,8 @@ interface ProductPageProps {
   storeId: string
   deliveryZones?: { id: string; name: string; fee: number; delay: string | null; active: boolean }[]
   coachingSlots?: any[]
+  blockedDates?: any[]
+  bookedSlots?: Record<string, number>
   similarProducts?: {
     id: string
     name: string
@@ -220,6 +233,8 @@ export default function ProductPage({
   storeId,
   deliveryZones = [],
   coachingSlots = [],
+  blockedDates = [],
+  bookedSlots = {},
   similarProducts = [],
   telegramCommunity,
 }: ProductPageProps) {
@@ -240,23 +255,36 @@ export default function ProductPage({
   const [formMode, setFormMode]       = useState<'online' | 'cod'>('online')
   const [copied, setCopied]           = useState(false)
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  // -- Countdown Logic --
+  const promoEndsAt = computedPrice.activePromo?.ends_at ? new Date(computedPrice.activePromo.ends_at) : null
+  const [timeLeft, setTimeLeft] = useState<{ d: number, h: number, m: number, s: number } | null>(null)
 
-  const showCOD = product.type === 'physical' 
-    && product.cash_on_delivery === true 
-    && (product.store.vendor_type === 'physical' || product.store.vendor_type === 'hybrid')
-
-  // --- NOUVEAU : WhatsApp direct ---
-  const rawWhatsapp = product.store.social_links?.whatsapp
-  const whatsappNumber = rawWhatsapp ? rawWhatsapp.replace(/[^0-9]/g, '') : null
-  const isWhatsappCallable = !!whatsappNumber
-  const whatsappMessage = encodeURIComponent(`Bonjour, je veux commander "${product.name}" à ${finalPrice.toLocaleString('fr-FR')} FCFA. (Quantité souhaitée : ${quantity})`)
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`
-
+  import('react').then(({ useEffect }) => {
+    // We use a manual effect directly in body since we can't top-level import standard React hooks easily without breaking previous hooks order if we don't know them. 
+    // Wait, let's assume useEffect is available since useState is. I will add it to the import at top instead of inline.
+    // Actually, I can just access it from React namespace.
+  })
+  
+  React.useEffect(() => {
+    if (!promoEndsAt) return
+    const interval = setInterval(() => {
+      const now = new Date().getTime()
+      const distance = promoEndsAt.getTime() - now
+      
+      if (distance < 0) {
+        clearInterval(interval)
+        setTimeLeft({ d: 0, h: 0, m: 0, s: 0 })
+      } else {
+        setTimeLeft({
+          d: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          h: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          m: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          s: Math.floor((distance % (1000 * 60)) / 1000)
+        })
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [promoEndsAt])
 
   // Variant sélectionné
   const selectedVariant = variants.find((v) => v.id === selectedVariantId) ?? null
@@ -267,6 +295,17 @@ export default function ProductPage({
     ? computedPrice.finalPrice
     : product.price
   const finalPrice = baseProductPrice + (selectedVariant?.price_adjust ?? 0)
+
+  // --- NOUVEAU : WhatsApp direct ---
+  const rawWhatsapp = product.store.social_links?.whatsapp
+  const whatsappNumber = rawWhatsapp ? rawWhatsapp.replace(/[^0-9]/g, '') : null
+  const isWhatsappCallable = !!whatsappNumber
+  const whatsappMessage = encodeURIComponent(`Bonjour, je veux commander "${product.name}" à ${finalPrice.toLocaleString('fr-FR')} FCFA. (Quantité souhaitée : ${quantity})`)
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`
+
+  const showCOD = product.type === 'physical' 
+    && product.cash_on_delivery === true 
+    && (product.store.vendor_type === 'physical' || product.store.vendor_type === 'hybrid')
 
   // Badge réduction
   const discountBadge = () => {
@@ -427,13 +466,29 @@ export default function ProductPage({
               </span>
               {discountBadge() && (
                 <span
-                  className="text-sm font-black px-3 py-1 rounded-full text-white"
+                  className="text-sm font-black px-3 py-1 rounded-full text-white shadow-sm flex items-center gap-1.5 animate-pulse"
                   style={{ backgroundColor: accent }}
                 >
-                  {discountBadge()}
+                  <Tags className="w-4 h-4" /> {discountBadge()}
                 </span>
               )}
             </div>
+
+            {/* ── Countdown Timer (Booster) ─────────────────────────────── */}
+            {promoEndsAt && timeLeft && (timeLeft.d > 0 || timeLeft.h > 0 || timeLeft.m > 0 || timeLeft.s > 0) && (
+              <div className="flex items-center gap-3 bg-red-50 border border-red-100 p-3 rounded-xl max-w-max">
+                <Timer className="w-5 h-5 text-red-500 animate-pulse" />
+                <div>
+                  <p className="text-[10px] font-black uppercase text-red-500 tracking-widest leading-tight">L'offre expire dans</p>
+                  <div className="text-red-700 font-black flex items-center gap-1 text-sm">
+                    {timeLeft.d > 0 && <span>{timeLeft.d}j</span>}
+                    <span className="w-7 text-center bg-white rounded shadow-sm">{timeLeft.h.toString().padStart(2, '0')}</span> h
+                    <span className="w-7 text-center bg-white rounded shadow-sm">{timeLeft.m.toString().padStart(2, '0')}</span> m
+                    <span className="w-7 text-center bg-white rounded shadow-sm">{timeLeft.s.toString().padStart(2, '0')}</span> s
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* ── Variants ───────────────────────────────────────────────── */}
             {variants.length > 0 && (
@@ -509,6 +564,41 @@ export default function ProductPage({
                 </div>
               </div>
             )}
+
+            {/* ── Jauge Livraison Gratuite (Booster) ─────────────────── */}
+            {product.type === 'physical' && product.store.free_shipping_threshold && product.store.free_shipping_threshold > 0 ? (
+              <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold">
+                  <span className="text-gray-600 flex items-center gap-1"><Truck className="w-4 h-4" /> Livraison Gratuite</span>
+                  <span className="text-gray-900">{product.store.free_shipping_threshold.toLocaleString('fr-FR')} FCFA</span>
+                </div>
+                
+                {(() => {
+                  const currentTotal = finalPrice * quantity
+                  const threshold = product.store.free_shipping_threshold || 1
+                  const progress = Math.min(100, (currentTotal / threshold) * 100)
+                  const remaining = threshold - currentTotal
+                  const isFree = remaining <= 0
+
+                  return (
+                    <>
+                      <div className="h-2.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full transition-all duration-500 ${isFree ? 'bg-emerald-500' : 'bg-orange-400'}`}
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                      <p className={`text-[11px] font-bold text-center mt-1 ${isFree ? 'text-emerald-600' : 'text-gray-500'}`}>
+                        {isFree ? 
+                          '🎉 Félicitations ! Vous avez débloqué la livraison gratuite.' : 
+                          `Plus que ${(remaining).toLocaleString('fr-FR')} FCFA pour la livraison gratuite !`
+                        }
+                      </p>
+                    </>
+                  )
+                })()}
+              </div>
+            ) : null}
 
             {/* ── SocialProofBanner ───────────────────────────────────── */}
             <SocialProofBanner
@@ -752,6 +842,8 @@ export default function ProductPage({
                     defaultQuantity={quantity}
                     deliveryZones={deliveryZones}
                     coachingSlots={coachingSlots}
+                    blockedDates={blockedDates}
+                    bookedSlots={bookedSlots}
                   />
                 </div>
               )}
@@ -760,6 +852,13 @@ export default function ProductPage({
           </div>
           {/* fin colonne droite */}
         </div>
+
+        {/* ── Boosters / Gamification Globales ─────────────────────── */}
+        <FortuneWheelPopup
+          storeId={product.store.id}
+          active={product.store.gamification_active ?? false}
+          config={product.store.gamification_config}
+        />
 
         {/* ── Produits Similaires ───────────────────────────────────── */}
         {similarProducts && similarProducts.length > 0 && (

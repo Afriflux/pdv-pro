@@ -49,11 +49,12 @@ function ProductListRow({ product, baseUrl }: { product: Product; baseUrl: strin
   }
 
   return (
-    <div className="flex items-center gap-4 bg-white border border-line p-3 rounded-xl hover:shadow-sm transition-all group">
+    <div className="flex items-center gap-4 bg-white/60 backdrop-blur-xl border border-white p-4 rounded-2xl hover:shadow-xl hover:shadow-[#0F7A60]/10 hover:border-[#0F7A60]/20 transition-all duration-300 group relative">
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#0F7A60]/[0.02] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       {/* Image miniature */}
-      <div className="w-12 h-12 rounded-lg bg-cream flex-shrink-0 overflow-hidden border border-line">
+      <div className="w-14 h-14 rounded-xl bg-gray-50 flex-shrink-0 overflow-hidden border border-gray-100 shadow-sm relative z-10">
         {product.images?.[0] ? (
-          <img src={product.images[0]} alt={product.name || "Image du produit"} className="w-full h-full object-cover" />
+          <img src={product.images[0]} alt={product.name || "Image du produit"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-xl">📦</div>
         )}
@@ -134,13 +135,14 @@ function LargeProductCard({ product, baseUrl }: { product: Product; baseUrl: str
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-line overflow-hidden hover:shadow-xl transition-all flex flex-col md:flex-row h-full group">
+    <div className="bg-white/90 backdrop-blur-2xl rounded-3xl border border-white hover:border-[#0F7A60]/30 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-[#0F7A60]/10 transition-all duration-500 flex flex-col md:flex-row h-full group relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       {/* Image large */}
-      <div className="md:w-2/5 aspect-[16/10] md:aspect-auto relative bg-cream border-b md:border-b-0 md:border-r border-line overflow-hidden">
+      <div className="md:w-2/5 aspect-[16/10] md:aspect-auto relative bg-gray-50/50 border-b md:border-b-0 md:border-r border-gray-100/50 overflow-hidden z-10">
         {product.images?.[0] ? (
-          <img src={product.images[0]} alt={product.name || "Image du produit"} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src={product.images[0]} alt={product.name || "Image du produit"} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-6xl">📦</div>
+          <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-50">📦</div>
         )}
         
         {/* Badges flottants */}
@@ -248,11 +250,11 @@ export default function ProductsView({ products, storeName, baseUrl }: ProductsV
     <>
       {/* Barre d'outils (Toggle) */}
       <div className="flex items-center justify-between mb-6 px-6">
-        <p className="text-dust text-sm">
+        <p className="text-gray-500 text-sm font-medium">
           {products.length} produit{products.length > 1 ? 's' : ''} dans votre catalogue ({storeName})
         </p>
         
-        <div className="flex bg-white/60 backdrop-blur-sm border border-line rounded-xl p-1 gap-1 shadow-sm">
+        <div className="flex bg-white/80 backdrop-blur-xl border border-white rounded-xl p-1 gap-1 shadow-sm">
           {(['grid3', 'grid4', 'list', 'large'] as const).map((mode) => {
             const icons = { grid3: '▥', grid4: '⊟', list: '▤', large: '⊡' }
             const labels = { grid3: 'Grille 3', grid4: 'Grille 4', list: 'Liste', large: 'Grandes' }
@@ -278,18 +280,22 @@ export default function ProductsView({ products, storeName, baseUrl }: ProductsV
       {/* Contenu de la liste */}
       <div className="w-full p-6 pt-0">
         {products.length === 0 ? (
-          <div className="bg-white border border-line rounded-2xl p-16 text-center flex flex-col items-center justify-center">
-            <div className="text-gray-300 mb-4">
-              <Package size={64} strokeWidth={1.5} />
+          <div className="bg-white/80 backdrop-blur-2xl border border-white rounded-[32px] p-20 text-center flex flex-col items-center justify-center shadow-xl shadow-gray-200/50 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#0F7A60]/5 blur-[80px] rounded-full pointer-events-none" />
+            
+            <div className="w-24 h-24 mb-6 rounded-3xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-400 group-hover:scale-110 group-hover:text-[#0F7A60] group-hover:rotate-3 transition-all duration-500 relative z-10">
+              <Package size={48} strokeWidth={1.5} />
             </div>
-            <h3 className="font-display text-ink text-xl font-bold mb-2">Aucun produit pour le moment</h3>
-            <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">
-              Ajoutez votre premier produit pour commencer à vendre
+            <h3 className="font-display text-[#1A1A1A] text-2xl font-black mb-3 relative z-10">Aucun produit pour le moment</h3>
+            <p className="text-gray-500 font-medium text-sm mb-8 max-w-sm mx-auto relative z-10 leading-relaxed">
+              Ajoutez votre premier produit pour commencer à générer des ventes et développer votre activité.
             </p>
             <Link
               href="/dashboard/products/new"
-              className="inline-flex items-center gap-2 bg-emerald hover:bg-emerald-rich text-white px-6 py-3 rounded-xl font-medium transition shadow-md shadow-emerald/20"
+              className="inline-flex items-center gap-2 bg-gradient-to-br from-[#0F7A60] to-[#0D5C4A] hover:to-[#0A4A3A] text-white px-8 py-4 rounded-2xl font-black shadow-lg shadow-[#0F7A60]/20 hover:shadow-xl hover:shadow-[#0F7A60]/40 hover:-translate-y-1 transition-all duration-300 relative z-10 overflow-hidden"
             >
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700 pointer-events-none" />
               Créer mon premier produit →
             </Link>
           </div>

@@ -49,6 +49,8 @@ export const metadata: Metadata = {
 
 import FooterWrapper from '@/components/FooterWrapper'
 import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
+import { Suspense } from 'react'
+import AffiliateTracker from '@/components/affiliation/AffiliateTracker'
 
 export default function RootLayout({
   children,
@@ -60,6 +62,9 @@ export default function RootLayout({
       <body className={`antialiased font-body bg-cream text-ink selection:bg-gold/30 selection:text-ink`}>
         <OrganizationJsonLd />
         <WebSiteJsonLd />
+        <Suspense fallback={null}>
+          <AffiliateTracker />
+        </Suspense>
         {children}
         <FooterWrapper />
         <script dangerouslySetInnerHTML={{ __html: `

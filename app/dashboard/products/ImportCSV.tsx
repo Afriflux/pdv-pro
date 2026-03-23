@@ -8,12 +8,12 @@ import { Upload, Download, Loader2, CheckCircle2, AlertCircle, X } from 'lucide-
 import { toast } from 'sonner'
 
 // Format CSV attendu (colonnes)
-const CSV_HEADERS = ['name', 'description', 'price', 'type', 'category', 'stock']
+const CSV_HEADERS = ['Nom du produit', 'Description', 'Prix (FCFA)', 'Type (physical/digital/coaching)', 'Catégorie', 'Stock']
 
-const TEMPLATE_CSV = `name,description,price,type,category,stock
+const TEMPLATE_CSV = `Nom du produit,Description,Prix (FCFA),Type (physical/digital/coaching),Catégorie,Stock
 Robe en wax premium,Magnifique robe en wax authentique 100% coton,25000,physical,Mode,20
-Cours Excel débutant,Formation complète Excel pour démarrer rapidement votre carrière,10000,digital,Formation,
-Coaching business 1h,Session de coaching individuelle pour booster votre business,50000,coaching,Business,`
+Cours Excel débutant,Formation complète Excel pour démarrer rapidement,10000,digital,Formation,
+Coaching business 1h,Session de coaching individuelle,50000,coaching,Business,`
 
 interface PreviewRow {
   name:        string
@@ -138,14 +138,6 @@ export default function ImportCSV() {
             <p className="text-xs text-gray-400">Importez vos produits en masse</p>
           </div>
         </div>
-        <button
-          onClick={downloadTemplate}
-          className="inline-flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200
-            rounded-xl text-xs font-bold text-gray-600 hover:border-[#0F7A60] hover:text-[#0F7A60] transition-all"
-        >
-          <Download className="w-3.5 h-3.5" />
-          Modèle CSV
-        </button>
       </div>
 
       <div className="p-6 space-y-5">
@@ -155,18 +147,45 @@ export default function ImportCSV() {
             onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
             onDragLeave={() => setDragging(false)}
             onDrop={onDrop}
-            onClick={() => fileRef.current?.click()}
-            className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all ${
+            className={`border-2 border-dashed rounded-2xl p-10 text-center transition-all ${
               dragging
                 ? 'border-[#0F7A60] bg-[#0F7A60]/5'
                 : 'border-gray-200 hover:border-[#0F7A60]/40 hover:bg-[#FAFAF7]'
             }`}
           >
-            <Upload className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-            <p className="font-semibold text-gray-600 text-sm">Glissez votre fichier CSV ici</p>
-            <p className="text-xs text-gray-400 mt-1">ou cliquez pour sélectionner</p>
-            <p className="text-[10px] text-gray-300 mt-3 font-mono">
-              Colonnes : {CSV_HEADERS.join(', ')}
+            <Upload className="w-12 h-12 text-[#C9A84C] mx-auto mb-4" />
+            <p className="font-bold text-[#1A1A1A] text-lg mb-2">Déposez votre fichier CSV ici</p>
+            <p className="text-sm text-gray-500 mb-6">
+              Assurez-vous de respecter le format attendu. Vous pouvez télécharger notre modèle Excel/CSV prêt à l'emploi.
+            </p>
+            
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  downloadTemplate()
+                }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 shadow-sm
+                  rounded-xl text-sm font-bold text-gray-700 hover:border-[#0F7A60] hover:text-[#0F7A60] transition-all"
+              >
+                <Download className="w-4 h-4" />
+                Télécharger le modèle CSV
+              </button>
+              
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  fileRef.current?.click()
+                }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0F7A60] text-white
+                  rounded-xl text-sm font-bold hover:bg-[#0D6B53] transition-all shadow-sm"
+              >
+                Parcourir mes fichiers
+              </button>
+            </div>
+            
+            <p className="text-[10px] text-gray-400 mt-6 font-mono tracking-wide">
+              COLONNES REQUISES : {CSV_HEADERS.join(', ')}
             </p>
             <input
               aria-label="Fichier CSV"

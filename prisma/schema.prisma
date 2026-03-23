@@ -19,6 +19,9 @@ enum Role {
   vendeur
   affilie
   acheteur
+  support
+  ambassador
+  client
   @@schema("public")
 }
 
@@ -96,6 +99,7 @@ model Store {
   primary_color      String?
   category           String?  // Secteur activité (onboarding étape 2)
   whatsapp           String?  // Numéro WhatsApp de la boutique
+  whatsapp_abandoned_cart Boolean @default(false) // Relance de panier WhatsApp
   description        String?  // Description courte (vitrine publique)
   affiliate_active   Boolean  @default(false)
   affiliate_margin   Float    @default(0.10) // Taux commission (ex: 10%)
@@ -119,6 +123,25 @@ model Store {
   meta_pixel_id      String?
   tiktok_pixel_id    String?
   google_tag_id      String?
+  payout_wallet_number   String?
+  payout_provider        String? // 'wave' | 'orange_money' | etc.
+
+  // ── Bandeau d'Annonce (Marketing) ──
+  announcement_active    Boolean  @default(false)
+  announcement_text      String?
+  announcement_bg_color  String?
+
+  // --- NOUVEAU : Configuration avancée du Coaching ---
+  coaching_max_per_day   Int?     @default(0) // 0 = illimité
+  coaching_min_notice    Int?     @default(24) // Heures de préavis minimum
+  coaching_auto_accept   Boolean  @default(true) // Acceptation automatique des résas
+  coaching_buffer_time   Int      @default(0) // En minutes (espacement entre créneaux)
+  coaching_max_future_days Int    @default(60) // En jours (réservation max dans le futur)
+
+  // ── Gamification & Boosters (Phase 6) ──
+  free_shipping_threshold Int?    @default(0) // 0 = désactivé
+  gamification_active     Boolean @default(false)
+  gamification_config     Json?   // ex: { prize_code: '...' }
 
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
@@ -137,6 +160,7 @@ model Store {
   deliveryZones DeliveryZone[]
   coachingSlots CoachingSlot[]
   bookings      Booking[]
+  blockedDates  BlockedDate[]
   closing_enabled Boolean @default(false)
   closing_fee     Float   @default(500)
   closingRequests ClosingRequest[]
@@ -179,10 +203,26 @@ model Product {
   session_duration String?
   session_mode     String?
   booking_link     String?
+  coaching_type    String?     @default("individual") // individual | group
+  max_participants Int?        @default(1)
+
+  // --- NOUVEAU : Coaching Avancé ---
+  coaching_durations  Int[]   @default([60]) // Durées possibles en minutes (ex: [30, 60, 120])
+  coaching_is_pack    Boolean @default(false)
+  coaching_pack_count Int?    @default(1)
+
+  // ── Affiliation Spécifique ──
+  affiliate_active Boolean?  // null = hérite du Store
+  affiliate_margin Float?    // null = hérite du Store
+
+  // ── SEO ──
+  seo_title        String?
+  seo_description  String?
 
   created_at       DateTime    @default(now())
   updated_at       DateTime    @updatedAt
   views            Int         @default(0)
+  sales            Int         @default(0)
 
   store          Store            @relation(fields: [store_id], references: [id], onDelete: Cascade)
   variants       ProductVariant[]
@@ -218,6 +258,11 @@ model SalePage {
   template    String
   sections    Json
   product_ids String[]
+  
+  // ── Affiliation Spécifique ──
+  affiliate_active Boolean?
+  affiliate_margin Float?
+  
   active      Boolean  @default(true)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
@@ -249,6 +294,7 @@ model Order {
   payment_method   String
   payment_ref      String?
   affiliate_token  String?
+  affiliate_amount Float       @default(0)
   applied_promo_id String?
   delivery_address String?
   delivery_zone_id String?
@@ -320,6 +366,10 @@ model Wallet {
   pending      Float  @default(0)
   total_earned Float  @default(0)
   updated_at   DateTime @updatedAt
+
+  auto_withdraw_enabled   Boolean @default(false)
+  auto_withdraw_threshold Float?  @default(100000)
+  monthly_goal            Float?  @default(1000000)
 
   vendor      Store        @relation(fields: [vendor_id], references: [id], onDelete: Cascade)
   withdrawals Withdrawal[]
@@ -598,6 +648,8 @@ model DeliveryZone {
   name        String
   fee         Float
   delay       String?
+  free_shipping_threshold Int?
+  note        String?
   active      Boolean  @default(true)
   created_at  DateTime @default(now())
 
@@ -639,21 +691,69 @@ model Booking {
   @@schema("public")
 }
 
+model MasterclassArticle {
+  id        String   @id @default(cuid())
+  emoji     String   @default("📖")
+  title     String
+  color     String   @default("bg-emerald-50")
+  category  String
+  readTime  String   @default("5 min")
+  intro     String
+  tips      Json
+  is_active Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  @@schema("public")
+}
+
+model BlockedDate {
+  id         String   @id @default(cuid())
+  store_id   String
+  date       DateTime
+  start_time String?
+  end_time   String?
+  reason     String?
+  store      Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  @@schema("public")
+}
+
 // ─── Closing & Anti-fraude COD ───────────────────────────────────────────────
 
 model ClosingRequest {
   id              String   @id @default(uuid())
   order_id        String   @unique
   store_id        String
-  status          String   @default("PENDING") // PENDING, VALIDATED, REJECTED, NO_REPLY
+  status          String   @default("PENDING") // PENDING, VALIDATED, REJECTED, NO_REPLY, SCHEDULED
   call_attempts   Int      @default(0)
   notes           String?
   closing_fee     Float    @default(500)
+  scheduled_at    DateTime?
+  locked_until    DateTime?
+  locked_by       String?
+
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
   order           Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
   store           Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  history         ClosingRequestHistory[]
+
+  @@schema("public")
+}
+
+model ClosingRequestHistory {
+  id                  String   @id @default(uuid())
+  closing_request_id  String
+  action              String   // e.g "CREATED", "STATUS_CHANGED", "NOTE_ADDED", "SCHEDULED"
+  previous_status     String?
+  new_status          String?
+  details             String?
+  agent_name          String?
+  created_at          DateTime @default(now())
+
+  request             ClosingRequest @relation(fields: [closing_request_id], references: [id], onDelete: Cascade)
+
   @@schema("public")
 }
 

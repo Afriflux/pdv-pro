@@ -2,221 +2,21 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Metadata } from 'next'
 import { PDVAnalytics } from '@/components/tracking/PDVAnalytics'
+import { LiveCheckoutDrawer } from '@/components/pages/LiveCheckoutDrawer'
+import { 
+  Section, Product, Theme, DEFAULT_THEME, PageRendererConfig,
+  HeroSection, BenefitsSection, TestimonialsSection, FaqSection, 
+  ProgramSection, CoachProfileSection, ImageGallerySection, CtaSection, 
+  ProductCards, GenericSection,
+  CountdownSection, ComparisonSection, VideoGallerySection, CrossSellSection
+} from '@/components/pages/PageRenderers'
+import { AnnouncementBar, StickyMobileCTA, SalesPops, ExitIntentPopup, ScrollReveal } from '@/components/pages/StorefrontFeatures'
 
 // ----------------------------------------------------------------
 // Types
 // ----------------------------------------------------------------
-interface Section {
-  type: string
-  title?: string
-  subtitle?: string
-  cta?: string
-  text?: string
-  items?: string[] | Array<{ q?: string; a?: string; name?: string; text?: string; rating?: number }>
-  name?: string
-  bio?: string
-  credentials?: string[]
-}
-
-interface Product {
-  id: string
-  name: string
-  description: string | null
-  price: number
-  type: string
-  images: string[]
-}
-
 interface SalePagePublicProps {
   params: { slug: string }
-}
-
-// ----------------------------------------------------------------
-// Section renderers
-// ----------------------------------------------------------------
-function HeroSection({ s, products, cta }: { s: Section; products: Product[]; cta: string }) {
-  return (
-    <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white py-20 px-6 text-center overflow-hidden">
-      {/* Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-orange-500 opacity-10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="relative max-w-xl mx-auto space-y-6">
-        <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
-          {s.title ?? 'Bienvenue'}
-        </h1>
-        {s.subtitle && (
-          <p className="text-gray-300 text-lg">{s.subtitle}</p>
-        )}
-
-        {/* Produits */}
-        {products.length > 0 && (
-          <div className="space-y-3 mt-8">
-            {products.map(p => (
-              <a
-                key={p.id}
-                href={`#product-${p.id}`}
-                className="block bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-2xl text-lg transition shadow-lg shadow-orange-500/30"
-              >
-                {s.cta ?? cta} — {p.price.toLocaleString('fr-FR')} FCFA
-              </a>
-            ))}
-          </div>
-        )}
-        {products.length === 0 && s.cta && (
-          <a href="#contact"
-            className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-2xl text-lg transition">
-            {s.cta}
-          </a>
-        )}
-      </div>
-    </section>
-  )
-}
-
-function BenefitsSection({ s }: { s: Section }) {
-  const items = (s.items as string[] | undefined) ?? []
-  return (
-    <section className="py-14 px-6 bg-white">
-      <div className="max-w-xl mx-auto">
-        <h2 className="text-xl font-bold text-gray-800 text-center mb-8">Pourquoi nous choisir ?</h2>
-        <div className="grid grid-cols-1 gap-4">
-          {items.map((item, i) => (
-            <div key={i} className="flex items-center gap-4 bg-orange-50 rounded-2xl p-4">
-              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">✓</div>
-              <span className="text-gray-700 font-medium">{typeof item === 'string' ? item : ''}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function TestimonialsSection({ s }: { s: Section }) {
-  const items = (s.items as Array<{ name: string; text: string; rating: number }> | undefined) ?? []
-  return (
-    <section className="py-14 px-6 bg-gray-50">
-      <div className="max-w-xl mx-auto">
-        <h2 className="text-xl font-bold text-gray-800 text-center mb-8">Ce que disent nos clients</h2>
-        <div className="space-y-4">
-          {items.map((t, i) => (
-            <div key={i} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-              <div className="flex items-center gap-1 mb-2">
-                {'★★★★★'.split('').map((star, si) => (
-                  <span key={si} className={si < (t.rating ?? 5) ? 'text-orange-400' : 'text-gray-200'}>{star}</span>
-                ))}
-              </div>
-              <p className="text-gray-600 text-sm italic mb-3">&ldquo;{t.text}&rdquo;</p>
-              <p className="text-sm font-semibold text-gray-800">— {t.name}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function FaqSection({ s }: { s: Section }) {
-  const items = (s.items as Array<{ q: string; a: string }> | undefined) ?? []
-  return (
-    <section className="py-14 px-6 bg-white">
-      <div className="max-w-xl mx-auto">
-        <h2 className="text-xl font-bold text-gray-800 text-center mb-8">Questions fréquentes</h2>
-        <div className="space-y-4">
-          {items.map((qa, i) => (
-            <div key={i} className="border border-gray-100 rounded-2xl p-5">
-              <p className="font-semibold text-gray-800 mb-2">❓ {qa.q}</p>
-              <p className="text-gray-500 text-sm">{qa.a}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function ProgramSection({ s }: { s: Section }) {
-  const items = (s.items as string[] | undefined) ?? []
-  return (
-    <section className="py-14 px-6 bg-gray-50">
-      <div className="max-w-xl mx-auto">
-        <h2 className="text-xl font-bold text-gray-800 text-center mb-8">Programme</h2>
-        <div className="space-y-3">
-          {items.map((item, i) => (
-            <div key={i} className="flex items-center gap-4 bg-white rounded-2xl p-4 shadow-sm">
-              <div className="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">{i + 1}</div>
-              <span className="text-gray-700">{typeof item === 'string' ? item : ''}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function CtaSection({ s, products }: { s: Section; products: Product[] }) {
-  return (
-    <section className="py-16 px-6 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-center">
-      <div className="max-w-xl mx-auto space-y-4">
-        <p className="text-xl font-bold">{s.cta ?? 'Passer commande maintenant'}</p>
-        {products.map(p => (
-          <a
-            key={p.id}
-            href={`#product-${p.id}`}
-            className="inline-block bg-white text-orange-600 font-bold py-4 px-10 rounded-2xl text-lg hover:bg-gray-50 transition shadow-lg"
-          >
-            Commander — {p.price.toLocaleString('fr-FR')} FCFA
-          </a>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function ProductCards({ products }: { products: Product[] }) {
-  if (products.length === 0) return null
-  return (
-    <section className="py-14 px-6 bg-white">
-      <div className="max-w-xl mx-auto">
-        <h2 className="text-xl font-bold text-gray-800 text-center mb-8">Nos produits</h2>
-        <div className="space-y-5">
-          {products.map(p => (
-            <div key={p.id} id={`product-${p.id}`} className="border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
-              {p.images?.[0] && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.images[0]} alt={p.name} className="w-full h-52 object-cover" />
-              )}
-              <div className="p-5 space-y-3">
-                <h3 className="font-bold text-gray-800 text-lg">{p.name}</h3>
-                {p.description && <p className="text-gray-500 text-sm">{p.description}</p>}
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-extrabold text-orange-500">
-                    {p.price.toLocaleString('fr-FR')} <span className="text-base font-medium">FCFA</span>
-                  </span>
-                  <a
-                    href={`/checkout/${p.id}`}
-                    className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded-xl transition"
-                  >
-                    Acheter
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function GenericSection({ s }: { s: Section }) {
-  return (
-    <section className="py-12 px-6 bg-white">
-      <div className="max-w-xl mx-auto text-center">
-        {s.text && <p className="text-gray-600">{s.text}</p>}
-      </div>
-    </section>
-  )
 }
 
 // ----------------------------------------------------------------
@@ -308,6 +108,10 @@ export default async function PublicSalePage({ params }: SalePagePublicProps) {
     notFound()
   }
 
+  // Incrémenter le compteur de vues
+  const currentViews = page.views_count || 0
+  await supabase.from('SalePage').update({ views_count: currentViews + 1 }).eq('id', page.id)
+
   // Charger les produits liés
   let linkedProducts: Product[] = []
   if (page.product_ids?.length > 0) {
@@ -321,31 +125,96 @@ export default async function PublicSalePage({ params }: SalePagePublicProps) {
 
   const sections = (page.sections as Section[]) ?? []
   const ctaText = sections.find(s => s.type === 'cta')?.cta ?? 'Commander maintenant'
+  
+  // Extraire le thème s'il existe (stocké dans un bloc { type: 'theme' })
+  const themeSection = sections.find(s => s.type === 'theme') as unknown as Theme | undefined
+  const theme = themeSection ? { color: themeSection.color || 'orange', font: themeSection.font || 'sans' } as Theme : DEFAULT_THEME
+
+  // On retire le bloc theme des sections visuelles
+  const visualSections = sections.filter(s => s.type !== 'theme')
+
+  // Fetch cross-sell products from the exact same store, excluding the currently linked products
+  let crossSellProducts: Product[] = []
+  if (page.store_id) {
+    const { data: storeProducts } = await supabase
+      .from('Product')
+      .select('id, name, description, price, type, images')
+      .eq('store_id', page.store_id)
+      .eq('active', true)
+      .not('id', 'in', page.product_ids && page.product_ids.length > 0 ? `(${page.product_ids.join(',')})` : '(00000000-0000-0000-0000-000000000000)') // Supabase IN syntax hack for empty arrays
+      .limit(4)
+    crossSellProducts = storeProducts ?? []
+  }
 
   return (
-    <main className="min-h-screen font-sans antialiased">
-        <PDVAnalytics pageId={page.id} />
-        {/* Sections dans l'ordre */}
-        {sections.map((s, i) => {
-          if (s.type === 'hero')         return <HeroSection key={i} s={s} products={linkedProducts} cta={ctaText} />
-          if (s.type === 'benefits')     return <BenefitsSection key={i} s={s} />
-          if (s.type === 'testimonials') return <TestimonialsSection key={i} s={s} />
-          if (s.type === 'faq')          return <FaqSection key={i} s={s} />
-          if (s.type === 'program')      return <ProgramSection key={i} s={s} />
-          if (s.type === 'cta')          return <CtaSection key={i} s={s} products={linkedProducts} />
-          return <GenericSection key={i} s={s} />
-        })}
+    <PageRendererConfig theme={theme}>
+      <main className="min-h-screen antialiased flex flex-col relative overflow-x-hidden">
+          <AnnouncementBar theme={theme} />
+          
+          <PDVAnalytics pageId={page.id} />
+          
+          {/* Sections dans l'ordre, wrappées avec Scroll Reveal */}
+          {visualSections.map((s, i) => {
+            const SectionEl = (
+              s.type === 'hero'         ? <HeroSection key={i} s={s} products={linkedProducts} cta={ctaText} theme={theme} /> :
+              s.type === 'benefits'     ? <BenefitsSection key={i} s={s} theme={theme} /> :
+              s.type === 'testimonials' ? <TestimonialsSection key={i} s={s} theme={theme} /> :
+              s.type === 'faq'          ? <FaqSection key={i} s={s} theme={theme} /> :
+              s.type === 'program'      ? <ProgramSection key={i} s={s} theme={theme} /> :
+              s.type === 'coach'        ? <CoachProfileSection key={i} s={s} theme={theme} /> :
+              s.type === 'gallery'      ? <ImageGallerySection key={i} s={s} theme={theme} /> :
+              s.type === 'cta'          ? <CtaSection key={i} s={s} products={linkedProducts} theme={theme} /> :
+              s.type === 'countdown'    ? <CountdownSection key={i} s={s} theme={theme} /> :
+              s.type === 'comparison'   ? <ComparisonSection key={i} s={s} theme={theme} /> :
+              s.type === 'video'        ? <VideoGallerySection key={i} s={s} theme={theme} /> :
+              <GenericSection key={i} s={s} />
+            )
 
-        {/* Bloc produits */}
-        <ProductCards products={linkedProducts} />
+            // On ne met pas de ScrollReveal sur le Hero pour un LCP rapide, ni Countdown
+            if (s.type === 'hero' || s.type === 'countdown') return SectionEl
+            
+            return (
+              <ScrollReveal key={i}>
+                 {SectionEl}
+              </ScrollReveal>
+            )
+          })}
 
-        {/* Footer minimal */}
-        <footer className="py-8 px-6 bg-gray-900 text-center">
-          <p className="text-gray-500 text-sm">
-            Propulsé par <span className="text-orange-400 font-semibold">PDV Pro</span>
-            {page.store?.name && <span className="text-gray-600"> · {page.store.name}</span>}
-          </p>
-        </footer>
-    </main>
+          {/* Bloc produits (Boutons d'achat statiques) */}
+          <ScrollReveal>
+             <ProductCards products={linkedProducts} theme={theme} />
+          </ScrollReveal>
+
+          {/* Section Cross-Sell */}
+          {crossSellProducts.length > 0 && (
+             <ScrollReveal>
+                <CrossSellSection products={crossSellProducts} theme={theme} />
+             </ScrollReveal>
+          )}
+
+          {/* Checkout Drawer (Slide-over) */}
+          <LiveCheckoutDrawer 
+            pageId={page.id} 
+            products={[...linkedProducts, ...crossSellProducts]} // Support checkout for cross-sell as well
+            theme={theme}
+            storeName={page.store?.name}
+          />
+
+          {/* Fonctions de Conversion Ultra (Global) */}
+          <SalesPops />
+          <ExitIntentPopup productId={linkedProducts[0]?.id} theme={theme} />
+          {linkedProducts[0] && (
+            <StickyMobileCTA productId={linkedProducts[0].id} price={linkedProducts[0].price} theme={theme} />
+          )}
+
+          {/* Footer minimal */}
+          <footer className="py-10 px-6 bg-gray-900 text-center">
+            <p className="text-gray-400 text-sm">
+              Propulsé par <span className="text-white font-bold tracking-wide">PDV Pro</span>
+              {page.store?.name && <span className="opacity-50"> · {page.store.name}</span>}
+            </p>
+          </footer>
+      </main>
+    </PageRendererConfig>
   )
 }

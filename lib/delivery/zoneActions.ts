@@ -17,7 +17,7 @@ async function getStoreId() {
   return store.id
 }
 
-export async function createDeliveryZone(data: { name: string; fee: number; delay?: string }) {
+export async function createDeliveryZone(data: { name: string; fee: number; delay?: string; free_shipping_threshold?: number | null; note?: string | null }) {
   const store_id = await getStoreId()
   await prisma.deliveryZone.create({
     data: { store_id, ...data }
@@ -25,7 +25,7 @@ export async function createDeliveryZone(data: { name: string; fee: number; dela
   revalidatePath('/dashboard/zones')
 }
 
-export async function updateDeliveryZone(id: string, data: { name: string; fee: number; delay?: string }) {
+export async function updateDeliveryZone(id: string, data: { name: string; fee: number; delay?: string; free_shipping_threshold?: number | null; note?: string | null }) {
   const store_id = await getStoreId()
   await prisma.deliveryZone.update({
     where: { id, store_id },

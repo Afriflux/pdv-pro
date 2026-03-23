@@ -1,434 +1,215 @@
 'use client'
 
-// ─── app/dashboard/marketing/EmailMarketing.tsx ──────────────────────────────
-// Dashboard email marketing du vendeur
-// Sections : Stats rapides | Séquences auto | Créer campagne | Liste campagnes
-
 import { useState, useEffect, useCallback } from 'react'
+import { Plus, Mail, Clock, CheckCircle2, Send, MessageCircle, AlertCircle, Phone } from 'lucide-react'
 import { toast } from 'sonner'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+export default function EmailMarketing({ store }: { store: any }) {
+  const [campaigns, setCampaigns] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  
+  // Brevo state
+  const [subject, setSubject] = useState('')
+  const [htmlContent, setHtmlContent] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-interface Campaign {
-  id:          number
-  name:        string
-  subject:     string
-  status:      string
-  createdAt:   string
-  scheduledAt?: string
-  statistics?: {
-    globalStats?: {
-      uniqueClicks?: number
-      delivered?:   number
-      uniqueOpens?: number
-    }
-  }
-}
+  // WhatsApp state
+  const [waNumber, setWaNumber] = useState(store?.whatsapp || '')
+  const [waActive, setWaActive] = useState(store?.whatsapp_abandoned_cart || false)
+  const [savingWa, setSavingWa] = useState(false)
 
-interface EmailStats {
-  totalCampaigns: number
-  sentCampaigns:  number
-  lastCampaignAt: string | null
-}
-
-type CampaignStatus = 'idle' | 'loading' | 'success' | 'error'
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('fr-FR', {
-    day:   '2-digit',
-    month: 'short',
-    year:  'numeric',
-  })
-}
-
-function statusLabel(status: string): { label: string; color: string } {
-  const map: Record<string, { label: string; color: string }> = {
-    sent:      { label: 'Envoyée',    color: 'text-[#0F7A60] bg-[#F0FAF7]' },
-    scheduled: { label: 'Planifiée',  color: 'text-[#C9A84C] bg-[#FDF9F0]' },
-    draft:     { label: 'Brouillon',  color: 'text-gray-500  bg-gray-100'   },
-    in_process:{ label: 'En cours',   color: 'text-blue-600  bg-blue-50'    },
-    queued:    { label: 'En attente', color: 'text-purple-600 bg-purple-50' },
-  }
-  return map[status] ?? { label: status, color: 'text-gray-500 bg-gray-100' }
-}
-
-// ─── Séquences automatiques (statique) ───────────────────────────────────────
-
-const AUTO_SEQUENCES = [
-  { icon: '✅', label: 'Email de bienvenue vendeur',   sublabel: 'Actif automatiquement',     active: true  },
-  { icon: '✅', label: 'Confirmation commande acheteur', sublabel: 'Actif automatiquement',   active: true  },
-  { icon: '✅', label: 'Notification nouvelle commande', sublabel: 'Actif automatiquement',   active: true  },
-  { icon: '⚙️', label: 'Relance panier abandonné',      sublabel: 'Déclenché par webhook',    active: false },
-  { icon: '⚙️', label: 'Rapport hebdomadaire',          sublabel: 'Déclenché par cron',       active: false },
-]
-
-// ─── Composant principal ──────────────────────────────────────────────────────
-
-export default function EmailMarketing() {
-  // ── État ──────────────────────────────────────────────────────────────────
-  const [campaigns,     setCampaigns]     = useState<Campaign[]>([])
-  const [stats,         setStats]         = useState<EmailStats | null>(null)
-  const [loadingStats,  setLoadingStats]  = useState<boolean>(true)
-
-  // Formulaire campagne
-  const [subject,      setSubject]      = useState<string>('')
-  const [htmlContent,  setHtmlContent]  = useState<string>('')
-  const [scheduledAt,  setScheduledAt]  = useState<string>('')
-  const [showForm,     setShowForm]     = useState<boolean>(false)
-  const [campaignStatus, setCampaignStatus] = useState<CampaignStatus>('idle')
-
-  // ── Charger les campagnes au montage ──────────────────────────────────────
-
-  const loadCampaigns = useCallback(async (): Promise<void> => {
-    setLoadingStats(true)
+  const loadCampaigns = useCallback(async () => {
     try {
-      const response = await fetch('/api/brevo/campaign', { method: 'GET' })
-      if (!response.ok) throw new Error('Erreur serveur')
-
-      const data = await response.json() as { campaigns?: Campaign[] }
-      const list = data.campaigns ?? []
-
-      setCampaigns(list)
-
-      // Calcul des stats depuis la liste
-      const sent = list.filter(c => c.status === 'sent').length
-      const lastSent = list
-        .filter(c => c.status === 'sent' && c.scheduledAt)
-        .sort((a, b) => new Date(b.scheduledAt!).getTime() - new Date(a.scheduledAt!).getTime())[0]
-
-      setStats({
-        totalCampaigns: list.length,
-        sentCampaigns:  sent,
-        lastCampaignAt: lastSent?.scheduledAt ?? null,
-      })
-    } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Erreur inconnue'
-      console.error('[EmailMarketing] Chargement campagnes:', msg)
+      const res = await fetch('/api/brevo/campaign')
+      const data = await res.json()
+      if (res.ok) setCampaigns(data.campaigns || [])
+    } catch (e) {
+      console.error(e)
     } finally {
-      setLoadingStats(false)
+      setLoading(false)
     }
   }, [])
 
-  useEffect(() => {
-    loadCampaigns()
-  }, [loadCampaigns])
+  useEffect(() => { loadCampaigns() }, [loadCampaigns])
 
-  // ── Soumettre une nouvelle campagne ───────────────────────────────────────
-
-  async function handleCreateCampaign(e: React.FormEvent<HTMLFormElement>): Promise<void> {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!subject.trim()) {
-      toast.error('Le sujet est obligatoire.')
-      return
-    }
-    if (!htmlContent.trim()) {
-      toast.error('Le contenu HTML est obligatoire.')
-      return
-    }
-
-    setCampaignStatus('loading')
-
+    setSubmitting(true)
     try {
-      const body: Record<string, unknown> = {
-        subject:     subject.trim(),
-        htmlContent: htmlContent.trim(),
-        listId:      2, // Liste vendeurs par défaut
-      }
-      if (scheduledAt) {
-        body.scheduledAt = new Date(scheduledAt).toISOString()
-      }
-
-      const response = await fetch('/api/brevo/campaign', {
-        method:  'POST',
+      const res = await fetch('/api/brevo/campaign', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(body),
+        body: JSON.stringify({ subject, htmlContent, listId: 2 })
       })
-
-      const data = await response.json() as { success?: boolean; error?: string; campaignId?: string }
-
-      if (response.ok && data.success) {
-        setCampaignStatus('success')
-        toast.success(`Campagne créée avec succès ! ID : ${data.campaignId}`)
-        // Réinitialiser le formulaire
+      if (res.ok) {
+        toast.success("Campagne créée !")
+        setShowForm(false)
         setSubject('')
         setHtmlContent('')
-        setScheduledAt('')
-        setShowForm(false)
-        // Recharger la liste
-        await loadCampaigns()
-      } else {
-        throw new Error(data.error ?? 'Erreur lors de la création.')
-      }
-    } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Erreur interne.'
-      setCampaignStatus('error')
-      toast.error(msg)
-      setTimeout(() => setCampaignStatus('idle'), 3000)
+        loadCampaigns()
+      } else throw new Error("Erreur")
+    } catch {
+      toast.error("Erreur de création.")
+    } finally {
+      setSubmitting(false)
     }
   }
 
-  // ── Rendu ─────────────────────────────────────────────────────────────────
+  const handleSaveWhatsApp = async () => {
+    setSavingWa(true)
+    try {
+      const res = await fetch('/api/marketing/automations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          storeId: store.id,
+          whatsapp: waNumber,
+          whatsappAbandonedCart: waActive
+        })
+      })
+      if (res.ok) {
+        toast.success("Configuration WhatsApp sauvegardée !")
+      } else {
+         const data = await res.json()
+         throw new Error(data.error)
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Erreur lors de la sauvegarde.")
+    } finally {
+      setSavingWa(false)
+    }
+  }
 
   return (
-    <div className="space-y-6">
-
-      {/* ── SECTION 1 : Stats rapides ─────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-3">
-
-        {/* Card : Campagnes totales */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm text-center">
-          <p className="text-2xl mb-1">📨</p>
-          {loadingStats ? (
-            <div className="h-7 w-12 mx-auto bg-gray-100 rounded animate-pulse" />
-          ) : (
-            <p className="text-2xl font-black text-[#1A1A1A]">{stats?.totalCampaigns ?? 0}</p>
-          )}
-          <p className="text-xs text-gray-500 mt-1 font-medium">Campagnes créées</p>
+    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      
+      {/* HEADER EMAILS */}
+      <div className="bg-gradient-to-br from-[#1A1A1A] to-[#2D2D2D] p-8 rounded-3xl text-white shadow-xl relative flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div>
+          <h2 className="text-3xl font-black mb-2 flex items-center gap-3">
+             <Mail className="w-8 h-8 opacity-80" /> Automatisations Email
+          </h2>
+          <p className="text-gray-400 text-sm font-medium max-w-md leading-relaxed">
+            Communiquez avec vos clients par email. Configurez des newsletters manuelles ou l'email de bienvenue post-achat.
+          </p>
         </div>
-
-        {/* Card : Campagnes envoyées */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm text-center">
-          <p className="text-2xl mb-1">✉️</p>
-          {loadingStats ? (
-            <div className="h-7 w-12 mx-auto bg-gray-100 rounded animate-pulse" />
-          ) : (
-            <p className="text-2xl font-black text-[#0F7A60]">{stats?.sentCampaigns ?? 0}</p>
-          )}
-          <p className="text-xs text-gray-500 mt-1 font-medium">Emails envoyés</p>
-        </div>
-
-        {/* Card : Dernière campagne */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm text-center">
-          <p className="text-2xl mb-1">📅</p>
-          {loadingStats ? (
-            <div className="h-5 w-20 mx-auto bg-gray-100 rounded animate-pulse mt-1" />
-          ) : (
-            <p className="text-sm font-black text-[#1A1A1A] leading-tight">
-              {stats?.lastCampaignAt ? formatDate(stats.lastCampaignAt) : '—'}
-            </p>
-          )}
-          <p className="text-xs text-gray-500 mt-1 font-medium">Dernière campagne</p>
-        </div>
+        <button 
+          onClick={() => setShowForm(!showForm)}
+          className="bg-white text-[#1A1A1A] px-6 py-3.5 rounded-2xl font-black text-sm hover:scale-105 active:scale-95 transition-transform shrink-0 flex items-center gap-2"
+        >
+          {showForm ? 'Annuler' : <><Plus size={16}/> Nouvelle Campagne</>}
+        </button>
       </div>
 
-      {/* ── SECTION 2 : Séquences automatiques ───────────────────────── */}
-      <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
-        <div className="px-4 py-3 border-b border-gray-50">
-          <h3 className="text-sm font-black text-[#1A1A1A]">🤖 Séquences automatiques</h3>
-          <p className="text-xs text-gray-400 mt-0.5">Emails déclenchés automatiquement selon les événements</p>
-        </div>
+      {/* NEW CAMPAIGN FORM */}
+      {showForm && (
+        <form onSubmit={handleCreate} className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+           <h3 className="text-lg font-black text-[#1A1A1A] mb-6 flex items-center gap-2">
+             <Send size={18} className="text-[#0F7A60]" /> Créer une Newsletter
+           </h3>
+           <div className="space-y-4">
+             <div>
+               <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Sujet de l'email</label>
+               <input 
+                 autoFocus required
+                 value={subject} onChange={e => setSubject(e.target.value)}
+                 className="w-full bg-[#FAFAF7] border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-[#1A1A1A] focus:border-[#0F7A60] outline-none"
+               />
+             </div>
+             <div>
+               <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Contenu Message</label>
+               <textarea 
+                 required rows={5}
+                 value={htmlContent} onChange={e => setHtmlContent(e.target.value)}
+                 placeholder="Tapez le contenu de votre email ici..."
+                 className="w-full bg-[#FAFAF7] border border-gray-200 rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:border-[#0F7A60] outline-none resize-none font-medium"
+               />
+             </div>
+             <div className="pt-2">
+               <button disabled={submitting} type="submit" className="w-full bg-[#0F7A60] text-white py-4 rounded-xl font-black text-sm disabled:opacity-50 hover:bg-[#0C634E] transition-colors shadow-sm">
+                 {submitting ? 'Envoi en cours...' : 'Planifier la campagne'}
+               </button>
+             </div>
+           </div>
+        </form>
+      )}
 
-        <div className="divide-y divide-gray-50">
-          {AUTO_SEQUENCES.map((seq) => (
-            <div key={seq.label} className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-2.5">
-                <span className="text-base leading-none">{seq.icon}</span>
-                <div>
-                  <p className="text-sm font-semibold text-[#1A1A1A]">{seq.label}</p>
-                  <p className="text-xs text-gray-400">{seq.sublabel}</p>
-                </div>
-              </div>
-              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${
-                seq.active
-                  ? 'bg-[#F0FAF7] text-[#0F7A60]'
-                  : 'bg-gray-100 text-gray-400'
-              }`}>
-                {seq.active ? 'Actif' : 'Config'}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* NEW SECTION : WHATSAPP ABANDONED CART */}
+      <div className="bg-white border-2 border-[#25D366]/20 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
+         <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-[#25D366]/5 rounded-full blur-3xl" />
+         
+         <div className="relative z-10 flex flex-col md:flex-row gap-8">
+            <div className="flex-1 space-y-4">
+               <div className="flex items-center gap-3 mb-2">
+                 <div className="w-12 h-12 bg-[#25D366]/10 text-[#25D366] rounded-2xl flex items-center justify-center">
+                    <MessageCircle size={24} />
+                 </div>
+                 <div>
+                   <h3 className="text-xl font-black text-[#1A1A1A]">Relance Panier sur WhatsApp</h3>
+                   <p className="text-xs text-emerald-600 font-bold uppercase tracking-widest">+98% Taux d'ouverture</p>
+                 </div>
+               </div>
+               
+               <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                 Activez les relances automatiques pour les clients qui ont commencé leur commande sans la finaliser. Ils recevront un rappel amical sur WhatsApp au nom de votre boutique.
+               </p>
 
-      {/* ── SECTION 3 : Créer une campagne ───────────────────────────── */}
-      <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
-        <div className="px-4 py-3 flex items-center justify-between border-b border-gray-50">
-          <div>
-            <h3 className="text-sm font-black text-[#1A1A1A]">📤 Créer une campagne</h3>
-            <p className="text-xs text-gray-400 mt-0.5">Envoyez un email à vos abonnés Brevo</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowForm(prev => !prev)}
-            className="text-xs font-bold px-3 py-1.5 rounded-lg bg-[#0F7A60] text-white hover:bg-[#0D6B53] transition-colors"
-          >
-            {showForm ? 'Annuler' : '+ Nouvelle campagne'}
-          </button>
-        </div>
+               <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4 mt-6">
+                 <Phone className="w-5 h-5 text-gray-400 mt-1 shrink-0" />
+                 <div className="flex-1 space-y-2">
+                   <label className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]">Numéro WhatsApp Service Client</label>
+                   <input
+                     value={waNumber}
+                     onChange={(e) => setWaNumber(e.target.value)}
+                     placeholder="Ex: 771234567"
+                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold focus:border-[#25D366] focus:ring-2 focus:ring-[#25D366]/10 outline-none transition-all"
+                   />
+                 </div>
+               </div>
 
-        {/* Formulaire inline (accordéon) */}
-        {showForm && (
-          <form onSubmit={handleCreateCampaign} className="px-4 py-4 space-y-3">
+               <button
+                 onClick={() => setWaActive(!waActive)}
+                 className={`w-full py-4 flex items-center justify-center gap-3 rounded-xl font-black text-sm transition-all ${
+                   waActive 
+                   ? 'bg-[#25D366] text-white shadow-md shadow-[#25D366]/20' 
+                   : 'bg-white border-2 border-gray-200 text-gray-400 hover:border-gray-300'
+                 }`}
+               >
+                 {waActive ? <CheckCircle2 size={18} /> : <div className="w-4 h-4 rounded-full border-2 border-current" />}
+                 {waActive ? 'Relance Automatique Activée' : 'Activer la relance Panier'}
+               </button>
 
-            {/* Sujet */}
-            <div>
-              <label htmlFor="email-subject" className="block text-xs font-bold text-gray-600 mb-1">
-                Sujet de l'email *
-              </label>
-              <input
-                id="email-subject"
-                type="text"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="Ex : Nos nouvelles offres de la semaine 🔥"
-                required
-                maxLength={150}
-                className="
-                  w-full px-3 py-2.5 text-sm text-[#1A1A1A]
-                  bg-[#FAFAF7] border border-gray-200 rounded-xl
-                  placeholder:text-gray-400
-                  focus:outline-none focus:ring-2 focus:ring-[#0F7A60]/30 focus:border-[#0F7A60]
-                  transition-all duration-150
-                "
-              />
-            </div>
-
-            {/* Contenu HTML */}
-            <div>
-              <label htmlFor="email-content" className="block text-xs font-bold text-gray-600 mb-1">
-                Contenu HTML *
-              </label>
-              <textarea
-                id="email-content"
-                value={htmlContent}
-                onChange={(e) => setHtmlContent(e.target.value)}
-                placeholder="<p>Bonjour,</p><p>Découvrez nos nouvelles offres...</p>"
-                required
-                rows={6}
-                className="
-                  w-full px-3 py-2.5 text-sm text-[#1A1A1A] font-mono
-                  bg-[#FAFAF7] border border-gray-200 rounded-xl
-                  placeholder:text-gray-400 placeholder:font-sans
-                  focus:outline-none focus:ring-2 focus:ring-[#0F7A60]/30 focus:border-[#0F7A60]
-                  transition-all duration-150 resize-y min-h-[120px]
-                "
-              />
-              <p className="text-[11px] text-gray-400 mt-1">
-                HTML inline requis pour la compatibilité email (Outlook, Gmail, etc.)
-              </p>
+               <button
+                 onClick={handleSaveWhatsApp}
+                 disabled={savingWa || (!waNumber.trim() && waActive)}
+                 className="w-full text-center text-xs font-bold text-gray-500 hover:text-[#1A1A1A] disabled:opacity-50"
+               >
+                 {savingWa ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
+               </button>
             </div>
 
-            {/* Date d'envoi optionnelle */}
-            <div>
-              <label htmlFor="email-scheduled" className="block text-xs font-bold text-gray-600 mb-1">
-                Date d'envoi planifié <span className="font-normal text-gray-400">(optionnel — laissez vide pour brouillon)</span>
-              </label>
-              <input
-                id="email-scheduled"
-                type="datetime-local"
-                value={scheduledAt}
-                onChange={(e) => setScheduledAt(e.target.value)}
-                min={new Date().toISOString().slice(0, 16)}
-                className="
-                  w-full px-3 py-2.5 text-sm text-[#1A1A1A]
-                  bg-[#FAFAF7] border border-gray-200 rounded-xl
-                  focus:outline-none focus:ring-2 focus:ring-[#0F7A60]/30 focus:border-[#0F7A60]
-                  transition-all duration-150
-                "
-              />
+            {/* PREVIEW */}
+            <div className="md:w-[320px] shrink-0 bg-[#EFEAE2] p-4 rounded-[32px] border-4 border-gray-100 shadow-inner relative flex flex-col h-[400px]">
+               <div className="bg-[#075E54] text-white p-4 rounded-t-2xl flex items-center gap-3 absolute top-0 left-0 right-0 z-10">
+                 <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold text-xs">{store?.name?.charAt(0) || 'S'}</div>
+                 <div>
+                   <p className="text-sm font-bold">{store?.name || 'Votre Boutique'}</p>
+                   <p className="text-[10px] opacity-80">Bot automatisé</p>
+                 </div>
+               </div>
+               
+               <div className="flex-1 mt-16 mt-auto flex flex-col justify-end pb-2">
+                 <div className="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[90%] text-sm text-gray-800 relative">
+                   Salut 👋 <br/><br/>
+                   On a remarqué que tu avais laissé des articles dans ton panier chez <b>{store?.name}</b> !<br/><br/>
+                   Ton stock est mis de côté, voici le lien pour finaliser ta commande avant rupture : <br/>
+                   <span className="text-blue-500 underline mt-1 block">Finaliser l'achat</span>
+                   <span className="text-[10px] text-gray-400 absolute bottom-1.5 right-2">Maintenant</span>
+                 </div>
+               </div>
             </div>
-
-            {/* Bouton de soumission */}
-            <div className="flex gap-2 pt-1">
-              <button
-                type="submit"
-                disabled={campaignStatus === 'loading'}
-                className="
-                  flex-1 py-2.5 text-sm font-bold text-white
-                  bg-[#0F7A60] hover:bg-[#0D6B53] active:bg-[#0B5E49]
-                  rounded-xl shadow-sm
-                  disabled:opacity-50 disabled:cursor-not-allowed
-                  transition-all duration-150 flex items-center justify-center gap-2
-                "
-              >
-                {campaignStatus === 'loading' ? (
-                  <>
-                    <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    <span>Création en cours...</span>
-                  </>
-                ) : (
-                  '📤 Créer la campagne'
-                )}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-
-      {/* ── SECTION 4 : Dernières campagnes ──────────────────────────── */}
-      <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
-        <div className="px-4 py-3 border-b border-gray-50">
-          <h3 className="text-sm font-black text-[#1A1A1A]">📋 Dernières campagnes</h3>
-        </div>
-
-        {loadingStats ? (
-          /* Skeleton loader */
-          <div className="divide-y divide-gray-50">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="px-4 py-3 flex items-center gap-3">
-                <div className="flex-1 h-4 bg-gray-100 rounded animate-pulse" />
-                <div className="w-16 h-4 bg-gray-100 rounded animate-pulse" />
-                <div className="w-20 h-4 bg-gray-100 rounded animate-pulse" />
-              </div>
-            ))}
-          </div>
-        ) : campaigns.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-3xl mb-2">📭</p>
-            <p className="text-sm font-semibold text-gray-500">Aucune campagne créée</p>
-            <p className="text-xs text-gray-400 mt-1">Créez votre première campagne ci-dessus</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-[#FAFAF7] border-b border-gray-100">
-                  <th className="text-left px-4 py-2.5 text-xs font-black text-gray-400 uppercase tracking-wider">Nom</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-black text-gray-400 uppercase tracking-wider">Statut</th>
-                  <th className="text-left px-4 py-2.5 text-xs font-black text-gray-400 uppercase tracking-wider">Date</th>
-                  <th className="text-right px-4 py-2.5 text-xs font-black text-gray-400 uppercase tracking-wider">Clics</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {campaigns.map((campaign) => {
-                  const { label, color } = statusLabel(campaign.status)
-                  const clicks = campaign.statistics?.globalStats?.uniqueClicks ?? 0
-                  const dateStr = campaign.scheduledAt ?? campaign.createdAt
-
-                  return (
-                    <tr key={campaign.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3">
-                        <p className="font-semibold text-[#1A1A1A] text-xs truncate max-w-[160px]" title={campaign.name}>
-                          {campaign.name}
-                        </p>
-                        <p className="text-[11px] text-gray-400 truncate max-w-[160px]" title={campaign.subject}>
-                          {campaign.subject}
-                        </p>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${color}`}>
-                          {label}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
-                        {formatDate(dateStr)}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <span className="text-sm font-bold text-[#1A1A1A]">{clicks}</span>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+         </div>
       </div>
 
     </div>

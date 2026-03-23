@@ -18,7 +18,8 @@ import {
   AlertTriangle,
   Mail,
   LayoutTemplate,
-  PhoneCall
+  PhoneCall,
+  BookOpen
 } from 'lucide-react'
 import { signOut } from '@/app/auth/actions'
 
@@ -51,6 +52,7 @@ const navItems: NavItem[] = [
   { href: '/admin/kyc',           label: 'KYC',             icon: ShieldCheck },
   { href: '/admin/integrations',  label: 'Intégrations',    icon: Puzzle },
   { href: '/admin/email',         label: 'Email Marketing',  icon: Mail },
+  { href: '/admin/masterclass',   label: 'Academy',         icon: BookOpen },
   { href: '/admin/landing',       label: 'Landing Page',     icon: LayoutTemplate },
   { href: '/admin/settings',      label: 'Paramètres',       icon: Settings },
 ]

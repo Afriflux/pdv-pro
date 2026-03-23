@@ -2,9 +2,9 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import Link from 'next/link'
-import { Search, ArrowRight, Download, CheckSquare, Square, Filter, ChevronDown, MessageCircle, AlertCircle, Loader2 } from 'lucide-react'
+import { Search, ArrowRight, Download, CheckSquare, Square, Filter, ChevronDown, AlertCircle, Loader2, LayoutGrid, List as ListIcon, Clock as ClockIcon, Phone as PhoneIcon } from 'lucide-react'
 import { bulkUpdateOrdersStatus } from '@/app/actions/orders'
+import { OrderDetailsDrawer } from './OrderDetailsDrawer'
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   pending:         { label: 'En attente',    color: 'bg-amber-100 text-amber-700' },
@@ -40,9 +40,19 @@ interface Order {
   payment_method: string
   created_at: string
   product: {
+    id: string
     name: string
     images: string[]
+    type: string
+    price: number
   } | null
+  delivery_address?: string
+  subtotal?: number
+  platform_fee?: number
+  vendor_amount?: number
+  payment_ref?: string
+  variant?: any
+  invoices?: any[]
 }
 
 interface OrdersViewProps {
@@ -50,6 +60,22 @@ interface OrdersViewProps {
   storeName?: string
   storeId?: string // Nécessaire pour la Server Action
 }
+
+function WhatsAppIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+    </svg>
+  )
+}
+
+const KANBAN_COLUMNS = [
+  { id: 'pending', label: 'Nouveau', statuses: ['pending', 'cod_pending', 'pending_payment'] },
+  { id: 'confirmed', label: 'Confirmé', statuses: ['confirmed'] },
+  { id: 'processing', label: 'En Préparation', statuses: ['processing'] },
+  { id: 'shipped', label: 'Expédié', statuses: ['shipped'] },
+  { id: 'delivered', label: 'Livré / Terminé', statuses: ['delivered', 'cod_confirmed', 'completed'] }
+]
 
 export default function OrdersView({ initialOrders, storeName, storeId = '' }: OrdersViewProps) {
   // États de données (pour supporter l'optimistic UI)
@@ -59,6 +85,10 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
   const [search, setSearch]       = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [periodFilter, setPeriodFilter] = useState('all') // 'all', 'today', '7days', '30days'
+  
+  // UI & Views
+  const [viewMode, setViewMode] = useState<'list' | 'board'>('list')
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   
   // Actions Bulk
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -151,6 +181,12 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
           arrIds.includes(o.id) ? { ...o, status: newStatus } : o
         ))
         setSelectedIds(new Set()) // Reset 
+        
+        // Update selectedOrder if it's currently open in the Drawer
+        if (selectedOrder && arrIds.includes(selectedOrder.id)) {
+          setSelectedOrder({ ...selectedOrder, status: newStatus })
+        }
+        
         alert(`✅ ${res.updated} commande(s) mise(s) à jour en "${STATUS_CONFIG[newStatus]?.label || newStatus}"`)
       } else {
         alert(`❌ Erreur: ${res.error}`)
@@ -199,39 +235,55 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
       
       {/* 1. STATS RAPIDES */}
       <div className="px-6 pt-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           
-          <div className="bg-white p-5 rounded-2xl border border-line shadow-sm">
-            <p className="text-xs font-black text-dust uppercase tracking-wider mb-1">💰 CA Total</p>
-            <p className="font-display text-2xl font-black text-emerald">
-              {stats.totalCa.toLocaleString('fr-FR')} <span className="text-sm">F</span>
-            </p>
-          </div>
-          
-          <div className="bg-white p-5 rounded-2xl border border-line shadow-sm">
-            <p className="text-xs font-black text-dust uppercase tracking-wider mb-1">📦 Commandes</p>
-            <p className="font-display text-2xl font-black text-ink">{stats.nbCommandes}</p>
-          </div>
-          
-          <div className="bg-white p-5 rounded-2xl border border-line shadow-sm">
-            <p className="text-xs font-black text-dust uppercase tracking-wider mb-1">✅ Complétées</p>
-            <div className="flex items-baseline gap-2">
-              <p className="font-display text-2xl font-black text-ink">{stats.countCompleted}</p>
-              <p className="text-sm font-bold text-emerald">({stats.txCompletion}%)</p>
+          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#0F7A60]/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-[#0F7A60]/10 transition-colors duration-500 pointer-events-none" />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
+            <div className="relative z-10 flex flex-col">
+              <p className="text-[11px] font-black text-[#0F7A60] uppercase tracking-wider mb-2">💰 CA Total</p>
+              <p className="font-display text-3xl font-black text-[#1A1A1A]">
+                {stats.totalCa.toLocaleString('fr-FR')} <span className="text-base text-gray-400">F</span>
+              </p>
             </div>
           </div>
           
-          <div className="bg-white p-5 rounded-2xl border border-line shadow-sm">
-             <p className="text-xs font-black text-dust uppercase tracking-wider mb-1">⏳ En attente</p>
-            <p className={`font-display text-2xl font-black ${stats.countPending > 0 ? 'text-amber-500' : 'text-slate'}`}>
-              {stats.countPending}
-            </p>
+          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-blue-500/10 transition-colors duration-500 pointer-events-none" />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
+            <div className="relative z-10 flex flex-col">
+              <p className="text-[11px] font-black text-blue-500 uppercase tracking-wider mb-2">📦 Commandes</p>
+              <p className="font-display text-3xl font-black text-[#1A1A1A]">{stats.nbCommandes}</p>
+            </div>
+          </div>
+          
+          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-purple-500/10 transition-colors duration-500 pointer-events-none" />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
+            <div className="relative z-10 flex flex-col">
+              <p className="text-[11px] font-black text-purple-500 uppercase tracking-wider mb-2">✅ Complétées</p>
+              <div className="flex items-baseline gap-2">
+                <p className="font-display text-3xl font-black text-[#1A1A1A]">{stats.countCompleted}</p>
+                <p className="text-sm font-bold text-gray-400">({stats.txCompletion}%)</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#C9A84C]/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-[#C9A84C]/10 transition-colors duration-500 pointer-events-none" />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
+            <div className="relative z-10 flex flex-col">
+              <p className="text-[11px] font-black text-[#C9A84C] uppercase tracking-wider mb-2">⏳ En attente</p>
+              <p className={`font-display text-3xl font-black ${stats.countPending > 0 ? 'text-[#C9A84C]' : 'text-gray-400'}`}>
+                {stats.countPending}
+              </p>
+            </div>
           </div>
 
         </div>
       </div>
 
-      {/* 2. FILTRES INTELLIGENTS */}
+      {/* 2. FILTRES INTELLIGENTS & TOGGLE VUE */}
       <div className="px-6 space-y-4">
         <div className="flex flex-col md:flex-row gap-3">
           
@@ -248,6 +300,23 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
           </div>
 
           <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+            
+            {/* Toggle View */}
+            <div className="flex items-center bg-[#FAFAF7] border border-line rounded-xl p-1 shrink-0">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${viewMode === 'list' ? 'bg-white shadow-sm text-ink' : 'text-slate hover:text-ink'}`}
+              >
+                <ListIcon size={14} /> Liste
+              </button>
+              <button
+                onClick={() => setViewMode('board')}
+                className={`py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${viewMode === 'board' ? 'bg-white shadow-sm text-ink' : 'text-slate hover:text-ink'}`}
+              >
+                <LayoutGrid size={14} /> Kanban
+              </button>
+            </div>
+
             {/* Filtre Période */}
             <div className="relative min-w-[140px] flex-shrink-0">
                <select 
@@ -295,135 +364,218 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
         </div>
       </div>
 
-      {/* 3. TABLEAU (LISTE COMPACTE) */}
+      {/* 3. VUES (LISTE OU KANBAN) */}
       <div className="px-6">
         
-        {/* Header colonnes (Desktop) */}
-        {filteredOrders.length > 0 && (
-          <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 bg-[#FAFAF7] border border-line rounded-t-xl text-[10px] font-black uppercase text-dust tracking-wider">
-             <div className="col-span-1 flex items-center justify-center">
-               <button onClick={toggleAll} className="text-dust hover:text-ink">
-                 {selectedIds.size > 0 && selectedIds.size === filteredOrders.length ? <CheckSquare size={16}/> : <Square size={16}/>}
-               </button>
-             </div>
-             <div className="col-span-3">Client</div>
-             <div className="col-span-3">Produit</div>
-             <div className="col-span-2">Date</div>
-             <div className="col-span-1 text-right">Montant</div>
-             <div className="col-span-1 text-center">Status</div>
-             <div className="col-span-1 text-right">Action</div>
+        {viewMode === 'list' ? (
+          <>
+            {/* VUE TABLEAU DE BORD (DATA-GRID) */}
+            <div className="bg-white/80 backdrop-blur-xl border border-white shadow-xl shadow-gray-200/50 rounded-[32px] overflow-hidden">
+              <table className="w-full text-left whitespace-nowrap">
+                <thead className="bg-[#FAFAF7] border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                  <tr>
+                    <th className="px-5 py-5 w-10 text-center">
+                      <button onClick={toggleAll} className={`text-slate hover:text-[#1A1A1A] transition-colors ${selectedIds.size > 0 && selectedIds.size === filteredOrders.length ? 'text-[#0F7A60]' : ''}`} title="Tout sélectionner">
+                        {selectedIds.size > 0 && selectedIds.size === filteredOrders.length ? <CheckSquare size={16} className="text-[#0F7A60]" /> : <Square size={16} />}
+                      </button>
+                    </th>
+                    <th className="px-5 py-5">Commande</th>
+                    <th className="px-5 py-5">Client</th>
+                    <th className="px-5 py-5">Produit & Montant</th>
+                    <th className="px-5 py-5">Statut</th>
+                    <th className="px-5 py-5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                {filteredOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-16 text-center">
+                      <div className="flex flex-col items-center justify-center">
+                        <AlertCircle size={40} className="text-dust opacity-30 mb-4" />
+                        <p className="font-display font-black text-ink text-lg uppercase tracking-tight">Aucune commande</p>
+                        <p className="text-sm font-medium text-slate mt-1 max-w-xs">Modifiez vos filtres ou effectuez une nouvelle recherche pour voir vos commandes.</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredOrders.map((order) => {
+                    const statusConfig = STATUS_CONFIG[order.status] || { label: order.status, color: 'bg-gray-100 text-gray-500' }
+                    const isSelected = selectedIds.has(order.id)
+                    const isPendingUrgent = ['pending', 'cod_pending'].includes(order.status) && (new Date().getTime() - new Date(order.created_at).getTime() > 24 * 60 * 60 * 1000)
+                    
+                    const waLink = `https://wa.me/${order.buyer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                     `Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de votre commande sur PDV Pro.`
+                    )}`
+
+                    const getTimeAgo = (dateStr: string) => {
+                      const diffMins = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000)
+                      if (diffMins < 60) return `${diffMins || 1} min`
+                      const diffHours = Math.floor(diffMins / 60)
+                      if (diffHours < 24) return `${diffHours}h`
+                      const diffDays = Math.floor(diffHours / 24)
+                      if (diffDays === 1) return `Hier`
+                      return `${diffDays} jrs`
+                    }
+
+                    return (
+                      <tr 
+                        key={order.id} 
+                        className={`group cursor-pointer transition-colors ${isSelected ? 'bg-[#0F7A60]/5' : 'hover:bg-gray-50/50'}`}
+                        onClick={() => setSelectedOrder(order)}
+                      >
+                        <td className="px-5 py-4 w-10 text-center" onClick={(e) => { e.stopPropagation(); toggleSelection(order.id) }}>
+                          <button className={`transition-colors ${isSelected ? 'text-[#0F7A60]' : 'text-gray-400 hover:text-[#1A1A1A]'}`}>
+                            {isSelected ? <CheckSquare size={16} /> : <Square size={16} />}
+                          </button>
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-[#1A1A1A] bg-gray-100 px-2.5 py-1 rounded-lg">#{order.id.split('-')[0].toUpperCase()}</span>
+                            {isPendingUrgent && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" title="En attente depuis +24h" />}
+                          </div>
+                          <div className="text-[10px] uppercase font-bold text-gray-400 mt-2 flex items-center gap-1.5 tracking-wider">
+                            <ClockIcon size={12} /> {getTimeAgo(order.created_at)}
+                          </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="flex flex-col gap-1.5">
+                            <span className="font-black text-[#1A1A1A] text-[15px]">{order.buyer_name}</span>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <a href={`tel:${order.buyer_phone}`} onClick={e => e.stopPropagation()} className="font-mono text-[11px] text-gray-500 hover:text-[#0F7A60] font-bold flex items-center gap-1.5 bg-gray-100 hover:bg-emerald-50 px-2 py-1 rounded-md transition-colors"><PhoneIcon size={12}/>{order.buyer_phone}</a>
+                              <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1.5 text-white bg-gradient-to-r from-[#25D366] to-[#1EBE5C] px-2.5 py-1 font-bold text-[10px] rounded-md shadow-sm shadow-[#25D366]/20 transition-transform active:scale-95 hover:shadow-md" title="WhatsApp">
+                                <WhatsAppIcon className="w-3.5 h-3.5" /> WhatsApp
+                              </a>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden hidden sm:flex items-center justify-center shrink-0">
+                              {order.product?.images?.[0] ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={order.product.images[0]} alt={order.product?.name || "Image produit"} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-gray-300 text-[10px]">📦</span>
+                              )}
+                            </div>
+                            <div className="flex flex-col gap-1 min-w-[120px]">
+                              <span className="font-black text-[#0F7A60] text-sm">{order.total.toLocaleString('fr-FR')} F</span>
+                              <span className="text-[11px] font-bold text-gray-500 truncate max-w-[160px]" title={order.product?.name ?? ''}>{order.product?.name ?? '—'}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest ${statusConfig.color} shadow-sm border border-black/5`}>
+                            {statusConfig.label}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4 text-right">
+                           <button 
+                             onClick={(e) => { e.stopPropagation(); setSelectedOrder(order) }}
+                             className="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-[#1A1A1A] rounded-xl transition-all ml-auto hover:shadow-sm"
+                             title="Voir détail"
+                           >
+                             <ArrowRight size={14} />
+                           </button>
+                        </td>
+                      </tr>
+                    )
+                  })
+                )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : (
+          /* VUE KANBAN (BOARD) */
+          <div className="flex gap-4 overflow-x-auto pb-6 pt-2" style={{ scrollbarWidth: 'thin' }}>
+            {KANBAN_COLUMNS.map(column => {
+              const columnOrders = filteredOrders.filter(o => column.statuses.includes(o.status))
+              
+              const handleDrop = async (e: React.DragEvent) => {
+                e.preventDefault()
+                const orderId = e.dataTransfer.getData('orderId')
+                if (!orderId || !storeId) return
+                
+                const orderIndex = orders.findIndex(o => o.id === orderId)
+                if (orderIndex === -1) return
+                if (column.statuses.includes(orders[orderIndex].status)) return // Already in this column
+                
+                // Optimistic UI Update -> on déplace vers le 1er status de la colonne cible (ex: pending, confirmed, processing, shipped, delivered)
+                const newStatus = column.statuses[0]
+                setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o))
+                
+                // Background Call
+                await bulkUpdateOrdersStatus([orderId], newStatus, storeId)
+              }
+
+              return (
+                <div 
+                  key={column.id} 
+                  className="flex-shrink-0 w-80 bg-[#FAFAF7] border border-line rounded-2xl flex flex-col h-[70vh]"
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={handleDrop}
+                >
+                  {/* Column Header */}
+                  <div className="p-4 border-b border-line flex items-center justify-between bg-white rounded-t-2xl shadow-sm">
+                    <h3 className="font-black text-ink text-sm uppercase tracking-tight">{column.label}</h3>
+                    <span className="bg-cream text-slate text-xs font-bold px-2 py-1 rounded-lg">{columnOrders.length}</span>
+                  </div>
+                  
+                  {/* Column Body / Cards */}
+                  <div className="p-3 flex-1 overflow-y-auto space-y-3">
+                    {columnOrders.map(order => {
+                      const isPendingUrgent = ['pending', 'cod_pending'].includes(order.status) && (new Date().getTime() - new Date(order.created_at).getTime() > 24 * 60 * 60 * 1000)
+                      return (
+                        <div 
+                          key={order.id}
+                          draggable
+                          onDragStart={e => {
+                            e.dataTransfer.setData('orderId', order.id)
+                            e.currentTarget.classList.add('opacity-50', 'ring-2', 'ring-emerald')
+                          }}
+                          onDragEnd={e => {
+                            e.currentTarget.classList.remove('opacity-50', 'ring-2', 'ring-emerald')
+                          }}
+                          onClick={() => setSelectedOrder(order)}
+                          className={`bg-white p-4 rounded-xl shadow-sm border ${isPendingUrgent ? 'border-red-200' : 'border-line'} hover:shadow-md hover:border-emerald/30 transition-all cursor-grab active:cursor-grabbing relative group`}
+                        >
+                          {isPendingUrgent && (
+                            <span className="absolute top-4 right-4 w-2 h-2 rounded-full bg-red-500 animate-pulse" title="En attente depuis +24h" />
+                          )}
+                          <p className="text-xs font-black text-slate uppercase tracking-wider mb-1">
+                            #{order.id.split('-')[0]}
+                          </p>
+                          <p className="font-bold text-ink text-sm mb-1">{order.buyer_name}</p>
+                          <p className="text-xs text-dust mb-3">{order.product?.name ?? '—'}</p>
+                          <div className="flex items-center justify-between mt-3 pt-3 border-t border-line/50">
+                            <span className="font-black text-emerald text-sm">{order.total.toLocaleString('fr-FR')} F</span>
+                            <span className="text-[10px] uppercase font-bold text-dust">
+                              {new Date(order.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
           </div>
         )}
-
-        <div className="space-y-3 md:space-y-0 md:bg-white md:border md:border-t-0 border-line md:rounded-b-xl shadow-sm">
-          {filteredOrders.length === 0 ? (
-            <div className="py-20 text-center flex flex-col items-center">
-              <AlertCircle size={40} className="text-dust opacity-30 mb-4" />
-              <p className="font-bold text-ink text-lg">Aucune commande trouvée</p>
-              <p className="text-sm text-dust mt-1">Modifiez vos filtres ou effectuez une nouvelle recherche.</p>
-            </div>
-          ) : (
-             filteredOrders.map((order) => {
-               const statusConfig = STATUS_CONFIG[order.status] || { label: order.status, color: 'bg-gray-100 text-gray-500' }
-               const isSelected = selectedIds.has(order.id)
-               const waLink = `https://wa.me/${order.buyer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                `Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de votre commande sur PDV Pro.`
-               )}`
-
-               return (
-                 <div 
-                  key={order.id} 
-                  className={`flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 p-4 md:items-center bg-white md:bg-transparent rounded-xl md:rounded-none border border-line md:border-0 md:border-b last:border-0 transition-colors ${isSelected ? 'bg-emerald/5 md:bg-emerald/5 border-emerald/20' : 'hover:bg-[#FAFAF7]'}`}
-                >
-                   
-                   {/* Checkbox (Mobile + Desktop) */}
-                   <div className="absolute md:relative right-4 top-4 md:right-auto md:top-auto md:col-span-1 flex items-center md:justify-center">
-                      <button onClick={() => toggleSelection(order.id)} className={isSelected ? 'text-emerald' : 'text-slate hover:text-ink'}>
-                        {isSelected ? <CheckSquare size={20} className="md:w-4 md:h-4"/> : <Square size={20} className="md:w-4 md:h-4"/>}
-                      </button>
-                   </div>
-
-                   {/* Client */}
-                   <div className="md:col-span-3 flex flex-col pt-1 md:pt-0">
-                     <Link href={`/dashboard/orders/${order.id}`} className="font-bold text-ink hover:text-emerald text-sm truncate">
-                        {order.buyer_name}
-                     </Link>
-                     <p className="text-xs text-dust">{order.buyer_phone}</p>
-                   </div>
-
-                   {/* Produit */}
-                   <div className="md:col-span-3 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-cream flex-shrink-0 border border-line overflow-hidden hidden md:block">
-                        {order.product?.images?.[0] ? (
-                          <>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={order.product!.images[0]} alt={order.product?.name || "Image produit"} className="w-full h-full object-cover" />
-                          </>
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">📦</div>
-                        )}
-                      </div>
-                      <p className="text-xs font-semibold text-ink line-clamp-2 md:line-clamp-1">
-                        {order.product?.name ?? '—'}
-                      </p>
-                   </div>
-
-                   {/* Date */}
-                   <div className="md:col-span-2 hidden md:block text-xs text-dust font-medium">
-                     {new Date(order.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour:'2-digit', minute:'2-digit' })}
-                   </div>
-
-                   {/* Montant */}
-                   <div className="md:col-span-1 md:text-right hidden md:block">
-                      <p className="font-black text-emerald text-sm">{order.total.toLocaleString('fr-FR')} F</p>
-                   </div>
-
-                   {/* Mobile Montant + Date + Status row */}
-                   <div className="md:hidden flex items-center justify-between border-t border-dashed border-line pt-3 mt-1">
-                      <div>
-                        <p className="font-black text-emerald text-sm">{order.total.toLocaleString('fr-FR')} FCFA</p>
-                        <p className="text-[10px] text-dust">{new Date(order.created_at).toLocaleDateString('fr-FR')}</p>
-                      </div>
-                      <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-md ${statusConfig.color}`}>
-                        {statusConfig.label}
-                      </span>
-                   </div>
-
-                   {/* Status (Desktop) */}
-                   <div className="md:col-span-1 hidden md:flex items-center justify-center">
-                     <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-md text-center inline-block w-full ${statusConfig.color} truncate`}>
-                        {statusConfig.label}
-                      </span>
-                   </div>
-
-                   {/* Actions */}
-                   <div className="md:col-span-1 flex items-center justify-end gap-2 md:gap-3">
-                      <a
-                        href={waLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 md:p-1.5 text-[#25D366] bg-[#25D366]/10 hover:bg-[#25D366]/20 rounded-lg transition"
-                        title="Contacter sur WhatsApp"
-                      >
-                         <MessageCircle size={18} className="md:w-4 md:h-4" />
-                      </a>
-                      <Link
-                        href={`/dashboard/orders/${order.id}`}
-                        className="p-2 md:p-1.5 text-ink bg-gray-100 hover:bg-gray-200 rounded-lg transition"
-                        title="Voir détail"
-                      >
-                        <ArrowRight size={18} className="md:w-4 md:h-4" />
-                      </Link>
-                   </div>
-
-                 </div>
-               )
-             })
-          )}
-        </div>
       </div>
 
-      {/* 4. ACTIONS BULK (Panel Fixe en bas) */}
+      {/* 4. TIREUR DE DÉTAILS (SLIDE-OVER) */}
+      <OrderDetailsDrawer 
+        isOpen={!!selectedOrder} 
+        order={selectedOrder} 
+        onClose={() => {
+          setSelectedOrder(null)
+          // Mettre un refresh si on veut s'assurer des modifs, mais optimistic UI s'en charge.
+        }} 
+      />
+
+      {/* 5. ACTIONS BULK (Panel Fixe en bas) */}
       {selectedIds.size > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-ink rounded-2xl p-4 shadow-2xl flex items-center gap-6 text-white border border-white/10 animate-in slide-in-from-bottom-5">
            <div className="flex items-center gap-3 border-r border-white/20 pr-6">

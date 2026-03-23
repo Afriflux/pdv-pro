@@ -4,10 +4,14 @@ import { useState } from 'react'
 import { Sparkles, Loader2, Check, Edit2 } from 'lucide-react'
 
 interface GeneratedProduct {
-  name: string
+  title: string
   description: string
-  price?: number
-  tags?: string[]
+  benefits: string[]
+  faq: Array<{ question: string; answer: string }>
+  callToAction: string
+  marketingAngles: string[]
+  seoTitle: string
+  metaDescription: string
 }
 
 interface AIProductGeneratorProps {
@@ -183,8 +187,8 @@ export default function AIProductGenerator({ onGenerated, category: defaultCateg
               </div>
               
               <div>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Nom du produit</p>
-                <p className="font-bold text-[#1A1A1A]">{generated.name}</p>
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Titre généré</p>
+                <p className="font-bold text-[#1A1A1A]">{generated.title}</p>
               </div>
               
               <div>
@@ -194,26 +198,22 @@ export default function AIProductGenerator({ onGenerated, category: defaultCateg
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4 pt-2">
-                {generated.price && (
-                  <div>
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Prix suggéré</p>
-                    <p className="font-bold text-[#1A1A1A]">{generated.price.toLocaleString('fr-FR')} FCFA</p>
+              <div className="grid grid-cols-1 gap-4 pt-2">
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Angles Marketing clés</p>
+                  <ul className="text-sm text-gray-600 list-disc pl-4">
+                    {generated.marketingAngles?.map((angle, i) => <li key={i}>{angle}</li>)}
+                  </ul>
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">SEO (Meta Title & Meta Description)</p>
+                  <div className="bg-white p-3 rounded-lg border border-gray-100 mt-1">
+                    <p className="text-blue-600 text-sm font-semibold truncate hover:underline cursor-pointer">{generated.seoTitle}</p>
+                    <p className="text-green-700 text-xs truncate">pdvpro.com/p/votre-produit</p>
+                    <p className="text-gray-500 text-xs mt-1 line-clamp-2">{generated.metaDescription}</p>
                   </div>
-                )}
-                
-                {generated.tags && generated.tags.length > 0 && (
-                  <div>
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Tags (SEO)</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {generated.tags.slice(0, 3).map((tag, i) => (
-                        <span key={i} className="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded-md font-medium">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
 

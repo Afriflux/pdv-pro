@@ -104,3 +104,40 @@ export async function rejectAffiliate(affiliateId: string) {
   revalidatePath('/dashboard/affilies')
   return { success: true }
 }
+
+/**
+ * Met à jour les règles spécifiques d'affiliation pour un produit
+ */
+export async function updateProductAffiliateSettings(productId: string, isActive: boolean | null, margin: number | null) {
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('Product')
+    .update({ 
+      affiliate_active: isActive, 
+      affiliate_margin: margin 
+    })
+    .eq('id', productId)
+
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/dashboard/affilies')
+  return { success: true }
+}
+
+/**
+ * Met à jour les règles spécifiques d'affiliation pour une page de vente
+ */
+export async function updateSalePageAffiliateSettings(pageId: string, isActive: boolean | null, margin: number | null) {
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('SalePage')
+    .update({ 
+      affiliate_active: isActive, 
+      affiliate_margin: margin 
+    })
+    .eq('id', pageId)
+
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/dashboard/affilies')
+  return { success: true }
+}
+

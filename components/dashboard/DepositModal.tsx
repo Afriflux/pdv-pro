@@ -25,9 +25,23 @@ export function DepositModal() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full py-4 bg-white border border-emerald/20 text-[#0F7A60] font-bold rounded-2xl hover:bg-emerald/5 transition shadow-sm"
+        className="relative overflow-hidden w-full sm:w-auto px-6 py-3.5 bg-gradient-to-br from-[#0F7A60] to-[#094A3A] text-white rounded-2xl transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group ring-4 ring-[#0F7A60]/20 hover:ring-[#0F7A60]/40 shadow-[0_8px_30px_rgba(15,122,96,0.3)]"
       >
-        ➕ Recharger mon solde
+        <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
+        
+        <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 group-hover:scale-110 transition-all shadow-inner backdrop-blur-md relative z-10">
+          <span className="text-base">⚡</span>
+        </div>
+        
+        <div className="flex flex-col items-start text-left relative z-10">
+          <span className="text-sm font-black leading-none mb-1">Recharger le solde</span>
+          <span className="text-[10px] text-emerald-200 font-bold uppercase tracking-widest leading-none flex items-center gap-1">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.65 2 6.32 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM13.707 8.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            100% Sécurisé
+          </span>
+        </div>
       </button>
 
       {isOpen && (

@@ -7,6 +7,7 @@ import {
   Clock,
   ArrowUpRight,
   Store,
+  DollarSign
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -79,10 +80,11 @@ export default async function AdminDashboard() {
     { data: withdrawalsAmount },
     { count: newStoresWeek },
     { data: latestOrders },
+    { data: revenueAllTimeData },
   ] = await Promise.all([
     supabase.from('Store').select('*', { count: 'exact', head: true }),
     supabase.from('Order').select('*', { count: 'exact', head: true }).gte('created_at', todayISO),
-    supabase.from('Order').select('total').in('status', ['paid', 'confirmed', 'completed']).gte('created_at', todayISO),
+    supabase.from('Order').select('total, platform_fee').in('status', ['paid', 'confirmed', 'completed']).gte('created_at', todayISO),
     supabase.from('Order').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('WithdrawalRequest').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('WithdrawalRequest').select('amount').eq('status', 'pending'),
@@ -91,10 +93,14 @@ export default async function AdminDashboard() {
       .select('id, total, status, created_at, Store(name)')
       .order('created_at', { ascending: false })
       .limit(10),
+    supabase.from('Order').select('platform_fee').in('status', ['paid', 'confirmed', 'completed']),
   ])
 
   // Calculs agrégés
-  const dailyRevenue = revenueData?.reduce((acc, curr) => acc + (curr.total ?? 0), 0) ?? 0
+  const dailyGMV = revenueData?.reduce((acc, curr) => acc + (curr.total ?? 0), 0) ?? 0
+  const dailyPlatformRevenue = revenueData?.reduce((acc, curr) => acc + (curr.platform_fee ?? 0), 0) ?? 0
+  const totalPlatformRevenue = revenueAllTimeData?.reduce((acc, curr) => acc + (curr.platform_fee ?? 0), 0) ?? 0
+  
   const totalPendingAmount = withdrawalsAmount?.reduce((acc, curr) => acc + (curr.amount ?? 0), 0) ?? 0
 
   // Cards statistiques avec couleurs de la charte PDV Pro
@@ -115,11 +121,26 @@ export default async function AdminDashboard() {
       bgColor: 'bg-blue-50',
     },
     {
-      label:   'CA du jour',
-      value:   `${dailyRevenue.toLocaleString('fr-FR')} FCFA`,
+      label:   'Volume Ventes (24h)',
+      value:   `${dailyGMV.toLocaleString('fr-FR')} F`,
       icon:    TrendingUp,
+      color:   'text-gray-500',
+      bgColor: 'bg-gray-100',
+    },
+    {
+      label:   'Vos Revenus (24h)',
+      value:   `${dailyPlatformRevenue.toLocaleString('fr-FR')} F`,
+      icon:    DollarSign,
       color:   'text-[#C9A84C]',
       bgColor: 'bg-[#C9A84C]/10',
+    },
+    {
+      label:   'Vos Revenus (Global)',
+      value:   `${totalPlatformRevenue.toLocaleString('fr-FR')} F`,
+      icon:    DollarSign,
+      trend:   'Commissions cumulées',
+      color:   'text-[#0F7A60]',
+      bgColor: 'bg-[#0F7A60]/10',
     },
     {
       label:   'En attente',
@@ -137,7 +158,7 @@ export default async function AdminDashboard() {
     },
     {
       label:   'Montant à décaisser',
-      value:   `${totalPendingAmount.toLocaleString('fr-FR')} FCFA`,
+      value:   `${totalPendingAmount.toLocaleString('fr-FR')} F`,
       icon:    ArrowUpRight,
       color:   'text-red-500',
       bgColor: 'bg-red-50',
@@ -157,7 +178,7 @@ export default async function AdminDashboard() {
       </header>
 
       {/* ── CARDS STATISTIQUES — Fond blanc, bordure grise, icônes colorées ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
           <div
             key={i}

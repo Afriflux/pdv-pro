@@ -9,13 +9,23 @@ export default async function PromotionsHubPage() {
   if (!user) redirect('/login')
 
   // 1. Boutique
-  const { data: store } = await supabase
+  const { data: store, error: storeError } = await supabase
     .from('Store')
-    .select('id, name')
+    .select('id, name, announcement_active, announcement_text, announcement_bg_color, free_shipping_threshold, gamification_active, gamification_config')
     .eq('user_id', user.id)
     .single()
 
-  if (!store) redirect('/dashboard')
+  if (storeError) {
+    console.error('[PromotionsHubPage] Error fetching store:', storeError)
+  }
+
+  if (!store) {
+    return (
+      <div className="p-8 text-orange-500 font-bold bg-orange-50 border border-orange-100 text-center rounded-xl mx-auto mt-10 max-w-2xl">
+        Aucune boutique active trouvée pour votre compte. Veuillez terminer la configuration de votre boutique avant d'accéder aux promotions.
+      </div>
+    )
+  }
   const storeId = store.id
 
   // 2. Produits Actifs (pour le choix de la cible)
@@ -53,6 +63,14 @@ export default async function PromotionsHubPage() {
           promotions={promotions}
           promoCodes={promos ?? []}
           products={products ?? []}
+          storeSettings={{
+            announcement_active: store.announcement_active,
+            announcement_text: store.announcement_text,
+            announcement_bg_color: store.announcement_bg_color,
+            free_shipping_threshold: store.free_shipping_threshold,
+            gamification_active: store.gamification_active,
+            gamification_config: store.gamification_config
+          }}
         />
       </div>
     </main>

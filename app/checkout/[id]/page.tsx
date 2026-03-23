@@ -62,8 +62,8 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
   const { data: product } = await supabase
     .from('Product')
     .select(`
-      id, name, description, price, type, images, category, resale_allowed, resale_commission, cash_on_delivery, digital_files,
-      store:Store(id, name, slug, logo_url, primary_color, meta_pixel_id, tiktok_pixel_id, google_tag_id, contract_accepted, vendor_type, kyc_status, created_at, social_links)
+      id, name, description, price, type, images, category, resale_allowed, resale_commission, cash_on_delivery, digital_files, coaching_durations, coaching_is_pack, coaching_pack_count,
+      store:Store(id, name, slug, logo_url, primary_color, meta_pixel_id, tiktok_pixel_id, google_tag_id, contract_accepted, vendor_type, kyc_status, created_at, social_links, coaching_max_per_day, coaching_min_notice, free_shipping_threshold, gamification_active, gamification_config)
     `)
     .eq('id', params.id)
     .eq('active', true)
@@ -90,6 +90,10 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     meta_pixel_id: string | null; tiktok_pixel_id: string | null; google_tag_id: string | null
     contract_accepted: boolean | null; vendor_type: 'digital' | 'physical' | 'hybrid' | null
     kyc_status: string | null; created_at: string; social_links: any
+    coaching_max_per_day: number | null; coaching_min_notice: number | null
+    free_shipping_threshold: number | null
+    gamification_active: boolean
+    gamification_config: any | null
   } | null
 
   if (!store) notFound()
@@ -139,10 +143,35 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
 
   // Récupérer les créneaux si produit_type === "coaching"
   let coachingSlots: any[] = []
+  let blockedDates: any[] = []
+  const bookedSlots: Record<string, number> = {}
+
   if (product.type === 'coaching') {
     coachingSlots = await prisma.coachingSlot.findMany({
       where: { store_id: store.id, active: true },
       orderBy: [{ day_of_week: 'asc' }, { start_time: 'asc' }]
+    })
+
+    const todayDateStr = new Date().toISOString().split('T')[0]
+    const existingBookings = await prisma.booking.findMany({
+      where: { 
+        product_id: product.id,
+        status: { in: ['pending', 'confirmed'] },
+        booking_date: { gte: new Date(`${todayDateStr}T00:00:00.000Z`) }
+      },
+      select: { booking_date: true, start_time: true, end_time: true }
+    })
+
+    existingBookings.forEach((b: any) => {
+      if (!b.booking_date || !b.start_time || !b.end_time) return
+      const dateKey = typeof b.booking_date === 'string' ? b.booking_date.split('T')[0] : b.booking_date.toISOString().split('T')[0]
+      const key = `${dateKey}|${b.start_time}-${b.end_time}`
+      bookedSlots[key] = (bookedSlots[key] || 0) + 1
+    })
+
+    blockedDates = await prisma.blockedDate.findMany({
+      where: { store_id: store.id },
+      select: { date: true, start_time: true, end_time: true }
     })
   }
 
@@ -189,6 +218,8 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         storeId={store.id}
         deliveryZones={deliveryZones}
         coachingSlots={coachingSlots}
+        blockedDates={blockedDates}
+        bookedSlots={bookedSlots}
         similarProducts={similarProducts}
         telegramCommunity={telegramCommunity}
       />

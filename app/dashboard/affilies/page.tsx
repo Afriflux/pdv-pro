@@ -25,6 +25,13 @@ interface AffiliateRow {
   } | null
 }
 
+export interface OverrideItem {
+  id: string
+  name: string
+  affiliate_active: boolean | null
+  affiliate_margin: number | null
+}
+
 export default async function AffiliesPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -54,25 +61,60 @@ export default async function AffiliesPage() {
     .eq('store_id', store.id)
     .order('created_at', { ascending: false })
 
+  // 3. Récupérer les Produits et les Pages de vente pour les commissions spécifiques
+  const { data: products } = await supabaseAdmin
+    .from('Product')
+    .select('id, name, affiliate_active, affiliate_margin')
+    .eq('store_id', store.id)
+
+  const { data: salePages } = await supabaseAdmin
+    .from('SalePage')
+    .select('id, title, affiliate_active, affiliate_margin')
+    .eq('store_id', store.id)
+
+  const formattedProducts: OverrideItem[] = (products || []).map((p: any) => ({
+    id: p.id,
+    name: p.name,
+    affiliate_active: p.affiliate_active,
+    affiliate_margin: p.affiliate_margin,
+  }))
+
+  const formattedPages: OverrideItem[] = (salePages || []).map((p: any) => ({
+    id: p.id,
+    name: p.title,
+    affiliate_active: p.affiliate_active,
+    affiliate_margin: p.affiliate_margin,
+  }))
+
   return (
-    <>
-      <header className="bg-white border-b border-line shadow-sm px-6 py-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <main className="min-h-screen bg-[#FAFAF7]">
+      {/* Header Premium */}
+      <header className="bg-white border-b border-gray-100 px-6 py-8 md:px-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="font-display text-ink text-xl font-bold">Programme d&apos;Affiliation</h1>
+            <div className="flex items-center gap-3">
+              <span className="w-10 h-10 rounded-xl bg-[#0F7A60]/10 flex items-center justify-center text-xl shadow-sm">
+                🤝
+              </span>
+              <h1 className="text-2xl md:text-3xl font-black text-[#1A1A1A] tracking-tight">Réseau d&apos;Affiliation</h1>
+            </div>
+            <p className="text-sm text-gray-500 mt-2 font-medium max-w-xl leading-relaxed">
+              Gérez vos ambassadeurs, configurez vos commissions et développez votre force de vente de manière totalement organique.
+            </p>
           </div>
         </div>
       </header>
 
-      <div className="w-full p-6">
+      <div className="w-full px-4 md:px-6 py-8">
         <AffiliateClient
           storeId={store.id}
-
           initialActive={store.affiliate_active}
           initialMargin={store.affiliate_margin ?? 0.15}
           affiliates={(affiliates ?? []) as unknown as AffiliateRow[]}
+          products={formattedProducts}
+          salePages={formattedPages}
         />
       </div>
-    </>
+    </main>
   )
 }

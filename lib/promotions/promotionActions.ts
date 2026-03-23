@@ -206,3 +206,51 @@ export async function expireOldPromotions() {
     console.log(`[expireOldPromotions] Expiré: ${data.length} promotions.`)
   }
 }
+
+// ─── 4. Bandeau d'Annonce ────────────────────────────────────────────────
+
+export async function updateStoreAnnouncement(
+  storeId: string, 
+  payload: { active: boolean, text: string, bgColor: string }
+) {
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from('Store')
+    .update({ 
+      announcement_active: payload.active,
+      announcement_text: payload.text,
+    })
+    .eq('id', storeId)
+
+  return !error
+}
+
+// ─── 5. Boosters (Phase 6) ────────────────────────────────────────────────
+
+export async function updateStoreBoosters(
+  storeId: string,
+  payload: {
+    freeShippingThreshold: number | null
+    gamificationActive: boolean
+    gamificationConfig: any | null
+  }
+) {
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from('Store')
+    .update({ 
+      free_shipping_threshold: payload.freeShippingThreshold,
+      gamification_active: payload.gamificationActive,
+      gamification_config: payload.gamificationConfig
+    })
+    .eq('id', storeId)
+
+  if (error) {
+    console.error('[updateStoreBoosters]', error)
+    return false
+  }
+
+  return true
+}

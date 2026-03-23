@@ -28,6 +28,11 @@ interface Product {
   type: string
   images: string[]
   cash_on_delivery: boolean
+  coaching_type?: 'individual' | 'group' | null
+  max_participants?: number | null
+  coaching_durations?: number[] | null
+  coaching_is_pack?: boolean | null
+  coaching_pack_count?: number | null
   store: {
     id: string
     name: string
@@ -35,6 +40,8 @@ interface Product {
     logo_url: string | null
     primary_color: string | null
     vendor_type: 'digital' | 'physical' | 'hybrid' | null
+    coaching_max_per_day?: number | null
+    coaching_min_notice?: number | null
   }
 }
 
@@ -50,6 +57,8 @@ interface CheckoutFormProps {
   vendorPlan?: 'gratuit' | 'pro'
   deliveryZones?: { id: string; name: string; fee: number; delay: string | null; active: boolean }[]
   coachingSlots?: any[]
+  blockedDates?: any[]
+  bookedSlots?: Record<string, number>
   // Props optionnelles pour pré-remplir depuis ProductPage
   defaultUseCOD?: boolean
   defaultVariantId?: string | null
@@ -69,6 +78,8 @@ export function CheckoutForm({
   defaultQuantity,
   deliveryZones = [],
   coachingSlots = [],
+  blockedDates = [],
+  bookedSlots = {},
 }: CheckoutFormProps) {
   const router = useRouter()
   const accent = product.store.primary_color || '#0F7A60'
@@ -103,7 +114,17 @@ export function CheckoutForm({
 
   // ── États Coaching ──────────────────────────────────────────────
   const [selectedDate, setSelectedDate] = useState<string>('')
+  const [selectedDuration, setSelectedDuration] = useState<number>(() => {
+    if (product.coaching_durations && product.coaching_durations.length > 0) {
+      return product.coaching_durations[0]
+    }
+    return 60
+  })
   const [selectedSlotStr, setSelectedSlotStr] = useState<string>('')
+  const [userTz, setUserTz] = useState<string>('')
+  useEffect(() => {
+    setUserTz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+  }, [])
 
   // ── États flow 2 étapes ───────────────────────────────────────
   type CheckoutStep = 'form' | 'payment'
@@ -250,6 +271,10 @@ export function CheckoutForm({
     setLoading(true)
 
     try {
+      // ── Lecture du Token d'Affiliation ──
+      const refMatch = document.cookie.match(/(?:^|; )pdv_affiliate_ref=([^;]*)/)
+      const affiliateToken = refMatch ? decodeURIComponent(refMatch[1]) : null
+
       const body = {
         product_id:       product.id,
         store_id:         product.store.id,
@@ -269,6 +294,7 @@ export function CheckoutForm({
         vendor_amount:    vendorAmount,
         total,
         applied_promo_id: appliedPromo?.id || null,
+        affiliate_token:  affiliateToken,
         booking_date:     selectedDate || null,
         booking_start_time: selectedSlotStr ? selectedSlotStr.split('-')[0] : null,
         booking_end_time:   selectedSlotStr ? selectedSlotStr.split('-')[1] : null,
@@ -496,11 +522,30 @@ export function CheckoutForm({
           <section className="bg-white rounded-2xl shadow-sm p-4 space-y-4 border border-gray-100">
             <h2 className="font-semibold text-gray-800 text-sm">Réserver votre session</h2>
             
+            {product.coaching_durations && product.coaching_durations.length > 1 && (
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Durée de la session</label>
+                <div className="flex flex-wrap gap-2">
+                  {product.coaching_durations.map(dur => (
+                    <button
+                      key={dur}
+                      type="button"
+                      onClick={() => { setSelectedDuration(dur); setSelectedSlotStr(''); }}
+                      className={`px-4 py-2 rounded-xl text-sm font-bold transition border-2 ${selectedDuration === dur ? 'text-white border-transparent' : 'text-gray-600 bg-white hover:bg-gray-50 border-gray-200'}`}
+                      style={selectedDuration === dur ? { backgroundColor: accent } : {}}
+                    >
+                      {dur >= 60 ? `${Math.floor(dur/60)}h${dur%60 ? dur%60 : ''}` : `${dur} min`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">Sélectionnez une date <span className="text-red-500">*</span></label>
               <input
                 type="date"
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date(Date.now() + (product.store.coaching_min_notice || 0) * 3600000).toISOString().split('T')[0]}
                 value={selectedDate}
                 onChange={(e) => {
                   setSelectedDate(e.target.value)
@@ -514,37 +559,123 @@ export function CheckoutForm({
             {selectedDate && (
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-2">Créneaux horaires disponibles <span className="text-red-500">*</span></label>
+                <p className="text-[11px] text-gray-500 mb-3 bg-gray-50 p-2 rounded-lg border border-gray-100 flex items-start gap-1">
+                  <span className="text-sm">🌍</span>
+                  <span>Les horaires sont affichés à l'heure du vendeur (GMT). 
+                  {userTz && <strong> Votre fuseau : {userTz}</strong>}</span>
+                </p>
                 {(() => {
                   const dateObj = new Date(selectedDate)
                   // getDay(): 0=Dimanche, 1=Lundi -> Notre DB: 0=Lundi, 6=Dimanche
                   const dayOfWeek = (dateObj.getDay() + 6) % 7
-                  const availableSlots = coachingSlots.filter(s => s.day_of_week === dayOfWeek && s.active)
+                  const baseAvailableSlots = coachingSlots.filter(s => s.day_of_week === dayOfWeek && s.active)
+
+                  // Check if the entire day or specific hours are blocked
+                  const dayBlocks = blockedDates.filter((b: any) => {
+                    const blockDateStr = new Date(b.date).toISOString().split('T')[0]
+                    return blockDateStr === selectedDate
+                  })
+                  
+                  const isSlotBlocked = (slot: any) => {
+                    for (const block of dayBlocks) {
+                      if (!block.start_time || !block.end_time) {
+                        return true // The entire day is blocked!
+                      }
+                      // A slot [s1, e1] overlaps with block [s2, e2] if: s1 < e2 && e1 > s2
+                      if (slot.start_time < block.end_time && slot.end_time > block.start_time) {
+                        return true
+                      }
+                    }
+                    return false
+                  }
+                  
+                  const availableSlots = baseAvailableSlots.filter(s => !isSlotBlocked(s))
 
                   if (availableSlots.length === 0) {
                     return <p className="text-sm font-medium text-amber-600 bg-amber-50 p-3 rounded-xl text-center">Aucune disponibilité pour ce jour.</p>
                   }
 
+                  const maxBookings = product.store.coaching_max_per_day || 0;
+                  const dayBookings = Object.entries(bookedSlots).filter(([key]) => key.startsWith(selectedDate + '|')).reduce((acc, [_, val]) => acc + val, 0);
+                  if (maxBookings > 0 && dayBookings >= maxBookings) {
+                    return <p className="text-sm font-medium text-amber-600 bg-amber-50 p-3 rounded-xl text-center">Cette journée est complète ({maxBookings} session(s) max par jour).</p>
+                  }
+
+                  const timeToMins = (t: string) => {
+                    const [h, m] = t.split(':').map(Number);
+                    return h * 60 + m;
+                  }
+
+                  const finalSlots: { start: string, end: string, originalSlots: any[] }[] = [];
+                  const sortedSlots = [...availableSlots].sort((a,b) => timeToMins(a.start_time) - timeToMins(b.start_time));
+                  
+                  sortedSlots.forEach((slot, index) => {
+                    let currentDur = timeToMins(slot.end_time) - timeToMins(slot.start_time);
+                    let originalSlots = [slot];
+                    let endTime = slot.end_time;
+                    let i = index + 1;
+                    
+                    while (currentDur < selectedDuration && i < sortedSlots.length) {
+                      const nextSlot = sortedSlots[i];
+                      if (nextSlot.start_time === endTime) {
+                        currentDur += timeToMins(nextSlot.end_time) - timeToMins(nextSlot.start_time);
+                        endTime = nextSlot.end_time;
+                        originalSlots.push(nextSlot);
+                        i++;
+                      } else {
+                        break;
+                      }
+                    }
+                    
+                    if (currentDur >= selectedDuration) {
+                      const startMins = timeToMins(slot.start_time);
+                      const finalMins = startMins + selectedDuration;
+                      const finalH = Math.floor(finalMins / 60).toString().padStart(2, '0');
+                      const finalM = (finalMins % 60).toString().padStart(2, '0');
+                      const finalEndStr = `${finalH}:${finalM}`;
+                      
+                      const finalSlotValue = `${slot.start_time}-${finalEndStr}`;
+                      if (!finalSlots.find(s => `${s.start}-${s.end}` === finalSlotValue)) {
+                         finalSlots.push({ start: slot.start_time, end: finalEndStr, originalSlots });
+                      }
+                    }
+                  });
+
+                  if (finalSlots.length === 0) {
+                     return <p className="text-sm font-medium text-amber-600 bg-amber-50 p-3 rounded-xl text-center">Aucun créneau continu d'une durée de {selectedDuration >= 60 ? Math.floor(selectedDuration/60)+'h'+(selectedDuration%60 || '') : selectedDuration+' min'} n'est disponible.</p>
+                  }
+
                   return (
                     <div className="grid grid-cols-2 gap-2">
-                      {availableSlots.map((slot, i) => {
-                        const slotValue = `${slot.start_time}-${slot.end_time}`
-                        const isSelected = selectedSlotStr === slotValue
+                       {finalSlots.map((combo, i) => {
+                         const slotValue = `${combo.start}-${combo.end}`;
+                         const isSelected = selectedSlotStr === slotValue;
+                         
+                         const maxAllowed = product.coaching_type === 'group' ? (product.max_participants || 10) : 1;
+                         const isFull = combo.originalSlots.some(s => {
+                            const slotKey = `${selectedDate}|${s.start_time}-${s.end_time}`;
+                            const currentBookings = bookedSlots[slotKey] || 0;
+                            return currentBookings >= maxAllowed;
+                         });
+
                         return (
                           <button
                             key={i}
                             type="button"
+                            disabled={isFull && !isSelected}
                             onClick={() => setSelectedSlotStr(slotValue)}
-                            className="py-2.5 px-2 rounded-xl border text-sm font-bold transition flex items-center justify-center"
+                            className={`py-2.5 px-2 rounded-xl border-2 text-sm font-bold transition flex items-center justify-center ${isFull && !isSelected ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-100' : ''}`}
                             style={isSelected ? {
-                              backgroundColor: accent,
+                              backgroundColor: `${accent}15`,
                               borderColor: accent,
-                              color: '#fff'
-                            } : {
+                              color: accent
+                            } : (!isFull ? {
                               borderColor: '#e5e7eb',
-                              color: '#374151'
-                            }}
+                              color: '#374151',
+                              backgroundColor: '#fff'
+                            } : {})}
                           >
-                            {slot.start_time} - {slot.end_time}
+                            {combo.start} - {combo.end} {isFull && !isSelected ? '(Complet)' : ''}
                           </button>
                         )
                       })}

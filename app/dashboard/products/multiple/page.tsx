@@ -19,7 +19,7 @@ export default function BatchProductPage() {
     <main className="min-h-screen bg-[#FAFAF7]">
       {/* ── BREADCRUMB ── */}
       <div className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
           <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest">
             <Link 
               href="/dashboard" 
@@ -41,7 +41,7 @@ export default function BatchProductPage() {
       </div>
 
       {/* ── TITLE SECTION ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 pt-8">
         <div className="mb-2">
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
             Ajouter plusieurs produits à la fois

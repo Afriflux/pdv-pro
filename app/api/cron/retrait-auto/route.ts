@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   // 3. Fetch ONLY pending withdrawals (Idempotency: don't touch processing/paid)
   const { data: pendingWithdrawals, error: fetchError } = await supabase
     .from('Withdrawal')
-    .select('id, amount, vendor_id, wallet_id, store_id, payment_method, phone_or_iban, Store (user_id, whatsapp, User (phone))')
+    .select('id, amount, vendor_id, wallet_id, store_id, payment_method, phone_or_iban, notes, Store (user_id, whatsapp, User (phone))')
     .eq('status', 'pending')
 
   if (fetchError) {
@@ -85,17 +85,41 @@ export async function POST(req: Request) {
         await supabase.rpc('release_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
         processed++
       } else {
-        // Réfus API (CinetPay / Wave error)
+        // Réfus API (CinetPay / Wave error / Insufficient Balance)
         console.error(`[CRON] Payout refusé pr ${w.id}: ${payoutResult.error}`)
-        await supabase.from('Withdrawal').update({ status: 'rejected', notes: payoutResult.error }).eq('id', w.id)
-        await supabase.rpc('unfreeze_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
+        const alertMsg = 'ALERT: ' + payoutResult.error
+        
+        // On remet en state 'pending', on ne débloque pas l'argent
+        await supabase.from('Withdrawal').update({ status: 'pending', notes: alertMsg }).eq('id', w.id)
+        
+        // On notifie le vendeur uniquement si ce n'était pas DÉJÀ en alerte (pour éviter le spam toutes les 5 min)
+        if (!(w as any).notes?.startsWith('ALERT:')) {
+          await supabase.from('Notification').insert({
+            user_id: storeData.user_id,
+            type: 'wallet_alert',
+            title: '⚠️ Retard de Retrait Automatique',
+            message: `Votre transfert de ${w.amount.toLocaleString()} FCFA est mis en attente suite à un problème de réseau fournisseur (${payoutResult.error}). Il sera relancé automatiquement.`,
+            link: '/dashboard/wallet'
+          })
+        }
         failed++
       }
     } catch (error: any) {
       // Timeout / Crash Critique
       console.error(`[CRON] Exception réseau sur ${w.id}:`, error)
-      await supabase.from('Withdrawal').update({ status: 'rejected', notes: 'Exception: ' + error.message }).eq('id', w.id)
-      await supabase.rpc('unfreeze_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
+      const alertMsg = 'ALERT: Exception - ' + error.message
+      
+      await supabase.from('Withdrawal').update({ status: 'pending', notes: alertMsg }).eq('id', w.id)
+      
+      if (!w.notes?.startsWith('ALERT:')) {
+        await supabase.from('Notification').insert({
+          user_id: storeData.user_id,
+          type: 'wallet_alert',
+          title: '⚠️ Retard de Retrait Automatique',
+          message: `Votre transfert de ${w.amount.toLocaleString()} FCFA est retardé à cause d'un délai réseau. Il sera traité sous peu.`,
+          link: '/dashboard/wallet'
+        })
+      }
       failed++
     }
   }

@@ -31,6 +31,7 @@ export default async function ClosingPage() {
     ],
     include: {
       store: { select: { name: true } },
+      history: { orderBy: { created_at: 'asc' } },
       order: {
         include: {
           product: {
@@ -56,8 +57,8 @@ export default async function ClosingPage() {
   }, {} as Record<string, ScorePayload>)
 
   // Clean data for the client
-  const formattedRequests = closingRequests.map((req: ClosingRequestPayload) => {
-    const p = req.order.product as unknown as { name: string } | { name: string }[]
+  const formattedRequests = closingRequests.map((req: any) => {
+    const p = req.order.product
     const productName = Array.isArray(p) ? p[0]?.name : p?.name
 
     return {
@@ -72,16 +73,27 @@ export default async function ClosingPage() {
       productName: productName,
       storeName: req.store.name,
       orderTotal: req.order.total,
-      score: scoresMap[req.order.buyer_phone] || null
+      score: scoresMap[req.order.buyer_phone] || null,
+      notes: req.notes || '',
+      scheduledAt: req.scheduled_at ? req.scheduled_at.toISOString() : null,
+      lockedBy: req.locked_by,
+      lockedUntil: req.locked_until ? req.locked_until.toISOString() : null,
+      history: req.history.map((h: any) => ({
+        id: h.id,
+        action: h.action,
+        createdAt: h.created_at.toISOString(),
+        agentName: h.agent_name,
+        details: h.details
+      }))
     }
   })
 
   return (
     <>
-      <header className="bg-white border-b border-line shadow-sm px-6 py-5">
+      <header className="bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 shadow-sm px-6 py-5 sticky top-0 z-20">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="font-display text-ink text-xl font-bold">Centre de Validation COD</h1>
+            <h1 className="font-display text-[#1A1A1A] text-xl font-bold">Centre de Validation COD</h1>
             <p className="text-sm text-gray-500 mt-1">Gérez les appels de confirmation pour protéger vos livraisons.</p>
           </div>
         </div>

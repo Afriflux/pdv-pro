@@ -1,19 +1,6 @@
-'use client'
-
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 
-export function LandingNav() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getSession().then(({ data }) => {
-      setIsLoggedIn(!!data.session)
-    })
-  }, [])
-
+export function LandingNav({ isLoggedIn }: { isLoggedIn?: boolean }) {
   if (isLoggedIn) {
     return (
       <Link

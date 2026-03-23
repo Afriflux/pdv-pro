@@ -94,14 +94,14 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
   // ── Store local — permet la mise à jour optimiste (ex: signature contrat) ──
   const [store, setStore] = useState<StoreData | null>(initialStore)
 
-  const [activeSection, setActiveSection] = useState<'profil' | 'lien' | 'apparence' | 'reseaux' | 'pixels' | 'securite' | 'kyc' | 'notifications' | 'retrait' | 'contrat' | 'vendor' | 'danger'>('profil')
+  const [activeSection, setActiveSection] = useState<'profil' | 'lien' | 'apparence' | 'reseaux' | 'securite' | 'kyc' | 'notifications' | 'retrait' | 'contrat' | 'vendor' | 'danger'>('profil')
 
   // Hash scroll : activer la section correspondant au hash URL au montage
   useEffect(() => {
     if (typeof window === 'undefined') return
     const hash = window.location.hash.replace('#', '').trim()
     const valid = [
-      'profil', 'lien', 'apparence', 'reseaux', 'pixels',
+      'profil', 'lien', 'apparence', 'reseaux',
       'securite', 'kyc', 'notifications', 'retrait', 'contrat', 'vendor', 'danger',
     ]
     if (valid.includes(hash)) {
@@ -502,8 +502,6 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
           <MenuBtn active={activeSection === 'lien'} icon={<Globe size={18}/>} label="Lien de vente" onClick={() => setActiveSection('lien')} />
           <MenuBtn active={activeSection === 'apparence'} icon={<Palette size={18}/>} label="Mon apparence" onClick={() => setActiveSection('apparence')} />
           <MenuBtn active={activeSection === 'reseaux'} icon={<Share2 size={18}/>} label="Réseaux sociaux" onClick={() => setActiveSection('reseaux')} />
-          <MenuBtn active={activeSection === 'pixels'} icon={<Target size={18}/>} label="Pixels & Tracking" onClick={() => setActiveSection('pixels')} />
-          <MenuBtn active={activeSection === 'securite'} icon={<ShieldCheck size={18}/>} label="Sécurité" onClick={() => setActiveSection('securite')} />
           <MenuBtn active={activeSection === 'kyc'} icon={<CheckCircle2 size={18}/>} label="Vérification KYC" onClick={() => setActiveSection('kyc')} />
           <MenuBtn active={activeSection === 'notifications'} icon={<Bell size={18}/>} label="Notifications" onClick={() => setActiveSection('notifications')} />
           <MenuBtn active={activeSection === 'retrait'} icon={<Wallet size={18}/>} label="Coordonnées de retrait" onClick={() => setActiveSection('retrait')} />
@@ -563,7 +561,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
 
         {/* 1. PROFIL */}
         {activeSection === 'profil' && (
-          <form onSubmit={onUpdateProfile} className="bg-white rounded-3xl border border-line p-8 shadow-sm space-y-8">
+          <form onSubmit={onUpdateProfile} className="bg-white/80 backdrop-blur-2xl rounded-[32px] border border-white p-6 md:p-8 shadow-xl shadow-[#0F7A60]/5 space-y-6 md:space-y-8 relative overflow-hidden group">
             <h2 className="text-2xl font-black text-ink">Mon Profil</h2>
             
             <div className="flex items-center gap-6 pb-6 border-b border-line">
@@ -613,7 +611,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
 
         {/* 2. LIEN DE VENTE */}
         {activeSection === 'lien' && (
-          <form onSubmit={onUpdateSlug} className="bg-white rounded-3xl border border-line p-8 shadow-sm space-y-8">
+          <form onSubmit={onUpdateSlug} className="bg-white/80 backdrop-blur-2xl rounded-[32px] border border-white p-6 md:p-8 shadow-xl shadow-[#0F7A60]/5 space-y-6 md:space-y-8 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-ink">Mon Lien de Vente</h2>
               <div className="bg-emerald/5 text-emerald border border-emerald/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
@@ -665,7 +663,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
 
         {/* 3. APPARENCE */}
         {activeSection === 'apparence' && (
-          <form onSubmit={onUpdateAppearance} className="bg-white rounded-3xl border border-line p-8 shadow-sm space-y-8">
+          <form onSubmit={onUpdateAppearance} className="bg-white/80 backdrop-blur-2xl rounded-[32px] border border-white p-6 md:p-8 shadow-xl shadow-[#0F7A60]/5 space-y-6 md:space-y-8 relative overflow-hidden group">
             <h2 className="text-2xl font-black text-ink">Apparence</h2>
 
             <div className="space-y-4">
@@ -847,7 +845,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
 
         {/* 3.5 RÉSEAUX SOCIAUX */}
         {activeSection === 'reseaux' && (
-          <form onSubmit={onUpdateSocialLinks} className="bg-white rounded-3xl border border-line p-8 shadow-sm space-y-8">
+          <form onSubmit={onUpdateSocialLinks} className="bg-white/80 backdrop-blur-2xl rounded-[32px] border border-white p-6 md:p-8 shadow-xl shadow-[#0F7A60]/5 space-y-6 md:space-y-8 relative overflow-hidden group">
             <h2 className="text-2xl font-black text-ink">Mes Réseaux Sociaux</h2>
             
             <div className="bg-emerald/5 border border-emerald/10 p-4 rounded-xl text-xs text-emerald-800 flex gap-3">
@@ -904,102 +902,11 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
           </form>
         )}
 
-        {/* 3.6 PIXELS & TRACKING */}
-        {activeSection === 'pixels' && (
-          <div className="space-y-6">
 
-            {/* Header */}
-            <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
-              <h2 className="text-xl font-black text-[#1A1A1A] mb-2">
-                📡 Pixels & Tracking
-              </h2>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                Les pixels et outils de tracking sont essentiels pour vos campagnes <strong>Ads</strong>. 
-                Ils vous permettent de mesurer vos ventes avec précision (<strong>pin target</strong>), 
-                d'optimiser le budget publicitaire, et de mettre en place du <strong>re-targeting</strong> 
-                puissant pour reconvertir vos visiteurs.
-              </p>
-            </div>
-
-            {/* Meta Pixel */}
-            <PixelCard
-              name="Meta Pixel"
-              logo="📘"
-              color="#1877F2"
-              description="Mesure les conversions Facebook & Instagram Ads et gère le re-targeting"
-              value={store?.meta_pixel_id ?? ''}
-              onChange={(val) => handleSaveField('meta_pixel_id', val)}
-              guide={[
-                "Allez sur business.facebook.com",
-                "Cliquez sur 'Gestionnaire d'événements'",
-                "Créez un nouveau pixel → copiez l'ID (16 chiffres)",
-                "Collez l'ID ci-dessous et sauvegardez",
-              ]}
-              placeholder="Ex : 1234567890123456"
-              helpUrl="https://business.facebook.com/events_manager"
-              badge={store?.meta_pixel_id ? "✅ Actif" : "⚪ Non configuré"}
-            />
-
-            {/* TikTok Pixel */}
-            <PixelCard
-              name="TikTok Pixel"
-              logo="🎵"
-              color="#010101"
-              description="Capture les événements TikTok Ads pour optimiser l'algorithme"
-              value={store?.tiktok_pixel_id ?? ''}
-              onChange={(val) => handleSaveField('tiktok_pixel_id', val)}
-              guide={[
-                "Allez sur ads.tiktok.com",
-                "Cliquez sur 'Assets' → 'Events'",
-                "Créez un pixel Web → copiez l'ID",
-                "Collez l'ID ci-dessous et sauvegardez",
-              ]}
-              placeholder="Ex : CXXXXXXXXXXXXXXX"
-              helpUrl="https://ads.tiktok.com/i18n/events_manager"
-              badge={store?.tiktok_pixel_id ? "✅ Actif" : "⚪ Non configuré"}
-            />
-
-            {/* Google Tag Manager */}
-            <PixelCard
-              name="Google Tag Manager"
-              logo="🏷️"
-              color="#4285F4"
-              description="Centralise tous vos tags Google (Analytics, Google Ads, reciblage)"
-              value={store?.google_tag_id ?? ''}
-              onChange={(val) => handleSaveField('google_tag_id', val)}
-              guide={[
-                "Allez sur tagmanager.google.com",
-                "Créez un compte → un conteneur",
-                "Copiez l'ID du conteneur (format GTM-XXXXX)",
-                "Collez l'ID ci-dessous et sauvegardez",
-              ]}
-              placeholder="Ex : GTM-XXXXX"
-              helpUrl="https://tagmanager.google.com"
-              badge={store?.google_tag_id ? "✅ Actif" : "⚪ Non configuré"}
-            />
-
-            {/* Info box */}
-            <div className="bg-[#0F7A60]/5 border border-[#0F7A60]/20 rounded-2xl p-4 flex items-start gap-3">
-              <span className="text-xl flex-shrink-0">💡</span>
-              <div>
-                <p className="text-sm font-bold text-[#0F7A60]">
-                  Comment fonctionnent les pixels ?
-                </p>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                  Une fois configurés, les pixels se chargent automatiquement
-                  sur votre boutique publique et sur vos pages de vente.
-                  Ils enregistrent chaque visite et chaque achat —
-                  sans aucune action supplémentaire de votre part.
-                </p>
-              </div>
-            </div>
-
-          </div>
-        )}
 
         {/* 4. SÉCURITÉ */}
         {activeSection === 'securite' && (
-          <form onSubmit={onUpdatePassword} className="bg-white rounded-3xl border border-line p-8 shadow-sm space-y-8">
+          <form onSubmit={onUpdatePassword} className="bg-white/80 backdrop-blur-2xl rounded-[32px] border border-white p-6 md:p-8 shadow-xl shadow-[#0F7A60]/5 space-y-6 md:space-y-8 relative overflow-hidden group">
             <h2 className="text-2xl font-black text-ink">Sécurité</h2>
 
             <div className="space-y-6">
@@ -1064,7 +971,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
 
         {/* 4.5 KYC */}
         {activeSection === 'kyc' && (
-          <div className="bg-white rounded-3xl border border-line p-8 shadow-sm space-y-8">
+          <div className="bg-white/80 backdrop-blur-2xl rounded-[32px] border border-white p-6 md:p-8 shadow-xl shadow-[#0F7A60]/5 space-y-6 md:space-y-8 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-ink">Vérification KYC</h2>
               <KycBadge status={kycStatus} />
@@ -1200,7 +1107,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
         {/* 5. NOTIFICATIONS */}
         {activeSection === 'notifications' && (
           <div className="space-y-8">
-            <div className="bg-white rounded-3xl border border-line p-8 shadow-sm space-y-8">
+            <div className="bg-white/80 backdrop-blur-2xl rounded-[32px] border border-white p-6 md:p-8 shadow-xl shadow-[#0F7A60]/5 space-y-6 md:space-y-8 relative overflow-hidden group">
               <h2 className="text-2xl font-black text-ink">Notifications Email & Système</h2>
               
               <div className="space-y-1">
@@ -1251,7 +1158,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
           <form
             id="retrait"
             onSubmit={onUpdateWithdrawal}
-            className="bg-white rounded-3xl border border-line p-8 shadow-sm space-y-8"
+            className="bg-white/80 backdrop-blur-2xl rounded-[32px] border border-white p-6 md:p-8 shadow-xl shadow-[#0F7A60]/5 space-y-6 md:space-y-8 relative overflow-hidden group"
           >
             {/* En-tête */}
             <div className="flex items-center justify-between">
@@ -1409,7 +1316,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
         )}
 
         {activeSection === 'vendor' && (
-          <div className="bg-white rounded-3xl border border-line p-8 shadow-sm space-y-8">
+          <div className="bg-white/80 backdrop-blur-2xl rounded-[32px] border border-white p-6 md:p-8 shadow-xl shadow-[#0F7A60]/5 space-y-6 md:space-y-8 relative overflow-hidden group">
             <div>
               <h2 className="text-2xl font-black text-ink mb-2">Type de vendeur</h2>
               <p className="text-sm text-dust">
@@ -1601,14 +1508,15 @@ function MenuBtn({ active, icon, label, onClick }: { active: boolean; icon: Reac
   return (
     <button 
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+      className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 relative overflow-hidden group ${
         active 
-          ? 'bg-emerald text-white shadow-md shadow-emerald/20 translate-x-1' 
-          : 'text-dust hover:bg-white hover:text-ink'
+          ? 'bg-gradient-to-br from-ink to-slate text-white shadow-lg shadow-ink/20 translate-x-2' 
+          : 'text-dust hover:bg-white/60 hover:text-ink hover:translate-x-1'
       }`}
     >
-      <span className={active ? 'text-white' : 'text-dust'}>{icon}</span>
-      {label}
+      {active && <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>}
+      <span className={`relative z-10 transition-colors ${active ? 'text-white drop-shadow-sm' : 'text-dust group-hover:text-ink'}`}>{icon}</span>
+      <span className="relative z-10 tracking-wide">{label}</span>
     </button>
   )
 }

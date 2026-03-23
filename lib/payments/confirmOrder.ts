@@ -14,6 +14,7 @@ import {
   triggerPaymentTelegram 
 } from '@/lib/telegram/notify-hooks'
 import { triggerAffiliateCommission } from '@/lib/affiliation/commission-hook'
+import { triggerAmbassadorCommission } from '@/lib/affiliation/ambassador-hook'
 
 // ─── Types internes ───────────────────────────────────────────────────────────
 
@@ -28,6 +29,8 @@ interface OrderRow {
   buyer_phone:      string
   delivery_address: string | null
   payment_method:   string
+  affiliate_token:  string | null
+  affiliate_amount: number | null
 }
 
 interface ProductRow {
@@ -67,7 +70,7 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
   // ── 1. Charger la commande ─────────────────────────────────────────────────
   const { data: order } = await supabase
     .from('Order')
-    .select('id, store_id, product_id, vendor_amount, total, status, buyer_name, buyer_phone, delivery_address, payment_method')
+    .select('id, store_id, product_id, vendor_amount, total, status, buyer_name, buyer_phone, delivery_address, payment_method, affiliate_token, affiliate_amount')
     .eq('id', orderId)
     .single<OrderRow>()
 
@@ -147,9 +150,12 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
     })
   }
 
-  // ── 5.ter Déclenchement commission affiliation ──────────────────
+  // ── 5.ter Déclenchement commission affiliation B2B & Ambassadeur ──────────────────
   triggerAffiliateCommission(orderId, order.store_id, order.total, order.vendor_amount)
-    .catch(e => console.error('[Affiliation]', e))
+    .catch(e => console.error('[Affiliation B2B]', e))
+    
+  triggerAmbassadorCommission(orderId, order.affiliate_token, order.affiliate_amount)
+    .catch(e => console.error('[Ambassadeur]', e))
 
   // ── 5.bis Génération automatique de la facture PDF ───────────────────────
   // Fire-and-forget pour ne pas bloquer l'IPN

@@ -37,6 +37,11 @@ interface Product {
   cash_on_delivery?: boolean
   session_duration?: string | null
   session_mode?: 'online' | 'onsite' | 'both' | null
+  coaching_type?: 'individual' | 'group' | null
+  max_participants?: number | null
+  coaching_durations?: number[] | null
+  coaching_is_pack?: boolean | null
+  coaching_pack_count?: number | null
   digital_files?: {
     type: string
     url: string | null
@@ -51,6 +56,10 @@ interface Product {
   // Droit de revente — champs issus de la migration resale_migration.sql
   resale_allowed?:    boolean
   resale_commission?: number | null
+  
+  // Nouveaux champs d'affiliation
+  affiliate_active?: boolean | null
+  affiliate_margin?: number | null
 }
 
 interface EditProductFormProps {
@@ -127,12 +136,21 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
   const [cashOnDelivery, setCashOnDelivery] = useState(product.cash_on_delivery ?? false)
 
   // ── États Coaching — pré-remplis ──
-  const [sessionDuration, setSessionDuration] = useState(product.session_duration ?? '')
+  const [sessionDuration] = useState(product.session_duration ?? '')
   const [sessionMode,     setSessionMode]     = useState<'online' | 'onsite' | 'both'>(product.session_mode ?? 'online')
+  const [coachingType,    setCoachingType]    = useState<'individual' | 'group'>(product.coaching_type ?? 'individual')
+  const [maxParticipants, setMaxParticipants] = useState(product.max_participants != null ? String(product.max_participants) : '10')
+  const [coachingDurations, setCoachingDurations] = useState<number[]>(product.coaching_durations && product.coaching_durations.length > 0 ? product.coaching_durations : [60])
+  const [coachingIsPack, setCoachingIsPack] = useState(product.coaching_is_pack ?? false)
+  const [coachingPackCount, setCoachingPackCount] = useState(product.coaching_pack_count != null ? String(product.coaching_pack_count) : '1')
 
   // ── États Telegram ──
   const [telegramCommunities, setTelegramCommunities] = useState<any[]>([])
   const [selectedCommunityId, setSelectedCommunityId] = useState<string>('')
+
+  // ── États Affiliation ──
+  const [affiliateActive, setAffiliateActive] = useState<boolean | null>(product.affiliate_active ?? null)
+  const [affiliateMargin, setAffiliateMargin] = useState<string>(product.affiliate_margin != null ? String(product.affiliate_margin * 100) : '')
 
   // Fetch Telegram Communities
   useEffect(() => {
@@ -264,6 +282,11 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
           : {
               session_duration: sessionDuration.trim() || null,
               session_mode:     sessionMode,
+              coaching_type:    coachingType,
+              max_participants: coachingType === 'group' ? (parseInt(maxParticipants) || 10) : 1,
+              coaching_durations: coachingDurations.length > 0 ? coachingDurations : [60],
+              coaching_is_pack: coachingIsPack,
+              coaching_pack_count: coachingIsPack ? parseInt(coachingPackCount) || 1 : 1,
               digital_file_url: null, digital_link: null,
               shipping_fee: null, shipping_delay: null, cash_on_delivery: false,
             }
@@ -279,6 +302,8 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
           category:    category.trim() || null,
           images:      allImages,
           active,
+          affiliate_active: affiliateActive,
+          affiliate_margin: affiliateMargin ? parseFloat(affiliateMargin) / 100 : null,
           ...typeExtra,
         })
         .eq('id', product.id)
@@ -365,7 +390,7 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
         {showAI && (
           <AIProductGenerator
             category={category}
-            onGenerated={(data) => {
+            onGenerated={(data: any) => {
               if (data.name) setName(data.name)
               if (data.description) setDescription(data.description)
               if (data.price) setPrice(String(data.price))
@@ -439,7 +464,7 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
                       : 'border-gray-200 bg-white text-gray-600 hover:bg-cream'
                   }`}
                 >
-                  {t === 'physical' ? '📦 Physique' : t === 'digital' ? '📥 Digital' : '🎓 Coaching'}
+                  {t === 'physical' ? '📦 Physique' : t === 'digital' ? '📥 Digital' : '🎓 Service / Coaching'}
                 </button>
               ))}
             </div>
@@ -694,20 +719,84 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
         {/* COACHING */}
         {type === 'coaching' && (
           <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
-            <h2 className="font-semibold text-ink">🎓 Détails de session</h2>
-            <p className="text-xs text-gray-400">Les créneaux de disponibilité se définissent depuis les paramètres du produit.</p>
+            <h2 className="font-semibold text-ink">🎓 Paramètres de consultation</h2>
+            <p className="text-xs text-gray-400">Les créneaux de disponibilité se définissent depuis le Hub Agenda.</p>
+
+            {/* Coaching Type Selection */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <button
+                type="button"
+                onClick={() => setCoachingType('individual')}
+                className={`p-4 rounded-xl border-2 text-left transition-all ${coachingType === 'individual' ? 'border-[#0F7A60] bg-[#0F7A60]/5' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+              >
+                <h3 className="font-bold text-[#0F7A60] text-sm mb-1">👤 Individuel (1-on-1)</h3>
+                <p className="text-[11px] text-gray-500 leading-tight">1 client par créneau. Le créneau se bloque après réservation.</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setCoachingType('group')}
+                className={`p-4 rounded-xl border-2 text-left transition-all ${coachingType === 'group' ? 'border-gold bg-gold/5' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+              >
+                <h3 className="font-bold text-gold text-sm mb-1">👥 Session de Groupe</h3>
+                <p className="text-[11px] text-gray-500 leading-tight">Webinaire/Masterclass. Plusieurs clients sur le même créneau.</p>
+              </button>
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Durée de session</label>
-                <input
-                  type="text" value={sessionDuration} onChange={e => setSessionDuration(e.target.value)}
-                  placeholder="Ex : 1h, 45min"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
-                />
+              {coachingType === 'group' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Places maximum</label>
+                  <input
+                    type="number" value={maxParticipants} onChange={e => setMaxParticipants(e.target.value)}
+                    min="2"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                  />
+                </div>
+              )}
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Durées proposées (Minutes)</label>
+                <div className="flex flex-wrap gap-2">
+                  {[15, 30, 45, 60, 90, 120].map(dur => (
+                    <label key={dur} className={`cursor-pointer px-4 py-2 rounded-xl border text-sm font-bold transition-all ${
+                      coachingDurations.includes(dur) ? 'border-gold bg-gold/10 text-gold' : 'border-gray-200 bg-white text-gray-500 hover:border-gold/50'
+                    }`}>
+                      <input type="checkbox" className="hidden" 
+                        title={`Durée ${dur} minutes`}
+                        checked={coachingDurations.includes(dur)} 
+                        onChange={(e) => {
+                          if (e.target.checked) setCoachingDurations([...coachingDurations, dur])
+                          else if (coachingDurations.length > 1) setCoachingDurations(coachingDurations.filter(d => d !== dur))
+                        }} 
+                      />
+                      {dur >= 60 ? (dur % 60 === 0 ? `${Math.floor(dur/60)}h` : `${Math.floor(dur/60)}h${dur%60}`) : `${dur} min`}
+                    </label>
+                  ))}
+                </div>
+                <p className="text-[10px] text-gray-400 mt-1">Sélectionnez au moins une durée.</p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mode</label>
+              
+              <div className="col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-100 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-bold text-ink">Pack de sessions</p>
+                  <p className="text-xs text-gray-500">Vendre plusieurs sessions en une seule fois.</p>
+                </div>
+                <div onClick={() => setCoachingIsPack(!coachingIsPack)} className={`w-10 h-6 rounded-full transition-all cursor-pointer relative ${coachingIsPack ? 'bg-gold' : 'bg-gray-200'}`}>
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${coachingIsPack ? 'left-5' : 'left-1'}`} />
+                </div>
+              </div>
+              {coachingIsPack && (
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de sessions incluses dans ce pack</label>
+                  <input
+                    type="number" min="2" value={coachingPackCount} onChange={e => setCoachingPackCount(e.target.value)}
+                    title="Nombre de sessions"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                  />
+                </div>
+              )}
+
+              <div className={coachingType !== 'group' ? 'col-span-1' : 'col-span-2'}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mode de Session</label>
                 <select
                   value={sessionMode}
                   onChange={e => setSessionMode(e.target.value as 'online' | 'onsite' | 'both')}
@@ -882,6 +971,56 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
               )}
             </div>
           )}
+        </section>
+
+        {/* ── AFFILIATION ── */}
+        <section className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <h2 className="font-semibold text-ink">🤝 Programme d'Affiliation</h2>
+            <div className="group relative">
+              <HelpCircle size={16} className="text-gray-400 cursor-help" />
+              <div className="absolute bottom-full left-0 mb-2 w-56 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                Définissez des règles de commission spécifiques pour ce produit, ou laissez vide pour hériter de la boutique.
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 border border-gray-100 p-4 rounded-xl">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Statut de l'affiliation</label>
+              <select
+                value={affiliateActive === null ? 'default' : affiliateActive ? 'true' : 'false'}
+                onChange={(e) => {
+                  if (e.target.value === 'default') setAffiliateActive(null)
+                  else setAffiliateActive(e.target.value === 'true')
+                }}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition bg-white"
+                title="Statut affiliation"
+              >
+                <option value="default">Par défaut (Hériter de la boutique)</option>
+                <option value="true">Activer pour ce produit</option>
+                <option value="false">Désactiver pour ce produit</option>
+              </select>
+            </div>
+
+            {affiliateActive !== false && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Commission spécifique (%)
+                </label>
+                <input
+                  aria-label="Commission spécifique"
+                  title="Commission spécifique"
+                  type="number"
+                  min={0} max={100} step="0.1"
+                  value={affiliateMargin}
+                  onChange={(e) => setAffiliateMargin(e.target.value)}
+                  placeholder="Ex : 20. Vide = hérite"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                />
+              </div>
+            )}
+          </div>
         </section>
 
         {/* ── STATUT ── */}

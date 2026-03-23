@@ -2,21 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Truck, Package, CheckCircle2, MapPin, Loader2, ArrowRightCircle } from 'lucide-react'
-
-// Configuration des badges par statut
-const STATUS_CONFIG: Record<string, { label: string, color: string, badgeBg: string }> = {
-  confirmed: { label: 'Confirmée', color: 'text-amber-600', badgeBg: 'bg-amber-100 border-amber-200' },
-  preparing: { label: 'En préparation', color: 'text-blue-600', badgeBg: 'bg-blue-100 border-blue-200' },
-  shipped: { label: 'Expédiée', color: 'text-purple-600', badgeBg: 'bg-purple-100 border-purple-200' },
-  delivered: { label: 'Livrée', color: 'text-[#0F7A60]', badgeBg: 'bg-emerald/20 border-emerald/30' },
-}
+import { Truck, Loader2 } from 'lucide-react'
+import LivraisonsView from './LivraisonsView'
 
 export default function LivraisonsDashboard() {
   const [orders, setOrders] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [updatingId, setUpdatingId] = useState<string | null>(null)
   const [error, setError] = useState('')
+  const [store, setStore] = useState<{ id: string, name: string } | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -30,19 +23,24 @@ export default function LivraisonsDashboard() {
       if (!user) return
 
       // Récupérer la boutique
-      const { data: store, error: storeError } = await supabase
+      const { data: storeData, error: storeError } = await supabase
         .from('Store')
-        .select('id')
-        .eq('vendor_id', user.id)
+        .select('id, name')
+        .eq('user_id', user.id)
         .single()
 
       if (storeError) throw new Error('Boutique introuvable')
+      setStore(storeData)
 
       // Récupérer les commandes avec les statuts pertinents
       const { data: ordersData, error: ordersError } = await supabase
         .from('Order')
-        .select('id, created_at, buyer_name, delivery_address, delivery_zone_id, status, total, deliveryZone:DeliveryZone(name)')
-        .eq('store_id', store.id)
+        .select(`
+          id, created_at, buyer_name, buyer_phone, delivery_address, delivery_zone_id, status, total,
+          deliveryZone:DeliveryZone(name),
+          product:Product(name, images)
+        `)
+        .eq('store_id', storeData.id)
         .in('status', ['confirmed', 'preparing', 'shipped'])
         .order('created_at', { ascending: false })
 
@@ -56,172 +54,46 @@ export default function LivraisonsDashboard() {
     }
   }
 
-  // Obtenir le statut suivant logique
-  const getNextStatus = (currentStatus: string) => {
-    if (currentStatus === 'confirmed') return 'preparing'
-    if (currentStatus === 'preparing') return 'shipped'
-    if (currentStatus === 'shipped') return 'delivered'
-    return null
-  }
-
-  const handleUpdateStatus = async (orderId: string, currentStatus: string) => {
-    const nextStatus = getNextStatus(currentStatus)
-    if (!nextStatus) return
-
-    setUpdatingId(orderId)
-    setError('')
-
-    try {
-      const res = await fetch('/api/orders/update-status', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: orderId, new_status: nextStatus })
-      })
-
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
-
-      // Si le nouveau statut est 'delivered', on l'enlève de la liste (ou on le garde selon le choix. Ici, on demande de récupérer confirmed, preparing, shipped)
-      if (nextStatus === 'delivered') {
-        setOrders(prev => prev.filter(o => o.id !== orderId))
-      } else {
-        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: nextStatus } : o))
-      }
-
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setUpdatingId(null)
-    }
-  }
-
   if (loading) {
     return (
       <div className="flex justify-center flex-col items-center py-32 space-y-4">
         <Loader2 className="w-10 h-10 animate-spin text-[#0F7A60]" />
-        <p className="text-gray-500 font-medium animate-pulse">Chargement de vos expéditions...</p>
+        <p className="text-gray-500 font-medium animate-pulse">Chargement de votre station de tri logistique...</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-12">
-      <div className="flex items-center justify-between bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-        <div>
-          <h1 className="text-2xl font-black text-gray-900 flex items-center gap-3">
-            <Truck className="w-8 h-8 text-[#0F7A60]" />
-            Suivi des Expéditions
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Gérez la préparation et l'expédition de vos commandes physiques en temps réel.
+    <div className="space-y-6 w-full pb-12">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/80 backdrop-blur-2xl p-6 md:p-8 rounded-[32px] border border-white shadow-2xl shadow-[#0F7A60]/5 sticky top-2 z-20 overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#0F7A60]/10 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none transition-transform group-hover:scale-110 duration-700"></div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-4 mb-2">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-[#0F7A60] to-[#0A5240] text-white flex items-center justify-center shadow-lg shadow-[#0F7A60]/20">
+              <Truck size={24} className="md:w-7 md:h-7" />
+            </div>
+            <h1 className="text-2xl md:text-4xl font-black text-ink tracking-tight">
+              Centre de Livraisons
+            </h1>
+          </div>
+          <p className="text-dust text-sm md:text-base font-medium max-w-xl pl-16 md:pl-18">
+            Triez, expédiez et générez les bordereaux de vos commandes validées.
           </p>
         </div>
       </div>
 
-      {error && (
+      {error ? (
         <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-bold border border-red-100 shadow-sm">
           {error}
         </div>
+      ) : (
+        <LivraisonsView 
+          initialOrders={orders} 
+          storeName={store?.name} 
+          storeId={store?.id} 
+        />
       )}
-
-      <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-sm">
-        {orders.length === 0 ? (
-          <div className="p-16 text-center flex flex-col items-center justify-center">
-            <div className="w-20 h-20 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center mb-6 shadow-inner">
-              <Package className="w-10 h-10" />
-            </div>
-            <p className="font-black text-gray-900 text-xl">Aucune livraison en cours</p>
-            <p className="text-gray-500 text-sm mt-2 max-w-sm">
-              Vous n'avez actuellement aucune commande confirmée, en préparation ou expédiée.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-widest text-gray-500">
-                  <th className="p-5 font-black">Commande</th>
-                  <th className="p-5 font-black">Client & Adresse</th>
-                  <th className="p-5 font-black">Statut Actuel</th>
-                  <th className="p-5 font-black text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {orders.map((order) => {
-                  const statusConf = STATUS_CONFIG[order.status] || STATUS_CONFIG.confirmed
-                  const nextStatus = getNextStatus(order.status)
-                  const nextStatusConf = nextStatus ? STATUS_CONFIG[nextStatus] : null
-                  const zone = Array.isArray(order.deliveryZone) ? order.deliveryZone[0] : order.deliveryZone
-
-                  return (
-                    <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
-                      {/* Commande Info */}
-                      <td className="p-5">
-                        <p className="font-mono font-black text-gray-900">
-                          #{order.id.split('-')[0].toUpperCase()}
-                        </p>
-                        <p className="text-xs text-gray-500 font-medium mt-1">
-                          {new Date(order.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                        <p className="text-sm font-bold text-gray-900 mt-2">
-                          {order.total?.toLocaleString('fr-FR')} FCFA
-                        </p>
-                      </td>
-
-                      {/* Client Info */}
-                      <td className="p-5">
-                        <p className="font-bold text-gray-900">{order.buyer_name}</p>
-                        <div className="flex items-start gap-1.5 mt-2 text-sm text-gray-600 max-w-[250px]">
-                          <MapPin className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
-                          <div>
-                            {zone && <span className="font-bold block text-gray-800">{zone.name}</span>}
-                            <span className="truncate block mt-0.5">{order.delivery_address || 'Aucune adresse'}</span>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Statut Badge */}
-                      <td className="p-5">
-                        <span className={`px-4 py-1.5 rounded-xl text-xs font-black border uppercase tracking-wider inline-flex items-center gap-2 ${statusConf.badgeBg} ${statusConf.color}`}>
-                          <span className={`w-2 h-2 rounded-full bg-current ${order.status !== 'delivered' ? 'animate-pulse' : ''}`}></span>
-                          {statusConf.label}
-                        </span>
-                      </td>
-
-                      {/* Action Button */}
-                      <td className="p-5 text-center">
-                        {nextStatusConf ? (
-                          <button
-                            onClick={() => handleUpdateStatus(order.id, order.status)}
-                            disabled={updatingId === order.id}
-                            className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm
-                              ${updatingId === order.id 
-                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' 
-                                : 'bg-white text-gray-900 border-2 border-gray-200 hover:border-[#0F7A60] hover:text-[#0F7A60] active:scale-95'
-                              }`}
-                          >
-                            {updatingId === order.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <>
-                                Passer en '{nextStatusConf.label}' <ArrowRightCircle className="w-4 h-4" />
-                              </>
-                            )}
-                          </button>
-                        ) : (
-                          <span className="inline-flex items-center px-4 py-2 text-sm font-black text-[#0F7A60] bg-emerald/10 rounded-xl">
-                            <CheckCircle2 className="w-5 h-5 mr-1" /> Terminé
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
     </div>
   )
 }
+

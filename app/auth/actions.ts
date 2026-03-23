@@ -235,8 +235,12 @@ export async function signIn(formData: FormData): Promise<void> {
 // DÉCONNEXION
 // ----------------------------------------------------------------
 export async function signOut(): Promise<void> {
-  const supabase = await createClient()
-  await supabase.auth.signOut()
+  try {
+    const supabase = await createClient()
+    await supabase.auth.signOut()
+  } catch (error) {
+    console.error('Erreur déconnexion (ignorée):', error)
+  }
   revalidatePath('/', 'layout')
   redirect('/login')
 }

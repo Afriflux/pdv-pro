@@ -25,8 +25,9 @@ async function SuccessContent({
     .from('Order')
     .select(`
       id, buyer_name, buyer_phone, total, payment_method, status, product_id,
-      product:Product(name, type, images),
-      store:Store(name, primary_color, slug, whatsapp, closing_enabled)
+      product:Product(name, type, images, booking_link),
+      store:Store(name, primary_color, slug, whatsapp, closing_enabled),
+      booking:Booking(date, start_time, end_time)
     `)
     .eq('id', orderId)
     .single()
@@ -43,10 +44,10 @@ async function SuccessContent({
     )
   }
 
-  const product = (Array.isArray(order.product) ? order.product[0] : order.product) as { name: string; type: string; images: string[] } | null
-  const store   = (Array.isArray(order.store)   ? order.store[0]   : order.store)   as { name: string } | null
+  const product = (Array.isArray(order.product) ? order.product[0] : order.product) as { name: string; type: string; images: string[]; booking_link: string } | null
+  const store   = (Array.isArray(order.store)   ? order.store[0]   : order.store)   as { name: string; primary_color: string; slug: string; whatsapp: string; closing_enabled: boolean } | null
+  const booking = (Array.isArray(order.booking) ? order.booking[0] : order.booking) as { date: string; start_time: string; end_time: string } | null
   
-  // Vérifier communauté Telegram
   let telegramCommunity: { chat_title: string } | null = null
   if (order?.product_id) {
     const { data: community } = await supabase
@@ -59,6 +60,26 @@ async function SuccessContent({
   }
 
   const formattedOrderId = order.id.split('-')[0].toUpperCase()
+
+  // Generation de l'ICS si c'est un coaching
+  let icsDataUrl = ''
+  let visioLink = ''
+  if (booking) {
+    const dStr = booking.date.split('T')[0].replace(/-/g, '') // YYYYMMDD
+    const st = booking.start_time.replace(':', '') + '00'
+    const et = booking.end_time ? booking.end_time.replace(':', '') + '00' : st
+    const icsString = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:${dStr}T${st}Z
+DTEND:${dStr}T${et}Z
+SUMMARY:Réservation - ${product?.name}
+DESCRIPTION:Lien Visio: ${product?.booking_link || `https://meet.jit.si/PDVPro_${orderId}`}
+END:VEVENT
+END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
+    icsDataUrl = `data:text/calendar;charset=utf8,${icsString}`
+    visioLink = product?.booking_link || `https://meet.jit.si/PDVPro_${orderId}`
+  }
 
   if (isFailed) {
     return (
@@ -148,6 +169,37 @@ async function SuccessContent({
             )}
           </div>
         </div>
+        
+        {/* Réservation Booking / Coaching */}
+        {booking && (
+          <div className="bg-[#0F7A60]/5 border border-[#0F7A60]/20 rounded-xl p-5 mb-6 text-left space-y-3">
+            <h3 className="font-bold text-[#0F7A60] flex items-center gap-2 mb-2">
+              <span className="text-lg">📅</span> Votre rendez-vous
+            </h3>
+            <p className="text-sm text-ink mb-1">
+              <strong>Date :</strong> {new Date(booking.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
+            <p className="text-sm text-ink mb-3">
+              <strong>Heure :</strong> {booking.start_time} {booking.end_time ? `- ${booking.end_time}` : ''}
+            </p>
+            <div className="flex gap-2">
+              <a href={visioLink} target="_blank" rel="noopener noreferrer" className="flex-1 py-2.5 bg-[#0F7A60] hover:bg-[#0c624d] text-white text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
+                Rejoindre Visio
+              </a>
+              <a href={icsDataUrl} download={`PDVPro_Booking_${formattedOrderId}.ics`} className="flex-1 py-2.5 bg-white border border-line hover:bg-cream text-[#0F7A60] text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
+                + Agenda
+              </a>
+            </div>
+            
+            {(store as any)?.whatsapp && (
+              <div className="mt-2">
+                <a href={`https://wa.me/${(store as any).whatsapp}?text=${encodeURIComponent(`Bonjour, j'ai réservé une session de "${product?.name}" le ${new Date(booking.date).toLocaleDateString('fr-FR')} à ${booking.start_time} (Commande #${formattedOrderId}). J'ai un imprévu, est-il possible de reprogrammer ce rendez-vous s'il vous plaît ?`)}`} target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 bg-white border border-line hover:bg-cream text-dust text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
+                  Demander une reprogrammation
+                </a>
+              </div>
+            )}
+          </div>
+        )}
         
         {/* Notification accès Telegram */}
         {telegramCommunity && (

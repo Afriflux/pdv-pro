@@ -2,21 +2,21 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { CheckCircle2, ChevronRight, X } from 'lucide-react'
-import { toast } from 'sonner'
+import { Check, ChevronRight, X, Sparkles, Store, Package } from 'lucide-react'
 
 interface GettingStartedProps {
   hasProducts: boolean
-  isPersonalized: boolean
-  storeSlug: string
+  hasZones: boolean
+  hasPromotions: boolean
 }
 
-export function GettingStartedChecklist({ hasProducts, isPersonalized, storeSlug }: GettingStartedProps) {
+export function GettingStartedChecklist({ hasProducts, hasZones, hasPromotions }: GettingStartedProps) {
   const [isVisible, setIsVisible] = useState(false)
-  const fullLink = `https://pdvpro.com/${storeSlug}`
+  const [animatedProgress, setAnimatedProgress] = useState(0)
+
+  // On ignore storeSlug si non utilisé au final, ou on pourrait s'en servir plus tard.
 
   useEffect(() => {
-    // Vérifier si le guide n'a pas été masqué
     const hidden = localStorage.getItem('hide_getting_started')
     if (!hidden) setIsVisible(true)
   }, [])
@@ -26,79 +26,167 @@ export function GettingStartedChecklist({ hasProducts, isPersonalized, storeSlug
     setIsVisible(false)
   }
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(fullLink)
-    toast.success('Lien de la boutique copié !')
-  }
-
-  if (!isVisible) return null
-
   const steps = [
     {
-      label: 'Ajoutez votre premier produit',
+      id: 1,
+      label: 'Créer un premier produit',
+      desc: 'Ajoutez des photos, prix et description',
       done: hasProducts,
-      href: '/dashboard/products/new'
+      href: '/dashboard/products/new',
+      icon: <Package size={18} />
     },
     {
-      label: 'Personnalisez votre boutique',
-      done: isPersonalized,
-      href: '/dashboard/settings'
+      id: 2,
+      label: 'Configurer les livraisons',
+      desc: 'Définissez vos prix par zone (ex: Dakar 2000F)',
+      done: hasZones,
+      href: '/dashboard/zones',
+      icon: <Store size={18} />
     },
     {
-      label: 'Partagez votre lien de boutique',
-      done: false, // Pas traçable purement
-      action: copyLink,
-      extraUI: <button className="ml-auto bg-gray-100 px-3 py-1 rounded text-xs font-bold text-gray-500 hover:bg-emerald hover:text-white transition">Copier lien</button>
-    },
-    {
-      label: 'Configurez vos zones de livraison',
-      done: false, // On suppose false pour cet encart initial
-      href: '/dashboard/zones'
+      id: 3,
+      label: 'Lancer une promotion',
+      desc: 'Ventes flash ou codes promo (BOGO)',
+      done: hasPromotions,
+      href: '/dashboard/promotions',
+      icon: <Sparkles size={18} />
     }
   ]
 
-  const progress = Math.round((steps.filter(s => s.done).length / steps.length) * 100)
+  const totalSteps = steps.length
+  const completedSteps = steps.filter(s => s.done).length
+  const progressPercent = Math.round((completedSteps / totalSteps) * 100)
+
+  useEffect(() => {
+    if (isVisible) {
+      setTimeout(() => setAnimatedProgress(progressPercent), 300)
+    }
+  }, [isVisible, progressPercent])
+
+  if (!isVisible) return null
+
+  // SVGs properties for Circular Progress (Apple Fitness style)
+  const size = 100
+  const strokeWidth = 8
+  const radius = (size - strokeWidth) / 2
+  const circumference = radius * 2 * Math.PI
+  const strokeDashoffset = circumference - (animatedProgress / 100) * circumference
 
   return (
-    <div className="bg-white border text-left border-line rounded-3xl shadow-sm mb-8 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500 relative">
-      <div className="absolute top-4 right-4 cursor-pointer text-slate hover:text-ink transition" onClick={hideGuide} title="Masquer définitivement">
+    <div className="bg-white/70 backdrop-blur-3xl border border-white max-w-7xl mx-auto rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-700 relative">
+      <div 
+        className="absolute top-6 right-6 cursor-pointer text-gray-400 hover:text-ink hover:bg-gray-100 p-2 rounded-full transition-all" 
+        onClick={hideGuide} 
+        title="Masquer définitivement"
+      >
         <X size={20} />
       </div>
 
-      <div className="p-6 md:p-8">
-        <h2 className="text-2xl font-display font-black text-ink mb-2">Bienvenue sur PDV Pro ! 👋</h2>
-        <p className="text-slate text-sm mb-6 max-w-2xl">Voici les étapes essentielles pour réussir votre lancement et générer vos premières ventes.</p>
-
-        {/* ProgressBar */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="flex-1 h-3 bg-cream rounded-full overflow-hidden border border-line">
-            <div className="h-full bg-emerald rounded-full transition-all duration-1000" style={{ width: progress + '%' }}></div>
+      <div className="p-8 lg:p-10 flex flex-col lg:flex-row gap-10">
+        
+        {/* Left Side: Progress & Intro */}
+        <div className="flex flex-col items-center lg:items-start lg:w-1/3 shrink-0">
+          <div className="mb-6 relative flex items-center justify-center">
+            {/* Apple Fitness style circular progress */}
+            <svg width={size} height={size} className="-rotate-90 drop-shadow-sm">
+              <defs>
+                <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#C9A84C" />
+                  <stop offset="100%" stopColor="#E2C167" />
+                </linearGradient>
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="4" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+              <circle
+                cx={size / 2} cy={size / 2} r={radius}
+                stroke="#f3f4f6" strokeWidth={strokeWidth}
+                fill="none"
+              />
+              <circle
+                cx={size / 2} cy={size / 2} r={radius}
+                stroke="url(#goldGradient)" strokeWidth={strokeWidth} strokeLinecap="round"
+                fill="none"
+                style={{
+                  strokeDasharray: circumference,
+                  strokeDashoffset: strokeDashoffset,
+                  transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                  filter: 'url(#glow)'
+                }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span className="text-2xl font-black text-ink">{animatedProgress}%</span>
+            </div>
           </div>
-          <span className="text-xs font-bold text-gray-400">{progress}% complété</span>
+          
+          <h2 className="text-2xl lg:text-3xl font-black text-ink mb-3 text-center lg:text-left tracking-tight">Checklist de<br />Succès 🚀</h2>
+          <p className="text-gray-500 text-sm font-medium text-center lg:text-left leading-relaxed">
+            Complétez ces étapes pour lancer votre business et encaisser vos premiers paiements sur PDV Pro.
+          </p>
         </div>
 
-        {/* Checklist */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {steps.map((step, i) => (
-            <div key={i} className="flex border border-line rounded-2xl overflow-hidden hover:border-emerald/30 transition-all bg-cream/50 group">
-              <div className="w-12 flex items-center justify-center shrink-0 border-r border-line/50 bg-white">
-                 {step.done ? <CheckCircle2 className="text-emerald" size={24} /> : <div className="w-5 h-5 rounded-full border-2 border-gray-300"></div>}
-              </div>
-              
+        {/* Right Side: Steps Grid */}
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
+          {steps.map((step) => (
+            <div 
+              key={step.id} 
+              className={`relative overflow-hidden border rounded-2xl transition-all duration-300 group
+                ${step.done 
+                  ? 'border-gray-200 bg-gray-50/50' 
+                  : 'border-gray-100 bg-white hover:border-[#C9A84C]/40 hover:shadow-[0_4px_20px_rgb(201,168,76,0.1)] hover:-translate-y-0.5'
+                }
+              `}
+            >
+              {/* Optional background glow on hover */}
+              {!step.done && <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />}
+
               {step.href ? (
-                <Link href={step.href} className="flex-1 px-4 py-3 flex items-center justify-between hover:bg-white transition-colors">
-                  <span className={`font-bold text-sm ${step.done ? 'text-gray-400 line-through' : 'text-ink'}`}>{step.label}</span>
-                  <ChevronRight size={18} className="text-dust group-hover:text-emerald group-hover:translate-x-1 transition-all" />
+                <Link href={step.href} className="relative z-10 p-5 flex items-start gap-4 h-full">
+                  <div className={`mt-0.5 w-7 h-7 shrink-0 rounded-full flex items-center justify-center shadow-sm transition-colors border
+                    ${step.done ? 'bg-[#1A1A1A] border-[#1A1A1A] text-white' : 'bg-white border-gray-200 text-gray-400 group-hover:border-[#C9A84C] group-hover:text-[#C9A84C]'}
+                  `}>
+                    {step.done ? <Check size={14} strokeWidth={4} /> : step.icon}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0 pr-4">
+                    <h3 className={`text-sm font-bold truncate ${step.done ? 'text-gray-400 line-through' : 'text-ink group-hover:text-[#1A1A1A]'}`}>
+                      {step.label}
+                    </h3>
+                    <p className={`text-xs mt-1 leading-relaxed ${step.done ? 'text-gray-400 opacity-50' : 'text-gray-500'}`}>
+                      {step.desc}
+                    </p>
+                  </div>
+
+                  {!step.done && (
+                     <div className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:translate-x-1 group-hover:bg-[#C9A84C]/10 group-hover:text-[#C9A84C] transition-all">
+                       <ChevronRight size={16} />
+                     </div>
+                  )}
                 </Link>
               ) : (
-                <div onClick={step.action} className="flex-1 px-4 py-3 flex items-center cursor-pointer hover:bg-white transition-colors">
-                  <span className="font-bold text-sm text-ink">{step.label}</span>
-                  {step.extraUI}
+                <div className="relative z-10 p-5 flex items-start gap-4 h-full">
+                  <div className={`mt-0.5 w-7 h-7 shrink-0 rounded-full flex items-center justify-center shadow-sm transition-colors border
+                    ${step.done ? 'bg-[#1A1A1A] border-[#1A1A1A] text-white' : 'bg-white border-gray-200 text-gray-400'}
+                  `}>
+                    {step.done ? <Check size={14} strokeWidth={4} /> : step.icon}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h3 className={`text-sm font-bold truncate ${step.done ? 'text-gray-400 line-through' : 'text-ink'}`}>
+                      {step.label}
+                    </h3>
+                    <p className={`text-xs mt-1 leading-relaxed ${step.done ? 'text-gray-400 opacity-50' : 'text-gray-500'}`}>
+                      {step.desc}
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
           ))}
         </div>
+
       </div>
     </div>
   )

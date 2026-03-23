@@ -21,6 +21,7 @@ import PricingCalculator from './PricingCalculator'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { HeroStats } from './components/HeroStats'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 import { CountdownBanner } from '@/components/landing/CountdownBanner'
 import { LiveCounters } from '@/components/landing/LiveCounters'
 import { TestimonialSlider } from '@/components/landing/TestimonialSlider'
@@ -90,6 +91,10 @@ export const metadata = {
   ]
 
 export default async function LandingPage() {
+  const supabaseServer = await createClient()
+  const { data: { session } } = await supabaseServer.auth.getSession()
+  const isLoggedIn = !!session
+
   // Chargement config dynamique depuis PlatformConfig
   const supabaseAdmin = createAdminClient()
   const allowedKeys = [
@@ -195,7 +200,7 @@ export default async function LandingPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <LandingNav />
+            <LandingNav isLoggedIn={isLoggedIn} />
           </div>
         </div>
       </header>
@@ -238,8 +243,8 @@ export default async function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-              <Link href="/register" className="w-full sm:w-auto px-8 py-4 bg-emerald hover:bg-emerald-rich text-white font-semibold rounded-full text-lg transition shadow-xl shadow-emerald/20 flex items-center justify-center gap-2">
-                {get('landing_hero_cta_primary', 'Lancer ma boutique')} <ArrowRight size={20} />
+              <Link href={isLoggedIn ? "/dashboard" : "/register"} className="w-full sm:w-auto px-8 py-4 bg-emerald hover:bg-emerald-rich text-white font-semibold rounded-full text-lg transition shadow-xl shadow-emerald/20 flex items-center justify-center gap-2">
+                {isLoggedIn ? "Mon espace" : get('landing_hero_cta_primary', 'Lancer ma boutique')} <ArrowRight size={20} />
               </Link>
               <Link href="/vendeurs" className="w-full sm:w-auto px-8 py-4 bg-white border border-emerald text-emerald hover:bg-emerald/5 rounded-full font-medium text-lg transition flex items-center justify-center shadow-sm">
                 Voir les boutiques actives →
@@ -250,8 +255,8 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* BARRE DE SOCIAL PROOF ANIMÉE */}
-        <div className="bg-gray-900 text-white py-3 overflow-hidden flex whitespace-nowrap">
+        {/* BARRE DE SOCIAL PROOF ANIMÉE - FIXÉ EN BAS */}
+        <div className="fixed bottom-0 left-0 right-0 z-[100] bg-[#1A1A1A] text-white py-3 overflow-hidden flex whitespace-nowrap border-t border-white/5 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
           <style>{`
             @keyframes marqueeHero {
               from { transform: translateX(0); }
@@ -739,15 +744,16 @@ export default async function LandingPage() {
         </section>
 
         {/* ── Section Communautés Telegram ──────────────────────────────── */}
-        <section className="py-20 bg-gradient-to-br from-gray-900 to-gray-800">
-          <div className="max-w-6xl mx-auto px-4">
+        <section className="py-20 bg-ink border-y border-white/5 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald/5 blur-[120px] rounded-full pointer-events-none" />
+          <div className="max-w-6xl mx-auto px-4 relative z-10">
             <div className="text-center mb-12">
-              <span className="inline-block bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold px-3 py-1 rounded-full mb-4 shadow-sm">
+              <span className="inline-block bg-emerald/10 border border-emerald/30 text-emerald text-xs font-bold px-3 py-1 rounded-full mb-4 shadow-sm">
                 EXCLUSIF PDV PRO
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
                 Vendez l&apos;accès à vos groupes<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+                <span className="text-white">
                   Telegram privés
                 </span>
               </h2>
@@ -777,7 +783,7 @@ export default async function LandingPage() {
 
             {/* Cas d'usage concrets */}
             <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -translate-y-32 translate-x-32 pointer-events-none blur-3xl"></div>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald/5 rounded-full -translate-y-32 translate-x-32 pointer-events-none blur-3xl"></div>
               <h3 className="font-black text-white text-xl mb-6 text-center relative z-10">Qui utilise cette fonctionnalité ?</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
                 {[
@@ -789,7 +795,7 @@ export default async function LandingPage() {
                   <div key={u.label} className="text-center group cursor-default">
                     <span className="text-3xl block mb-2 group-hover:scale-110 transition-transform">{u.emoji}</span>
                     <p className="font-bold text-white text-sm mb-1">{u.label}</p>
-                    <p className="text-blue-200/60 text-xs">{u.desc}</p>
+                    <p className="text-white/60 text-xs">{u.desc}</p>
                   </div>
                 ))}
               </div>
@@ -884,20 +890,22 @@ export default async function LandingPage() {
               <p>Rejoignez PDV Pro gratuitement.</p>
               <p>Aucun abonnement, vous ne payez que quand vous vendez.</p>
             </div>
-            <Link href="/register" className="inline-block px-14 py-6 bg-red-600 text-white rounded-2xl font-black text-xl hover:bg-red-700 hover:scale-105 transition-all shadow-2xl shadow-red-600/20 mb-8 animate-pulse">
-              Créer ma boutique maintenant
+            <Link href={isLoggedIn ? "/dashboard" : "/register"} className="inline-block px-14 py-6 bg-red-600 text-white rounded-2xl font-black text-xl hover:bg-red-700 hover:scale-105 transition-all shadow-2xl shadow-red-600/20 mb-8 animate-pulse">
+              {isLoggedIn ? "Mon espace" : "Créer ma boutique maintenant"}
             </Link>
-            <div className="mt-8 pt-8 border-t border-white/10">
-              <Link href="/login" className="text-cream/60 hover:text-white transition font-medium text-lg">
-                Déjà vendeur ? Connectez-vous →
-              </Link>
-            </div>
+            {!isLoggedIn && (
+              <div className="mt-8 pt-8 border-t border-white/10">
+                <Link href="/login" className="text-cream/60 hover:text-white transition font-medium text-lg">
+                  Déjà vendeur ? Connectez-vous →
+                </Link>
+              </div>
+            )}
           </div>
         </section>
       </main>
 
       {/* FOOTER */}
-      <footer className="bg-emerald-deep border-t border-emerald-deep py-16 px-6 relative">
+      <footer className="bg-ink border-t border-white/5 pt-16 pb-28 px-6 relative">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mt-4">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-6">

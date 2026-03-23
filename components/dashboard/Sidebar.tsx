@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { signOut } from '@/app/auth/actions'
 import { 
   LayoutDashboard, 
   Package, 
@@ -167,7 +167,6 @@ function SidebarContent({
   setCollapsed?: (val: boolean) => void
 }) {
   const pathname = usePathname()
-  const router   = useRouter()
 
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
     'FINANCES': false,
@@ -196,12 +195,6 @@ function SidebarContent({
   const isActive = (href: string) => {
     if (href === '/dashboard') return pathname === '/dashboard'
     return pathname.startsWith(href)
-  }
-
-  const handleSignOut = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/login')
   }
 
   return (
@@ -295,20 +288,22 @@ function SidebarContent({
           )}
         </div>
         
-        <button
-          onClick={handleSignOut}
-          className={`w-full flex items-center ${collapsed ? 'justify-center px-0 w-10 h-10 mx-auto' : 'px-3 gap-3'} py-2 rounded-xl text-white/50 hover:text-red-300 hover:bg-red-400/10 transition-colors text-sm group/logout relative`}
-        >
-          <LogOut className={`${collapsed ? 'w-5 h-5' : 'w-[18px] h-[18px]'}`} />
-          {!collapsed && <span className="font-medium text-[13px]">Déconnexion</span>}
-          
-          {collapsed && (
-            <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 invisible group-hover/logout:opacity-100 group-hover/logout:visible transition-all whitespace-nowrap z-50 shadow-xl border border-white/10">
-              Déconnexion
-              <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
-            </div>
-          )}
-        </button>
+        <form action={signOut} className={`w-full flex items-center ${collapsed ? 'justify-center mx-auto' : ''}`}>
+          <button
+            type="submit"
+            className={`w-full flex items-center ${collapsed ? 'justify-center px-0 w-10 h-10 mx-auto' : 'px-3 gap-3'} py-2 rounded-xl text-white/50 hover:text-red-300 hover:bg-red-400/10 transition-colors text-sm group/logout relative`}
+          >
+            <LogOut className={`${collapsed ? 'w-5 h-5' : 'w-[18px] h-[18px]'}`} />
+            {!collapsed && <span className="font-medium text-[13px]">Déconnexion</span>}
+            
+            {collapsed && (
+              <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 invisible group-hover/logout:opacity-100 group-hover/logout:visible transition-all whitespace-nowrap z-50 shadow-xl border border-white/10">
+                Déconnexion
+                <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+              </div>
+            )}
+          </button>
+        </form>
       </div>
     </div>
   )

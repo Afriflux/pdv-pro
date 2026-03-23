@@ -54,11 +54,21 @@ export async function bulkUpdateOrdersStatus(
       })
       .in('id', orderIds)
       .eq('store_id', store.id)
-      .select('id')
+      .select('id, payment_method, affiliate_token, affiliate_amount')
 
     if (updateError) {
       console.error('Erreur bulkUpdateOrders:', updateError)
       return { success: false, updated: 0, error: 'Erreur lors de la mise à jour des commandes' }
+    }
+
+    if (status === 'delivered' && updatedOrders) {
+      const { triggerAmbassadorCommission } = await import('@/lib/affiliation/ambassador-hook')
+      for (const order of updatedOrders) {
+        if (order.affiliate_token && order.affiliate_amount && order.affiliate_amount > 0) {
+          triggerAmbassadorCommission(order.id, order.affiliate_token, order.affiliate_amount)
+            .catch(e => console.error('[Ambassadeur Hook COD]', e))
+        }
+      }
     }
 
     return { 

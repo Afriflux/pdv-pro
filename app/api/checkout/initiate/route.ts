@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     const {
       product_id, store_id, variant_id, quantity = 1,
       buyer_name, buyer_email, buyer_phone, delivery_address, delivery_zone_id,
-      payment_method, applied_promo_id,
+      payment_method, applied_promo_id, affiliate_token,
       booking_date, booking_start_time, booking_end_time
     } = body
 
@@ -149,6 +149,24 @@ export async function POST(req: NextRequest) {
       if (!booking_date || !booking_start_time || !booking_end_time) {
         return NextResponse.json({ error: 'Informations de coaching manquantes.' }, { status: 400 })
       }
+      
+      const parsedDate = new Date(`${booking_date}T00:00:00.000Z`)
+
+      // Check capacity bounds
+      const currentBookings = await prisma.booking.count({
+        where: {
+          product_id: product_id,
+          booking_date: parsedDate,
+          start_time: booking_start_time,
+          end_time: booking_end_time,
+          status: { in: ['pending', 'confirmed'] }
+        }
+      })
+      
+      const maxAllowed = product.coaching_type === 'group' ? (product.max_participants || 10) : 1
+      if (currentBookings >= maxAllowed) {
+        return NextResponse.json({ error: 'Désolé, ce créneau vient d\'être completé ! Veuillez en choisir un autre.' }, { status: 400 })
+      }
     }
 
     if (payment_method === 'cod' && product.type !== 'physical') {
@@ -157,24 +175,63 @@ export async function POST(req: NextRequest) {
 
     const total = subtotal + deliveryFee
 
-    // ── 4. COMMISSION PLATEFORME ──────────────────────────────────
+    // ── 4. COMMISSION PLATEFORME & AFFILIATION ──────────────────────────────────
     const storeRecord = await prisma.store.findUnique({
       where: { id: store_id },
-      select: { closing_enabled: true, closing_fee: true }
+      select: { closing_enabled: true, affiliate_active: true, affiliate_margin: true }
     })
     
+    // Le vendeur a activé la confirmation manuelle
     const requiresClosing = storeRecord?.closing_enabled && payment_method === 'cod'
-    const closingFee = storeRecord?.closing_fee ?? 500
 
-    const { platformFee: finalPlatformFee, deliveryCommission: finalDeliveryCommission, vendorAmount: finalVendorAmount } =
+    const { platformFee: finalPlatformFee, deliveryCommission: finalDeliveryCommission, vendorAmount: initialVendorAmount } =
       await resolveOrderCommission(store_id, subtotal, deliveryFee, payment_method)
+
+    let finalVendorAmount = initialVendorAmount
+    let affiliateAmount = 0
+    let finalAffiliateToken = affiliate_token || null
+
+    if (finalAffiliateToken) {
+      // 1. Vérifier si l'affilié existe et est actif
+      const affiliateData = await prisma.affiliate.findUnique({
+        where: { code: finalAffiliateToken, is_active: true }
+      })
+
+      if (affiliateData) {
+        // 2. Déterminer le taux
+        let appliedMargin = 0
+        if (product.affiliate_active === true && product.affiliate_margin !== null) {
+          appliedMargin = product.affiliate_margin
+        } else if (product.affiliate_active !== false) {
+          if (storeRecord?.affiliate_active && storeRecord.affiliate_margin) {
+            appliedMargin = storeRecord.affiliate_margin
+          }
+        }
+
+        // 3. Calcul sur le sous-total (hors livraison) moins frais plateforme
+        if (appliedMargin > 0) {
+          const baseForAffiliate = Math.max(0, subtotal - finalPlatformFee)
+          affiliateAmount = Math.round(baseForAffiliate * appliedMargin)
+          
+          if (affiliateAmount > 0 && affiliateAmount < finalVendorAmount) {
+            finalVendorAmount -= affiliateAmount
+          } else {
+            affiliateAmount = 0
+            finalAffiliateToken = null
+          }
+        } else {
+          finalAffiliateToken = null
+        }
+      } else {
+         finalAffiliateToken = null
+      }
+    }
 
     const supabase = await createClient()
 
     // Vérification Portefeuille pour COD
     if (payment_method === 'cod') {
-      const feeToFreeze = requiresClosing ? closingFee : 0
-      const { canAccept, commissionDue } = await canAcceptCOD(store_id, total, feeToFreeze)
+      const { canAccept, commissionDue } = await canAcceptCOD(store_id, total, 0)
 
       if (!canAccept) {
         return NextResponse.json({ error: `Solde insuffisant pour la marge COD. Requis : ${commissionDue} FCFA.` }, { status: 402 })
@@ -212,18 +269,20 @@ export async function POST(req: NextRequest) {
             platform_fee: finalPlatformFee, delivery_commission: finalDeliveryCommission,
             vendor_amount: finalVendorAmount, total,
             applied_promo_id: applied_promo_id ?? null,
+            affiliate_token: finalAffiliateToken,
+            affiliate_amount: affiliateAmount,
             status: requiresClosing ? 'cod_pending_confirmation' : 'pending',
             ...(booking_date && booking_start_time && booking_end_time && {
               booking: {
                 create: {
-                  store_id, product_id, booking_date: new Date(booking_date),
+                  store_id, product_id, booking_date: new Date(`${booking_date}T00:00:00.000Z`),
                   start_time: booking_start_time, end_time: booking_end_time,
                 }
               }
             }),
             ...(requiresClosing && {
               closing: {
-                create: { store_id, closing_fee: closingFee, status: 'PENDING' }
+                create: { store_id, closing_fee: 0, status: 'PENDING' }
               }
             }),
           },
@@ -235,8 +294,7 @@ export async function POST(req: NextRequest) {
 
     } catch (dbErr: any) {
       if (payment_method === 'cod') {
-        const feeToFreeze = requiresClosing ? closingFee : 0
-        const commissionDue = Math.round(total * 0.05) + feeToFreeze
+        const commissionDue = Math.round(total * 0.05)
         await supabase.rpc('unfreeze_commission', { p_vendor_id: store_id, p_commission: commissionDue })
       }
       return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })

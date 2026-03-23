@@ -1,0 +1,6 @@
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
+prisma.$queryRawUnsafe(`SELECT pg_get_constraintdef(oid) as def FROM pg_constraint WHERE conname = 'chk_payment_method';`)
+.then(res => console.log("CONSTRAINT DEF:", res))
+.catch(console.error)
+.finally(() => prisma.$disconnect())

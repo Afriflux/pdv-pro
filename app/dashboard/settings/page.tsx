@@ -34,17 +34,29 @@ export default async function SettingsPage() {
     .single()
 
   return (
-    <main className="min-h-screen bg-cream">
-      <header className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-10">
-        <h1 className="text-lg font-bold text-ink">Paramètres</h1>
+    <div className="w-full space-y-6 lg:space-y-8 animate-in fade-in duration-500 pb-12">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/80 backdrop-blur-2xl p-6 md:p-8 rounded-[32px] border border-white shadow-2xl shadow-[#0F7A60]/5 sticky top-2 z-20 overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#0F7A60]/10 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none transition-transform group-hover:scale-110 duration-700"></div>
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-ink to-slate text-white flex items-center justify-center shadow-lg shadow-ink/20 shrink-0">
+            <span className="text-2xl md:text-3xl">⚙️</span>
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-ink tracking-tight">Paramètres</h1>
+            <p className="text-dust text-sm md:text-base font-medium mt-1">
+              Gérez votre boutique, votre profil et vos préférences.
+            </p>
+          </div>
+        </div>
       </header>
-      <div className="w-full p-6 space-y-6 bg-[#FAFAF7] min-h-screen">
+
+      <div className="w-full">
         <SettingsForm
           store={store}
           profile={profile ?? { name: '', phone: '', email: null }}
           userId={user.id}
         />
       </div>
-    </main>
+    </div>
   )
 }

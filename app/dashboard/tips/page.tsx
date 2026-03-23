@@ -1,9 +1,11 @@
 // app/dashboard/tips/page.tsx
 // Server Component statique — Articles & Guides pour vendeurs PDV Pro
 
-import TipsAccordion from './TipsAccordion'
-
-export const dynamic = 'force-static'
+import AcademyGrid from './AcademyGrid'
+import TipsClient from './TipsClient'
+import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
+import { getMasterclassArticles } from '@/app/actions/masterclass'
 
 // ─── Données des 5 articles ──────────────────────────────────────────────────
 
@@ -13,6 +15,8 @@ const ARTICLES = [
     emoji: '📖',
     title: 'Comment écrire une description qui vend',
     color: 'bg-emerald-50',
+    category: 'Vente',
+    readTime: '3 min',
     intro:
       'Une fiche produit bien rédigée peut multiplier votre taux de conversion par 3. ' +
       'En Afrique, les acheteurs en ligne cherchent la confiance avant tout : ' +
@@ -50,6 +54,8 @@ const ARTICLES = [
     emoji: '🎯',
     title: '5 techniques pour booster vos ventes',
     color: 'bg-amber-50',
+    category: 'Marketing',
+    readTime: '4 min',
     intro:
       'Vendre en ligne en Afrique demande des stratégies adaptées au marché local. ' +
       'Ces 5 techniques sont utilisées par les top-vendeurs PDV Pro pour doubler ' +
@@ -87,6 +93,8 @@ const ARTICLES = [
     emoji: '📸',
     title: 'Guide photo produit avec un smartphone',
     color: 'bg-blue-50',
+    category: 'Photo',
+    readTime: '5 min',
     intro:
       'Pas besoin d\'un studio professionnel. Avec votre téléphone et les bonnes techniques, ' +
       'vous pouvez produire des photos qui rivalisent avec des boutiques haut de gamme. ' +
@@ -124,6 +132,8 @@ const ARTICLES = [
     emoji: '💡',
     title: 'Utiliser WhatsApp Business pour vendre',
     color: 'bg-green-50',
+    category: 'WhatsApp',
+    readTime: '4 min',
     intro:
       'WhatsApp Business est l\'outil de vente le plus puissant pour le marché africain. ' +
       'Avec plus de 500 millions d\'utilisateurs actifs en Afrique, c\'est là où se trouvent ' +
@@ -161,6 +171,8 @@ const ARTICLES = [
     emoji: '📊',
     title: 'Comprendre vos analytics PDV Pro',
     color: 'bg-purple-50',
+    category: 'Stats',
+    readTime: '6 min',
     intro:
       'Vos données PDV Pro sont une mine d\'or inexploitée. Savoir lire vos statistiques, ' +
       'c\'est savoir où investir votre temps et votre argent. Voici les 5 métriques ' +
@@ -197,52 +209,120 @@ const ARTICLES = [
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
-export default function TipsPage() {
+export default async function TipsPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  const store = await prisma.store.findUnique({
+    where: { user_id: user.id },
+    include: { subscriptions: { orderBy: { created_at: 'desc' }, take: 1 } }
+  })
+  const isPro = store?.subscriptions?.[0]?.plan === 'pro'
+  
+  // Simulation de la progression pour la gamification
+  const userProgress = 40; 
+
+  // Récupération des articles depuis la BDD
+  let dbArticles = await getMasterclassArticles(false)
+
+  // Auto-seed si la BDD est vide
+  if (dbArticles.length === 0) {
+    for (const art of ARTICLES) {
+      await prisma.masterclassArticle.create({
+        data: {
+          title: art.title,
+          emoji: art.emoji,
+          color: art.color,
+          category: art.category,
+          readTime: art.readTime,
+          intro: art.intro,
+          tips: art.tips,
+          is_active: true
+        }
+      })
+    }
+    dbArticles = await getMasterclassArticles(false)
+  }
+
   return (
     <div className="w-full bg-[#FAFAF7] min-h-screen">
 
-      {/* ── HEADER ── */}
-      <div className="bg-white border-b border-gray-100 px-6 py-6 mb-6">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-3xl">🎓</span>
-            <h1 className="text-2xl font-black text-[#1A1A1A]">Ressources & Guides</h1>
+      {/* ── HERO BANNER PREMIUM ── */}
+      <div className="relative overflow-hidden bg-[#0A0A0A] px-6 py-12 md:py-16 mb-8 mt-2 mx-4 sm:mx-8 rounded-[2rem] shadow-xl">
+        {/* Décors d'arrière-plan */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-[#0F7A60]/30 to-transparent rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-gold/20 to-transparent rounded-full blur-[60px] translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
+        
+        <div className="relative max-w-5xl mx-auto z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-6">
+              <span className="text-gold font-bold text-xs">✨ PDV Pro Academy</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
+              Devenez un maître de la <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">vente en ligne.</span>
+            </h1>
+            <p className="text-gray-400 text-sm md:text-base leading-relaxed mb-8">
+              Découvrez les stratégies exactes utilisées par le top 1% des vendeurs en Afrique. Des guides ultra-actionnables, des astuces secrètes et des techniques qui ont fait leurs preuves.
+            </p>
+            
+            {/* Gamification Progress */}
+            <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
+              <div className="flex justify-between items-end mb-3">
+                <div>
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Votre Niveau</p>
+                  <p className="text-white font-black text-lg">Vendeur Initié</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-gold font-black">{userProgress}%</p>
+                </div>
+              </div>
+              <div className="h-2.5 w-full bg-white/10 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-[#0F7A60] to-emerald-400 rounded-full" style={{ width: `${userProgress}%` }}></div>
+              </div>
+              <p className="text-xs text-gray-500 mt-3">🎯 Lisez encore 3 guides pour débloquer le badge <strong className="text-gray-300">Expert</strong> et obtenir un badge sur votre boutique.</p>
+            </div>
           </div>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            Stratégies éprouvées par les meilleurs vendeurs PDV Pro en Afrique.
-            Développez votre activité étape par étape.
-          </p>
-          <div className="flex items-center gap-2 mt-4">
-            <span className="bg-[#0F7A60]/10 text-[#0F7A60] text-[10px] font-black px-2.5 py-1 rounded-full">
-              5 guides gratuits
-            </span>
-            <span className="bg-amber-50 text-amber-700 text-[10px] font-black px-2.5 py-1 rounded-full">
-              Mis à jour chaque semaine
-            </span>
+
+          <div className="hidden md:flex flex-col gap-4 min-w-[300px]">
+            {/* Stats widgets */}
+            <div className="bg-white/10 border border-white/20 p-5 rounded-2xl backdrop-blur-md flex items-center gap-4 transform rotate-2 hover:rotate-0 transition-all cursor-default">
+              <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl">📈</div>
+              <div>
+                <p className="text-white font-black text-xl">+47%</p>
+                <p className="text-xs text-gray-400 font-medium">De CA en appliquant nos méthodes</p>
+              </div>
+            </div>
+            <div className="bg-white/10 border border-white/20 p-5 rounded-2xl backdrop-blur-md flex items-center gap-4 transform -rotate-2 hover:rotate-0 transition-all cursor-default translate-x-4">
+              <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xl">👥</div>
+              <div>
+                <p className="text-white font-black text-xl">1 200+</p>
+                <p className="text-xs text-gray-400 font-medium">Vendeurs formés ce mois-ci</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── ARTICLES ── */}
-      <div className="max-w-3xl mx-auto px-4 pb-16 space-y-6">
-
-        {/* Intro avec stats */}
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { emoji: '📈', label: 'Vendeurs formés',   value: '1 200+' },
-            { emoji: '💰', label: 'CA moyen augmenté', value: '+47%'   },
-            { emoji: '⭐', label: 'Note moyenne',       value: '4.9/5'  },
-          ].map(stat => (
-            <div key={stat.label} className="bg-white rounded-2xl border border-gray-100 p-4 text-center shadow-sm">
-              <div className="text-2xl mb-1">{stat.emoji}</div>
-              <p className="font-black text-sm text-[#1A1A1A]">{stat.value}</p>
-              <p className="text-[10px] text-gray-400 mt-0.5">{stat.label}</p>
-            </div>
-          ))}
+      <div className="w-full px-4 sm:px-8 pb-20 space-y-10">
+        
+        {/* SECTION: ALERTS & NEWS (TipsClient) */}
+        <div>
+          <div className="flex items-center gap-2 mb-6 ml-2">
+            <div className="w-2 h-6 rounded-full bg-gold"></div>
+            <h2 className="text-xl font-black text-ink">Alertes & Nouveautés</h2>
+          </div>
+          <TipsClient userId={user.id} isPro={isPro} />
         </div>
 
-        {/* Accordéon — côté client */}
-        <TipsAccordion articles={ARTICLES} />
+        {/* SECTION: MASTERCLASS GRID */}
+        <div className="pt-4">
+          <div className="flex items-center gap-2 mb-8 ml-2">
+            <div className="w-2 h-6 rounded-full bg-[#0F7A60]"></div>
+            <h2 className="text-xl font-black text-ink">La Bibliothèque Masterclass</h2>
+          </div>
+          <AcademyGrid articles={dbArticles as any} />
+        </div>
 
         {/* Footer CTA */}
         <div className="bg-[#0F7A60] rounded-2xl p-6 text-center space-y-3">

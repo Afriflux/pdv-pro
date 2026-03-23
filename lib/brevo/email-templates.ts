@@ -96,6 +96,31 @@ function ctaButton(label: string, url: string): string {
 }
 
 /**
+ * Email de rappel de rendez-vous (-24h).
+ */
+export function bookingReminderEmail(buyerName: string, productName: string, date: string, time: string, visioLink: string): string {
+  const body = `
+    <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F7A60;">Rappel de votre session demain 📅</h2>
+    <p style="margin:0 0 20px;font-size:15px;color:#444444;line-height:1.6;">
+      Bonjour <strong>${buyerName}</strong>,
+    </p>
+    <p style="margin:0 0 20px;font-size:15px;color:#444444;line-height:1.6;">
+      Ceci est un rappel automatique pour votre session <strong>"${productName}"</strong> prévue le <strong>${date}</strong> à <strong>${time} (GMT)</strong>.
+    </p>
+
+    ${ctaButton('Rejoindre la Visio', visioLink)}
+
+    ${divider()}
+
+    <p style="margin:0;font-size:13px;color:#888888;line-height:1.6;">
+      Si vous avez un imprévu, veuillez vérifier votre facture pour contacter le vendeur afin de reprogrammer votre créneau.
+    </p>
+  `
+
+  return emailWrapper(body, `Rappel : Votre session "${productName}" est pour demain.`)
+}
+
+/**
  * Ligne de séparation subtile.
  */
 function divider(): string {

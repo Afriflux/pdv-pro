@@ -33,7 +33,7 @@ export default async function EditSalePagePage({ params }: EditPageProps) {
   // Produits actifs du vendeur
   const { data: products } = await supabase
     .from('Product')
-    .select('id, name, price, type, images')
+    .select('id, name, price, type, images, description')
     .eq('store_id', store.id)
     .eq('active', true)
     .order('created_at', { ascending: false })
