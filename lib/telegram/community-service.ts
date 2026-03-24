@@ -59,6 +59,14 @@ export async function handleConnectCommand(
     }
   }
 
+  // 4.5. Vérifier que c'est bien un groupe
+  if (chatType === 'private') {
+    return {
+      success: false,
+      message: '❌ <b>Erreur :</b> Veuillez envoyer cette commande directement dans le <b>Groupe ou Canal</b> que vous souhaitez lier, pas en message privé.'
+    }
+  }
+
   // 5. Lier le groupe → mettre à jour la community
   const { error: updateError } = await admin
     .from('TelegramCommunity')
@@ -140,14 +148,55 @@ export async function revokeMember(chatId: string, userId: number): Promise<void
     body: JSON.stringify({ chat_id: chatId, user_id: userId }),
   })
 
-  // Unban immédiat (permet de rejoindre via un nouveau lien plus tard si autorisé)
+  // Unban direct (pour qu'il puisse revenir plus tard s'il repaye)
   await fetch(`https://api.telegram.org/bot${token}/unbanChatMember`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chat_id: chatId,
-      user_id: userId,
-      only_if_banned: true,
-    }),
+    body: JSON.stringify({ chat_id: chatId, user_id: userId, only_if_banned: true }),
   })
+}
+
+// ── sendSaleNotification ─────────────────────────────────────────────────────
+// Envoie une notification automatique dans tous les groupes Telegram liés
+// à la boutique lors d'une nouvelle vente.
+
+export async function sendSaleNotification(storeId: string, amount: number, customerName: string, productName: string): Promise<void> {
+  const token = await getTelegramToken()
+  if (!token) return
+
+  const admin = createAdminClient()
+  
+  // Trouver toutes les communautés actives de cette boutique
+  const { data: communities } = await admin
+    .from('TelegramCommunity')
+    .select('chat_id')
+    .eq('store_id', storeId)
+    .eq('is_active', true)
+    
+  if (!communities || communities.length === 0) return
+
+  const firstName = customerName.split(' ')[0] || 'Un client'
+  const formattedAmount = amount.toLocaleString('fr-FR')
+    
+  const text = `🎉 <b>NOUVELLE VENTE !</b>\n\n` +
+               `💰 <b>${firstName}</b> vient d'effectuer un achat de <b>${formattedAmount} CFA</b> pour <b>${productName}</b> !\n\n` +
+               `<i>Félicitations pour cette belle vente ! Continuez comme ça ! 🚀</i>`
+
+  for (const c of communities) {
+    if (c.chat_id) {
+      try {
+        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: c.chat_id,
+            text,
+            parse_mode: 'HTML'
+          }),
+        })
+      } catch (err) {
+        console.error('[Community] Erreur sendSaleNotification:', err)
+      }
+    }
+  }
 }

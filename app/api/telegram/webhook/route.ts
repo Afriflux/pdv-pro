@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendMessage } from '@/lib/telegram/bot-service'
-import { handleConnectCommand } from '@/lib/telegram/community-service'
+import { handleConnectCommand, createInviteLink } from '@/lib/telegram/community-service'
 
 // Initialisation du client Supabase Admin
 const supabaseAdmin = createClient(
@@ -21,15 +21,17 @@ const supabaseAdmin = createClient(
 
 interface TelegramUser {
   id: number
+  is_bot?: boolean
   first_name: string
   username?: string
 }
 
 interface TelegramMessage {
   message_id: number
-  from: TelegramUser
+  from?: TelegramUser
   chat: { id: number; type: string; title?: string }
   text?: string
+  new_chat_members?: TelegramUser[]
 }
 
 interface TelegramUpdate {
@@ -50,12 +52,24 @@ export async function POST(req: NextRequest) {
 
     // 2. Parsing de l'Update
     const update = (await req.json()) as TelegramUpdate
-    if (!update.message || !update.message.text) {
+    if (!update.message) {
       return NextResponse.json({ ok: true })
     }
 
-    const { text, from, chat } = update.message
+    const { text, from, chat, new_chat_members } = update.message
     const chatId = chat.id.toString()
+
+    // --- Gestion de l'arrivée de nouveaux membres (Message de Bienvenue) ---
+    if (new_chat_members && new_chat_members.length > 0) {
+      await handleNewMembers(chatId, new_chat_members)
+      return NextResponse.json({ ok: true })
+    }
+
+    // Si pas de texte (par ex: photo isolée sans légende), on ignore
+    if (!text || !from) {
+      return NextResponse.json({ ok: true })
+    }
+
     const command = text.split(' ')[0].toLowerCase()
 
     // 3. Routing des commandes
@@ -103,14 +117,129 @@ export async function POST(req: NextRequest) {
 // --- Command Handlers ---
 
 /**
- * Gère la commande /start (Liaison ou Bienvenue)
+ * Gère le flux du Gateway Bot pour les acheteurs (Auto-Kick)
+ */
+async function handleBuyerGateway(chatId: string, orderId: string, from: TelegramUser) {
+  // 1. Vérifier la commande
+  const { data: order } = await supabaseAdmin
+    .from('Order')
+    .select('id, product_id, status, created_at, is_subscription, next_billing_at, product:Product(access_duration_days), store:Store(name)')
+    .eq('id', orderId)
+    .single()
+
+  if (!order) {
+    await sendMessage(chatId, "❌ Commande introuvable.")
+    return
+  }
+
+  // 2. Vérifier si un TelegramCommunity est lié à ce product_id
+  const { data: community } = await supabaseAdmin
+    .from('TelegramCommunity')
+    .select('chat_id, chat_title, is_active')
+    .eq('product_id', order.product_id)
+    .eq('is_active', true)
+    .single()
+
+  if (!community || !community.chat_id) {
+    await sendMessage(chatId, "❌ Aucun groupe Telegram actif n'est lié à cet achat.")
+    return
+  }
+
+  // 3. Vérifier si l'utilisateur a déjà généré un lien ou s'il est banni
+  const { data: existingMember } = await supabaseAdmin
+    .from('TelegramMember')
+    .select('id, status')
+    .eq('order_id', order.id)
+    .single()
+
+  if (existingMember && existingMember.status === 'kicked') {
+    await sendMessage(chatId, "❌ Votre accès à ce groupe a expiré ou a été révoqué.")
+    return
+  }
+
+  // 4. Calculer l'expiration
+  let expiresAt: string | null = null
+  if (order.is_subscription && order.next_billing_at) {
+    expiresAt = new Date(order.next_billing_at).toISOString()
+  } else {
+    const duration = (Array.isArray(order.product) ? order.product[0] : order.product)?.access_duration_days
+    if (duration) {
+      const expDate = new Date()
+      expDate.setDate(expDate.getDate() + duration)
+      expiresAt = expDate.toISOString()
+    }
+  }
+
+  // 5. Enregistrer en base
+  if (!existingMember) {
+    await supabaseAdmin
+      .from('TelegramMember')
+      .insert({
+        telegram_user_id: String(from.id),
+        telegram_username: from.username,
+        chat_id: community.chat_id,
+        order_id: order.id,
+        status: 'pending',
+        expires_at: expiresAt
+      })
+  } else {
+    // Si l'utilisateur relance le bot (ex: lien perdu)
+    await supabaseAdmin
+      .from('TelegramMember')
+      .update({
+        telegram_user_id: String(from.id),
+        telegram_username: from.username,
+      })
+      .eq('id', existingMember.id)
+  }
+
+  // 6. Générer un lien d'invitation à usage unique
+  try {
+    const inviteLink = await createInviteLink(community.chat_id)
+    const storeName = (Array.isArray(order.store) ? order.store[0] : order.store)?.name || 'PDV Pro'
+    
+    // 7. Envoyer le lien en privé
+    const msg = `🎉 <b>Félicitations pour votre achat chez ${storeName} !</b>\n\n` +
+      `Voici votre accès exclusif au groupe privé <b>${community.chat_title}</b>.\n\n` +
+      `<i>⚠️ Ce lien est à usage unique et n'est valable que pour vous.</i>`
+    
+    const replyMarkup = JSON.stringify({
+      inline_keyboard: [[{ text: 'Rejoindre le Groupe VIP 🚀', url: inviteLink }]]
+    })
+
+    const botToken = process.env.TELEGRAM_BOT_TOKEN
+    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: msg,
+        parse_mode: 'HTML',
+        reply_markup: replyMarkup
+      })
+    })
+
+  } catch (err) {
+    console.error('[Gateway] Erreur génération lien:', err)
+    await sendMessage(chatId, "❌ Une erreur est survenue lors de la création de votre lien. Veuillez contacter le support.")
+  }
+}
+
+/**
+ * Gère la commande /start (Liaison, Acheteur Gateway ou Bienvenue)
  */
 async function handleStart(chatId: string, fullText: string, from: TelegramUser) {
   const parts = fullText.split(' ')
-  const token = parts.length > 1 ? parts[1].toUpperCase() : null
+  const rawToken = parts.length > 1 ? parts[1] : null
+  const token = rawToken ? rawToken.toUpperCase() : null
+
+  if (rawToken && rawToken.length > 20) {
+    // C'est très probablement un ID de Commande (Gateway Bot Auto-Kick)
+    return handleBuyerGateway(chatId, rawToken, from)
+  }
 
   if (token) {
-    // Tentative de liaison avec un token
+    // Tentative de liaison avec un token de 6 caractères (Store Link)
     const now = new Date().toISOString()
     const { data: linkToken, error } = await supabaseAdmin
       .from('telegram_link_tokens')
@@ -165,6 +294,50 @@ async function handleStart(chatId: string, fullText: string, from: TelegramUser)
       `3. Revenez ici et tapez /start suivi du code affiché\n\n` +
       `Exemple : <code>/start ABC123</code>`
     await sendMessage(chatId, welcomeMsg)
+  }
+}
+
+/**
+ * Gère l'arrivée de nouveaux membres dans un groupe (Message de Bienvenue)
+ */
+async function handleNewMembers(chatId: string, newMembers: TelegramUser[]) {
+  // 1. Chercher si ce chat est une communauté active
+  const { data: community } = await supabaseAdmin
+    .from('TelegramCommunity')
+    .select('welcome_message, is_active')
+    .eq('chat_id', chatId)
+    .single()
+
+  if (!community || !community.is_active) {
+    return
+  }
+
+  // 2. Activer l'accès au Gateway (Auto-kick) pour les membres qui rejoignent
+  for (const member of newMembers) {
+    if (member.is_bot) continue;
+
+    await supabaseAdmin
+      .from('TelegramMember')
+      .update({
+        status: 'active',
+        joined_at: new Date().toISOString()
+      })
+      .eq('telegram_user_id', String(member.id))
+      .eq('chat_id', chatId)
+  }
+
+  // 3. Envoyer le message de bienvenue s'il est configuré
+  if (community.welcome_message) {
+    const realMembers = newMembers.filter(m => !m.is_bot)
+    if (realMembers.length === 0) return
+
+    const names = realMembers.map(m => m.first_name).join(', ')
+    
+    const finalMessage = community.welcome_message
+      .replace(/{first_name}/g, names)
+      .replace(/{name}/g, names)
+
+    await sendMessage(chatId, finalMessage)
   }
 }
 

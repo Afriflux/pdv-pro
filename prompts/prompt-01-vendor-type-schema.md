@@ -1,7 +1,7 @@
 === CONTEXTE PDV Pro ===
 Projet : PDV Pro — SaaS e-commerce Afrique de l'Ouest
 Stack : Next.js 14 App Router · TypeScript strict · Supabase · Prisma · Tailwind
-Lancement : 24/03/2026 (J-5)
+Lancement : 01/04/2026 (J-5)
 Build actuel : 114 pages propres, 0 erreurs TS
 Politique : Commission 7%→4% dégressive · Zéro abonnement · Cashless prioritaire
 Règle COD : uniquement vendeurs PHYSICAL/HYBRID sur produits physiques · jamais suggéré · jamais mis en avant · désactivé par défaut même si passage Hybride/Physique

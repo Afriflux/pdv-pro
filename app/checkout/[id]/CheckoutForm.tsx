@@ -27,6 +27,8 @@ interface Product {
   price: number
   type: string
   images: string[]
+  payment_type?: string | null
+  recurring_interval?: string | null
   cash_on_delivery: boolean
   coaching_type?: 'individual' | 'group' | null
   max_participants?: number | null
@@ -83,6 +85,16 @@ export function CheckoutForm({
 }: CheckoutFormProps) {
   const router = useRouter()
   const accent = product.store.primary_color || '#0F7A60'
+
+  const getIntervalSuffix = (interval?: string | null) => {
+    switch(interval) {
+      case 'weekly': return ' / sem'
+      case 'monthly': return ' / mois'
+      case 'quarterly': return ' / trim'
+      case 'yearly': return ' / an'
+      default: return ''
+    }
+  }
 
   // ── États formulaire ──────────────────────────────────────────
   const [name, setName]           = useState('')
@@ -455,7 +467,10 @@ export function CheckoutForm({
           )}
 
           <p className="text-2xl font-extrabold pt-1" style={{ color: accent }}>
-            {baseProductPrice.toLocaleString('fr-FR')} <span className="text-base font-medium opacity-60">FCFA</span>
+            {baseProductPrice.toLocaleString('fr-FR')}{' '}
+            <span className="text-base font-medium opacity-60">
+              FCFA{product.payment_type === 'recurring' ? getIntervalSuffix(product.recurring_interval) : ''}
+            </span>
           </p>
         </div>
       </div>
@@ -894,14 +909,16 @@ export function CheckoutForm({
         {/* Boutons */}
         <button
           type="submit" disabled={loading}
-          className="w-full text-white font-black py-4 rounded-2xl transition text-base shadow-xl"
+          className="w-full text-white font-black py-4 rounded-2xl transition text-base shadow-xl uppercase"
           style={{ backgroundColor: accent, opacity: loading ? 0.5 : 1 }}
         >
           {loading
             ? 'CHARGEMENT...'
             : useCOD
               ? 'COMMANDER SANS PAYER'
-              : `CONTINUER → PAIEMENT`}
+              : product.payment_type === 'recurring'
+                ? "S'ABONNER MAINTENANT"
+                : `CONTINUER → PAIEMENT`}
         </button>
 
         {/* Badges de Paiement Sécurisé Ouest-Africains */}

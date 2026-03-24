@@ -42,6 +42,8 @@ interface ProductPageProps {
     cash_on_delivery: boolean
     coaching_type?: 'individual' | 'group' | null
     max_participants?: number | null
+    payment_type?: string | null
+    recurring_interval?: string | null
     resale_allowed?: boolean
     resale_commission?: number | null
     digital_files?: any[]
@@ -239,6 +241,16 @@ export default function ProductPage({
   telegramCommunity,
 }: ProductPageProps) {
   const accent = product.store.primary_color || '#0F7A60'
+
+  const getIntervalSuffix = (interval?: string | null) => {
+    switch(interval) {
+      case 'weekly': return ' / sem'
+      case 'monthly': return ' / mois'
+      case 'quarterly': return ' / trim'
+      case 'yearly': return ' / an'
+      default: return ''
+    }
+  }
 
   const bunnyVideoId = product.digital_files?.find(
     (f: any) => f.bunny_video_id
@@ -462,7 +474,9 @@ export default function ProductPage({
               )}
               <span className="text-3xl font-black" style={{ color: accent }}>
                 {finalPrice.toLocaleString('fr-FR')}{' '}
-                <span className="text-base font-medium opacity-60">FCFA</span>
+                <span className="text-base font-medium opacity-60">
+                  FCFA{product.payment_type === 'recurring' ? getIntervalSuffix(product.recurring_interval) : ''}
+                </span>
               </span>
               {discountBadge() && (
                 <span

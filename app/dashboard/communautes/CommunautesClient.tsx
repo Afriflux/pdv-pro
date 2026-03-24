@@ -5,6 +5,8 @@
 // 4 onglets : Feed | Classement | Groupes | Ressources
 
 import { useState, useCallback, useEffect, useRef } from 'react'
+import { Trash2, MessageSquare, Send, RefreshCw, ChevronRight, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import type { PostItem, LeaderboardEntry, CurrentStore } from './page'
 
@@ -39,6 +41,14 @@ interface CommentItem {
 }
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
+
+// ─── Gamification Helper ────────────────────────────────────────────────────────
+function getNextTierGamification(revenue: number) {
+  if (revenue < 100000) return { current: 'Débutant', next: 'Actif', emoji: '🌱', threshold: 100000, gap: 100000 - revenue }
+  if (revenue < 500000) return { current: 'Actif', next: 'Pro', emoji: '🔥', threshold: 500000, gap: 500000 - revenue }
+  if (revenue < 1000000) return { current: 'Pro', next: 'Élite', emoji: '💼', threshold: 1000000, gap: 1000000 - revenue }
+  return { current: 'Élite', next: null, emoji: '👑', threshold: null, gap: 0 }
+}
 
 const FILTERS: { id: FilterId; label: string; emoji: string }[] = [
   { id: 'all',      label: 'Tous',      emoji: '🌐' },
@@ -113,16 +123,49 @@ interface PostCardProps {
   post:      PostItem
   currentStoreId: string
   onLike:    (postId: string) => void
+  onDelete?: (postId: string) => void
 }
 
-function PostCard({ post, currentStoreId, onLike }: PostCardProps) {
+function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null)
   const [commentsOpen, setCommentsOpen]   = useState(false)
   const [comments,     setComments]       = useState<CommentItem[]>([])
   const [commentsLoad, setCommentsLoad]   = useState(false)
   const [newComment,   setNewComment]     = useState('')
   const [submitting,   setSubmitting]     = useState(false)
+  const [isDeleting,   setIsDeleting]     = useState(false)
+  const [isPulsing,    setIsPulsing]      = useState(false)
+  const [exporting,    setExporting]      = useState(false)
+
+  const handleLikeClick = () => {
+    onLike(post.id)
+    if (!post.user_liked) {
+      setIsPulsing(true)
+      setTimeout(() => setIsPulsing(false), 400)
+    }
+  }
+
+  const exportAsImage = async () => {
+    if (!cardRef.current || exporting) return
+    setExporting(true)
+    try {
+      const html2canvas = (await import('html2canvas')).default
+      const canvas = await html2canvas(cardRef.current, { backgroundColor: '#ffffff', scale: 2, useCORS: true })
+      const imgData = canvas.toDataURL('image/png')
+      const link = document.createElement('a')
+      link.download = `pdvpro-success-${post.id}.png`
+      link.href = imgData
+      link.click()
+    } catch(err) {
+      console.error(err)
+      alert("Erreur lors de l'export de l'image.")
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const cat = CATEGORY_LABELS[post.category] ?? CATEGORY_LABELS['general']
+  const isMyPost = post.store_id === currentStoreId
 
   const loadComments = async () => {
     if (commentsOpen) { setCommentsOpen(false); return }
@@ -159,73 +202,135 @@ function PostCard({ post, currentStoreId, onLike }: PostCardProps) {
     }
   }
 
+  const handleDelete = async () => {
+    if (!onDelete || isDeleting) return
+    if (!confirm('Voulez-vous vraiment supprimer cette publication ?')) return
+    setIsDeleting(true)
+    try {
+      const res = await fetch(`/api/community/posts/${post.id}`, { method: 'DELETE' })
+      if (res.ok) {
+        onDelete(post.id)
+      } else {
+        alert('Erreur lors de la suppression')
+      }
+    } catch {
+      alert('Erreur réseau')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  if (isDeleting) return null; // Hide optimistically
+
   return (
-    <article className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
+    <article ref={cardRef} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-xl hover:border-slate-300 transition-all duration-300 group/card relative">
       {/* ── Header ── */}
-      <div className="flex items-start gap-3 p-4 pb-3">
-        <StoreAvatar name={post.store_name} logo={post.store_logo} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <p className="font-black text-sm text-[#1A1A1A] truncate">{post.store_name}</p>
-            <span className="text-[10px] text-gray-400 font-medium flex-shrink-0">{timeAgo(post.created_at)}</span>
+      <div className="flex items-start gap-4 p-5 pb-3">
+        <StoreAvatar name={post.store_name} logo={post.store_logo} size="lg" />
+        <div className="flex-1 min-w-0 pt-0.5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-black text-base text-[#1A1A1A] truncate hover:text-[#0F7A60] transition-colors cursor-pointer">{post.store_name}</p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className={`inline-flex items-center gap-1 text-[11px] font-black px-2.5 py-1 rounded-lg ${cat.color}`}>
+                  {cat.emoji} {cat.label}
+                </span>
+                <span className="text-xs text-slate-400 font-medium">{timeAgo(post.created_at)}</span>
+              </div>
+            </div>
+            
+            {/* Owner Actions */}
+            {isMyPost && (
+              <button
+                onClick={handleDelete}
+                className="w-8 h-8 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors opacity-0 group-hover/card:opacity-100 focus:opacity-100"
+                title="Supprimer la publication"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
           </div>
-          <span className={`inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full mt-0.5 ${cat.color}`}>
-            {cat.emoji} {cat.label}
-          </span>
         </div>
       </div>
 
       {/* ── Contenu ── */}
-      <div className="px-4 pb-3">
-        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{post.content}</p>
+      <div className="px-5 pb-4 pt-1">
+        <p className="text-[15px] font-medium text-slate-700 leading-relaxed whitespace-pre-line">{post.content}</p>
       </div>
 
       {/* ── Image ── */}
       {post.image_url && (
-        <div className="px-4 pb-3">
-          <img
-            src={post.image_url} alt="Image du post"
-            className="w-full rounded-xl object-cover max-h-64"
-          />
+        <div className="px-5 pb-4">
+          <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-sm relative group/img">
+            <img
+              src={post.image_url} alt="Image du post"
+              className="w-full object-cover max-h-80 group-hover/img:scale-105 transition-transform duration-500"
+            />
+          </div>
         </div>
       )}
 
       {/* ── Actions ── */}
-      <div className="flex items-center gap-4 px-4 pb-3 pt-1 border-t border-gray-50">
+      <div className="flex items-center gap-6 px-5 py-3 border-t border-slate-100 bg-slate-50/50">
         <button
-          onClick={() => onLike(post.id)}
-          className={`flex items-center gap-1.5 text-sm font-bold transition-all duration-200 hover:scale-105 ${
-            post.user_liked ? 'text-red-500' : 'text-gray-400 hover:text-red-400'
+          onClick={handleLikeClick}
+          className={`flex items-center gap-2 text-[13px] font-black transition-all duration-300 group/like ${
+            post.user_liked ? 'text-red-500' : 'text-slate-500 hover:text-red-400'
           }`}
         >
-          <span className="text-base">{post.user_liked ? '❤️' : '🤍'}</span>
-          <span>{post.likes_count}</span>
+          <div className={`p-1.5 rounded-full transition-all duration-300 ${post.user_liked ? 'bg-red-50 text-red-500' : 'bg-white border border-slate-200 text-slate-400 group-hover/like:border-red-200'} ${isPulsing ? 'scale-[1.6] rotate-12 drop-shadow-lg' : 'scale-100'}`}>
+             <svg width="18" height="18" viewBox="0 0 24 24" fill={post.user_liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={post.user_liked ? "scale-110" : ""}><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          </div>
+          <span>{post.likes_count} J'aime</span>
         </button>
 
         <button
           onClick={loadComments}
-          className="flex items-center gap-1.5 text-sm font-bold text-gray-400 hover:text-[#0F7A60] transition-colors"
+          className="flex items-center gap-2 text-[13px] font-black text-slate-500 hover:text-blue-600 transition-colors group/comment"
         >
-          <span className="text-base">💬</span>
-          <span>{post.comments_count}</span>
+          <div className="p-1.5 rounded-full bg-white border border-slate-200 text-slate-400 group-hover/comment:border-blue-200 group-hover/comment:text-blue-500 transition-colors">
+            <MessageSquare size={18} strokeWidth={2.5} />
+          </div>
+          <span className="hidden sm:inline">{post.comments_count} Commentaires</span>
+          <span className="inline sm:hidden">{post.comments_count}</span>
         </button>
+
+        {post.category === 'success' && (
+          <button
+            onClick={exportAsImage}
+            disabled={exporting}
+            className="flex items-center gap-2 text-[12px] font-black text-amber-500 hover:text-amber-600 transition-all ml-auto group/export shadow-sm hover:shadow active:scale-95 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200"
+          >
+            <div className={`${exporting ? 'animate-pulse' : ''}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </div>
+            <span className="hidden sm:inline">{exporting ? 'Export...' : 'Partager !'}</span>
+          </button>
+        )}
       </div>
 
       {/* ── Commentaires ── */}
       {commentsOpen && (
-        <div className="border-t border-gray-50 bg-[#FAFAF7] px-4 py-3 space-y-3">
+        <div className="border-t border-slate-100 bg-slate-50 px-5 py-5 space-y-4 animate-in slide-in-from-top-2 duration-300">
           {commentsLoad ? (
-            <p className="text-xs text-gray-400 text-center py-2 animate-pulse">Chargement…</p>
+            <div className="flex items-center justify-center py-4">
+              <div className="w-6 h-6 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+            </div>
           ) : comments.length === 0 ? (
-            <p className="text-xs text-gray-400 text-center py-2 italic">Aucun commentaire. Soyez le premier !</p>
+            <div className="text-center py-6 bg-white rounded-2xl border border-dashed border-slate-200">
+              <MessageSquare className="mx-auto text-slate-300 mb-2" size={24} />
+              <p className="text-sm font-bold text-slate-500">Aucun commentaire</p>
+              <p className="text-xs text-slate-400">Lancez la discussion !</p>
+            </div>
           ) : (
-            <div className="space-y-2.5">
+            <div className="space-y-4">
               {comments.map(c => (
-                <div key={c.id} className="flex items-start gap-2">
-                  <StoreAvatar name={c.store_name} logo={c.store_logo} size="sm" />
-                  <div className="flex-1 bg-white rounded-xl px-3 py-2 border border-gray-100">
-                    <p className="text-[10px] font-black text-gray-500 mb-0.5">{c.store_name}</p>
-                    <p className="text-xs text-gray-700">{c.content}</p>
+                <div key={c.id} className="flex items-start gap-3">
+                  <StoreAvatar name={c.store_name} logo={c.store_logo} size="md" />
+                  <div className="flex-1 bg-white rounded-2xl px-4 py-3 border border-slate-200 shadow-sm relative group/c">
+                    <p className="text-xs font-black text-[#1A1A1A] mb-1">{c.store_name}</p>
+                    <p className="text-[13px] text-slate-700 leading-snug">{c.content}</p>
+                    <span className="text-[10px] font-bold text-slate-400 mt-2 block">{timeAgo(c.created_at)}</span>
                   </div>
                 </div>
               ))}
@@ -233,26 +338,28 @@ function PostCard({ post, currentStoreId, onLike }: PostCardProps) {
           )}
 
           {/* Input commentaire */}
-          <div className="flex items-center gap-2">
-            <StoreAvatar name={currentStoreId} logo={null} size="sm" />
-            <div className="flex-1 flex gap-2">
-              <input
-                type="text"
+          <div className="flex items-start gap-3 pt-2">
+            <StoreAvatar name={currentStoreId} logo={null} size="md" />
+            <div className="flex-1 relative">
+              <textarea
                 value={newComment}
                 onChange={e => setNewComment(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && submitComment()}
-                placeholder="Écrire un commentaire…"
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitComment(); }
+                }}
+                placeholder="Rédigez votre réponse…"
                 maxLength={500}
-                className="flex-1 text-xs border border-gray-200 rounded-xl px-3 py-2 outline-none
-                  focus:border-[#0F7A60] transition-colors bg-white"
+                rows={1}
+                className="w-full text-[13px] font-medium border border-slate-300 rounded-2xl pl-4 pr-12 py-3 outline-none
+                  focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-white min-h-[44px] resize-none"
               />
               <button
                 onClick={submitComment}
                 disabled={!newComment.trim() || submitting}
-                className="px-3 py-2 bg-[#0F7A60] text-white text-xs font-black rounded-xl
-                  disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0D6B53] transition-colors"
+                className="absolute right-2 top-2 p-1.5 bg-blue-600 text-white font-black rounded-xl
+                  disabled:opacity-0 hover:bg-blue-700 hover:scale-105 transition-all shadow-md shadow-blue-500/20"
               >
-                {submitting ? '…' : '↑'}
+                {submitting ? <RefreshCw size={14} className="animate-spin" /> : <Send size={14} />}
               </button>
             </div>
           </div>
@@ -393,747 +500,554 @@ export default function CommunautesClient({
   // ─── RENDU ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7] pb-16">
+    <div className="min-h-screen bg-[#FAFAF7]">
 
-      {/* ── HEADER ─────────────────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-gray-100 px-6 py-6">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-black text-[#1A1A1A]">Communauté PDV Pro 🌍</h1>
-          <p className="text-sm text-gray-500 mt-1">Vendeurs africains — Partagez, apprenez, progressez ensemble.</p>
-        </div>
-      </div>
-
-      {/* ── ONGLETS ────────────────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 flex gap-1 overflow-x-auto">
-          {([
-            { id: 'feed',       label: 'Feed',        emoji: '📰' },
-            { id: 'classement', label: 'Classement',  emoji: '🏆' },
-            { id: 'groupes',    label: 'Groupes',     emoji: '💬' },
-            { id: 'ressources', label: 'Ressources',  emoji: '🎓' },
-          ] as { id: TabId; label: string; emoji: string }[]).map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-4 py-3.5 text-sm font-black whitespace-nowrap border-b-2 transition-all ${
-                activeTab === tab.id
-                  ? 'border-[#0F7A60] text-[#0F7A60]'
-                  : 'border-transparent text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <span>{tab.emoji}</span>
-              <span className="hidden sm:inline">{tab.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-
-        {/* ══════════════════════════════════════════════════════════════════
-            ONGLET 1 — FEED
-            ══════════════════════════════════════════════════════════════ */}
-        {activeTab === 'feed' && (
-          <div className="space-y-5">
-
-            {/* Formulaire création post */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
-              <div className="flex items-start gap-3">
-                <StoreAvatar name={store.name} logo={store.logo_url} />
-                <div className="flex-1 space-y-3">
-                  <textarea
-                    value={postContent}
-                    onChange={e => setPostContent(e.target.value)}
-                    placeholder={`Partagez quelque chose avec la communauté, ${store.name} !`}
-                    maxLength={1000}
-                    rows={3}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none
-                      focus:border-[#0F7A60] transition-colors resize-none placeholder:text-gray-400"
-                  />
-                  <div className="flex items-center justify-between flex-wrap gap-3">
-                    <div className="flex items-center gap-2">
-                      <select
-                        aria-label="Catégorie de post"
-                        title="Catégorie de post"
-                        value={postCategory}
-                        onChange={e => setPostCategory(e.target.value)}
-                        className="text-xs border border-gray-200 rounded-xl px-3 py-2 outline-none
-                          focus:border-[#0F7A60] font-bold text-gray-600 cursor-pointer bg-white"
-                      >
-                        <option value="general">📣 Général</option>
-                        <option value="question">❓ Question</option>
-                        <option value="success">🏆 Succès</option>
-                        <option value="tip">💡 Astuce</option>
-                        <option value="mode">👗 Mode</option>
-                        <option value="digital">📱 Digital</option>
-                        <option value="food">🍎 Food</option>
-                      </select>
-                      <span className="text-[10px] text-gray-400 font-mono">
-                        {postContent.length}/1000
-                      </span>
-                    </div>
-                    <button
-                      onClick={publishPost}
-                      disabled={!postContent.trim() || publishing}
-                      className="px-5 py-2 bg-[#0F7A60] text-white text-xs font-black rounded-xl
-                        disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0D6B53]
-                        transition-all shadow-sm shadow-[#0F7A60]/20"
-                    >
-                      {publishing ? 'Publication…' : '✈️ Publier'}
-                    </button>
-                  </div>
+      {/* ── HEADER PREMIUM & ONGLETS HORIZONTAUX ── */}
+      <div className="bg-white border-b border-gray-100 relative overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#0DE0A1]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-0 lg:pt-8 relative z-10 flex flex-col gap-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="flex items-center gap-4 lg:gap-5">
+              <StoreAvatar name={store.name} logo={store.logo_url} size="xl" />
+              <div>
+                <h1 className="text-2xl lg:text-3xl font-black text-[#1A1A1A] tracking-tight">Hub Communautaire</h1>
+                <p className="text-xs lg:text-sm font-medium text-slate-500 mt-1">Connectez-vous. Apprenez. Explosez vos ventes. 🚀</p>
+                <div className="mt-3 hidden sm:inline-flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-[#0F7A60] px-3 py-1 rounded-full border border-emerald-100 shadow-sm">
+                    {store.name}
+                  </span>
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
+                    Niveau Vendeur
+                  </span>
                 </div>
               </div>
             </div>
-
-            {/* Filtres catégories */}
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-              {FILTERS.map(f => (
-                <button
-                  key={f.id}
-                  onClick={() => loadFeed(f.id)}
-                  className={`flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-black
-                    border transition-all ${
-                    activeFilter === f.id
-                      ? 'bg-[#0F7A60] text-white border-[#0F7A60] shadow-sm'
-                      : 'bg-white text-gray-500 border-gray-200 hover:border-[#0F7A60]/40'
-                  }`}
-                >
-                  <span>{f.emoji}</span>
-                  <span>{f.label}</span>
-                </button>
-              ))}
+            
+            <div className="hidden lg:flex items-center gap-4 mb-1">
+               <Link href="/dashboard/affilies" className="group flex items-center gap-2 bg-[#1A1A1A] hover:bg-[#0DE0A1] hover:text-[#0F7A60] text-white px-5 py-3 rounded-xl text-sm font-black shadow-lg shadow-black/10 hover:-translate-y-0.5 transition-all">
+                  <span>🎁</span>
+                  Programme Ambassadeur
+               </Link>
             </div>
-
-            {/* Posts */}
-            {feedLoading ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="bg-white rounded-2xl border border-gray-100 h-32 animate-pulse" />
-                ))}
-              </div>
-            ) : posts.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center space-y-3">
-                <p className="text-4xl">📭</p>
-                <p className="font-black text-[#1A1A1A]">Aucun post dans cette catégorie</p>
-                <p className="text-sm text-gray-400">Soyez le premier à publier !</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {posts.map(post => (
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                    currentStoreId={store.id}
-                    onLike={handleLike}
-                  />
-                ))}
-              </div>
-            )}
           </div>
-        )}
 
-        {/* ══════════════════════════════════════════════════════════════════
-            ONGLET 2 — CLASSEMENT
-            ══════════════════════════════════════════════════════════════ */}
-        {activeTab === 'classement' && (
-          <div className="space-y-6">
+          {/* Onglets Unifiés (Desktop & Mobile) */}
+          <div className="flex gap-2 lg:gap-6 overflow-x-auto custom-scrollbar translate-y-[1px]">
+            {([
+              { id: 'feed',       label: 'Mon Feed',    emoji: '📰' },
+              { id: 'classement', label: 'Classement',  emoji: '🏆' },
+              { id: 'groupes',    label: 'Groupes VIP', emoji: '💬' },
+              { id: 'ressources', label: 'Ressources',  emoji: '🎓' },
+            ] as const).map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-shrink-0 flex items-center gap-2 px-2 lg:px-4 py-3.5 border-b-[3px] text-sm md:text-[15px] font-black transition-all ${
+                  activeTab === tab.id
+                    ? 'border-[#0F7A60] text-[#0F7A60]'
+                    : 'border-transparent text-slate-400 hover:text-slate-800'
+                }`}
+              >
+                <span className="text-lg opacity-90">{tab.emoji}</span>
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div>
-                <h2 className="text-xl font-black text-[#1A1A1A]">🏆 Top Vendeurs</h2>
-                <p className="text-xs text-gray-400">
-                  {lbPeriod === 'month' ? 'Ce mois-ci' : 'Depuis le début'}
-                </p>
-              </div>
-              <div className="flex bg-gray-100 rounded-xl p-1 gap-1">
-                {(['month', 'all'] as const).map(p => (
-                  <button
-                    key={p}
-                    onClick={() => loadLeaderboard(p)}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${
-                      lbPeriod === p ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-gray-500'
-                    }`}
-                  >
-                    {p === 'month' ? 'Ce mois' : 'Tout temps'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {lbLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="bg-white rounded-2xl h-20 animate-pulse border border-gray-100" />
-                ))}
-              </div>
-            ) : leaderboard.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-                <p className="text-4xl mb-3">📊</p>
-                <p className="font-black text-gray-500">Pas encore de données pour cette période.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {/* Podium top 3 */}
-                {leaderboard.slice(0, 3).length > 0 && (
-                  <div className="grid grid-cols-3 gap-3 mb-6">
-                    {(['🥇', '🥈', '🥉'] as string[]).map((medal, idx) => {
-                      const entry = leaderboard[idx]
-                      if (!entry) return <div key={idx} />
-                      const isMe = entry.store_id === store.id
-                      return (
-                        <div
-                          key={entry.store_id}
-                          className={`bg-white rounded-2xl border p-4 text-center space-y-2 shadow-sm ${
-                            isMe ? 'border-[#0F7A60] ring-2 ring-[#0F7A60]/20' : 'border-gray-100'
-                          } ${idx === 0 ? 'order-2' : idx === 1 ? 'order-1' : 'order-3'}`}
-                        >
-                          <div className="text-3xl">{medal}</div>
-                          <StoreAvatar name={entry.store_name} logo={entry.store_logo} size="lg" />
-                          <div>
-                            <p className="font-black text-xs text-[#1A1A1A] truncate">{entry.store_name}</p>
-                            <p className="text-[10px] text-gray-400">{entry.level_emoji} {entry.level}</p>
-                          </div>
-                          <p className="text-[10px] font-black text-[#0F7A60]">
-                            {Math.round(entry.total_revenue).toLocaleString('fr-FR')} F
-                          </p>
-                          {isMe && <span className="text-[10px] font-black text-[#0F7A60]">← Vous</span>}
+      {/* ── CONTENU PRINCIPAL (2 COLONNES) ── */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start relative">
+           
+           {/* ── COLONNE GAUCHE (CONTENU CENTRAL) ── */}
+           <div className="flex-1 min-w-0 w-full space-y-8">
+            
+            {/* ── ONGLET 1 — FEED ── */}
+            {activeTab === 'feed' && (
+              <div className="space-y-8 animate-in fade-in duration-500">
+                {/* Formulaire création post */}
+                <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 relative overflow-hidden group focus-within:ring-4 focus-within:ring-[#0DE0A1]/20 transition-all">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#0DE0A1]/10 to-transparent rounded-full blur-2xl pointer-events-none" />
+                  
+                  <div className="flex items-start gap-4">
+                    <StoreAvatar name={store.name} logo={store.logo_url} size="lg" />
+                    <div className="flex-1 space-y-4">
+                      <textarea
+                        value={postContent}
+                        onChange={e => setPostContent(e.target.value)}
+                        placeholder={`Une réussite à partager aujourd'hui, ${store.name} ?`}
+                        maxLength={1000}
+                        rows={3}
+                        className="w-full bg-slate-50 border-0 rounded-2xl px-5 py-4 text-[15px] outline-none
+                          focus:bg-white focus:shadow-inner transition-all resize-none placeholder:text-slate-400 font-medium text-[#1A1A1A]"
+                      />
+                      <div className="flex items-center justify-between flex-wrap gap-4 bg-slate-50/50 p-2 pl-4 rounded-xl border border-slate-100">
+                        <div className="flex items-center gap-3">
+                          <select
+                            aria-label="Catégorie de post"
+                            title="Catégorie de post"
+                            value={postCategory}
+                            onChange={e => setPostCategory(e.target.value)}
+                            className="text-sm border border-slate-200 rounded-xl px-4 py-2 outline-none
+                              focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-black text-slate-700 cursor-pointer bg-white transition-all hover:bg-slate-50 shadow-sm"
+                          >
+                            <option value="general">📣 Général</option>
+                            <option value="question">❓ Question</option>
+                            <option value="success">🏆 Succès</option>
+                            <option value="tip">💡 Astuce</option>
+                            <option value="mode">👗 Mode</option>
+                            <option value="digital">📱 Digital</option>
+                            <option value="food">🍎 Food</option>
+                          </select>
+                          <span className="text-xs text-slate-400 font-bold bg-slate-100 px-2 py-1 rounded-lg border border-slate-200">
+                            {postContent.length}/1000
+                          </span>
                         </div>
-                      )
-                    })}
+                        <button
+                          onClick={publishPost}
+                          disabled={!postContent.trim() || publishing}
+                          className="px-6 py-2.5 bg-[#1A1A1A] text-white text-sm font-black rounded-xl
+                            disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0DE0A1] hover:text-[#0F7A60]
+                            transition-all shadow-md flex items-center gap-2 group/btn"
+                        >
+                          {publishing ? <RefreshCw size={16} className="animate-spin" /> : <Send size={16} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />}
+                          {publishing ? 'Publication…' : 'Publier'}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                )}
+                </div>
 
-                {/* Positions 4-10 */}
-                {leaderboard.slice(3).map(entry => {
-                  const isMe = entry.store_id === store.id
-                  return (
-                    <div
-                      key={entry.store_id}
-                      className={`bg-white rounded-2xl border p-4 flex items-center gap-4 shadow-sm transition-all ${
-                        isMe ? 'border-[#0F7A60] ring-2 ring-[#0F7A60]/20' : 'border-gray-100 hover:shadow-md'
+                {/* Filtres catégories */}
+                <div className="flex gap-3 overflow-x-auto pb-4 custom-scrollbar">
+                  {FILTERS.map(f => (
+                    <button
+                      key={f.id}
+                      onClick={() => loadFeed(f.id)}
+                      className={`flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-black
+                        border-2 transition-all duration-300 shadow-sm ${
+                        activeFilter === f.id
+                          ? 'bg-[#1A1A1A] text-white border-[#1A1A1A] ring-4 ring-[#1A1A1A]/10 scale-105'
+                          : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700'
                       }`}
                     >
-                      <span className="text-xl font-black text-gray-400 w-8 text-center flex-shrink-0">
-                        #{entry.rank}
-                      </span>
-                      <StoreAvatar name={entry.store_name} logo={entry.store_logo} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-black text-sm text-[#1A1A1A] truncate">{entry.store_name}</p>
-                          {isMe && <span className="text-[10px] font-black text-white bg-[#0F7A60] px-2 py-0.5 rounded-full">Vous</span>}
-                        </div>
-                        <p className="text-[10px] text-gray-400">{entry.level_emoji} {entry.level} · {entry.order_count} commandes</p>
+                      <span className="text-lg">{f.emoji}</span>
+                      <span>{f.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Posts */}
+                {feedLoading ? (
+                  <div className="space-y-6">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="bg-white rounded-3xl border border-slate-200 h-48 animate-pulse shadow-sm" />
+                    ))}
+                  </div>
+                ) : posts.length === 0 ? (
+                  <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-16 text-center space-y-4 shadow-sm">
+                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                      <span className="text-4xl">📭</span>
+                    </div>
+                    <div>
+                      <p className="font-black text-2xl text-[#1A1A1A]">Aucune publication</p>
+                      <p className="text-sm text-slate-500 font-medium mt-1">
+                        Soyez le premier à briser la glace dans ce canal !
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    
+                    {/* 📌 POST ÉPINGLÉ OFFICIEL (Visible uniquement sur Mobile/Tablette) */}
+                    <div className="xl:hidden bg-gradient-to-r from-emerald-500 to-[#0F7A60] rounded-3xl p-6 text-white shadow-xl shadow-emerald-500/20 relative overflow-hidden mb-2">
+                      <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                        <span className="text-8xl">📣</span>
                       </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="font-black text-sm text-[#0F7A60]">
-                          {Math.round(entry.total_revenue).toLocaleString('fr-FR')}
-                        </p>
-                        <p className="text-[10px] text-gray-400">FCFA</p>
+                      <div className="flex items-start gap-4 relative z-10">
+                        <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-md shadow-inner border border-white/10">
+                           <span className="text-xl">⚡</span>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/10">Annonce Officielle</span>
+                          </div>
+                          <p className="font-medium text-[13px] leading-relaxed mb-4 text-emerald-50">
+                            Bienvenue dans le nouveau <b>Hub Communautaire PDV Pro !</b> Restez engagé, vendez plus, et connectez vos groupes Telegram pour notifier automatiquement vos membres. 🚀
+                          </p>
+                          <button className="text-xs font-black bg-white text-[#0F7A60] px-4 py-2 rounded-xl shadow-sm hover:scale-105 hover:shadow-md transition-all">
+                            Voir les Nouveautés
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {posts.map(post => (
+                      <PostCard
+                        key={post.id}
+                        post={post}
+                        currentStoreId={store.id}
+                        onLike={handleLike}
+                        onDelete={(id) => setPosts(prev => prev.filter(p => p.id !== id))}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── ONGLET 2 — CLASSEMENT ── */}
+            {activeTab === 'classement' && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div>
+                    <h2 className="text-xl font-black text-[#1A1A1A]">🏆 Top Vendeurs</h2>
+                    <p className="text-xs text-gray-400">
+                      {lbPeriod === 'month' ? 'Ce mois-ci' : 'Depuis le début'}
+                    </p>
+                  </div>
+                  <div className="flex bg-gray-100 rounded-xl p-1 gap-1">
+                    {(['month', 'all'] as const).map(p => (
+                      <button
+                        key={p}
+                        onClick={() => loadLeaderboard(p)}
+                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${
+                          lbPeriod === p ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-gray-500'
+                        }`}
+                      >
+                        {p === 'month' ? 'Ce mois' : 'Tout temps'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* BARRE DE PROGRESSION - GAMIFICATION DU RANG (Affiche si on a les datas) */}
+                {(!lbLoading && leaderboard.length > 0) && (() => {
+                  const myEntry = leaderboard.find(e => e.store_id === store.id);
+                  const rev = myEntry ? myEntry.total_revenue : 0;
+                  const { current, next, emoji, threshold, gap } = getNextTierGamification(rev);
+                  
+                  if (!next) {
+                    return (
+                      <div className="bg-gradient-to-r from-yellow-400 to-amber-500 rounded-2xl p-6 text-white shadow-xl shadow-yellow-500/20 relative overflow-hidden">
+                        <div className="absolute -right-4 -top-4 text-8xl opacity-20 pointer-events-none">👑</div>
+                        <div className="relative z-10">
+                          <h3 className="text-xl font-black mb-1">Vous êtes au sommet !</h3>
+                          <p className="text-sm font-medium opacity-90">Statut Élite débloqué. Vous dominez le classement PDV Pro.</p>
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  const progressPercent = Math.min(100, Math.max(0, (rev / (threshold as number)) * 100));
+
+                  return (
+                    <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden group">
+                      <div className="absolute right-0 top-0 w-32 h-32 bg-[#0DE0A1]/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xl">{emoji}</span>
+                            <h3 className="text-lg font-black text-[#1A1A1A]">Niveau {current}</h3>
+                          </div>
+                          <p className="text-sm font-medium text-slate-500">
+                            Plus que <span className="text-[#0F7A60] font-black">{Math.round(gap).toLocaleString('fr-FR')} FCFA</span> de ventes pour devenir <span className="font-black text-[#1A1A1A]">{next}</span> !
+                          </p>
+                        </div>
+                        <div className="w-full md:w-1/3 flex-shrink-0">
+                          <div className="flex justify-between text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">
+                            <span>Progression</span>
+                            <span>{next}</span>
+                          </div>
+                          <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner relative">
+                            <div 
+                              className="h-full bg-gradient-to-r from-[#0DE0A1] to-[#0F7A60] rounded-full relative transition-all duration-1000 ease-out"
+                              style={{ width: `${progressPercent}%` }}
+                            >
+                              <div className="absolute top-0 bottom-0 left-0 right-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )
-                })}
-              </div>
-            )}
-          </div>
-        )}
+                })()}
 
-        {/* ══════════════════════════════════════════════════════════════════
-            ONGLET 3 — GROUPES
-            ══════════════════════════════════════════════════════════════ */}
-        {activeTab === 'groupes' && (
-          <TelegramGroupsTab storeId={store.id} />
-        )}
-
-        {/* ══════════════════════════════════════════════════════════════════
-            ONGLET 4 — RESSOURCES
-            ══════════════════════════════════════════════════════════════ */}
-        {activeTab === 'ressources' && (
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-xl font-black text-[#1A1A1A]">🎓 Ressources & Guides</h2>
-              <p className="text-sm text-gray-400 mt-1">
-                Conseils pratiques pour développer votre activité en Afrique.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              {RESOURCES.map((r, i) => (
-                <a
-                  key={i}
-                  href="/dashboard/tips"
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5
-                    flex items-start gap-4 hover:shadow-md hover:border-[#0F7A60]/30
-                    transition-all duration-200 group"
-                >
-                  <span className="text-3xl flex-shrink-0">{r.emoji}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-black text-[#1A1A1A] group-hover:text-[#0F7A60] transition-colors text-sm">
-                      {r.title}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1 leading-relaxed">{r.desc}</p>
+                {lbLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="bg-white rounded-2xl h-20 animate-pulse border border-gray-100" />
+                    ))}
                   </div>
-                  <span className="text-[#0F7A60] font-black text-sm flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    Lire →
-                  </span>
-                </a>
-              ))}
-            </div>
-
-            <div className="bg-[#0F7A60]/5 border border-[#0F7A60]/20 rounded-2xl p-4 flex items-center gap-3">
-              <span className="text-2xl">💡</span>
-              <p className="text-sm text-[#0F7A60] font-medium">
-                De nouveaux guides sont ajoutés chaque semaine. Rejoignez la communauté pour ne rien manquer.
-              </p>
-            </div>
-          </div>
-        )}
-
-      </div>
-    </div>
-  )
-}
-
-// ─── Types Telegram Communities ───────────────────────────────────────────────
-
-interface TelegramCommunity {
-  id: string
-  chat_id: string
-  chat_title: string
-  chat_type: 'group' | 'supergroup' | 'channel'
-  product_id: string | null
-  is_active: boolean
-  members_count: number
-  created_at: string
-}
-
-type ConnectStep = 'idle' | 'generating' | 'waiting' | 'success' | 'error'
-
-// ─── Hook Countdown ───────────────────────────────────────────────────────────
-
-function useCountdown(expiresAt: string | null) {
-  const [remaining, setRemaining] = useState(0)
-  useEffect(() => {
-    if (!expiresAt) { setRemaining(0); return }
-    const tick = () => {
-      const diff = new Date(expiresAt).getTime() - Date.now()
-      setRemaining(Math.max(0, diff))
-    }
-    tick()
-    const interval = setInterval(tick, 1000)
-    return () => clearInterval(interval)
-  }, [expiresAt])
-  const mins = Math.floor(remaining / 60000)
-  const secs = Math.floor((remaining % 60000) / 1000)
-  return { remaining, display: `${mins}:${secs.toString().padStart(2, '0')}` }
-}
-
-// ─── Composant TelegramGroupsTab ──────────────────────────────────────────────
-
-function TelegramGroupsTab({ storeId }: { storeId: string }) {
-  const [communities, setCommunities] = useState<TelegramCommunity[]>([])
-  const [step, setStep]   = useState<ConnectStep>('idle')
-  const [code, setCode]   = useState<string | null>(null)
-  const [expiresAt, setExpiresAt] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [copied, setCopied] = useState(false)
-  const [deleting, setDeleting] = useState<string | null>(null)
-  const pollingRef = useRef<NodeJS.Timeout | null>(null)
-
-  const [products, setProducts] = useState<StoreProduct[]>([])
-  const [productLinks, setProductLinks] = useState<Record<string, string>>({})
-
-  // Charger les produits au montage
-  useEffect(() => {
-    if (!storeId) return
-    const supabase = createClient()
-    supabase
-      .from('Product')
-      .select('id, name, type')
-      .eq('store_id', storeId)
-      .eq('active', true)
-      .order('name')
-      .then(({ data }) => setProducts(data || []))
-  }, [storeId])
-
-  // Initialiser les liens au chargement des communautés
-  useEffect(() => {
-    const links: Record<string, string> = {}
-    communities.forEach(c => {
-      if (c.product_id) links[c.id] = c.product_id
-    })
-    setProductLinks(links)
-  }, [communities])
-
-  // Lier le produit via l'API
-  async function linkProduct(communityId: string, productId: string | null) {
-    const res = await fetch('/api/telegram/community', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ community_id: communityId, product_id: productId || null })
-    })
-    if (res.ok) {
-      setProductLinks(prev => ({
-        ...prev,
-        [communityId]: productId || ''
-      }))
-    }
-  }
-
-  const { remaining, display: countdown } = useCountdown(expiresAt)
-
-  // Charger les communautés au montage
-  const fetchCommunities = useCallback(async () => {
-    try {
-      const res = await fetch(`/api/telegram/community?store_id=${storeId}`)
-      const data = await res.json()
-      setCommunities(data.communities || [])
-    } catch {
-      console.error('Erreur chargement communautés')
-    } finally {
-      setLoading(false)
-    }
-  }, [storeId])
-
-  useEffect(() => { fetchCommunities() }, [fetchCommunities])
-
-  // Cleanup polling on unmount
-  useEffect(() => {
-    return () => { if (pollingRef.current) clearInterval(pollingRef.current) }
-  }, [])
-
-  // Générer un code
-  const handleGenerateCode = async () => {
-    setStep('generating')
-    setError(null)
-    try {
-      const res = await fetch('/api/telegram/community/generate-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ store_id: storeId }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
-      setCode(data.code)
-      setExpiresAt(data.expires_at)
-      setStep('waiting')
-      startPolling(data.code)
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erreur')
-      setStep('error')
-    }
-  }
-
-  // Auto-polling toutes les 5s pendant 2 minutes
-  const startPolling = (pollCode: string) => {
-    if (pollingRef.current) clearInterval(pollingRef.current)
-    let elapsed = 0
-    pollingRef.current = setInterval(async () => {
-      elapsed += 5000
-      if (elapsed > 120_000) {
-        if (pollingRef.current) clearInterval(pollingRef.current)
-        return
-      }
-      try {
-        const res = await fetch(
-          `/api/telegram/community/verify?store_id=${storeId}&code=${pollCode}`
-        )
-        const data = await res.json()
-        if (data.linked) {
-          if (pollingRef.current) clearInterval(pollingRef.current)
-          setStep('success')
-          await fetchCommunities()
-        }
-      } catch { /* silence */ }
-    }, 5000)
-  }
-
-  // Vérification manuelle
-  const verifyConnection = async () => {
-    if (!code) return
-    try {
-      const res = await fetch(
-        `/api/telegram/community/verify?store_id=${storeId}&code=${code}`
-      )
-      const data = await res.json()
-      if (data.linked) {
-        if (pollingRef.current) clearInterval(pollingRef.current)
-        setStep('success')
-        await fetchCommunities()
-      } else if (data.expired) {
-        setError('Code expiré. Générez un nouveau code.')
-        setStep('error')
-      }
-    } catch {
-      setError('Erreur de vérification')
-    }
-  }
-
-  // Supprimer une communauté
-  const deleteCommunity = async (communityId: string) => {
-    if (!confirm('Supprimer cette communauté ? Le groupe Telegram ne sera pas supprimé.')) return
-    setDeleting(communityId)
-    try {
-      await fetch('/api/telegram/community', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ community_id: communityId }),
-      })
-      await fetchCommunities()
-    } finally {
-      setDeleting(null)
-    }
-  }
-
-  // Copier le code
-  const copyCode = () => {
-    if (!code) return
-    navigator.clipboard.writeText(`/connect ${code}`)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  // Reset
-  const resetFlow = () => {
-    if (pollingRef.current) clearInterval(pollingRef.current)
-    setStep('idle')
-    setCode(null)
-    setExpiresAt(null)
-    setError(null)
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <div className="w-8 h-8 border-3 border-[#0F7A60] border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-black text-[#1A1A1A]">
-            📡 {communities.length > 0 ? `Mes communautés (${communities.length})` : 'Communautés Telegram'}
-          </h2>
-          <p className="text-sm text-gray-400 mt-1">
-            Liez vos groupes et canaux Telegram à votre boutique.
-          </p>
-        </div>
-        {step === 'idle' && (
-          <button
-            onClick={handleGenerateCode}
-            className="bg-[#0F7A60] hover:bg-[#0D6B53] text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center gap-2"
-          >
-            <span>+</span> Nouvelle communauté
-          </button>
-        )}
-      </div>
-
-      {/* ── Flow de connexion ── */}
-      {(step === 'generating' || step === 'waiting' || step === 'success' || step === 'error') && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
-          <h3 className="font-black text-[#1A1A1A]">Connecter votre groupe Telegram</h3>
-
-          {step === 'generating' && (
-            <div className="flex items-center justify-center py-8">
-              <div className="w-6 h-6 border-2 border-[#0F7A60] border-t-transparent rounded-full animate-spin" />
-              <span className="ml-3 text-sm text-gray-500">Génération du code…</span>
-            </div>
-          )}
-
-          {step === 'waiting' && code && (
-            <div className="space-y-6">
-              {/* Étape 1 */}
-              <div className="flex gap-4">
-                <div className="w-8 h-8 bg-[#0F7A60]/10 text-[#0F7A60] rounded-full flex items-center justify-center flex-shrink-0 font-black text-sm">1</div>
-                <div>
-                  <p className="font-bold text-sm text-[#1A1A1A]">Ajoutez @PDVProBot comme administrateur</p>
-                  <p className="text-xs text-gray-400 mt-1">Permission : Inviter des utilisateurs • Bannir des utilisateurs</p>
-                </div>
-              </div>
-
-              {/* Étape 2 */}
-              <div className="flex gap-4">
-                <div className="w-8 h-8 bg-[#0F7A60]/10 text-[#0F7A60] rounded-full flex items-center justify-center flex-shrink-0 font-black text-sm">2</div>
-                <div className="flex-1 space-y-2">
-                  <p className="font-bold text-sm text-[#1A1A1A]">Dans votre groupe, tapez :</p>
-                  <div className="flex items-center gap-2">
-                    <code className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-mono text-sm text-[#1A1A1A] font-bold">
-                      /connect {code}
-                    </code>
-                    <button
-                      onClick={copyCode}
-                      className={`px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                        copied
-                          ? 'bg-[#0F7A60] text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {copied ? '✓ Copié' : '📋 Copier'}
-                    </button>
+                ) : leaderboard.length === 0 ? (
+                  <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+                    <p className="text-4xl mb-3">📊</p>
+                    <p className="font-black text-gray-500">Pas encore de données pour cette période.</p>
                   </div>
-                  <p className={`text-xs font-bold flex items-center gap-1 ${
-                    remaining < 120_000 ? 'text-red-500' : 'text-gray-400'
-                  }`}>
-                    ⏱️ Code expire dans {countdown}
-                  </p>
-                </div>
-              </div>
+                ) : (
+                  <div className="space-y-3">
+                    {/* Podium top 3 en mode 3D/Premium */}
+                    {leaderboard.slice(0, 3).length > 0 && (
+                      <div className="flex items-end justify-center gap-2 md:gap-6 mb-12 mt-8 px-2">
+                        {(['🥈', '🥇', '🥉']).map((medal, visualIdx) => {
+                          const dataIdx = visualIdx === 1 ? 0 : visualIdx === 0 ? 1 : 2;
+                          const entry = leaderboard[dataIdx]
+                          
+                          if (!entry) return <div key={visualIdx} className="w-1/3 max-w-[140px]" />
+                          
+                          const isMe = entry.store_id === store.id
+                          const isFirst = dataIdx === 0
+                          const isSecond = dataIdx === 1
+                          
+                          const heightClass = isFirst ? 'h-48 md:h-56' : isSecond ? 'h-36 md:h-44' : 'h-32 md:h-40'
+                          
+                          const themeClass = isFirst 
+                            ? 'bg-gradient-to-t from-yellow-300 via-amber-100 to-white border-yellow-200 shadow-yellow-500/20' 
+                            : isSecond 
+                            ? 'bg-gradient-to-t from-slate-200 via-slate-50 to-white border-slate-200 shadow-slate-400/20'
+                            : 'bg-gradient-to-t from-orange-200 via-orange-50 to-white border-orange-200 shadow-orange-500/20'
 
-              {/* Étape 3 */}
-              <div className="flex gap-4">
-                <div className="w-8 h-8 bg-[#0F7A60]/10 text-[#0F7A60] rounded-full flex items-center justify-center flex-shrink-0 font-black text-sm">3</div>
-                <div className="flex-1">
-                  <button
-                    onClick={verifyConnection}
-                    className="bg-[#0F7A60] hover:bg-[#0D6B53] text-white px-6 py-3 rounded-xl text-sm font-bold transition-colors"
-                  >
-                    ✓ Vérifier la connexion
-                  </button>
-                  <p className="text-[10px] text-gray-400 mt-2">Vérification automatique toutes les 5 secondes.</p>
-                </div>
-              </div>
+                          return (
+                            <div key={entry.store_id} className="relative w-1/3 max-w-[150px] flex flex-col items-center group/podium">
+                              {/* Crown for 1st */}
+                              {isFirst && (
+                                <div className="absolute -top-10 animate-bounce">
+                                  <span className="text-4xl drop-shadow-md">👑</span>
+                                </div>
+                              )}
+                              
+                              {/* Avatar flottant */}
+                              <div className={`absolute -top-6 transform transition-transform duration-500 group-hover/podium:-translate-y-2 z-10 ${isFirst ? 'scale-125 -top-8' : ''}`}>
+                                <div className={`p-1 rounded-full bg-white shadow-lg ${isFirst ? 'ring-4 ring-yellow-400' : isSecond ? 'ring-2 ring-slate-300' : 'ring-2 ring-orange-300'}`}>
+                                   <StoreAvatar name={entry.store_name} logo={entry.store_logo} size={isFirst ? "lg" : "md"} />
+                                </div>
+                              </div>
 
-              <button
-                onClick={resetFlow}
-                className="text-sm text-gray-400 hover:text-gray-600 font-bold transition-colors"
-              >
-                ← Annuler
-              </button>
-            </div>
-          )}
+                              {/* Socle du podium */}
+                              <div className={`w-full rounded-t-2xl border shadow-xl flex flex-col items-center justify-end pb-4 px-2 relative overflow-hidden transition-all duration-300 ${heightClass} ${themeClass} ${isMe ? 'ring-4 ring-[#0DE0A1]/50' : ''}`}>
+                                 <div className="absolute inset-x-0 -top-12 h-24 bg-white/40 blur-xl transform -skew-y-12"></div>
+                                 
+                                 <div className="relative z-10 w-full text-center space-y-1">
+                                   <p className="font-black text-xs md:text-sm text-[#1A1A1A] truncate w-full px-1">{entry.store_name}</p>
+                                   <div className="flex justify-center">
+                                     <span className="text-[10px] md:text-xs font-bold text-slate-600 bg-white/50 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                       {entry.level_emoji} {entry.level}
+                                     </span>
+                                   </div>
+                                   <p className="text-xs md:text-sm font-black mt-2 text-[#1A1A1A]">
+                                     {Math.round(entry.total_revenue).toLocaleString('fr-FR')} <span className="text-[10px]">F</span>
+                                   </p>
+                                   {isMe && <span className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-[10px] font-black text-white bg-[#0F7A60] px-2 py-0.5 rounded-full shadow-sm">Vous</span>}
+                                 </div>
+                                 
+                                 <div className="absolute bottom-0 w-full h-1 bg-black/5"></div>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
 
-          {step === 'success' && (
-            <div className="text-center py-8 space-y-4">
-              <div className="w-16 h-16 bg-[#0F7A60]/10 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-3xl">✅</span>
-              </div>
-              <div>
-                <p className="font-black text-[#1A1A1A]">Groupe connecté avec succès !</p>
-                <p className="text-sm text-gray-400 mt-1">Votre groupe Telegram est désormais lié à votre boutique.</p>
-              </div>
-              <button
-                onClick={resetFlow}
-                className="bg-[#0F7A60] hover:bg-[#0D6B53] text-white px-6 py-3 rounded-xl text-sm font-bold transition-colors"
-              >
-                Fermer
-              </button>
-            </div>
-          )}
-
-          {step === 'error' && (
-            <div className="text-center py-8 space-y-4">
-              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-3xl">❌</span>
-              </div>
-              <div>
-                <p className="font-black text-red-600">{error || 'Une erreur est survenue'}</p>
-              </div>
-              <div className="flex items-center justify-center gap-3">
-                <button onClick={resetFlow} className="text-sm text-gray-400 hover:text-gray-600 font-bold">
-                  Annuler
-                </button>
-                <button
-                  onClick={handleGenerateCode}
-                  className="bg-[#0F7A60] hover:bg-[#0D6B53] text-white px-6 py-3 rounded-xl text-sm font-bold transition-colors"
-                >
-                  Nouveau code
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Liste des communautés liées ── */}
-      {communities.length > 0 ? (
-        <div className="space-y-3">
-          {communities.map(c => (
-            <div
-              key={c.id}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <span className="text-2xl">{c.chat_type === 'channel' ? '📢' : '💬'}</span>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-black text-[#1A1A1A] truncate">{c.chat_title}</p>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full uppercase">
-                        {c.chat_type}
-                      </span>
-                      <span className="text-xs text-gray-400">{c.members_count} membres</span>
-                      {c.is_active && (
-                        <span className="flex items-center gap-1 text-xs text-[#0F7A60] font-bold">
-                          <span className="w-1.5 h-1.5 bg-[#0F7A60] rounded-full animate-pulse" />
-                          Actif
-                        </span>
-                      )}
+                    {/* Positions 4-10 */}
+                    <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                      {leaderboard.slice(3).map((entry, idx) => {
+                        const isMe = entry.store_id === store.id
+                        return (
+                          <div
+                            key={entry.store_id}
+                            className={`p-4 md:p-5 flex items-center gap-4 transition-colors ${
+                              idx !== leaderboard.slice(3).length - 1 ? 'border-b border-slate-100' : ''
+                            } ${
+                              isMe ? 'bg-[#0DE0A1]/5 relative' : 'hover:bg-slate-50'
+                            }`}
+                          >
+                            {isMe && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#0DE0A1]" />}
+                            <span className="text-lg font-black text-slate-300 w-8 text-center flex-shrink-0">
+                              {entry.rank}
+                            </span>
+                            <StoreAvatar name={entry.store_name} logo={entry.store_logo} size="md" />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="font-black text-[15px] text-[#1A1A1A] truncate">{entry.store_name}</p>
+                                {isMe && <span className="text-[10px] font-black text-white bg-[#0F7A60] px-2 py-0.5 rounded-full shadow-sm">Vous</span>}
+                              </div>
+                              <p className="text-[12px] font-medium text-slate-500">{entry.level_emoji} {entry.level} <span className="mx-1">•</span> {entry.order_count} ventes</p>
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <p className="font-black text-[15px] text-[#0F7A60]">
+                                {Math.round(entry.total_revenue).toLocaleString('fr-FR')} F
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
+                )}
+              </div>
+            )}
+
+            {/* ── ONGLET 3 — GROUPES ── */}
+            {activeTab === 'groupes' && (
+              <div className="animate-in fade-in duration-500 bg-gradient-to-br from-slate-900 to-[#1A1A1A] rounded-3xl p-8 md:p-[5%] overflow-hidden shadow-2xl relative flex flex-col md:flex-row items-center gap-10">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-[#0DE0A1]/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay"></div>
+                
+                <div className="relative z-10 md:w-1/2 space-y-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md">
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest pl-1">Monétisation VIP</span>
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
+                    Gérez vos <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0DE0A1] to-emerald-400">Communautés Telegram</span>
+                  </h2>
+                  <p className="text-slate-300 font-medium text-[15px] leading-relaxed">
+                    Connectez vos groupes et canaux Telegram à PDV Pro. Automatisez les ajouts, gérez les expulsions expirées et vendez l'accès VIP à vos audiences en pilote automatique.
+                  </p>
+                  
+                  <Link
+                    href="/dashboard/telegram"
+                    className="inline-flex items-center justify-center gap-3 bg-[#0DE0A1] hover:bg-emerald-400 text-[#0F7A60] px-8 py-3.5 rounded-2xl text-[15px] font-black transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 w-full sm:w-auto"
+                  >
+                    Accéder au Dashboard Telegram
+                    <ArrowRight size={18} />
+                  </Link>
                 </div>
+
+                <div className="relative z-10 md:w-1/2 w-full flex justify-center">
+                   <div className="w-full max-w-[280px] aspect-square rounded-full border border-white/10 bg-white/5 backdrop-blur-3xl flex items-center justify-center shadow-xl relative">
+                      <div className="absolute inset-4 rounded-full border border-white/5 bg-white/5 backdrop-blur-md"></div>
+                      <div className="w-24 h-24 bg-gradient-to-tr from-blue-500 to-emerald-400 rounded-full flex items-center justify-center shadow-2xl z-10 animate-pulse">
+                        <span className="text-4xl">✈️</span>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── ONGLET 4 — RESSOURCES ── */}
+            {activeTab === 'ressources' && (
+              <div className="space-y-4 animate-in fade-in duration-500">
+                <div>
+                  <h2 className="text-xl font-black text-[#1A1A1A]">🎓 Ressources & Guides</h2>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Conseils pratiques pour développer votre activité en Afrique.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {RESOURCES.map((r, i) => (
+                    <a
+                      key={i}
+                      href="/dashboard/tips"
+                      className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 overflow-hidden
+                        flex flex-col gap-4 hover:shadow-lg hover:border-blue-300 hover:-translate-y-1
+                        transition-all duration-300 group/res relative"
+                    >
+                      {/* Effet fond brillant */}
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl group-hover/res:bg-blue-500/10 transition-colors pointer-events-none" />
+                      
+                      <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-3xl shadow-sm group-hover/res:scale-110 transition-transform duration-300">
+                        {r.emoji}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0 relative z-10">
+                        <p className="font-black text-lg text-[#1A1A1A] group-hover/res:text-blue-600 transition-colors leading-tight mb-2">
+                          {r.title}
+                        </p>
+                        <p className="text-sm font-medium text-slate-500 leading-relaxed">{r.desc}</p>
+                      </div>
+                      
+                      <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
+                         <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Guide PDV Pro</span>
+                         <span className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover/res:bg-blue-600 group-hover/res:text-white transition-colors">
+                           <ChevronRight size={16} strokeWidth={3} />
+                         </span>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+
+                <div className="bg-gradient-to-r from-[#1A1A1A] to-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-6 mt-8 shadow-xl">
+                  <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-3xl border border-white/20 shrink-0 shadow-inner">
+                    💡
+                  </div>
+                  <div className="flex-1 text-center sm:text-left">
+                    <p className="text-lg font-black text-white">L'académie PDV Pro s'agrandit</p>
+                    <p className="text-sm text-slate-300 font-medium mt-1">
+                      De nouveaux guides experts sont ajoutés chaque semaine. Restez à l'affût pour propulser vos ventes !
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          {/* ════════════════════════════════════════════════════════════
+              COLONNE DROITE: WIDGETS LATERAUX (Desktop)
+              ════════════════════════════════════════════════════════════ */}
+          {(activeTab === 'feed' || activeTab === 'ressources' || activeTab === 'classement') && (
+            <div className="hidden lg:flex flex-col gap-6 sticky top-8 h-max w-[320px] xl:w-[350px] flex-shrink-0">
+              
+              {/* Widget 1: Annonce Officielle */}
+              <div className="bg-gradient-to-r from-emerald-500 to-[#0F7A60] rounded-3xl p-6 text-white shadow-xl shadow-emerald-500/20 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-500">
+                  <span className="text-8xl">📣</span>
+                </div>
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-md shadow-inner border border-white/10">
+                     <span className="text-xl">⚡</span>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/10">Annonce Officielle</span>
+                    </div>
+                    <p className="font-medium text-[13px] leading-relaxed mb-4 text-emerald-50">
+                      Bienvenue dans le nouveau <b>Hub Communautaire PDV Pro !</b> Restez engagé, vendez plus, et connectez vos groupes Telegram pour notifier automatiquement vos membres. 🚀
+                    </p>
+                    <button className="text-xs font-black bg-white text-[#0F7A60] px-4 py-2 rounded-xl shadow-sm hover:scale-105 hover:shadow-md transition-all w-full md:w-auto">
+                      Voir les Nouveautés
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Widget 2: Bouton Parrainage */}
+              <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl border border-blue-100 flex flex-col items-center text-center shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-blue-100/50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                <span className="text-4xl mb-3 relative z-10">🎁</span>
+                <h3 className="text-[15px] font-black text-slate-800 mb-2 relative z-10 uppercase tracking-wide">Devenez Ambassadeur</h3>
+                <p className="text-[13px] font-medium text-slate-600 mb-5 relative z-10">Parrainez un vendeur et soyez payé sur <span className="font-bold underline decoration-blue-500/30 underline-offset-2">chacune</span> de ses ventes.</p>
+                <Link href="/dashboard/affilies" className="text-[13px] font-black text-white bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl transition-all duration-300 w-full relative z-10 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5">🚀 Découvrir le programme</Link>
+              </div>
+
+              {/* Widget 3: Raccourci vers les Groupes */}
+              <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm overflow-hidden relative group">
+                <div className="absolute right-0 bottom-0 w-32 h-32 bg-[#0DE0A1]/10 rounded-full blur-2xl translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:scale-150 transition-transform duration-700"></div>
+                <h3 className="font-black text-[#1A1A1A] mb-2 flex items-center gap-2 relative z-10">
+                  <div className="p-2 bg-slate-50 rounded-xl">
+                     <MessageSquare size={16} className="text-[#0F7A60]"/>
+                  </div>
+                  Groupes VIP
+                </h3>
+                <p className="text-[13px] text-slate-500 font-medium mb-5 relative z-10 leading-relaxed">Monétisez vos canaux Telegram privés et automatisez les expulsions.</p>
                 <button
-                  onClick={() => deleteCommunity(c.id)}
-                  disabled={deleting === c.id}
-                  className="text-xs font-bold text-red-400 hover:text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors disabled:opacity-50 flex-shrink-0"
+                  onClick={() => setActiveTab('groupes')}
+                  className="w-full text-[13px] font-black bg-[#1A1A1A] text-white hover:bg-[#0DE0A1] hover:text-[#0F7A60] transition-colors py-2.5 rounded-xl border border-transparent hover:shadow-lg hover:shadow-[#0DE0A1]/20 relative z-10"
                 >
-                  {deleting === c.id ? '…' : '🗑 Supprimer'}
+                  Gérer vos accès VIP
                 </button>
               </div>
 
-              {/* Produit lié */}
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider block mb-1">
-                  🔗 Accès automatique après achat de :
-                </label>
-                <select
-                  value={productLinks[c.id] || c.product_id || ''}
-                  onChange={(e) => linkProduct(c.id, e.target.value || null)}
-                  className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2
-                    focus:outline-none focus:border-[#0F7A60] bg-white transition-colors"
-                >
-                  <option value="">— Aucun produit lié —</option>
-                  {products.map(p => (
-                    <option key={p.id} value={p.id}>
-                      {p.type === 'digital' ? '📦' : '🛍️'} {p.name}
-                    </option>
-                  ))}
-                </select>
-                {productLinks[c.id] && (
-                  <p className="text-[10px] text-[#0F7A60] font-bold mt-1">
-                    ✅ Les acheteurs reçoivent l&apos;accès automatiquement
-                  </p>
-                )}
-              </div>
             </div>
-          ))}
+          )}
+
         </div>
-      ) : step === 'idle' ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center space-y-4">
-          <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto">
-            <span className="text-4xl">📡</span>
-          </div>
-          <div>
-            <p className="font-black text-[#1A1A1A]">Aucune communauté liée</p>
-            <p className="text-sm text-gray-400 mt-1 max-w-sm mx-auto">
-              Connectez un groupe ou canal Telegram pour créer un espace réservé à vos acheteurs.
-            </p>
-          </div>
-          <button
-            onClick={handleGenerateCode}
-            className="bg-[#0F7A60] hover:bg-[#0D6B53] text-white px-6 py-3 rounded-xl text-sm font-bold transition-colors inline-flex items-center gap-2"
-          >
-            <span>+</span> Connecter un groupe
-          </button>
-        </div>
-      ) : null}
+      </div>
     </div>
   )
 }

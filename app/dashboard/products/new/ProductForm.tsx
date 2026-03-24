@@ -73,6 +73,10 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   const [seoTitle, setSeoTitle] = useState('')
   const [seoDescription, setSeoDescription] = useState('')
 
+  // ── Tarification Récurrente ──
+  const [paymentType, setPaymentType] = useState<'one_time' | 'recurring'>('one_time')
+  const [recurringInterval, setRecurringInterval] = useState<'weekly' | 'monthly' | 'quarterly' | 'yearly'>('monthly')
+
   // Ref fichier digital
   const digitalFileRef = useRef<HTMLInputElement>(null)
 
@@ -342,6 +346,8 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           name:        name.trim(),
           description: description.trim() || null,
           price:       parseFloat(price),
+          payment_type: paymentType,
+          recurring_interval: paymentType === 'recurring' ? recurringInterval : null,
           type,
           category:    category.trim() || null,
           images:      imageUrls,
@@ -563,6 +569,55 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
             />
           </div>
+        </div>
+
+        {/* ── Mode de facturation ── */}
+        <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 mt-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Mode de paiement</label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setPaymentType('one_time')}
+                className={`flex-1 py-2.5 rounded-xl border text-sm font-medium transition ${paymentType === 'one_time' ? 'bg-gold text-white border-gold' : 'bg-white text-gray-600 border-gray-200 hover:border-gold/50'}`}
+              >
+                Paiement unique
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentType('recurring')}
+                className={`flex-1 py-2.5 rounded-xl border text-sm font-medium transition ${paymentType === 'recurring' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-400'}`}
+              >
+                Abonnement (Récurrent)
+              </button>
+            </div>
+          </div>
+
+          {paymentType === 'recurring' && (
+            <div className="animate-in fade-in slide-in-from-top-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Rythme de facturation</label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {[
+                  { id: 'weekly', label: 'Hebdomadaire' },
+                  { id: 'monthly', label: 'Mensuel' },
+                  { id: 'quarterly', label: 'Trimestriel' },
+                  { id: 'yearly', label: 'Annuel' },
+                ].map((interval) => (
+                  <button
+                    key={interval.id}
+                    type="button"
+                    onClick={() => setRecurringInterval(interval.id as any)}
+                    className={`py-2 rounded-lg text-xs font-bold transition-all border ${recurringInterval === interval.id ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}
+                  >
+                    {interval.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11px] text-gray-500 mt-2 font-medium">
+                💡 Remarque : PDV Pro relancera automatiquement le client à chaque itération. L'accès sera révoqué si le paiement échoue.
+              </p>
+            </div>
+          )}
         </div>
 
         <div>

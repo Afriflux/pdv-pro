@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
         chat_title,
         chat_type,
         product_id,
+        welcome_message,
         is_active,
         members_count,
         created_at,
@@ -139,9 +140,10 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json()
-    const { community_id, product_id } = body as {
+    const { community_id, product_id, welcome_message } = body as {
       community_id?: string
       product_id?: string | null
+      welcome_message?: string | null
     }
 
     if (!community_id) {
@@ -172,10 +174,14 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Accès interdit' }, { status: 403 })
     }
 
-    // Mettre à jour product_id
+    // Mettre à jour product_id ou welcome_message
+    const updateData: Record<string, string | null> = {}
+    if (product_id !== undefined) updateData.product_id = product_id ?? null
+    if (welcome_message !== undefined) updateData.welcome_message = welcome_message ?? null
+
     const { error: updateError } = await admin
       .from('TelegramCommunity')
-      .update({ product_id: product_id ?? null })
+      .update(updateData)
       .eq('id', community_id)
 
     if (updateError) {

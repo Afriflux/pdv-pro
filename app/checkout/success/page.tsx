@@ -141,7 +141,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
               ? " Paiement à la réception de votre commande."
               : product?.type === 'digital' 
                 ? telegramCommunity 
-                  ? " Votre invitation au groupe privé arrive par WhatsApp."
+                  ? " Cliquez ci-dessous pour débloquer votre accès au groupe VIP Telegram."
                   : " Vous recevrez votre accès ou produit numérique très bientôt."
                 : " Vous serez contacté pour le suivi de votre livraison."}
         </p>
@@ -203,19 +203,33 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
         
         {/* Notification accès Telegram */}
         {telegramCommunity && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-left flex items-start gap-3">
-            <div className="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mt-0.5">
-              <span className="text-white text-lg">🔐</span>
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6 text-left shadow-inner">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+                <span className="text-white text-lg">✈️</span>
+              </div>
+              <div>
+                <p className="font-bold text-blue-900 text-sm leading-tight">
+                  Groupe VIP : "{telegramCommunity.chat_title}"
+                </p>
+                <p className="text-blue-700 text-xs mt-0.5 font-medium">
+                  Votre accès sécurisé est prêt.
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="font-bold text-blue-900 text-sm">
-                Accès au groupe "{telegramCommunity.chat_title}"
-              </p>
-              <p className="text-blue-700 text-xs mt-1 leading-relaxed">
-                Vous allez recevoir votre lien d'invitation par <strong>WhatsApp</strong> dans les prochaines minutes. 
-                Le lien est à usage unique et valable 1 heure.
-              </p>
-            </div>
+            
+            <a 
+              href={`https://t.me/PDVProBot?start=${orderId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 w-full bg-[#0088cc] hover:bg-[#0077b5] text-white py-3 rounded-xl font-bold text-sm text-center flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/30"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              Récupérer mon accès VIP
+            </a>
+            <p className="text-[11px] text-blue-600/70 text-center mt-3 font-medium leading-relaxed">
+              Discutez avec notre bot officiel pour récupérer<br/>votre lien d'invitation à usage unique.
+            </p>
           </div>
         )}
         

@@ -4,11 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Timer, ArrowRight } from 'lucide-react'
 
-// Objectif: 24 Mars 2026 à 00:00:00
-const TARGET_DATE = new Date('2026-03-24T00:00:00Z').getTime()
-
 export function CountdownBanner() {
-  const LAUNCH_DATE = new Date('2026-03-24T00:00:00+00:00')
+  const LAUNCH_DATE = new Date('2026-04-01T00:00:00+00:00')
   const [mounted, setMounted] = useState(false)
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -19,6 +16,9 @@ export function CountdownBanner() {
 
   useEffect(() => {
     setMounted(true)
+    // Objectif: 1er Avril 2026 à 00:00:00
+    const TARGET_DATE = new Date('2026-04-01T00:00:00Z').getTime()
+    
     const updateTimer = () => {
       const now = new Date().getTime()
       const distance = TARGET_DATE - now
@@ -52,7 +52,7 @@ export function CountdownBanner() {
           <span className="bg-white/20 p-1.5 rounded-full animate-pulse">
             <Timer size={16} />
           </span>
-          <span className="font-bold">Lancement officiel le 24 Mars 2026</span>
+          <span className="font-bold">Lancement officiel le 1er Avril 2026</span>
           <span className="hidden md:inline">— Inscrivez-vous maintenant et soyez parmi les premiers vendeurs !</span>
         </div>
 

@@ -9,6 +9,7 @@ import { notifyNewOrder } from '@/lib/notifications/createNotification'
 import { sendTransactionalEmail } from '@/lib/brevo/brevo-service'
 import { orderConfirmationEmail } from '@/lib/brevo/email-templates'
 import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
+import { sendSaleNotification } from '@/lib/telegram/community-service'
 
 function roundTo5(amount: number): number {
   return Math.ceil(amount / 5) * 5
@@ -258,6 +259,18 @@ export async function POST(req: NextRequest) {
         )
       }
 
+      // Calcul de la prochaine date de facturation si abonnement
+      let nextBillingAt = null
+      if (product.payment_type === 'recurring' && product.recurring_interval) {
+        const now = new Date()
+        switch(product.recurring_interval) {
+          case 'weekly': nextBillingAt = new Date(now.setDate(now.getDate() + 7)); break;
+          case 'monthly': nextBillingAt = new Date(now.setMonth(now.getMonth() + 1)); break;
+          case 'quarterly': nextBillingAt = new Date(now.setMonth(now.getMonth() + 3)); break;
+          case 'yearly': nextBillingAt = new Date(now.setFullYear(now.getFullYear() + 1)); break;
+        }
+      }
+
       // Création commande
       operations.push(
         prisma.order.create({
@@ -272,6 +285,8 @@ export async function POST(req: NextRequest) {
             affiliate_token: finalAffiliateToken,
             affiliate_amount: affiliateAmount,
             status: requiresClosing ? 'cod_pending_confirmation' : 'pending',
+            is_subscription: product.payment_type === 'recurring',
+            next_billing_at: nextBillingAt,
             ...(booking_date && booking_start_time && booking_end_time && {
               booking: {
                 create: {
@@ -368,6 +383,8 @@ export async function POST(req: NextRequest) {
         userId: store_id, productName: product.name, buyerName: buyer_name,
         amount: total, orderId: orderRecord.id, paymentMethod: 'cod', city,
       }).catch(e => console.error('[Notification COD ERROR]', e))
+
+      sendSaleNotification(store_id, total, buyer_name, product.name).catch(e => console.error('[Telegram Sale Notify ERROR]', e))
 
       return NextResponse.json({ order_id: orderRecord.id, cod: true })
     }

@@ -15,6 +15,7 @@ import {
 } from '@/lib/telegram/notify-hooks'
 import { triggerAffiliateCommission } from '@/lib/affiliation/commission-hook'
 import { triggerAmbassadorCommission } from '@/lib/affiliation/ambassador-hook'
+import { sendSaleNotification } from '@/lib/telegram/community-service'
 
 // ─── Types internes ───────────────────────────────────────────────────────────
 
@@ -184,6 +185,7 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
     // ── 6.bis Notification Telegram ─────────────────────────────────────────
     triggerNewOrderTelegram(order.store_id, orderId).catch(console.error)
     triggerPaymentTelegram(order.store_id, order.total, order.payment_method).catch(console.error)
+    sendSaleNotification(order.store_id, order.total, order.buyer_name, product.name).catch(console.error)
 
     // ── 6.ter NPS post-première vente ───────────────────────────────────────
     ;(async () => {

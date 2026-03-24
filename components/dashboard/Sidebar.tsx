@@ -83,7 +83,6 @@ const NAV: NavSection[] = [
       { name: 'Offres & Promotions', href: '/dashboard/promotions', icon: Target },
       { name: 'Affiliés', href: '/dashboard/affilies', icon: Users },
       { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
-      { name: 'Générateur IA', href: '/dashboard/ai-generator', icon: Wand2 },
     ]
   },
   {

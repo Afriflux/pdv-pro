@@ -1,7 +1,7 @@
 # PDV Pro — SKILLS.md
 # Guide complet de développement et décisions produit
 # Dernière mise à jour : 13/03/2026 — Version 5.0 FINALE
-# Objectif lancement : 24 mars 2026
+# Objectif lancement : 1er avril 2026
 
 ---
 
@@ -1128,7 +1128,7 @@ emplates 1-5 + IA
 22/03             Landing page + Marketplace + PWA + SEO
 23/03             Plans Pro+ + Domaine perso + Tips
                   Tests end-to-end + Beta 5 vendeurs
-24/03             🚀 LANCEMENT PUBLIC
+01/04             🚀 LANCEMENT PUBLIC
 ```
 
 ---
@@ -1183,4 +1183,4 @@ Variables d'environnement requises :
 *PDV Pro — La plateforme de vente intelligente pour l'Afrique de l'Ouest*
 *Next.js 14 + Supabase + Prisma + Tailwind + Vercel + Claude AI + Bunny.net*
 *Supabase ID : ncyloylrxmwesngjlagl*
-*🚀 Lancement : 24 mars 2026*
+*🚀 Lancement : 1er avril 2026*
