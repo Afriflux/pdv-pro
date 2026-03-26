@@ -2,15 +2,25 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Check, ChevronRight, X, Sparkles, Store, Package } from 'lucide-react'
+import { Check, ChevronRight, X, Sparkles, Store, Package, Truck, Wallet, Settings, Newspaper } from 'lucide-react'
 
 interface GettingStartedProps {
   hasProducts: boolean
   hasZones: boolean
   hasPromotions: boolean
+  hasDeliveries?: boolean
+  hasWallet?: boolean
+  hasSettings?: boolean
 }
 
-export function GettingStartedChecklist({ hasProducts, hasZones, hasPromotions }: GettingStartedProps) {
+export function GettingStartedChecklist({ 
+  hasProducts, 
+  hasZones, 
+  hasPromotions, 
+  hasDeliveries = false, 
+  hasWallet = false, 
+  hasSettings = false 
+}: GettingStartedProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [animatedProgress, setAnimatedProgress] = useState(0)
 
@@ -50,6 +60,38 @@ export function GettingStartedChecklist({ hasProducts, hasZones, hasPromotions }
       done: hasPromotions,
       href: '/dashboard/promotions',
       icon: <Sparkles size={18} />
+    },
+    {
+      id: 4,
+      label: 'Flotte & Livraisons',
+      desc: 'Ajoutez et assignez vos livreurs',
+      done: hasDeliveries,
+      href: '/dashboard/livraisons',
+      icon: <Truck size={18} />
+    },
+    {
+      id: 5,
+      label: 'Portefeuille & Retraits',
+      desc: 'Connectez vos comptes pour être payé',
+      done: hasWallet,
+      href: '/dashboard/wallet',
+      icon: <Wallet size={18} />
+    },
+    {
+      id: 6,
+      label: 'Paramètres Boutique',
+      desc: 'Pixels, Branding, Modes de paiement',
+      done: hasSettings,
+      href: '/dashboard/settings',
+      icon: <Settings size={18} />
+    },
+    {
+      id: 7,
+      label: 'Explorer les Nouveautés',
+      desc: 'Conseils, IA, et nouvelles fonctionnalités',
+      done: false,
+      href: '/dashboard/tips',
+      icon: <Newspaper size={18} />
     }
   ]
 

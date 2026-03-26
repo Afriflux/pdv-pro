@@ -72,11 +72,11 @@ export default function CreateAdminForm() {
 
   // Classe commune pour les inputs — charte PDV Pro
   const inputCls =
-    'w-full bg-[#FAFAF7] border border-gray-200 rounded-xl py-2.5 px-4 text-sm text-[#1A1A1A] ' +
-    'focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all ' +
-    'placeholder:text-gray-400'
+    'w-full bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl py-3 px-4 text-sm font-semibold text-[#1A1A1A] ' +
+    'focus:bg-white focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 outline-none transition-all duration-300 ' +
+    'placeholder:text-gray-400 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] hover:bg-white/80'
 
-  const labelCls = 'block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider'
+  const labelCls = 'block text-[11px] font-black text-gray-500 mb-2 uppercase tracking-widest'
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -158,17 +158,17 @@ export default function CreateAdminForm() {
       </div>
 
       {/* Bouton de soumission */}
-      <div className="flex justify-end pt-2">
+      <div className="flex justify-end pt-4">
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0F7A60] hover:bg-[#0D5C4A] 
+          className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-[#0F7A60] to-teal-500 hover:from-[#0D5C4A] hover:to-[#0F7A60]
             disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold 
-            rounded-xl transition-all shadow-sm"
+            rounded-2xl transition-all shadow-[0_4px_15px_rgba(15,122,96,0.3)] hover:shadow-[0_6px_20px_rgba(15,122,96,0.4)] border border-[#0F7A60]/50"
         >
           {loading
-            ? <Loader2 className="w-4 h-4 animate-spin" />
-            : <UserPlus className="w-4 h-4" />
+            ? <Loader2 className="w-4.5 h-4.5 animate-spin" />
+            : <UserPlus className="w-4.5 h-4.5" />
           }
           {loading ? 'Création en cours...' : 'Créer le compte admin'}
         </button>

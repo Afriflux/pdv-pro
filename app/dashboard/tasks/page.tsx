@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import TasksClient from './TasksClient'
 
 // ─── Page Tâches — accessible à tous les vendeurs ────────────────────────────
@@ -19,6 +20,26 @@ export default async function TasksPage() {
 
   if (!store) redirect('/dashboard')
 
+  const tasks = await prisma.task.findMany({
+    where: { store_id: store.id },
+    orderBy: { createdAt: 'desc' }
+  })
+
+  // Conversion simple pour le Client
+  const plainTasks = tasks.map(t => ({
+    id: t.id,
+    title: t.title,
+    priority: t.priority as 'low' | 'medium' | 'high',
+    status: t.status as 'todo' | 'in_progress' | 'done',
+    dueDate: t.dueDate || undefined,
+    description: t.description || undefined,
+    taskType: t.taskType as 'call' | 'email' | 'meeting' | 'issue' | 'general' | string,
+    client_name: t.client_name || undefined,
+    client_phone: t.client_phone || undefined,
+    order_id: t.order_id || undefined,
+    createdAt: t.createdAt.toISOString()
+  }))
+
   return (
     <div className="flex flex-col min-h-screen bg-[#FAFAF7]">
       <header className="bg-white border-b border-line shadow-sm px-6 py-5">
@@ -31,7 +52,7 @@ export default async function TasksPage() {
       </header>
 
       <main className="w-full p-6">
-        <TasksClient />
+        <TasksClient initialTasks={plainTasks} />
       </main>
     </div>
   )

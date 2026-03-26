@@ -99,35 +99,45 @@ export default async function IntegrationsPage() {
     <div className="space-y-8 animate-in fade-in duration-500 max-w-4xl mx-auto">
 
       {/* ── EN-TÊTE ── */}
-      <header>
-        <div className="flex items-center gap-3 mb-1">
-          <div className="p-2 rounded-xl bg-[#0F7A60]/10 text-[#0F7A60]">
-            <Puzzle className="w-6 h-6" />
+      <header className="flex items-center justify-between bg-white/70 backdrop-blur-xl border border-white/50 p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0F7A60]/5 rounded-full blur-3xl -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2"></div>
+        
+        <div className="relative z-10 w-full flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#0F7A60]/10 to-teal-500/10 border border-[#0F7A60]/10 text-[#0F7A60] shadow-inner">
+                <Puzzle className="w-6 h-6" />
+              </div>
+              <h1 className="text-xl font-bold text-[#1A1A1A]">Intégrations &amp; API</h1>
+            </div>
+            <p className="text-sm text-gray-500 ml-14 font-medium">
+              Gérez les clés API des services tiers directement depuis cette interface.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">Intégrations &amp; API</h1>
-        </div>
-        <div className="flex items-center justify-between">
-          <p className="text-gray-400 text-sm">
-            Gérez les clés API des services tiers directement depuis cette interface.
-          </p>
-          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
-            configuredCount === allItems.length
-              ? 'bg-[#0F7A60]/10 text-[#0F7A60] border-[#0F7A60]/20'
-              : 'bg-amber-50 text-amber-600 border-amber-200'
-          }`}>
-            {configuredCount}/{allItems.length} configurées
-          </span>
+          
+          <div className="md:ml-0 ml-14">
+            <span className={`inline-flex items-center px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest border shadow-sm ${
+              configuredCount === allItems.length
+                ? 'bg-gradient-to-r from-[#0F7A60]/10 to-teal-500/10 text-[#0F7A60] border-[#0F7A60]/20'
+                : 'bg-gradient-to-r from-amber-50 to-amber-100/50 text-amber-600 border-amber-200/60'
+            }`}>
+              {configuredCount}/{allItems.length} configurées
+            </span>
+          </div>
         </div>
       </header>
 
       {/* ── GROUPES D'INTÉGRATIONS ── */}
-      {INTEGRATIONS.map(group => (
-        <section key={group.group} className="space-y-3">
-          <h2 className="text-sm font-black uppercase tracking-widest text-gray-400">
+      {INTEGRATIONS.map((group, groupIndex) => (
+        <section key={group.group} className="space-y-4 animate-in fade-in" style={{ animationDelay: `${groupIndex * 100}ms`}}>
+          <h2 className="text-xs font-black uppercase tracking-widest text-gray-500 ml-2">
             {group.group}
           </h2>
 
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm divide-y divide-gray-50">
+          <div className="relative bg-white/70 backdrop-blur-2xl border border-white/50 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)] divide-y divide-white/20">
+            {/* Subtle Glow inside the card */}
+            <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-gray-500/5 rounded-full blur-3xl -z-10 pointer-events-none -translate-x-1/2 -translate-y-1/2"></div>
+            
             {group.items.map(item => (
               <IntegrationItem
                 key={item.key}
@@ -145,14 +155,15 @@ export default async function IntegrationsPage() {
       ))}
 
       {/* ── NOTE SÉCURITÉ ── */}
-      <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex items-start gap-3">
-        <span className="text-lg flex-shrink-0">⚠️</span>
-        <div>
-          <p className="text-xs font-bold text-amber-800">
+      <div className="bg-gradient-to-r from-amber-50 to-amber-100/50 border border-amber-200/60 rounded-3xl p-6 flex items-start gap-4 shadow-[0_8px_30px_rgba(0,0,0,0.02)] relative overflow-hidden">
+        <div className="absolute bottom-0 right-0 w-48 h-48 bg-amber-200/20 rounded-full blur-2xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+        <span className="text-2xl flex-shrink-0 p-2 bg-amber-100 rounded-2xl shadow-sm border border-amber-200/50">⚠️</span>
+        <div className="relative z-10 pt-1">
+          <p className="text-sm font-bold text-amber-900 leading-snug">
             Les clés sont stockées dans la base de données (PlatformConfig).
             Ne partagez jamais ces clés — elles donnent accès aux services de paiement.
           </p>
-          <p className="text-xs text-amber-700 mt-1 font-medium">
+          <p className="text-[11px] font-semibold text-amber-700/80 mt-2">
             Pour la production, nous recommandons de définir les clés dans les variables d&apos;environnement Vercel/Railway plutôt qu&apos;en base.
           </p>
         </div>

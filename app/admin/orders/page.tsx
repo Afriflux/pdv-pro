@@ -141,11 +141,12 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
       </header>
 
       {/* ── LAYOUT 2 COLONNES ── */}
-      <div className="flex gap-5">
+      <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-start">
 
         {/* ── ONGLETS LATÉRAUX ── */}
-        <aside className="w-44 flex-shrink-0">
-          <nav className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <aside className="w-full lg:w-56 flex-shrink-0 sticky top-24 z-10">
+          <h2 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Filtrer par statut</h2>
+          <nav className="bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl p-3 flex flex-col gap-1 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             {STATUS_TABS.map((tab) => {
               const isActive = statusFilter === tab.value
               const n = tab.value === 'all' ? total : (countByStatus[tab.value] ?? 0)
@@ -153,15 +154,16 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                 <Link
                   key={tab.value}
                   href={`/admin/orders?status=${tab.value}`}
-                  className={`flex items-center gap-2.5 px-4 py-3 text-sm font-bold border-b border-gray-100 last:border-0 transition-all ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 relative overflow-hidden group ${
                     isActive
-                      ? 'bg-[#0F7A60] text-white'
-                      : 'text-gray-600 hover:bg-[#FAFAF7]'
+                      ? 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-[0_4px_15px_rgba(15,122,96,0.3)] border border-[#0F7A60]/50'
+                      : 'bg-transparent text-gray-500 hover:bg-white/80 hover:text-gray-900 border border-transparent'
                   }`}
                 >
-                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-white' : tab.dot}`} />
-                  <span className="flex-1 text-xs">{tab.label}</span>
-                  <span className={`text-[10px] font-black tabular-nums ${isActive ? 'text-white/80' : 'text-gray-400'}`}>
+                  {isActive && <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 ease-in-out -skew-x-12 -translate-x-full pointer-events-none" />}
+                  <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 relative z-10 shadow-sm ${isActive ? 'bg-white' : tab.dot}`} />
+                  <span className="flex-1 text-sm tracking-tight relative z-10">{tab.label}</span>
+                  <span className={`text-[10px] font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100/80 text-gray-500'}`}>
                     {n}
                   </span>
                 </Link>
@@ -171,32 +173,35 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
         </aside>
 
         {/* ── TABLEAU PRINCIPAL ── */}
-        <div className="flex-1 min-w-0">
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
+        <div className="flex-1 w-full min-w-0">
+          <div className="relative bg-white/70 backdrop-blur-2xl border border-white/50 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+            {/* Subtle Glow */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-3xl -z-10 pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
+
+            <div className="overflow-x-auto relative z-10">
               <table className="w-full text-left">
-                {/* En-tête émeraude */}
-                <thead className="bg-[#0F7A60]/5 border-b border-gray-100 text-gray-400 uppercase text-[10px] font-black tracking-widest">
+                {/* En-tête émeraude subtil */}
+                <thead className="bg-[#0F7A60]/[0.02] border-b border-white/40 text-gray-500 uppercase text-[10px] font-black tracking-widest">
                   <tr>
-                    <th className="px-5 py-4">Référence</th>
-                    <th className="px-5 py-4">Boutique</th>
-                    <th className="px-5 py-4">Acheteur</th>
-                    <th className="px-5 py-4">Montant</th>
-                    <th className="px-5 py-4">Méthode</th>
-                    <th className="px-5 py-4 text-center">Statut</th>
-                    <th className="px-5 py-4">Date</th>
-                    <th className="px-5 py-4 text-right">Action</th>
+                    <th className="px-5 py-5">Référence</th>
+                    <th className="px-5 py-5">Boutique</th>
+                    <th className="px-5 py-5">Acheteur</th>
+                    <th className="px-5 py-5">Montant</th>
+                    <th className="px-5 py-5">Méthode</th>
+                    <th className="px-5 py-5 text-center">Statut</th>
+                    <th className="px-5 py-5">Date</th>
+                    <th className="px-5 py-5 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {orders.map((order) => {
                     const store = storesMap[order.store_id]
                     return (
-                      <tr key={order.id} className="hover:bg-[#FAFAF7] transition-colors">
+                      <tr key={order.id} className="hover:bg-white/50 transition-colors border-b border-white/20 last:border-0 group">
                         {/* Référence */}
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-5">
                           <div className="flex items-center gap-2">
-                            <div className="p-1.5 rounded-lg bg-[#0F7A60]/10">
+                            <div className="p-1.5 rounded-xl bg-gradient-to-br from-[#0F7A60]/10 to-teal-500/10 border border-[#0F7A60]/10 shadow-sm">
                               <Package className="w-3.5 h-3.5 text-[#0F7A60]" />
                             </div>
                             <span className="font-mono text-xs font-bold text-[#1A1A1A]">
@@ -206,53 +211,53 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                         </td>
 
                         {/* Boutique */}
-                        <td className="px-5 py-4">
-                          <span className="text-sm font-semibold text-[#1A1A1A]">
+                        <td className="px-5 py-5">
+                          <span className="text-sm font-bold text-[#1A1A1A]">
                             {store?.name ?? '—'}
                           </span>
                         </td>
 
                         {/* Acheteur */}
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-5">
                           <div className="flex flex-col">
-                            <span className="text-sm text-[#1A1A1A] font-medium">
+                            <span className="text-sm text-[#1A1A1A] font-semibold tracking-tight">
                               {order.buyer_name ?? '—'}
                             </span>
                             {order.buyer_phone && (
-                              <span className="text-[10px] text-gray-400">{order.buyer_phone}</span>
+                              <span className="text-[10px] text-gray-400 font-medium">{order.buyer_phone}</span>
                             )}
                           </div>
                         </td>
 
                         {/* Montant */}
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-5">
                           <span className="text-sm font-black text-[#C9A84C]">
                             {order.total.toLocaleString('fr-FR')} FCFA
                           </span>
                         </td>
 
                         {/* Méthode */}
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-5">
                           <MethodBadge method={order.payment_method} />
                         </td>
 
                         {/* Statut */}
-                        <td className="px-5 py-4 text-center">
+                        <td className="px-5 py-5 text-center">
                           <StatusBadge status={order.status} />
                         </td>
 
                         {/* Date */}
-                        <td className="px-5 py-4 text-xs text-gray-400">
+                        <td className="px-5 py-5 text-xs text-gray-500 font-medium">
                           {format(new Date(order.created_at), 'dd MMM yyyy', { locale: fr })}
                         </td>
 
                         {/* Action */}
-                        <td className="px-5 py-4 text-right">
+                        <td className="px-5 py-5 text-right">
                           <Link
                             href={`/admin/orders/${order.id}`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0F7A60]/10 hover:bg-[#0F7A60] text-[#0F7A60] hover:text-white transition-all rounded-lg text-xs font-semibold"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:border-emerald-500/50 hover:bg-emerald-50/50 text-[#0F7A60] hover:shadow-md transition-all rounded-xl text-xs font-bold"
                           >
-                            <Eye className="w-3.5 h-3.5" />
+                            <Eye className="w-4 h-4" />
                             Voir
                           </Link>
                         </td>
@@ -262,31 +267,33 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                 </tbody>
               </table>
 
-              {/* État vide */}
+              {/* État vide Premium */}
               {orders.length === 0 && (
-                <div className="text-center py-20 text-gray-400">
-                  <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Package className="w-8 h-8 opacity-40" />
+                <div className="text-center py-24 text-gray-400 relative z-10 w-full">
+                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-50/50 to-transparent pointer-events-none" />
+                  <div className="w-20 h-20 bg-white shadow-xl rounded-3xl flex items-center justify-center mx-auto mb-6 relative z-10 border border-white/50">
+                    <Package className="w-10 h-10 text-[#0F7A60] opacity-80" />
+                    <div className="absolute -inset-4 bg-emerald-400/20 rounded-full blur-xl -z-10" />
                   </div>
-                  <p className="text-base font-semibold text-gray-500">Aucune commande</p>
-                  <p className="text-sm mt-1">
-                    {statusFilter !== 'all' ? `Aucune commande avec le statut « ${statusFilter} ».` : 'Aucune commande enregistrée.'}
+                  <p className="text-lg font-bold text-gray-700 relative z-10">Aucune commande</p>
+                  <p className="text-sm mt-2 text-gray-500 max-w-sm mx-auto relative z-10">
+                    {statusFilter !== 'all' ? `Aucune commande avec le statut « ${statusFilter} » actuellement.` : 'Aucune commande enregistrée pour le moment.'}
                   </p>
                 </div>
               )}
             </div>
 
-            {/* Pagination */}
+            {/* Pagination Glassmorphism */}
             {totalPages > 1 && (
-              <div className="p-4 border-t border-gray-100 flex items-center justify-center gap-2">
+              <div className="p-4 border-t border-white/20 relative z-10 flex items-center justify-center gap-2">
                 {Array.from({ length: totalPages }).map((_, i) => (
                   <Link
                     key={i}
                     href={`/admin/orders?page=${i + 1}&status=${statusFilter}`}
-                    className={`w-9 h-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all ${
+                    className={`w-10 h-10 flex items-center justify-center rounded-2xl text-sm font-black transition-all duration-300 shadow-sm border ${
                       currentPage === i + 1
-                        ? 'bg-[#0F7A60] text-white shadow-sm'
-                        : 'bg-[#FAFAF7] border border-gray-200 text-gray-500 hover:border-[#0F7A60] hover:text-[#0F7A60]'
+                        ? 'bg-gradient-to-br from-[#0F7A60] to-teal-600 text-white shadow-[0_4px_10px_rgba(15,122,96,0.3)] border-transparent'
+                        : 'bg-white/80 backdrop-blur-md border border-white/50 text-gray-500 hover:border-[#0F7A60]/30 hover:text-[#0F7A60] hover:shadow-md'
                     }`}
                   >
                     {i + 1}

@@ -8,6 +8,8 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import KYCAdminActions from '@/app/admin/kyc/KYCAdminActions'
 import VendorActions from './VendorActions'
+import AdminVendorEdit from '@/components/admin/AdminVendorEdit'
+import VendorAuditLogs from '@/components/admin/VendorAuditLogs'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -130,7 +132,7 @@ export default async function VendeurDetailPage({
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
   // 4. Charger le reste en parallèle
-  const [walletRes, ordersRes, userRes] = await Promise.all([
+  const [walletRes, ordersRes, userRes, logsRes] = await Promise.all([
     supabaseAdmin
       .from('Wallet')
       .select('balance, pending, total_earned')
@@ -149,11 +151,24 @@ export default async function VendeurDetailPage({
       .select('id, name, email, phone, role, avatar_url, created_at')
       .eq('id', store.user_id)
       .single(),
+      
+    supabaseAdmin
+      .from('AdminLog')
+      .select('id, action, created_at, details, admin:admin_id ( email, role )')
+      .eq('target_type', 'vendor')
+      .eq('target_id', storeId)
+      .order('created_at', { ascending: false }),
   ])
 
   const wallet  = walletRes.data  as WalletRow | null
   const orders  = (ordersRes.data ?? []) as OrderRow[]
   const vendor  = userRes.data    as UserRow | null
+  
+  const rawLogs = logsRes.data as any[]
+  const auditLogs = rawLogs?.map(log => ({
+    ...log,
+    admin: Array.isArray(log.admin) ? log.admin[0] : log.admin
+  })) || []
 
   // 5. Stats 30 jours
   const totalOrders  = orders.length
@@ -167,57 +182,62 @@ export default async function VendeurDetailPage({
     .filter(Boolean).length
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
+    <div className="flex-1 w-full bg-[#FAFAF7] min-h-screen flex flex-col animate-in fade-in duration-500">
+      
+      {/* ── COVER BANNER (Full Bleed) ── */}
+      <div className="w-full bg-gradient-to-r from-[#0D5C4A] to-[#0F7A60] pt-8 pb-28 px-6 lg:px-10 relative overflow-hidden shrink-0">
+        {/* Noise overlay */}
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+        {/* Glow */}
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-teal-400/20 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-emerald-900/30 rounded-full blur-[100px] pointer-events-none"></div>
 
-      {/* ── Breadcrumb ── */}
-      <div className="flex items-center gap-3">
-        <Link
-          href="/admin/vendeurs"
-          className="text-sm text-gray-500 hover:text-[#0F7A60] transition-colors font-medium"
-        >
-          ← Retour vendeurs
-        </Link>
-        <span className="text-gray-300">/</span>
-        <span className="text-sm text-[#1A1A1A] font-bold">{store.name}</span>
-      </div>
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-3 relative z-10 mb-8">
+          <Link
+            href="/admin/vendeurs"
+            className="text-sm text-emerald-100 hover:text-white transition-colors font-medium flex items-center gap-2"
+          >
+            <span className="text-lg leading-none">←</span> Retour vendeurs
+          </Link>
+          <span className="text-emerald-400">/</span>
+          <span className="text-sm text-white font-bold truncate max-w-xs">{store.name}</span>
+        </div>
 
-      {/* ── Header ── */}
-      <div className="bg-gradient-to-r from-[#0D5C4A] to-[#0F7A60] rounded-2xl p-6 text-white">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-4">
-            {/* Logo ou initiale */}
-            <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+        {/* Header Content */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+          <div className="flex items-center gap-5">
+            {/* Avatar / Logo massif */}
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-[1.5rem] bg-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-2xl backdrop-blur-md ring-4 ring-white/10">
               {store.logo_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={store.logo_url} alt={store.name} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-2xl font-black text-white">{store.name[0]}</span>
+                <span className="text-3xl md:text-4xl font-black text-white">{store.name[0]}</span>
               )}
             </div>
-            <div>
-              <h1 className="text-xl font-black">{store.name}</h1>
-              <p className="text-white/60 text-xs font-mono">/{store.slug}</p>
-              <p className="text-white/50 text-xs mt-1">
-                Créé le {formatDate(store.created_at)}
-              </p>
+            <div className="pb-1">
+              <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">{store.name}</h1>
+              <div className="flex items-center gap-3 mt-1.5 opacity-80">
+                <span className="text-emerald-50 text-xs md:text-sm font-mono">/{store.slug}</span>
+                <span className="text-emerald-200 text-xs">•</span>
+                <span className="text-emerald-50 text-xs">Créé le {formatDate(store.created_at)}</span>
+              </div>
             </div>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <span className={`px-3 py-1 rounded-full text-[11px] font-black border ${kycBadge.cls}`}>
-              KYC : {kycBadge.label}
+
+          <div className="flex flex-wrap items-center gap-3">
+            <span className={`px-4 py-1.5 rounded-xl text-xs font-black shadow-sm ${store.is_active ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
+              {store.is_active ? '🟢 BOUTIQUE ACTIVE' : '🔴 SUSPENDUE'}
             </span>
-            <span className={`px-3 py-1 rounded-full text-[11px] font-black ${
-              store.is_active
-                ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                : 'bg-red-100 text-red-700 border border-red-200'
-            }`}>
-              {store.is_active ? '🟢 Boutique active' : '🔴 Boutique suspendue'}
+            <span className="px-4 py-1.5 rounded-xl text-xs font-black bg-white/10 text-white backdrop-blur-sm border border-white/20 shadow-sm">
+              KYC : {kycBadge.label}
             </span>
             <a
               href={`/${store.slug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[11px] text-white/70 hover:text-white underline transition-colors"
+              className="px-4 py-1.5 rounded-xl text-xs font-black bg-white text-[#0F7A60] hover:bg-emerald-50 transition-colors shadow-sm"
             >
               Voir la boutique ↗
             </a>
@@ -225,216 +245,244 @@ export default async function VendeurDetailPage({
         </div>
       </div>
 
-      {/* ── Stats 30 jours ── */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* Commandes */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm text-center">
-          <p className="text-[11px] font-black text-gray-400 uppercase tracking-wider mb-2">
-            Commandes 30j
-          </p>
-          <p className="text-2xl font-black text-[#1A1A1A]">{totalOrders}</p>
-        </div>
-        {/* CA vendeur */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm text-center">
-          <p className="text-[11px] font-black text-gray-400 uppercase tracking-wider mb-2">
-            CA vendeur 30j
-          </p>
-          <p className="text-lg font-black text-[#0F7A60]">{formatAmount(totalRevenue)}</p>
-        </div>
-        {/* Solde wallet */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm text-center">
-          <p className="text-[11px] font-black text-gray-400 uppercase tracking-wider mb-2">
-            Solde wallet
-          </p>
-          <p className="text-lg font-black text-[#C9A84C]">
-            {formatAmount(Number(wallet?.balance ?? 0))}
-          </p>
-        </div>
-      </div>
-
-      {/* ── Grille Infos ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        {/* Infos vendeur */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm space-y-4">
-          <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider">
-            👤 Infos vendeur
-          </h2>
-          {vendor ? (
-            <div className="space-y-2.5">
-              <Row label="Nom"           value={vendor.name} />
-              <Row label="Email"         value={<a href={`mailto:${vendor.email}`} className="text-[#0F7A60] hover:underline">{vendor.email}</a>} />
-              <Row label="Téléphone"     value={vendor.phone ?? 'Non renseigné'} />
-              <Row label="Inscrit le"    value={formatDate(vendor.created_at)} />
-              <Row label="Rôle"          value={vendor.role} />
-            </div>
-          ) : (
-            <p className="text-sm text-gray-400 italic">Utilisateur introuvable</p>
-          )}
+      {/* ── MAIN CONTENT (Overlapping) ── */}
+      <div className="w-full px-6 lg:px-10 -mt-14 relative z-20 pb-20">
+        
+        {/* ── Stats 30 jours (Top Row) ── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
+          <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Commandes 30j</p>
+            <p className="text-2xl lg:text-3xl font-black text-[#1A1A1A]">{totalOrders}</p>
+          </div>
+          <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0F7A60]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">CA Vendeur 30j</p>
+            <p className="text-2xl lg:text-3xl font-black text-[#0F7A60]">{formatAmount(totalRevenue)}</p>
+          </div>
+          <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Solde Wallet Actuel</p>
+            <p className="text-2xl lg:text-3xl font-black text-[#C9A84C]">{formatAmount(Number(wallet?.balance ?? 0))}</p>
+          </div>
         </div>
 
-        {/* Infos boutique */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm space-y-4">
-          <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider">
-            🏪 Infos boutique
-          </h2>
-          <div className="space-y-2.5">
-            <Row label="Slug"          value={`/${store.slug}`} mono />
-            <Row label="WhatsApp"      value={store.whatsapp ?? 'Non configuré'} />
-            <Row label="Onboarding"    value={store.onboarding_completed ? '✅ Complété' : '⏳ En cours'} />
-            <Row
-              label="Pixels tracking"
-              value={pixelsCount > 0
-                ? `${pixelsCount} configuré${pixelsCount > 1 ? 's' : ''} ✅`
-                : '❌ Aucun'
-              }
-            />
-            {store.description && (
-              <div>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1">Description</p>
-                <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">{store.description}</p>
+        {/* ── Layout Split (Left: Main Data, Right: Info/Sidebar) ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          
+          {/* Main Column (Wallet & Orders) */}
+          <div className="lg:col-span-2 space-y-6 lg:space-y-8">
+            
+            {/* Wallet Detailed Card */}
+            <div className="bg-white border border-gray-100 rounded-3xl p-6 lg:p-8 shadow-sm">
+              <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-5">💰 Wallet & Finances</h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div className="bg-[#FAFAF7] rounded-2xl p-5 text-center border justify-center flex flex-col border-emerald-100/50 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/10 rounded-bl-full pointer-events-none"></div>
+                  <p className="text-[10px] text-emerald-600 font-black uppercase tracking-wider mb-1">Solde Disponible</p>
+                  <p className="text-xl lg:text-2xl font-black text-[#0F7A60]">{formatAmount(Number(wallet?.balance ?? 0))}</p>
+                </div>
+                <div className="bg-[#FAFAF7] border border-amber-100/50 rounded-2xl p-5 text-center relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-bl-full pointer-events-none"></div>
+                  <p className="text-[10px] text-amber-600 font-black uppercase tracking-wider mb-1">En attente (Sésquestre)</p>
+                  <p className="text-xl lg:text-2xl font-black text-amber-700">{formatAmount(Number(wallet?.pending ?? 0))}</p>
+                </div>
+                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5 text-center">
+                  <p className="text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1">Total Généré Historique</p>
+                  <p className="text-xl lg:text-2xl font-black text-gray-800">{formatAmount(Number(wallet?.total_earned ?? 0))}</p>
+                </div>
               </div>
-            )}
-          </div>
-        </div>
 
-      </div>
-
-      {/* ── Wallet ── */}
-      <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-        <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-4">
-          💰 Wallet
-        </h2>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-emerald-50 rounded-xl p-4 text-center">
-            <p className="text-[10px] text-emerald-600 font-black uppercase tracking-wider mb-1">Solde</p>
-            <p className="text-xl font-black text-[#0F7A60]">{formatAmount(Number(wallet?.balance ?? 0))}</p>
-          </div>
-          <div className="bg-amber-50 rounded-xl p-4 text-center">
-            <p className="text-[10px] text-amber-600 font-black uppercase tracking-wider mb-1">En attente</p>
-            <p className="text-xl font-black text-amber-700">{formatAmount(Number(wallet?.pending ?? 0))}</p>
-          </div>
-          <div className="bg-[#FAFAF7] rounded-xl p-4 text-center">
-            <p className="text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1">Total gagné</p>
-            <p className="text-xl font-black text-[#C9A84C]">{formatAmount(Number(wallet?.total_earned ?? 0))}</p>
-          </div>
-        </div>
-
-        {/* Coordonnées de retrait */}
-        {store.withdrawal_number && (
-          <div className="mt-4 bg-[#FAFAF7] rounded-xl p-3 flex items-center gap-3">
-            <span className="text-lg">{store.withdrawal_method ? (METHOD_LABELS[store.withdrawal_method]?.split(' ')[0] ?? '💸') : '💸'}</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-[#1A1A1A]">
-                {store.withdrawal_method ? (METHOD_LABELS[store.withdrawal_method] ?? store.withdrawal_method) : 'Retrait configuré'}
-              </p>
-              <p className="text-xs text-gray-500 font-mono truncate">{store.withdrawal_number}</p>
-              {store.withdrawal_name && (
-                <p className="text-[11px] text-gray-400">Au nom de : {store.withdrawal_name}</p>
+              {store.withdrawal_number && (
+                <div className="bg-[#FAFAF7] rounded-2xl p-4 flex items-center gap-4 border border-gray-100">
+                  <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center flex-shrink-0 text-xl border border-gray-100 text-[#1A1A1A]">
+                    {store.withdrawal_method && METHOD_LABELS[store.withdrawal_method] ? METHOD_LABELS[store.withdrawal_method].split(' ')[0] : '💸'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5">Méthode de retrait favorite</p>
+                    <p className="text-sm font-bold text-[#1A1A1A]">
+                      {store.withdrawal_method ? (METHOD_LABELS[store.withdrawal_method] ?? store.withdrawal_method) : 'Non définie'} • <span className="font-mono text-gray-500">{store.withdrawal_number}</span>
+                    </p>
+                    {store.withdrawal_name && (
+                      <p className="text-xs text-gray-400 mt-0.5">Titulaire : {store.withdrawal_name}</p>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
+
+            {/* Commandes récentes */}
+            <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
+              <div className="px-6 lg:px-8 py-5 border-b border-gray-50 bg-[#FAFAF7]/50 flex justify-between items-center">
+                <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest">📦 Dernières Commandes (30j)</h2>
+                {orders.length > 8 && (
+                   <Link href={`/admin/orders?store=${store.id}`} className="text-[10px] font-bold text-[#0F7A60] hover:underline uppercase tracking-wide">Voir tout</Link>
+                )}
+              </div>
+              <div className="divide-y divide-gray-50">
+                {orders.length > 0 ? orders.slice(0, 10).map((order) => (
+                  <Link
+                    key={order.id}
+                    href={`/admin/orders/${order.id}`}
+                    className="flex justify-between items-center px-6 lg:px-8 py-3.5 hover:bg-[#FAFAF7] transition-colors group"
+                  >
+                    <div className="flex items-center gap-4">
+                       <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 group-hover:text-[#0F7A60] group-hover:border-[#0F7A60]/20 group-hover:bg-[#0F7A60]/5 transition-colors">
+                          <span className="text-[10px] font-black">#</span>
+                       </div>
+                       <div>
+                         <p className="text-xs font-mono font-bold text-[#1A1A1A] group-hover:text-[#0F7A60] transition-colors">{order.id.slice(-8).toUpperCase()}</p>
+                         <p className="text-[10px] text-gray-400 mt-0.5">{formatDate(order.created_at)}</p>
+                       </div>
+                    </div>
+                    <div className="flex items-center gap-6">
+                       <span className={`text-[10px] font-black px-2.5 py-1 rounded-full ${
+                         order.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                         order.status === 'paid' ? 'bg-blue-100 text-blue-700' :
+                         order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                         'bg-gray-100 text-gray-600'
+                       }`}>
+                         {order.status}
+                       </span>
+                       <span className="text-sm font-black text-[#1A1A1A] w-24 text-right">
+                         {formatAmount(Number(order.vendor_amount))}
+                       </span>
+                    </div>
+                  </Link>
+                )) : (
+                  <div className="px-6 py-12 text-center">
+                    <p className="text-sm font-bold text-gray-400">Aucune commande sur les 30 derniers jours.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
           </div>
-        )}
-      </div>
 
-      {/* ── KYC ── */}
-      <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider">
-            🛡️ KYC
-          </h2>
-          <span className={`px-3 py-1 rounded-full text-[11px] font-black border ${kycBadge.cls}`}>
-            {kycBadge.label}
-          </span>
-        </div>
+          {/* Secondary Column (Infos & Admin Actions) */}
+          <div className="space-y-6 lg:space-y-8">
+            
+            {/* Infos Vendeur & Boutique */}
+            <div className="bg-white border border-gray-100 rounded-3xl p-6 lg:p-8 shadow-sm space-y-8">
+              {/* Vendeur */}
+              <div>
+                <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">👤 Profil Vendeur</h2>
+                {vendor ? (
+                  <div className="space-y-3">
+                    <Row label="Nom complet" value={vendor.name} />
+                    <Row label="Email" value={<a href={`mailto:${vendor.email}`} className="text-[#0F7A60] hover:underline font-bold">{vendor.email}</a>} />
+                    <Row label="Téléphone" value={vendor.phone ? <a href={`tel:${vendor.phone}`} className="hover:underline">{vendor.phone}</a> : 'Non renseigné'} />
+                    <Row label="Rôle" value={<span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider font-black">{vendor.role}</span>} />
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-400 italic">Compte utilisateur supprimé ou introuvable.</p>
+                )}
+              </div>
 
-        <div className="space-y-2 mb-4">
-          {store.kyc_document_type && (
-            <Row
-              label="Type de document"
-              value={store.kyc_document_type.replace('cni', 'CNI').replace('passport', 'Passeport').replace('permis', 'Permis de conduire')}
-            />
-          )}
-        </div>
+              <div className="h-px w-full bg-gray-100"></div>
 
-        {/* Boutons KYC - seulement si submitted */}
-        {store.kyc_status === 'submitted' && (
-          <KYCAdminActions storeId={store.id} storeName={store.name} />
-        )}
-        {store.kyc_status === 'verified' && (
-          <p className="text-xs text-emerald-600 font-medium">
-            ✅ Identité vérifiée — ce vendeur peut retirer sans limite.
-          </p>
-        )}
-        {(store.kyc_status === null || store.kyc_status === 'pending') && (
-          <p className="text-xs text-gray-400 italic">Aucun dossier soumis.</p>
-        )}
-        {store.kyc_status === 'rejected' && (
-          <p className="text-xs text-red-500">❌ Dossier rejeté — le vendeur doit resoumettre.</p>
-        )}
-      </div>
+              {/* Boutique */}
+              <div>
+                <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">🏪 Données Boutique</h2>
+                <div className="space-y-3">
+                  <Row label="WhatsApp" value={store.whatsapp ? <a href={`https://wa.me/${store.whatsapp.replace(/\+/g,'')}`} target="_blank" rel="noreferrer" className="text-[#0F7A60] hover:underline">{store.whatsapp}</a> : 'Non renseigné'} />
+                  <Row label="Onboarding" value={store.onboarding_completed ? '✅ Complété' : '⏳ Incomplet'} />
+                  <Row
+                    label="Pixels de Tracking"
+                    value={pixelsCount > 0
+                      ? <span className="text-emerald-600 font-bold">{pixelsCount} actif{pixelsCount > 1 ? 's' : ''}</span>
+                      : 'Aucun'
+                    }
+                  />
+                  {store.description && (
+                    <div className="pt-2">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Description (Bio)</p>
+                      <p className="text-xs text-gray-600 leading-relaxed bg-[#FAFAF7] p-3 rounded-xl border border-gray-100">
+                        {store.description}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
 
-      {/* ── Commandes récentes ── */}
-      {orders.length > 0 && (
-        <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
-          <div className="px-5 py-4 border-b border-gray-50">
-            <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider">
-              📦 Commandes (30 derniers jours)
-            </h2>
-          </div>
-          <div className="divide-y divide-gray-50">
-            {orders.slice(0, 8).map((order) => (
-              <Link
-                key={order.id}
-                href={`/admin/orders/${order.id}`}
-                className="flex items-center justify-between px-5 py-3 hover:bg-[#FAFAF7] transition-colors"
-              >
-                <span className="text-xs font-mono text-gray-400">#{order.id.slice(-8).toUpperCase()}</span>
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
-                  order.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                  order.status === 'paid' ? 'bg-blue-100 text-blue-700' :
-                  order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                  'bg-gray-100 text-gray-600'
-                }`}>
-                  {order.status}
+            {/* Conformité KYC */}
+            <div className="bg-white border border-gray-100 rounded-3xl p-6 lg:p-8 shadow-sm">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest">🛡️ Conformité KYC</h2>
+                <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border ${kycBadge.cls}`}>
+                  {kycBadge.label}
                 </span>
-                <span className="text-sm font-black text-[#1A1A1A]">
-                  {formatAmount(Number(order.vendor_amount))}
-                </span>
-              </Link>
-            ))}
+              </div>
+
+              {store.kyc_document_type && (
+                <div className="mb-5 bg-[#FAFAF7] p-3 rounded-xl border border-gray-100">
+                  <Row
+                    label="Document soumis"
+                    value={<span className="font-bold text-[#1A1A1A]">{store.kyc_document_type.replace('cni', 'CNI').replace('passport', 'Passeport').replace('permis', 'Permis de conduire')}</span>}
+                  />
+                </div>
+              )}
+
+              {/* Actions KYC */}
+              <div className="space-y-3">
+                {store.kyc_status === 'submitted' && (
+                  <KYCAdminActions storeId={store.id} storeName={store.name} />
+                )}
+                {store.kyc_status === 'verified' && (
+                  <p className="text-xs text-emerald-600 font-bold flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center">✅</span>
+                    Identité vérifiée, retraits débloqués.
+                  </p>
+                )}
+                {(store.kyc_status === null || store.kyc_status === 'pending') && (
+                  <p className="text-xs text-amber-600 font-medium flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center">⏳</span>
+                    Le vendeur n'a pas encore soumis son dossier.
+                  </p>
+                )}
+                {store.kyc_status === 'rejected' && (
+                  <p className="text-xs text-red-500 font-bold flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center">❌</span>
+                    Dossier rejeté. En attente de révision.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Actions Super Admin */}
+            <div className="bg-[#1A1A1A] border border-gray-800 rounded-3xl p-6 lg:p-8 shadow-xl relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+               <h2 className="text-[11px] font-black text-gray-500 uppercase tracking-widest mb-5 relative z-10">⚡ Actions Super Admin</h2>
+               <div className="space-y-4 relative z-10 flex flex-col">
+                  {/* Édition Administrative avancée (Modal Client) */}
+                  <AdminVendorEdit 
+                    storeId={store.id} 
+                    userId={vendor?.id || store.user_id} 
+                    initialData={{
+                      role: vendor?.role || 'vendeur',
+                      email: vendor?.email || '',
+                      whatsapp: store.whatsapp,
+                      onboarding_completed: store.onboarding_completed,
+                      kyc_status: store.kyc_status
+                    }}
+                  />
+                  
+                  {/* Boutons d'actions rapides (KYC & Suspendre) */}
+                  <VendorActions
+                    vendorId={store.id}
+                    kycStatus={store.kyc_status}
+                    isActive={store.is_active}
+                  />
+               </div>
+            </div>
+
+            {/* Audit Logs (Historique) */}
+            <VendorAuditLogs logs={auditLogs} />
           </div>
         </div>
-      )}
-
-      {/* ── Actions admin ── */}
-      <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-        <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-4">
-          ⚙️ Actions admin
-        </h2>
-        <div className="flex flex-wrap gap-3">
-          <VendorActions
-            vendorId={store.id}
-            kycStatus={store.kyc_status}
-            isActive={store.is_active}
-          />
-          <a
-            href={`/${store.slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2.5 text-sm font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-colors"
-          >
-            Voir la boutique publique ↗
-          </a>
-          <Link
-            href={`/admin/orders?store=${store.id}`}
-            className="px-4 py-2.5 text-sm font-bold text-[#0F7A60] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-colors"
-          >
-            Voir toutes les commandes
-          </Link>
-        </div>
       </div>
-
     </div>
   )
 }

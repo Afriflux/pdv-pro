@@ -24,10 +24,10 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 /** Paliers de commission dégressive pour les ventes en ligne */
 const COMMISSION_TIERS = [
-  { maxCA: 100_000,   rate: 0.07 },  // 7% — 0 à 100 000 FCFA/mois
-  { maxCA: 500_000,   rate: 0.06 },  // 6% — 100 001 à 500 000 FCFA/mois
-  { maxCA: 1_000_000, rate: 0.05 },  // 5% — 500 001 à 1 000 000 FCFA/mois
-  { maxCA: Infinity,  rate: 0.04 },  // 4% — Au-delà de 1 000 000 FCFA/mois
+  { maxCA: 100_000,   rate: 0.08 },  // 8% — 0 à 100 000 FCFA/mois
+  { maxCA: 500_000,   rate: 0.07 },  // 7% — 100 001 à 500 000 FCFA/mois
+  { maxCA: 1_000_000, rate: 0.06 },  // 6% — 500 001 à 1 000 000 FCFA/mois
+  { maxCA: Infinity,  rate: 0.05 },  // 5% — Au-delà de 1 000 000 FCFA/mois
 ] as const
 
 /** Taux fixe pour le COD — 5% indépendamment du CA */
@@ -59,7 +59,7 @@ export function getCommissionRate(monthlyCA: number): number {
   // Retourner le taux du premier palier dont le CA est inférieur au maxCA
   const tier = COMMISSION_TIERS.find(t => monthlyCA <= t.maxCA)
   // Le dernier palier (Infinity) garantit qu'un tier est toujours trouvé
-  return tier?.rate ?? 0.04
+  return tier?.rate ?? 0.05
 }
 
 /**

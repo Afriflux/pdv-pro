@@ -5,11 +5,11 @@
 // Galerie d'images, variants, sticky bar mobile, slide-down formulaire,
 // badges de confiance et intégration SocialProofBanner.
 
-import { useState } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { format, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Minus, Plus, Lock, ShieldCheck, BadgeCheck, MessageCircle, ChevronDown, Facebook, Link2, Check, Timer, Gift } from 'lucide-react'
+import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Minus, Plus, Lock, ShieldCheck, BadgeCheck, MessageCircle, ChevronDown, Facebook, Link2, Check, Timer, Tags } from 'lucide-react'
 import { CheckoutForm } from './CheckoutForm'
 import SocialProofBanner from '@/components/widgets/SocialProofBanner'
 import { ReviewWidget } from '@/components/reviews/ReviewWidget'
@@ -67,6 +67,9 @@ interface ProductPageProps {
       gamification_active?: boolean
       gamification_config?: any | null
     }
+    bump_active?: boolean
+    bump_product_id?: string | null
+    bump_offer_text?: string | null
   }
   variants: Variant[]
   computedPrice: {
@@ -96,6 +99,13 @@ interface ProductPageProps {
   telegramCommunity?: {
     chat_title: string
     members_count: number
+  } | null
+  bumpProduct?: {
+    id: string
+    name: string
+    price: number
+    images: string[]
+    type: string
   } | null
 }
 
@@ -239,6 +249,7 @@ export default function ProductPage({
   bookedSlots = {},
   similarProducts = [],
   telegramCommunity,
+  bumpProduct,
 }: ProductPageProps) {
   const accent = product.store.primary_color || '#0F7A60'
 
@@ -267,17 +278,22 @@ export default function ProductPage({
   const [formMode, setFormMode]       = useState<'online' | 'cod'>('online')
   const [copied, setCopied]           = useState(false)
 
-  // -- Countdown Logic --
-  const promoEndsAt = computedPrice.activePromo?.ends_at ? new Date(computedPrice.activePromo.ends_at) : null
-  const [timeLeft, setTimeLeft] = useState<{ d: number, h: number, m: number, s: number } | null>(null)
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
-  import('react').then(({ useEffect }) => {
-    // We use a manual effect directly in body since we can't top-level import standard React hooks easily without breaking previous hooks order if we don't know them. 
-    // Wait, let's assume useEffect is available since useState is. I will add it to the import at top instead of inline.
-    // Actually, I can just access it from React namespace.
-  })
+  // -- Countdown Logic --
+  const promoEndsAt = useMemo(() => {
+    return computedPrice.activePromo?.ends_at 
+      ? new Date(computedPrice.activePromo.ends_at) 
+      : null
+  }, [computedPrice.activePromo])
+
+  const [timeLeft, setTimeLeft] = useState<{ d: number, h: number, m: number, s: number } | null>(null)
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (!promoEndsAt) return
     const interval = setInterval(() => {
       const now = new Date().getTime()
@@ -858,6 +874,7 @@ export default function ProductPage({
                     coachingSlots={coachingSlots}
                     blockedDates={blockedDates}
                     bookedSlots={bookedSlots}
+                    bumpProduct={bumpProduct}
                   />
                 </div>
               )}

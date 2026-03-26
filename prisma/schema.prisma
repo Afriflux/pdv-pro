@@ -95,6 +95,7 @@ model Store {
   name          String
   slug               String   @unique
   vendor_type        VendorType @default(digital)
+  vendor_type_updated_at DateTime?
   logo_url           String?
   primary_color      String?
   category           String?  // Secteur activité (onboarding étape 2)
@@ -158,12 +159,15 @@ model Store {
   subscriptions Subscription[]
   withdrawals Withdrawal[]
   deliveryZones DeliveryZone[]
+  deliverers    Deliverer[]
   coachingSlots CoachingSlot[]
   bookings      Booking[]
   blockedDates  BlockedDate[]
   closing_enabled Boolean @default(false)
   closing_fee     Float   @default(500)
   closingRequests ClosingRequest[]
+  workflows       Workflow[]
+  tasks           Task[]
   @@schema("public")
 }
 
@@ -217,6 +221,11 @@ model Product {
   affiliate_active Boolean?  // null = hérite du Store
   affiliate_margin Float?    // null = hérite du Store
 
+  // ── Order Bump (Upsell 1-Click) ──
+  bump_active      Boolean     @default(false)
+  bump_product_id  String?
+  bump_offer_text  String?
+
   // ── SEO ──
   seo_title        String?
   seo_description  String?
@@ -264,6 +273,11 @@ model SalePage {
   // ── Affiliation Spécifique ──
   affiliate_active Boolean?
   affiliate_margin Float?
+
+  // ── Order Bump (Upsell 1-Click) ──
+  bump_active      Boolean     @default(false)
+  bump_product_id  String?
+  bump_offer_text  String?
   
   active      Boolean  @default(true)
   created_at  DateTime @default(now())
@@ -285,6 +299,11 @@ model Order {
   store_id         String
   product_id       String
   variant_id       String?
+  
+  // ── Order Bump (Upsell 1-Click) ──
+  bump_product_id  String?
+  bump_variant_id  String?
+
   quantity         Int         @default(1)
   subtotal         Float
   promo_discount   Float       @default(0)
@@ -300,6 +319,8 @@ model Order {
   applied_promo_id String?
   delivery_address String?
   delivery_zone_id String?
+  deliverer_id     String?     // Assignation d'un livreur spécifique
+  deliverer        Deliverer?  @relation(fields: [deliverer_id], references: [id])
   delivery_fee     Float       @default(0)
   
   // ── Champs additionnels Phase 2 & 6 ──
@@ -333,6 +354,7 @@ model Order {
   reports       Report[]
   booking       Booking?
   closing       ClosingRequest?
+  telegramMember TelegramMember?
 
   @@index([store_id])
   @@index([buyer_id])
@@ -664,6 +686,21 @@ model DeliveryZone {
   @@schema("public")
 }
 
+model Deliverer {
+  id         String   @id @default(uuid())
+  store_id   String
+  name       String
+  phone      String
+  active     Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  store      Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  orders     Order[]
+
+  @@schema("public")
+}
+
 // ─── Coaching & Réservations ─────────────────────────────────────────────────
 
 model CoachingSlot {
@@ -810,3 +847,49 @@ model TelegramMember {
 
   @@schema("public")
 }
+
+// ─── Workflows & Automatisations ─────────────────────────────────────────────
+
+model Workflow {
+  id          String   @id @default(uuid())
+  store_id    String
+  title       String
+  description String?
+  status      String   @default("inactive") // active | inactive
+  triggerType String
+  config      Json     // Graph/Nodes config
+  last_run    DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  store       Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  
+  @@index([store_id])
+  @@schema("public")
+}
+
+// ─── Tâches Internes (CRM) ───────────────────────────────────────────────────
+
+model Task {
+  id          String   @id @default(uuid())
+  store_id    String
+  title       String
+  priority    String   @default("medium") // low | medium | high
+  status      String   @default("todo") // todo | in_progress | done
+  dueDate     String?  // yyyy-mm-dd
+  
+  description String?  @db.Text
+  taskType    String   @default("general") // call | email | meeting | issue | general
+  client_name String?
+  client_phone String?
+  order_id    String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  store       Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  
+  @@index([store_id])
+  @@schema("public")
+}
+

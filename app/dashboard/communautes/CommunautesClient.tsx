@@ -4,17 +4,13 @@
 // Client Component — Feed communautaire PDV Pro
 // 4 onglets : Feed | Classement | Groupes | Ressources
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Trash2, MessageSquare, Send, RefreshCw, ChevronRight, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
+import Image from 'next/image'
 import type { PostItem, LeaderboardEntry, CurrentStore } from './page'
 
-interface StoreProduct {
-  id: string
-  name: string
-  type: string
-}
+
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -63,7 +59,7 @@ const FILTERS: { id: FilterId; label: string; emoji: string }[] = [
 
 const CATEGORY_LABELS: Record<string, { label: string; emoji: string; color: string }> = {
   general:  { label: 'Général',  emoji: '📣', color: 'bg-gray-100 text-gray-600'    },
-  question: { label: 'Question', emoji: '❓', color: 'bg-blue-100 text-blue-700'   },
+  question: { label: 'Question', emoji: '❓', color: 'bg-emerald-100 text-emerald-700'   },
   success:  { label: 'Succès',   emoji: '🏆', color: 'bg-yellow-100 text-yellow-700' },
   tip:      { label: 'Astuce',   emoji: '💡', color: 'bg-amber-100 text-amber-700'  },
   mode:     { label: 'Mode',     emoji: '👗', color: 'bg-pink-100 text-pink-700'    },
@@ -98,21 +94,25 @@ function getInitial(name: string): string {
   return name.charAt(0).toUpperCase()
 }
 
-function StoreAvatar({ name, logo, size = 'md' }: { name: string; logo: string | null; size?: 'sm' | 'md' | 'lg' }) {
-  const sizes = { sm: 'w-8 h-8 text-xs', md: 'w-10 h-10 text-sm', lg: 'w-14 h-14 text-lg' }
+function StoreAvatar({ name, logo, size = 'md', className = '' }: { name: string; logo: string | null; size?: 'sm' | 'md' | 'lg' | 'xl'; className?: string }) {
+  const sizes = { sm: 'w-8 h-8 text-xs', md: 'w-10 h-10 text-sm', lg: 'w-14 h-14 text-lg', xl: 'w-20 h-20 md:w-24 md:h-24 text-2xl md:text-3xl' }
   if (logo) {
     return (
-      <img
-        src={logo} alt={name}
-        className={`${sizes[size]} rounded-full object-cover flex-shrink-0 border-2 border-white shadow-sm`}
-      />
+      <div className={`relative ${sizes[size]} rounded-full overflow-hidden flex-shrink-0 border-2 border-white shadow-sm ${className}`}>
+        <Image
+          src={logo} alt={name}
+          fill
+          unoptimized
+          className="object-cover"
+        />
+      </div>
     )
   }
   return (
     <div
-      className={`${sizes[size]} rounded-full bg-[#0F7A60] flex items-center justify-center flex-shrink-0 border-2 border-white shadow-sm`}
+      className={`${sizes[size]} rounded-full bg-gradient-to-br from-[#0DE0A1] to-[#0F7A60] flex items-center justify-center flex-shrink-0 border-2 border-white shadow-sm ${className}`}
     >
-      <span className="font-black text-white">{getInitial(name)}</span>
+      <span className="font-black text-white drop-shadow-sm">{getInitial(name)}</span>
     </div>
   )
 }
@@ -223,14 +223,14 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
   if (isDeleting) return null; // Hide optimistically
 
   return (
-    <article ref={cardRef} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-xl hover:border-slate-300 transition-all duration-300 group/card relative">
+    <article ref={cardRef} className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden hover:shadow-[0_8px_30px_rgb(15,122,96,0.06)] hover:-translate-y-1 hover:border-[#0DE0A1]/30 transition-all duration-300 group/card relative">
       {/* ── Header ── */}
-      <div className="flex items-start gap-4 p-5 pb-3">
+      <div className="flex items-start gap-4 p-6 pb-4">
         <StoreAvatar name={post.store_name} logo={post.store_logo} size="lg" />
         <div className="flex-1 min-w-0 pt-0.5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="font-black text-base text-[#1A1A1A] truncate hover:text-[#0F7A60] transition-colors cursor-pointer">{post.store_name}</p>
+              <p className="font-extrabold tracking-tight text-base text-slate-900 truncate hover:text-[#0F7A60] transition-colors cursor-pointer">{post.store_name}</p>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className={`inline-flex items-center gap-1 text-[11px] font-black px-2.5 py-1 rounded-lg ${cat.color}`}>
                   {cat.emoji} {cat.label}
@@ -262,9 +262,11 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
       {post.image_url && (
         <div className="px-5 pb-4">
           <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-sm relative group/img">
-            <img
+            <Image
               src={post.image_url} alt="Image du post"
-              className="w-full object-cover max-h-80 group-hover/img:scale-105 transition-transform duration-500"
+              width={800} height={600}
+              unoptimized
+              className="w-full h-auto max-h-80 object-cover group-hover/img:scale-105 transition-transform duration-500"
             />
           </div>
         </div>
@@ -286,9 +288,9 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
 
         <button
           onClick={loadComments}
-          className="flex items-center gap-2 text-[13px] font-black text-slate-500 hover:text-blue-600 transition-colors group/comment"
+          className="flex items-center gap-2 text-[13px] font-black text-slate-500 hover:text-emerald-600 transition-colors group/comment"
         >
-          <div className="p-1.5 rounded-full bg-white border border-slate-200 text-slate-400 group-hover/comment:border-blue-200 group-hover/comment:text-blue-500 transition-colors">
+          <div className="p-1.5 rounded-full bg-white border border-slate-200 text-slate-400 group-hover/comment:border-emerald-200 group-hover/comment:text-emerald-500 transition-colors">
             <MessageSquare size={18} strokeWidth={2.5} />
           </div>
           <span className="hidden sm:inline">{post.comments_count} Commentaires</span>
@@ -351,13 +353,13 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
                 maxLength={500}
                 rows={1}
                 className="w-full text-[13px] font-medium border border-slate-300 rounded-2xl pl-4 pr-12 py-3 outline-none
-                  focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-white min-h-[44px] resize-none"
+                  focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0DE0A1]/10 transition-all bg-white min-h-[44px] resize-none"
               />
               <button
                 onClick={submitComment}
                 disabled={!newComment.trim() || submitting}
-                className="absolute right-2 top-2 p-1.5 bg-blue-600 text-white font-black rounded-xl
-                  disabled:opacity-0 hover:bg-blue-700 hover:scale-105 transition-all shadow-md shadow-blue-500/20"
+                className="absolute right-2 top-2 p-1.5 bg-[#0F7A60] text-white font-black rounded-xl
+                  disabled:opacity-0 hover:bg-emerald-700 hover:scale-105 transition-all shadow-md shadow-emerald-900/20"
               >
                 {submitting ? <RefreshCw size={14} className="animate-spin" /> : <Send size={14} />}
               </button>
@@ -500,70 +502,130 @@ export default function CommunautesClient({
   // ─── RENDU ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7]">
+    <div className="min-h-screen bg-[#FAFAF7] flex flex-col w-full">
 
-      {/* ── HEADER PREMIUM & ONGLETS HORIZONTAUX ── */}
-      <div className="bg-white border-b border-gray-100 relative overflow-hidden">
-        {/* Background glow */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#0DE0A1]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-        
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-0 lg:pt-8 relative z-10 flex flex-col gap-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="flex items-center gap-4 lg:gap-5">
-              <StoreAvatar name={store.name} logo={store.logo_url} size="xl" />
-              <div>
-                <h1 className="text-2xl lg:text-3xl font-black text-[#1A1A1A] tracking-tight">Hub Communautaire</h1>
-                <p className="text-xs lg:text-sm font-medium text-slate-500 mt-1">Connectez-vous. Apprenez. Explosez vos ventes. 🚀</p>
-                <div className="mt-3 hidden sm:inline-flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-[#0F7A60] px-3 py-1 rounded-full border border-emerald-100 shadow-sm">
-                    {store.name}
-                  </span>
-                  <span className="text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-500 px-3 py-1 rounded-full">
-                    Niveau Vendeur
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="hidden lg:flex items-center gap-4 mb-1">
-               <Link href="/dashboard/affilies" className="group flex items-center gap-2 bg-[#1A1A1A] hover:bg-[#0DE0A1] hover:text-[#0F7A60] text-white px-5 py-3 rounded-xl text-sm font-black shadow-lg shadow-black/10 hover:-translate-y-0.5 transition-all">
-                  <span>🎁</span>
-                  Programme Ambassadeur
-               </Link>
-            </div>
-          </div>
-
-          {/* Onglets Unifiés (Desktop & Mobile) */}
-          <div className="flex gap-2 lg:gap-6 overflow-x-auto custom-scrollbar translate-y-[1px]">
-            {([
-              { id: 'feed',       label: 'Mon Feed',    emoji: '📰' },
-              { id: 'classement', label: 'Classement',  emoji: '🏆' },
-              { id: 'groupes',    label: 'Groupes VIP', emoji: '💬' },
-              { id: 'ressources', label: 'Ressources',  emoji: '🎓' },
-            ] as const).map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-shrink-0 flex items-center gap-2 px-2 lg:px-4 py-3.5 border-b-[3px] text-sm md:text-[15px] font-black transition-all ${
-                  activeTab === tab.id
-                    ? 'border-[#0F7A60] text-[#0F7A60]'
-                    : 'border-transparent text-slate-400 hover:text-slate-800'
-                }`}
-              >
-                <span className="text-lg opacity-90">{tab.emoji}</span>
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </div>
+      {/* ── MOBILE HEADER & TABS ── */}
+      <div className="xl:hidden bg-white/90 backdrop-blur-xl px-6 py-4 border-b border-slate-100/50 z-20 relative">
+        <div className="flex items-center justify-between gap-4">
+           <div>
+             <h1 className="text-xl font-extrabold tracking-tight text-slate-900">Communauté 🌍</h1>
+             <p className="text-xs text-slate-500 font-medium mt-0.5">Partagez, apprenez, vendez.</p>
+           </div>
+           <StoreAvatar name={store.name} logo={store.logo_url} size="md" />
+        </div>
+      </div>
+      <div className="xl:hidden bg-white/80 backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-30 pb-2 pt-2 shadow-sm">
+        <div className="px-4 flex gap-2 overflow-x-auto custom-scrollbar">
+          {([
+            { id: 'feed',       label: 'Le Mur',      emoji: '📰' },
+            { id: 'classement', label: 'Classement',  emoji: '🏆' },
+            { id: 'groupes',    label: 'Groupes VIP', emoji: '💬' },
+            { id: 'ressources', label: 'Ressources',  emoji: '🎓' },
+          ] as const).map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-black whitespace-nowrap rounded-xl transition-all ${
+                activeTab === tab.id
+                  ? 'bg-[#0F7A60] text-white shadow-md'
+                  : 'bg-slate-50 text-slate-500 hover:text-[#1A1A1A] hover:bg-slate-100'
+              }`}
+            >
+              <span>{tab.emoji}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* ── CONTENU PRINCIPAL (2 COLONNES) ── */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start relative">
-           
-           {/* ── COLONNE GAUCHE (CONTENU CENTRAL) ── */}
-           <div className="flex-1 min-w-0 w-full space-y-8">
+      {/* ── HERO BANNER IMMERSIF (Pleine Largeur - Version Claire) ── */}
+      <div className="hidden xl:block relative bg-white w-full pt-10 pb-16 lg:pt-14 lg:pb-20 overflow-hidden border-b border-slate-200 shrink-0 shadow-sm">
+         <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-emerald-50/50 to-transparent"></div>
+         <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#0DE0A1]/10 rounded-full blur-[100px] pointer-events-none"></div>
+         <div className="absolute top-1/2 -left-20 w-72 h-72 bg-[#0F7A60]/5 rounded-full blur-[80px] pointer-events-none"></div>
+
+         <div className="max-w-[1600px] px-6 lg:px-12 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-5 lg:gap-6">
+               <div className="relative group cursor-pointer hidden sm:block">
+                 <div className="absolute inset-0 bg-gradient-to-br from-[#0DE0A1] to-[#0F7A60] rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
+                 <StoreAvatar name={store.name} logo={store.logo_url} size="xl" className="border-[4px] border-white shadow-lg relative z-10" />
+               </div>
+               <div>
+                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 mb-3 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-[#0DE0A1] animate-[pulse_2s_infinite]"></span>
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-[#0F7A60]">En ligne</span>
+                 </div>
+                 <h1 className="text-3xl lg:text-[40px] font-extrabold text-slate-900 tracking-tight leading-tight">Centre des Vendeurs</h1>
+                 <p className="text-slate-500 font-medium mt-2 text-sm lg:text-[15px] leading-relaxed max-w-lg">Plongez dans l'écosystème, trouvez l'inspiration et dominez vos ventes avec la communauté. 🔥</p>
+               </div>
+            </div>
+
+            {/* Quick Stats in Header */}
+            <div className="hidden xl:flex gap-4">
+              <div className="bg-white border border-slate-200 backdrop-blur-md rounded-2xl p-4 min-w-[130px] flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-shadow duration-300">
+                 <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Impact Vendeur</p>
+                 <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">Élite 🚀</p> 
+                 <p className="text-[10px] text-[#0F7A60] font-bold mt-1">+12% ce mois</p>
+              </div>
+            </div>
+         </div>
+      </div>
+
+      {/* ── ZONE INFERIEURE (Sidebar + Contenu) ── */}
+      <div className="flex-1 flex items-stretch w-full overflow-hidden">
+         
+         {/* ════════════════════════════════════════════════════════════
+             COLONNE 1: NAVIGATION LATERALE (Secondary Sidebar - Desktop)
+             ════════════════════════════════════════════════════════════ */}
+         <div className="hidden xl:flex flex-col w-[280px] flex-shrink-0 sticky top-0 h-screen bg-white border-r border-slate-200 pt-8 pb-8 px-5 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)] z-20 overflow-y-auto custom-scrollbar">
+            
+            <div className="mb-6 px-2">
+               <h2 className="text-xl font-black text-[#1A1A1A] tracking-tight">Navigation</h2>
+               <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Hub Social PDV Pro</p>
+            </div>
+
+            {/* Menu */}
+            <nav className="flex flex-col gap-2 flex-1">
+               {([
+                   { id: 'feed',       label: 'Le Mur',      emoji: '🗞️' },
+                   { id: 'classement', label: 'Classement',  emoji: '🏆' },
+                   { id: 'groupes',    label: 'Groupes VIP', emoji: '💬' },
+                   { id: 'ressources', label: 'Ressources',  emoji: '🎓' },
+               ] as const).map(tab => (
+                   <button
+                     key={tab.id}
+                     onClick={() => setActiveTab(tab.id)}
+                     className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 text-left border ${
+                       activeTab === tab.id
+                         ? 'bg-[#0F7A60] text-white border-[#0F7A60] shadow-xl shadow-emerald-900/10 scale-105 ml-2'
+                         : 'bg-transparent text-slate-600 border-transparent hover:bg-slate-50'
+                     }`}
+                   >
+                     <span className={`text-xl transition-transform duration-300 ${activeTab === tab.id ? 'scale-110 drop-shadow-md' : 'opacity-80'}`}>{tab.emoji}</span>
+                     <div className="font-black text-[14px]">{tab.label}</div>
+                   </button>
+               ))}
+            </nav>
+            
+            {/* Bouton d'action bonus (Parrainage) */}
+            <div className="mt-8 pt-6 border-t border-slate-100">
+               <div className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 flex flex-col items-center text-center">
+                  <span className="text-3xl mb-2 drop-shadow-sm hover:scale-110 transition-transform">🎁</span>
+                  <p className="text-xs font-bold text-slate-700 mb-3">Parrainez un vendeur et gagnez de l'argent !</p>
+                  <Link href="/dashboard/affilies" className="text-[13px] font-extrabold tracking-wide text-white bg-gradient-to-r from-[#0F7A60] to-emerald-600 hover:to-[#0DE0A1] px-4 py-3 rounded-xl transition-all duration-300 w-full shadow-md shadow-emerald-900/10 hover:shadow-emerald-900/30">Programme Affilié</Link>
+               </div>
+            </div>
+         </div>
+
+         {/* ════════════════════════════════════════════════════════════
+             ZONE PRINCIPALE (Feed + Widgets Droits)
+             ════════════════════════════════════════════════════════════ */}
+         <div className="flex-1 min-w-0 bg-[#FAFAF7] overflow-x-hidden p-4 md:p-6 lg:p-10 relative">
+            <div className="max-w-[1200px] w-full mx-auto pb-16">
+              <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start">
+                 
+                 {/* ── CONTENU CENTRAL ── */}
+                 <div className="flex-1 min-w-0 w-full space-y-8">
             
             {/* ── ONGLET 1 — FEED ── */}
             {activeTab === 'feed' && (
@@ -592,7 +654,7 @@ export default function CommunautesClient({
                             value={postCategory}
                             onChange={e => setPostCategory(e.target.value)}
                             className="text-sm border border-slate-200 rounded-xl px-4 py-2 outline-none
-                              focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-black text-slate-700 cursor-pointer bg-white transition-all hover:bg-slate-50 shadow-sm"
+                              focus:border-[#0DE0A1] focus:ring-2 focus:ring-[#0DE0A1]/20 font-black text-slate-700 cursor-pointer bg-white transition-all hover:bg-slate-50 shadow-sm"
                           >
                             <option value="general">📣 Général</option>
                             <option value="question">❓ Question</option>
@@ -609,9 +671,9 @@ export default function CommunautesClient({
                         <button
                           onClick={publishPost}
                           disabled={!postContent.trim() || publishing}
-                          className="px-6 py-2.5 bg-[#1A1A1A] text-white text-sm font-black rounded-xl
-                            disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0DE0A1] hover:text-[#0F7A60]
-                            transition-all shadow-md flex items-center gap-2 group/btn"
+                          className="px-6 py-3 bg-gradient-to-r from-[#0F7A60] to-emerald-600 text-white text-[13px] font-extrabold tracking-wide rounded-xl
+                            disabled:opacity-50 disabled:cursor-not-allowed hover:to-[#0DE0A1]
+                            transition-all duration-500 shadow-md shadow-emerald-900/10 hover:shadow-emerald-900/30 flex items-center gap-2 group/btn"
                         >
                           {publishing ? <RefreshCw size={16} className="animate-spin" /> : <Send size={16} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />}
                           {publishing ? 'Publication…' : 'Publier'}
@@ -630,8 +692,8 @@ export default function CommunautesClient({
                       className={`flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-black
                         border-2 transition-all duration-300 shadow-sm ${
                         activeFilter === f.id
-                          ? 'bg-[#1A1A1A] text-white border-[#1A1A1A] ring-4 ring-[#1A1A1A]/10 scale-105'
-                          : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700'
+                          ? 'bg-[#0F7A60] text-white shadow-md scale-105 border-transparent'
+                          : 'bg-white text-slate-500 border-slate-200 hover:border-[#0DE0A1]/50 hover:bg-emerald-50 hover:text-[#0F7A60]'
                       }`}
                     >
                       <span className="text-lg">{f.emoji}</span>
@@ -792,7 +854,7 @@ export default function CommunautesClient({
                     {/* Podium top 3 en mode 3D/Premium */}
                     {leaderboard.slice(0, 3).length > 0 && (
                       <div className="flex items-end justify-center gap-2 md:gap-6 mb-12 mt-8 px-2">
-                        {(['🥈', '🥇', '🥉']).map((medal, visualIdx) => {
+                        {(['🥈', '🥇', '🥉']).map((_medal, visualIdx) => {
                           const dataIdx = visualIdx === 1 ? 0 : visualIdx === 0 ? 1 : 2;
                           const entry = leaderboard[dataIdx]
                           
@@ -892,18 +954,18 @@ export default function CommunautesClient({
 
             {/* ── ONGLET 3 — GROUPES ── */}
             {activeTab === 'groupes' && (
-              <div className="animate-in fade-in duration-500 bg-gradient-to-br from-slate-900 to-[#1A1A1A] rounded-3xl p-8 md:p-[5%] overflow-hidden shadow-2xl relative flex flex-col md:flex-row items-center gap-10">
+              <div className="animate-in fade-in duration-500 bg-gradient-to-br from-[#0F7A60] to-emerald-900 rounded-3xl p-8 md:p-[5%] overflow-hidden shadow-2xl relative flex flex-col md:flex-row items-center gap-10">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-[#0DE0A1]/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none mix-blend-overlay"></div>
                 
                 <div className="relative z-10 md:w-1/2 space-y-6">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md">
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest pl-1">Monétisation VIP</span>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md shadow-inner">
+                    <span className="text-[10px] font-bold text-white uppercase tracking-widest pl-1">Monétisation VIP</span>
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
+                  <h2 className="text-3xl md:text-[40px] font-extrabold text-white tracking-tight leading-tight">
                     Gérez vos <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0DE0A1] to-emerald-400">Communautés Telegram</span>
                   </h2>
-                  <p className="text-slate-300 font-medium text-[15px] leading-relaxed">
+                  <p className="text-slate-300 font-medium text-[15px] leading-relaxed max-w-xl">
                     Connectez vos groupes et canaux Telegram à PDV Pro. Automatisez les ajouts, gérez les expulsions expirées et vendez l'accès VIP à vos audiences en pilote automatique.
                   </p>
                   
@@ -919,7 +981,7 @@ export default function CommunautesClient({
                 <div className="relative z-10 md:w-1/2 w-full flex justify-center">
                    <div className="w-full max-w-[280px] aspect-square rounded-full border border-white/10 bg-white/5 backdrop-blur-3xl flex items-center justify-center shadow-xl relative">
                       <div className="absolute inset-4 rounded-full border border-white/5 bg-white/5 backdrop-blur-md"></div>
-                      <div className="w-24 h-24 bg-gradient-to-tr from-blue-500 to-emerald-400 rounded-full flex items-center justify-center shadow-2xl z-10 animate-pulse">
+                      <div className="w-24 h-24 bg-gradient-to-tr from-[#0DE0A1] to-[#0F7A60] rounded-full flex items-center justify-center shadow-2xl z-10 animate-pulse">
                         <span className="text-4xl">✈️</span>
                       </div>
                    </div>
@@ -943,18 +1005,18 @@ export default function CommunautesClient({
                       key={i}
                       href="/dashboard/tips"
                       className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 overflow-hidden
-                        flex flex-col gap-4 hover:shadow-lg hover:border-blue-300 hover:-translate-y-1
+                        flex flex-col gap-4 hover:shadow-lg hover:border-[#0DE0A1] hover:-translate-y-1
                         transition-all duration-300 group/res relative"
                     >
                       {/* Effet fond brillant */}
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl group-hover/res:bg-blue-500/10 transition-colors pointer-events-none" />
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl group-hover/res:bg-emerald-500/10 transition-colors pointer-events-none" />
                       
                       <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-3xl shadow-sm group-hover/res:scale-110 transition-transform duration-300">
                         {r.emoji}
                       </div>
                       
                       <div className="flex-1 min-w-0 relative z-10">
-                        <p className="font-black text-lg text-[#1A1A1A] group-hover/res:text-blue-600 transition-colors leading-tight mb-2">
+                        <p className="font-black text-lg text-[#1A1A1A] group-hover/res:text-[#0F7A60] transition-colors leading-tight mb-2">
                           {r.title}
                         </p>
                         <p className="text-sm font-medium text-slate-500 leading-relaxed">{r.desc}</p>
@@ -962,7 +1024,7 @@ export default function CommunautesClient({
                       
                       <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
                          <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Guide PDV Pro</span>
-                         <span className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover/res:bg-blue-600 group-hover/res:text-white transition-colors">
+                         <span className="w-8 h-8 rounded-full bg-emerald-50 text-[#0F7A60] flex items-center justify-center group-hover/res:bg-[#0F7A60] group-hover/res:text-white transition-colors">
                            <ChevronRight size={16} strokeWidth={3} />
                          </span>
                       </div>
@@ -970,7 +1032,7 @@ export default function CommunautesClient({
                   ))}
                 </div>
 
-                <div className="bg-gradient-to-r from-[#1A1A1A] to-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-6 mt-8 shadow-xl">
+                <div className="bg-gradient-to-r from-[#0DE0A1] to-[#0F7A60] rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-6 mt-8 shadow-xl">
                   <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-3xl border border-white/20 shrink-0 shadow-inner">
                     💡
                   </div>
@@ -990,7 +1052,7 @@ export default function CommunautesClient({
               COLONNE DROITE: WIDGETS LATERAUX (Desktop)
               ════════════════════════════════════════════════════════════ */}
           {(activeTab === 'feed' || activeTab === 'ressources' || activeTab === 'classement') && (
-            <div className="hidden lg:flex flex-col gap-6 sticky top-8 h-max w-[320px] xl:w-[350px] flex-shrink-0">
+            <div className="hidden lg:flex flex-col gap-6 sticky top-8 h-max w-[300px] flex-shrink-0 z-10">
               
               {/* Widget 1: Annonce Officielle */}
               <div className="bg-gradient-to-r from-emerald-500 to-[#0F7A60] rounded-3xl p-6 text-white shadow-xl shadow-emerald-500/20 relative overflow-hidden group">
@@ -1003,51 +1065,40 @@ export default function CommunautesClient({
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/10">Annonce Officielle</span>
+                      <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/10">Nouveauté</span>
                     </div>
                     <p className="font-medium text-[13px] leading-relaxed mb-4 text-emerald-50">
                       Bienvenue dans le nouveau <b>Hub Communautaire PDV Pro !</b> Restez engagé, vendez plus, et connectez vos groupes Telegram pour notifier automatiquement vos membres. 🚀
                     </p>
-                    <button className="text-xs font-black bg-white text-[#0F7A60] px-4 py-2 rounded-xl shadow-sm hover:scale-105 hover:shadow-md transition-all w-full md:w-auto">
-                      Voir les Nouveautés
-                    </button>
                   </div>
                 </div>
               </div>
 
-              {/* Widget 2: Bouton Parrainage */}
-              <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl border border-blue-100 flex flex-col items-center text-center shadow-sm relative overflow-hidden group">
-                <div className="absolute inset-0 bg-blue-100/50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                <span className="text-4xl mb-3 relative z-10">🎁</span>
-                <h3 className="text-[15px] font-black text-slate-800 mb-2 relative z-10 uppercase tracking-wide">Devenez Ambassadeur</h3>
-                <p className="text-[13px] font-medium text-slate-600 mb-5 relative z-10">Parrainez un vendeur et soyez payé sur <span className="font-bold underline decoration-blue-500/30 underline-offset-2">chacune</span> de ses ventes.</p>
-                <Link href="/dashboard/affilies" className="text-[13px] font-black text-white bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl transition-all duration-300 w-full relative z-10 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5">🚀 Découvrir le programme</Link>
-              </div>
-
-              {/* Widget 3: Raccourci vers les Groupes */}
-              <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm overflow-hidden relative group">
+              {/* Widget 2: Raccourci vers les Groupes */}
+              <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] border border-slate-200/50 p-6 shadow-lg shadow-slate-200/30 overflow-hidden relative group hover:border-[#0DE0A1]/30 transition-colors duration-300">
                 <div className="absolute right-0 bottom-0 w-32 h-32 bg-[#0DE0A1]/10 rounded-full blur-2xl translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:scale-150 transition-transform duration-700"></div>
-                <h3 className="font-black text-[#1A1A1A] mb-2 flex items-center gap-2 relative z-10">
-                  <div className="p-2 bg-slate-50 rounded-xl">
+                <h3 className="font-extrabold tracking-tight text-slate-900 mb-2 flex items-center gap-2 relative z-10 text-lg">
+                  <div className="p-2 bg-slate-50/80 backdrop-blur-sm rounded-xl border border-slate-100/50">
                      <MessageSquare size={16} className="text-[#0F7A60]"/>
                   </div>
                   Groupes VIP
                 </h3>
-                <p className="text-[13px] text-slate-500 font-medium mb-5 relative z-10 leading-relaxed">Monétisez vos canaux Telegram privés et automatisez les expulsions.</p>
+                <p className="text-[13px] text-slate-500 font-medium mb-5 relative z-10 leading-relaxed">Monétisez vos canaux Telegram privés et automatisez vos expulsions en un clin d'œil.</p>
                 <button
                   onClick={() => setActiveTab('groupes')}
-                  className="w-full text-[13px] font-black bg-[#1A1A1A] text-white hover:bg-[#0DE0A1] hover:text-[#0F7A60] transition-colors py-2.5 rounded-xl border border-transparent hover:shadow-lg hover:shadow-[#0DE0A1]/20 relative z-10"
+                  className="w-full text-[13px] font-extrabold tracking-wide bg-gradient-to-r from-slate-900 to-slate-800 text-white hover:from-[#0F7A60] hover:to-emerald-600 transition-all duration-500 py-3 rounded-xl border border-transparent shadow-md hover:shadow-xl hover:shadow-emerald-900/20 hover:-translate-y-0.5 relative z-10"
                 >
-                  Gérer vos accès VIP
+                  Configurer mes accès VIP
                 </button>
               </div>
 
             </div>
           )}
 
-        </div>
+         </div>
+       </div>
       </div>
+     </div>
     </div>
   )
 }

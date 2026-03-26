@@ -17,10 +17,10 @@ interface Tier {
 }
 
 const TIERS: Tier[] = [
-  { name: '0 – 100K',    min: 0,         max: 100_000,   rate: 7, color: '#94a3b8' },
-  { name: '100K – 500K', min: 100_001,   max: 500_000,   rate: 6, color: '#3b82f6' },
-  { name: '500K – 1M',   min: 500_001,   max: 1_000_000, rate: 5, color: '#8b5cf6' },
-  { name: '+ 1M',        min: 1_000_001, max: null,       rate: 4, color: '#C9A84C' },
+  { name: '0 – 100K',    min: 0,         max: 100_000,   rate: 8, color: '#94a3b8' },
+  { name: '100K – 500K', min: 100_001,   max: 500_000,   rate: 7, color: '#3b82f6' },
+  { name: '500K – 1M',   min: 500_001,   max: 1_000_000, rate: 6, color: '#8b5cf6' },
+  { name: '+ 1M',        min: 1_000_001, max: null,       rate: 5, color: '#C9A84C' },
 ]
 
 const QUICK_AMOUNTS = [
@@ -142,7 +142,7 @@ export default function SimulateurCommission() {
               <p className="font-black text-sm text-red-500">PDV Pro</p>
               <p className="text-xl font-black text-red-600">
                 {fmt(commission)}
-                <span className="text-xs font-bold ml-1">F</span>
+                <span className="text-xs font-bold ml-1">FCFA</span>
               </p>
             </div>
 
@@ -152,7 +152,7 @@ export default function SimulateurCommission() {
               <p className="font-black text-sm text-[#0F7A60]">Net vendeur</p>
               <p className="text-xl font-black text-[#0F7A60]">
                 {fmt(net)}
-                <span className="text-xs font-bold ml-1">F</span>
+                <span className="text-xs font-bold ml-1">FCFA</span>
               </p>
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function SimulateurCommission() {
           ) : (
             <div className="bg-[#C9A84C]/10 border border-[#C9A84C]/20 rounded-2xl p-3 text-center">
               <p className="text-sm font-black text-[#C9A84C]">
-                🎉 Palier + 1M — Meilleur taux possible : <strong>4%</strong>
+                🎉 Palier + 1M — Meilleur taux possible : <strong>5%</strong>
               </p>
             </div>
           )}

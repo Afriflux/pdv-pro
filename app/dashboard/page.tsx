@@ -36,7 +36,7 @@ export default async function DashboardPage() {
   // --- 1. Récupération Store ---
   let { data: storeRaw } = await supabase
     .from('Store')
-    .select('id, name, slug, logo_url, contract_accepted')
+    .select('id, name, slug, logo_url, contract_accepted, meta_pixel_id, tiktok_pixel_id')
     .eq('user_id', user.id)
     .single()
 
@@ -94,16 +94,22 @@ export default async function DashboardPage() {
         name: insertedStore.name,
         slug: insertedStore.slug,
         logo_url: insertedStore.logo_url,
-        contract_accepted: insertedStore.contract_accepted
+        contract_accepted: insertedStore.contract_accepted,
+        meta_pixel_id: null,
+        tiktok_pixel_id: null
       }
     }
 
-    storeRaw = {
-      id: newStoreId,
-      name: name,
-      slug: newSlug,
-      logo_url: null,
-      contract_accepted: false
+    if (!storeRaw || storeRaw.id === newStoreId) {
+      storeRaw = {
+        id: newStoreId,
+        name: name,
+        slug: newSlug,
+        logo_url: null,
+        contract_accepted: false,
+        meta_pixel_id: null,
+        tiktok_pixel_id: null
+      }
     }
   }
 
@@ -128,9 +134,10 @@ export default async function DashboardPage() {
     { data: userData },
     { count: productCount },
     { count: zoneCount },
-    { count: promoCount }
+    { count: promoCount },
+    { count: delivererCount },
+    { count: walletSettingCount }
   ] = await Promise.all([
-
     // CA + ventes aujourd'hui
     supabase.from('Order')
       .select('id, vendor_amount, status, created_at')
@@ -182,7 +189,17 @@ export default async function DashboardPage() {
     // Count promotions
     supabase.from('Promotion')
       .select('id', { count: 'exact', head: true })
-      .eq('store_id', storeId)
+      .eq('store_id', storeId),
+      
+    // Count livreurs
+    supabase.from('Deliverer')
+      .select('id', { count: 'exact', head: true })
+      .eq('store_id', storeId),
+      
+    // Count WalletSetting (pour savoir si retrait configuré)
+    supabase.from('WalletSetting')
+      .select('id', { count: 'exact', head: true })
+      .eq('vendor_id', storeId)
   ])
 
   // --- Calculs KPIs ---
@@ -259,9 +276,13 @@ export default async function DashboardPage() {
   const safeProductCount = productCount ?? 0
   const safeZoneCount = zoneCount ?? 0
   const safePromoCount = promoCount ?? 0
+  const safeDelivererCount = delivererCount ?? 0
+  const safeWalletSettingCount = walletSettingCount ?? 0
+  
+  const hasSettingsChecked = !!storeRaw.meta_pixel_id || !!storeRaw.tiktok_pixel_id || !!storeRaw.logo_url
 
   // --- Check si le vendeur est nouveau (a configuré tous les éléments essentiels) ---
-  const isNewVendor = safeProductCount === 0 || safeZoneCount === 0 || safePromoCount === 0
+  const isNewVendor = safeProductCount === 0 || safeZoneCount === 0 || safePromoCount === 0 || safeDelivererCount === 0 || safeWalletSettingCount === 0 || !hasSettingsChecked
 
   return (
     <main className="min-h-screen bg-[#FAFAF7] font-sans pb-20 relative">
@@ -305,6 +326,9 @@ export default async function DashboardPage() {
             hasProducts={safeProductCount > 0} 
             hasZones={safeZoneCount > 0}
             hasPromotions={safePromoCount > 0}
+            hasDeliveries={safeDelivererCount > 0}
+            hasWallet={safeWalletSettingCount > 0}
+            hasSettings={hasSettingsChecked}
           />
         )}
 

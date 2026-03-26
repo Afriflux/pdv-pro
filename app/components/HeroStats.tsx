@@ -34,8 +34,8 @@ function useCountUp(end: number, start: number = 0, duration: number = 2000) {
 export function HeroStats() {
   const stat1 = useCountUp(1, 10, 2000)
   const stat2 = useCountUp(0, 50000, 2500)
-  const stat3Start = useCountUp(7, 0, 1500)
-  const stat3End = useCountUp(4, 0, 1500)
+  const stat3Start = useCountUp(8, 0, 1500)
+  const stat3End = useCountUp(5, 0, 1500)
 
   return (
     <div className="pt-16 max-w-4xl mx-auto border-t border-line mt-16 flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16">

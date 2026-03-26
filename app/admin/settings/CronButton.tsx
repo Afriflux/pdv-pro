@@ -49,19 +49,21 @@ export default function CronButton({ label, endpoint, description }: CronButtonP
   }
 
   return (
-    <div className="bg-[#161B22] border border-[#30363D] p-5 rounded-2xl flex flex-col gap-4 relative overflow-hidden group">
-      <div className="flex items-center justify-between">
+    <div className="bg-white/70 backdrop-blur-xl border border-white/50 p-5 rounded-3xl flex flex-col gap-4 relative overflow-hidden group shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-lg transition-shadow duration-300">
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-white/20 pointer-events-none -z-10"></div>
+      
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="font-bold text-gray-200">{label}</h3>
-          {description && <p className="text-xs text-gray-500 mt-0.5">{description}</p>}
+          <h3 className="font-bold text-[#1A1A1A]">{label}</h3>
+          {description && <p className="text-xs font-medium text-gray-500 mt-0.5">{description}</p>}
         </div>
         <button
           onClick={handleTrigger}
           disabled={loading}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all ${
+          className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all shadow-sm border ${
             loading 
-              ? 'bg-[#30363D] text-gray-500 cursor-not-allowed'
-              : 'bg-[#0F7A60] hover:bg-[#0F7A60]/80 text-white shadow-lg shadow-[#0F7A60]/20 active:scale-95'
+              ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+              : 'bg-gradient-to-r from-[#0F7A60] to-teal-500 hover:from-[#0D5C4A] hover:to-[#0F7A60] text-white border-[#0F7A60]/50 shadow-[0_4px_15px_rgba(15,122,96,0.2)] hover:shadow-[0_6px_20px_rgba(15,122,96,0.3)]'
           }`}
         >
           {loading ? (
@@ -75,28 +77,30 @@ export default function CronButton({ label, endpoint, description }: CronButtonP
 
       {/* Résultat JSON */}
       {(result || error) && (
-        <div className={`mt-2 p-3 rounded-xl border animate-in slide-in-from-top-2 duration-300 ${
-          error ? 'bg-red-500/5 border-red-500/20' : 'bg-emerald-500/5 border-emerald-500/20'
+        <div className={`mt-2 p-4 rounded-2xl border backdrop-blur-md animate-in slide-in-from-top-2 duration-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] ${
+          error ? 'bg-red-50/80 border-red-200' : 'bg-emerald-50/80 border-emerald-200'
         }`}>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1.5">
-              {error ? (
-                <AlertCircle className="w-3.5 h-3.5 text-red-500" />
-              ) : (
-                <Check className="w-3.5 h-3.5 text-emerald-500" />
-              )}
-              <span className={`text-[10px] font-black uppercase ${error ? 'text-red-500' : 'text-emerald-500'}`}>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className={`p-1.5 rounded-lg border shadow-sm flex items-center justify-center ${error ? 'bg-red-100 text-red-500 border-red-200' : 'bg-emerald-100 text-emerald-500 border-emerald-200'}`}>
+                {error ? (
+                  <AlertCircle className="w-3 h-3" />
+                ) : (
+                  <Check className="w-3 h-3" />
+                )}
+              </span>
+              <span className={`text-[10px] font-black uppercase tracking-wider ${error ? 'text-red-600' : 'text-emerald-600'}`}>
                 {error ? 'Échec' : 'Succès'}
               </span>
             </div>
             <button 
               onClick={() => { setResult(null); setError(null); }}
-              className="text-[10px] text-gray-500 hover:text-white"
+              className={`text-[10px] font-bold px-2 py-1 rounded-lg transition-colors ${error ? 'text-red-500 hover:bg-red-100' : 'text-emerald-500 hover:bg-emerald-100'}`}
             >
               Effacer
             </button>
           </div>
-          <pre className="text-[10px] font-mono text-gray-400 overflow-x-auto p-2 bg-black/30 rounded-lg max-h-32">
+          <pre className={`text-[11px] font-mono overflow-x-auto p-3 rounded-xl border max-h-40 shadow-inner ${error ? 'text-red-800 bg-red-100/50 border-red-200/50' : 'text-emerald-800 bg-emerald-100/50 border-emerald-200/50'}`}>
             {JSON.stringify(result || { error }, null, 2)}
           </pre>
         </div>

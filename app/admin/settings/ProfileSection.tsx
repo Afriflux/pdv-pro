@@ -20,7 +20,7 @@ function RoleBadge({ role }: { role: string }) {
     support:      'Support',
   }
   return (
-    <span className={`px-2.5 py-1 border rounded-full text-[10px] font-black uppercase tracking-wider ${styles[role] ?? styles.support}`}>
+    <span className={`px-2.5 py-1 border rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm ${styles[role] ?? styles.support}`}>
       {labels[role] ?? role}
     </span>
   )
@@ -131,31 +131,31 @@ export default function ProfileSection({
   return (
     <form onSubmit={handleSaveName} className="space-y-6">
       {/* Avatar */}
-      <div className="flex items-center gap-5">
-        <div className="relative flex-shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-5 p-2 leading-none">
+        <div className="relative flex-shrink-0 group">
           {currentAvatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={currentAvatar}
               alt="Avatar admin"
-              className="w-20 h-20 rounded-2xl object-cover border-2 border-gray-200"
+              className="w-20 h-20 rounded-2xl object-cover border-2 border-white/80 shadow-md transition-transform group-hover:scale-105"
             />
           ) : (
-            <div className="w-20 h-20 rounded-2xl bg-[#0F7A60]/10 flex items-center justify-center text-2xl font-black text-[#0F7A60] border-2 border-[#0F7A60]/20">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#0F7A60]/10 to-teal-500/10 flex items-center justify-center text-2xl font-black text-[#0F7A60] border-2 border-white/80 shadow-md transition-transform group-hover:scale-105">
               {initiale}
             </div>
           )}
           {uploading && (
-            <div className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm rounded-2xl flex items-center justify-center transition-all delay-75">
               <Loader2 className="w-5 h-5 text-white animate-spin" />
             </div>
           )}
         </div>
-        <div>
+        <div className="flex flex-col gap-2">
           <label
             htmlFor="avatar-upload"
-            className="inline-flex items-center gap-2 cursor-pointer px-4 py-2 bg-[#FAFAF7] border border-gray-200
-              rounded-xl text-xs font-bold text-gray-600 hover:border-[#0F7A60] hover:text-[#0F7A60] transition-all"
+            className="inline-flex items-center justify-center gap-2 cursor-pointer px-4 py-2.5 bg-white/60 backdrop-blur-sm shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] border border-white/80
+              rounded-xl text-xs font-bold text-gray-600 hover:border-[#0F7A60]/50 hover:bg-white hover:text-[#0F7A60] transition-all hover:shadow-sm"
           >
             <Upload className="w-3.5 h-3.5" />
             {uploading ? 'Upload en cours...' : 'Changer la photo'}
@@ -174,7 +174,7 @@ export default function ProfileSection({
 
       {/* Nom */}
       <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">
+        <label className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1">
           Nom affiché
         </label>
         <input
@@ -182,15 +182,15 @@ export default function ProfileSection({
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="Prénom Nom"
-          className="w-full bg-[#FAFAF7] border border-gray-200 rounded-xl py-2.5 px-4 text-sm text-[#1A1A1A]
-            focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all"
+          className="w-full bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl py-3 px-4 text-sm font-semibold text-[#1A1A1A]
+            focus:bg-white focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 outline-none transition-all duration-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]"
           required
         />
       </div>
 
       {/* Email readonly + badge rôle */}
       <div>
-        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">
+        <label className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1">
           Email & Rôle
         </label>
         <div className="flex items-center gap-3">
@@ -200,19 +200,19 @@ export default function ProfileSection({
             type="email"
             value={email}
             readOnly
-            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl py-2.5 px-4 text-sm text-gray-400 cursor-not-allowed"
+            className="flex-1 bg-gray-50/50 backdrop-blur-sm border border-gray-200/50 rounded-2xl py-3 px-4 text-sm font-medium text-gray-400 cursor-not-allowed shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)]"
           />
           <RoleBadge role={role} />
         </div>
       </div>
 
       {/* Bouton sauvegarde */}
-      <div className="flex justify-end">
+      <div className="flex justify-end pt-2">
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0F7A60] hover:bg-[#0D5C4A]
-            disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-all shadow-sm"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#0F7A60] to-teal-500 hover:from-[#0D5C4A] hover:to-[#0F7A60]
+            disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-2xl transition-all shadow-[0_4px_15px_rgba(15,122,96,0.2)] hover:shadow-[0_6px_20px_rgba(15,122,96,0.3)] border border-[#0F7A60]/50"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {saving ? 'Sauvegarde...' : 'Sauvegarder le profil'}

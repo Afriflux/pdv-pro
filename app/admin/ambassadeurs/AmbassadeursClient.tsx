@@ -55,14 +55,15 @@ function StatsCards({ ambassadeurs }: { ambassadeurs: AmbassadorWithStore[] }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
       {[
-        { label: 'Total ambassadeurs', value: total,  color: 'text-[#1A1A1A]' },
-        { label: 'Actifs',             value: actifs, color: 'text-[#0F7A60]' },
-        { label: 'Contrats signés',    value: signés, color: 'text-[#C9A84C]' },
-        { label: 'KYC vérifié',        value: kycOk,  color: 'text-blue-600'  },
+        { label: 'Total ambassadeurs', value: total,  color: 'text-[#1A1A1A]', bg: 'bg-white/70' },
+        { label: 'Actifs',             value: actifs, color: 'text-[#0F7A60]', bg: 'bg-[#0F7A60]/5' },
+        { label: 'Contrats signés',    value: signés, color: 'text-[#C9A84C]', bg: 'bg-[#C9A84C]/5' },
+        { label: 'KYC vérifié',        value: kycOk,  color: 'text-emerald-600', bg: 'bg-emerald-500/5'  },
       ].map(s => (
-        <div key={s.label} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-          <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-2">{s.label}</p>
-          <p className={`text-3xl font-black ${s.color}`}>{s.value}</p>
+        <div key={s.label} className={`backdrop-blur-xl border border-white/50 rounded-3xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden group ${s.bg}`}>
+          <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          <p className="text-[10px] text-gray-500 font-extrabold uppercase tracking-widest mb-2 relative z-10">{s.label}</p>
+          <p className={`text-4xl font-black relative z-10 ${s.color}`}>{s.value}</p>
         </div>
       ))}
     </div>
@@ -120,10 +121,13 @@ function OngletAmbassadeurs({
 
   if (list.length === 0) {
     return (
-      <div className="bg-white border border-gray-100 rounded-2xl p-16 text-center shadow-sm">
-        <p className="text-4xl mb-4">🤝</p>
-        <p className="text-gray-500 font-medium">Aucun ambassadeur pour le moment.</p>
-        <p className="text-gray-400 text-xs mt-1">
+      <div className="bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl p-16 text-center shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
+        <div className="w-20 h-20 bg-white shadow-xl rounded-3xl flex items-center justify-center mx-auto mb-6 relative z-10 border border-white/50">
+          <Users className="w-10 h-10 text-gray-300" />
+          <div className="absolute -inset-4 bg-emerald-400/20 rounded-full blur-xl -z-10" />
+        </div>
+        <h2 className="text-xl font-black text-[#1A1A1A] mb-2 relative z-10">Aucun ambassadeur</h2>
+        <p className="text-sm text-gray-500 relative z-10">
           Les vendeurs autorisés apparaîtront ici avec leur code unique.
         </p>
       </div>
@@ -163,79 +167,82 @@ function OngletAmbassadeurs({
         />
       )}
 
-      <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
+      <div className="relative bg-white/70 backdrop-blur-2xl border border-white/50 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+        {/* Subtle Glow */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0F7A60]/5 rounded-full blur-3xl -z-10 pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
+
+        <div className="overflow-x-auto relative z-10">
           <table className="w-full text-left">
-            <thead className="bg-[#0F7A60]/5 border-b border-gray-100 text-gray-400 uppercase text-[10px] font-black tracking-widest">
+            <thead className="bg-[#0F7A60]/[0.02] border-b border-white/40 text-gray-500 uppercase text-[10px] font-black tracking-widest">
               <tr>
-                <th className="px-6 py-4">Boutique / Vendeur</th>
-                <th className="px-6 py-4">Code</th>
-                <th className="px-6 py-4 text-center">Commission</th>
-                <th className="px-6 py-4 text-center">KYC</th>
-                <th className="px-6 py-4 text-center">Contrat</th>
-                <th className="px-6 py-4 text-center">Statut</th>
-                <th className="px-6 py-4">Depuis</th>
-                <th className="px-6 py-4 text-center">Toggle</th>
+                <th className="px-6 py-5">Boutique / Vendeur</th>
+                <th className="px-6 py-5">Code</th>
+                <th className="px-6 py-5 text-center">Commission</th>
+                <th className="px-6 py-5 text-center">KYC</th>
+                <th className="px-6 py-5 text-center">Contrat</th>
+                <th className="px-6 py-5 text-center">Statut</th>
+                <th className="px-6 py-5">Depuis</th>
+                <th className="px-6 py-5 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-white/20">
               {list.map((amb) => {
                 const kycOk = amb.Store?.kyc_status === 'verified'
                 return (
-                  <tr key={amb.id} className="hover:bg-[#FAFAF7] transition-colors">
+                  <tr key={amb.id} className="hover:bg-white/50 transition-colors border-b border-white/20 last:border-0 group">
 
                     {/* Boutique */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#0F7A60]/10 flex items-center justify-center text-[#0F7A60] font-black text-sm flex-shrink-0">
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0F7A60]/10 to-teal-500/10 border border-[#0F7A60]/10 shadow-inner flex items-center justify-center text-[#0F7A60] font-black text-sm flex-shrink-0">
                           {(amb.Store?.name ?? '?').charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-[#1A1A1A]">
+                          <p className="text-sm font-bold text-[#1A1A1A] group-hover:text-[#0F7A60] transition-colors">
                             {amb.Store?.name ?? 'Boutique inconnue'}
                           </p>
-                          <p className="text-xs text-gray-400">{amb.Store?.User?.email ?? '—'}</p>
+                          <p className="text-xs font-medium text-gray-500">{amb.Store?.User?.email ?? '—'}</p>
                         </div>
                       </div>
                     </td>
 
                     {/* Code */}
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 bg-[#0F7A60]/10 text-[#0F7A60] rounded-lg font-mono text-xs font-black tracking-wider">
+                    <td className="px-6 py-5">
+                      <span className="inline-flex items-center px-3 py-1.5 bg-[#0F7A60]/10 border border-[#0F7A60]/20 text-[#0F7A60] rounded-xl font-mono text-xs font-black tracking-wider shadow-sm">
                         {amb.code}
                       </span>
                     </td>
 
                     {/* Commission */}
-                    <td className="px-6 py-4 text-center">
-                      <span className="text-sm font-bold text-[#C9A84C]">
+                    <td className="px-6 py-5 text-center">
+                      <span className="text-sm font-black text-[#C9A84C] bg-[#C9A84C]/10 border border-[#C9A84C]/20 px-3 py-1.5 rounded-xl">
                         {commissionAmount.toLocaleString('fr-FR')} FCFA
                       </span>
                     </td>
 
                     {/* KYC */}
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-5 text-center">
                       {kycOk ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-black">
-                          <ShieldCheck size={11} /> Vérifié
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-[10px] uppercase font-black tracking-wider shadow-sm">
+                          <ShieldCheck size={12} /> Vérifié
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-50 text-orange-600 rounded-full text-[10px] font-black">
-                          <ShieldAlert size={11} /> Requis
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-600 border border-amber-200 rounded-xl text-[10px] uppercase font-black tracking-wider shadow-sm">
+                          <ShieldAlert size={12} /> Requis
                         </span>
                       )}
                     </td>
 
                     {/* Contrat */}
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-5 text-center">
                       {amb.contract_accepted ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-600">
-                          ✅ Signé
+                        <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100 shadow-sm">
+                          <ShieldCheck size={12} /> Signé
                         </span>
                       ) : (
                         <button
                           onClick={() => setContractAmb(amb)}
-                          className="text-[10px] font-black text-amber-600 underline hover:text-amber-800 transition-colors"
+                          className="text-[10px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200 hover:bg-amber-100 shadow-sm transition-colors"
                         >
                           ⚠️ Faire signer
                         </button>
@@ -243,23 +250,23 @@ function OngletAmbassadeurs({
                     </td>
 
                     {/* Statut */}
-                    <td className="px-6 py-4 text-center">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase ${
+                    <td className="px-6 py-5 text-center">
+                      <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider inline-block shadow-sm ${
                         amb.is_active
-                          ? 'bg-[#0F7A60]/10 text-[#0F7A60]'
-                          : 'bg-red-50 text-red-500'
+                          ? 'bg-[#0F7A60]/10 border border-[#0F7A60]/20 text-[#0F7A60]'
+                          : 'bg-red-50 border border-red-200 text-red-600'
                       }`}>
                         {amb.is_active ? 'Actif' : 'Inactif'}
                       </span>
                     </td>
 
                     {/* Date */}
-                    <td className="px-6 py-4 text-xs text-gray-400">
+                    <td className="px-6 py-5 text-xs font-semibold text-gray-500">
                       {format(new Date(amb.created_at), 'dd MMM yyyy', { locale: fr })}
                     </td>
 
                     {/* Toggle */}
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-5 text-center">
                       <button
                         onClick={() => handleToggle(amb.id, amb.is_active)}
                         disabled={toggling === amb.id}
@@ -329,15 +336,19 @@ function OngletRegles({ initialConfig }: { initialConfig: Record<string, string>
   return (
     <div className="space-y-6">
       {/* ── Config programme ── */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
-        <h3 className="text-sm font-black text-[#1A1A1A] mb-5">⚙️ Configuration du programme</h3>
-        <form onSubmit={handleSave} className="space-y-6">
+      <div className="bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] p-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#0F7A60]/5 rounded-full blur-3xl -z-10 pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
+        <h3 className="text-sm font-black text-[#1A1A1A] mb-6 flex items-center gap-2">
+          <Settings className="w-5 h-5 text-[#0F7A60]" />
+          Configuration du programme
+        </h3>
+        <form onSubmit={handleSave} className="space-y-6 relative z-10">
 
           {/* Toggle activation globale */}
-          <div className="flex items-center justify-between p-4 bg-[#FAFAF7] rounded-2xl border border-gray-100">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/50 shadow-sm gap-4">
             <div>
               <p className="text-sm font-bold text-[#1A1A1A]">Programme ambassadeur actif</p>
-              <p className="text-xs text-gray-400 mt-0.5">Désactiver empêche les nouveaux parrainages.</p>
+              <p className="text-xs font-medium text-gray-500 mt-1">Désactiver empêche les nouveaux parrainages.</p>
             </div>
             <button
               type="button"
@@ -413,17 +424,19 @@ function OngletRegles({ initialConfig }: { initialConfig: Record<string, string>
       </div>
 
       {/* ── Règles officielles (accordéon) ── */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden">
         <button
           type="button"
           onClick={() => setShowRules(v => !v)}
-          className="w-full flex items-center justify-between px-6 py-4 text-sm font-black text-[#1A1A1A] hover:bg-[#FAFAF7] transition-colors"
+          className="w-full flex items-center justify-between px-8 py-6 text-sm font-black text-[#1A1A1A] hover:bg-white/50 transition-colors border-b border-white/20"
         >
-          <div className="flex items-center gap-2">
-            <BookOpen size={16} className="text-[#0F7A60]" />
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-[#0F7A60]/10 text-[#0F7A60]">
+              <BookOpen size={18} />
+            </div>
             Règles officielles du programme ambassadeur
           </div>
-          <span className="text-gray-400">{showRules ? '▲' : '▼'}</span>
+          <span className="text-gray-400 bg-white/60 px-3 py-1.5 rounded-xl border border-white/50">{showRules ? 'Masquer' : 'Afficher'}</span>
         </button>
 
         {showRules && (
@@ -491,11 +504,11 @@ function OngletRegles({ initialConfig }: { initialConfig: Record<string, string>
 
 function RuleBlock({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-[#FAFAF7] rounded-xl p-4">
-      <p className="text-xs font-black text-[#1A1A1A] uppercase tracking-wider mb-2">
-        {icon} {title}
+    <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-5 border border-white/50 shadow-sm hover:shadow-md transition-shadow">
+      <p className="text-[11px] font-black text-[#1A1A1A] uppercase tracking-widest mb-3 flex items-center gap-2">
+        <span className="text-lg">{icon}</span> {title}
       </p>
-      <div className="text-sm text-gray-600 space-y-1">{children}</div>
+      <div className="text-sm font-medium text-gray-600 space-y-1.5 leading-relaxed">{children}</div>
     </div>
   )
 }
@@ -518,19 +531,20 @@ export default function AmbassadeursClient({ ambassadeurs, initialConfig }: Amba
       <StatsCards ambassadeurs={ambassadeurs} />
 
       {/* Onglets */}
-      <div className="flex border-b border-gray-200">
+      <div className="flex gap-2">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-5 py-3 text-sm font-bold border-b-2 transition-all -mb-px ${
+            className={`flex items-center gap-2.5 px-6 py-3.5 text-sm font-bold rounded-2xl transition-all duration-300 relative overflow-hidden ${
               activeTab === tab.id
-                ? 'border-[#0F7A60] text-[#0F7A60]'
-                : 'border-transparent text-gray-400 hover:text-gray-600'
+                ? 'bg-gradient-to-r from-[#0F7A60] to-teal-500 text-white shadow-[0_4px_15px_rgba(15,122,96,0.3)] border border-[#0F7A60]/50'
+                : 'bg-white/70 backdrop-blur-xl border border-white/50 text-gray-500 hover:bg-white/90 hover:text-gray-900 shadow-sm'
             }`}
           >
-            <tab.icon className="w-4 h-4" />
-            {tab.label}
+            {activeTab === tab.id && <div className="absolute inset-0 bg-white/20 hover:translate-x-full transition-transform duration-700 -skew-x-12 -translate-x-full pointer-events-none" />}
+            <tab.icon className="w-4.5 h-4.5 relative z-10" />
+            <span className="relative z-10">{tab.label}</span>
           </button>
         ))}
       </div>

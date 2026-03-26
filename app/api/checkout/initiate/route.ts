@@ -10,6 +10,7 @@ import { sendTransactionalEmail } from '@/lib/brevo/brevo-service'
 import { orderConfirmationEmail } from '@/lib/brevo/email-templates'
 import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
 import { sendSaleNotification } from '@/lib/telegram/community-service'
+import { executeWorkflows } from '@/lib/workflows/execution'
 
 function roundTo5(amount: number): number {
   return Math.ceil(amount / 5) * 5
@@ -76,7 +77,8 @@ export async function POST(req: NextRequest) {
       product_id, store_id, variant_id, quantity = 1,
       buyer_name, buyer_email, buyer_phone, delivery_address, delivery_zone_id,
       payment_method, applied_promo_id, affiliate_token,
-      booking_date, booking_start_time, booking_end_time
+      booking_date, booking_start_time, booking_end_time,
+      bump_product_id
     } = body
 
     if (!product_id || !store_id || !buyer_name || !buyer_phone || !payment_method) {
@@ -101,7 +103,15 @@ export async function POST(req: NextRequest) {
       basePrice += variantData.price_adjust
     }
 
-    const grossSubtotal = basePrice * quantity
+    let bumpProduct = null
+    if (bump_product_id) {
+      bumpProduct = await prisma.product.findUnique({ where: { id: bump_product_id } })
+      if (!bumpProduct || !bumpProduct.active || bumpProduct.store_id !== store_id) {
+        return NextResponse.json({ error: 'Produit additionnel invalide.' }, { status: 400 })
+      }
+    }
+
+    const grossSubtotal = (basePrice * quantity) + (bumpProduct ? bumpProduct.price : 0)
     let promoDiscountAmount = 0
 
     // ── 2. VALIDATION SERVEUR DU CODE PROMO ───────────────────────
@@ -195,10 +205,10 @@ export async function POST(req: NextRequest) {
     if (finalAffiliateToken) {
       // 1. Vérifier si l'affilié existe et est actif
       const affiliateData = await prisma.affiliate.findUnique({
-        where: { code: finalAffiliateToken, is_active: true }
+        where: { token: finalAffiliateToken }
       })
 
-      if (affiliateData) {
+      if (affiliateData && affiliateData.status === 'active') {
         // 2. Déterminer le taux
         let appliedMargin = 0
         if (product.affiliate_active === true && product.affiliate_margin !== null) {
@@ -276,6 +286,7 @@ export async function POST(req: NextRequest) {
         prisma.order.create({
           data: {
             product_id, store_id, variant_id: variant_id ?? null, quantity,
+            bump_product_id: bump_product_id ?? null,
             buyer_name, buyer_email: buyer_email?.trim() || null, buyer_phone, delivery_address: delivery_address ?? null,
             delivery_zone_id: delivery_zone_id ?? null, delivery_fee: deliveryFee,
             payment_method, subtotal: grossSubtotal, promo_discount: promoDiscountAmount,
@@ -385,6 +396,17 @@ export async function POST(req: NextRequest) {
       }).catch(e => console.error('[Notification COD ERROR]', e))
 
       sendSaleNotification(store_id, total, buyer_name, product.name).catch(e => console.error('[Telegram Sale Notify ERROR]', e))
+
+      executeWorkflows(store_id, 'Nouvelle Commande (Validée COD)', {
+        client_name: buyer_name,
+        client_phone: buyer_phone,
+        client_email: buyer_email || '',
+        product_name: product.name,
+        order_id: orderRecord.id,
+        order_total: total,
+        customer_city: city || 'Inconnue',
+        store_name: storeRecordData?.name || 'PDV Pro',
+      }).catch(e => console.error('[Workflow Engine Error]', e));
 
       return NextResponse.json({ order_id: orderRecord.id, cod: true })
     }

@@ -29,7 +29,7 @@ import { Package, Wallet } from 'lucide-react'
 
 export const metadata = {
   title: 'PDV Pro — Vendez en ligne en Afrique de l\'Ouest',
-  description: 'Créez votre boutique en ligne en 10 minutes. Zéro abonnement, zéro frais fixe. Paiements Wave, Orange Money et Mobile Money intégrés. Commission dégressive 7% → 4%.',
+  description: 'Créez votre boutique en ligne en 10 minutes. Zéro abonnement, zéro frais fixe. Paiements Wave, Orange Money et Mobile Money intégrés. Commission dégressive 8% → 5%.',
   openGraph: {
     title: 'PDV Pro — Votre boutique e-commerce en 10 minutes',
     description: 'Vendez sur WhatsApp, Instagram et Facebook avec une vraie boutique. Paiements Mobile Money intégrés.',
@@ -58,7 +58,7 @@ export const metadata = {
   const DEFAULT_FAQS: LandingFAQ[] = [
     {
       q: "Comment fonctionne la commission ?",
-      r: "La commission est dégressive et calculée automatiquement sur votre chiffre d'affaires mensuel : de 7% pour les débutants à seulement 4% pour les gros volumes. PDV Pro absorbe tous les frais techniques (passerelles et retraits), vous recevez votre net garanti."
+      r: "La commission est dégressive et calculée automatiquement sur votre chiffre d'affaires mensuel : de 8% pour les débutants à seulement 5% pour les gros volumes. PDV Pro absorbe tous les frais techniques (passerelles et retraits), vous recevez votre net garanti."
     },
     {
       q: "Peut-on vendre des produits physiques ?",
@@ -227,7 +227,7 @@ export default async function LandingPage() {
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
                 </span>
                 <span className="text-sm font-semibold text-amber-700">
-                  🚀 Launch Week — Commission à 4% pour les 100 premiers vendeurs
+                  🚀 Launch Week — Commission à 5% pour les 100 premiers vendeurs
                 </span>
               </div>
             )}
@@ -639,15 +639,15 @@ export default async function LandingPage() {
                 <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative group/tooltip overflow-hidden cursor-help">
                   <div className="absolute inset-0 bg-ink/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
                     <h4 className="font-bold text-gold mb-3 text-lg">Palier Débutant</h4>
-                    <p className="text-sm text-cream/90 leading-relaxed">Activé par défaut ou si votre chiffre d'affaires mensuel (N-1) est inférieur à 100 000 FCFA. Une commission unique de 7% s'applique. Zéro abonnement.</p>
+                    <p className="text-sm text-cream/90 leading-relaxed">Activé par défaut ou si votre chiffre d'affaires mensuel (N-1) est inférieur à 100 000 FCFA. Une commission unique de 8% s'applique. Zéro abonnement.</p>
                   </div>
                   <div className="text-center pb-6 border-b border-line mb-6">
                     <h3 className="font-display font-black text-2xl text-ink">Débutant</h3>
                   </div>
                   <div className="space-y-6 flex-1 text-center">
                     <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">0 - 100K FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">7%</div>
-                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">93%</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">8%</div>
+                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">92%</div>
                     <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
                   </div>
                   </div>
@@ -656,15 +656,15 @@ export default async function LandingPage() {
                 <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative group/tooltip overflow-hidden cursor-help">
                   <div className="absolute inset-0 bg-ink/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
                     <h4 className="font-bold text-gold mb-3 text-lg">Palier Actif</h4>
-                    <p className="text-sm text-cream/90 leading-relaxed">Dès que vous dépassez les 100 000 FCFA de ventes le mois précédent, le système abaisse automatiquement votre commission à 6%. Vous gagnez plus.</p>
+                    <p className="text-sm text-cream/90 leading-relaxed">Dès que vous dépassez les 100 000 FCFA de ventes le mois précédent, le système abaisse automatiquement votre commission à 7%. Vous gagnez plus.</p>
                   </div>
                   <div className="text-center pb-6 border-b border-line mb-6">
                     <h3 className="font-display font-black text-2xl text-ink">Actif</h3>
                   </div>
                   <div className="space-y-6 flex-1 text-center">
                     <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">100K - 500K FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">6%</div>
-                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">94%</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">7%</div>
+                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">93%</div>
                     <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
                   </div>
                   </div>
@@ -673,15 +673,15 @@ export default async function LandingPage() {
                 <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative group/tooltip overflow-hidden cursor-help">
                   <div className="absolute inset-0 bg-ink/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
                     <h4 className="font-bold text-gold mb-3 text-lg">Palier Pro</h4>
-                    <p className="text-sm text-cream/90 leading-relaxed">Réservé aux e-commerçants confirmés avec plus de 500 000 FCFA de volumes mensuels (N-1). Vous passez à 5% et gardez 95% du chiffre d'affaires net.</p>
+                    <p className="text-sm text-cream/90 leading-relaxed">Réservé aux e-commerçants confirmés avec plus de 500 000 FCFA de volumes mensuels (N-1). Vous passez à 6% et gardez 94% du chiffre d'affaires net.</p>
                   </div>
                   <div className="text-center pb-6 border-b border-line mb-6">
                     <h3 className="font-display font-black text-2xl text-ink">Pro</h3>
                   </div>
                   <div className="space-y-6 flex-1 text-center">
                     <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">500K - 1M FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">5%</div>
-                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">95%</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">6%</div>
+                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">94%</div>
                     <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
                   </div>
                   </div>
@@ -690,7 +690,7 @@ export default async function LandingPage() {
                 <div className="w-64 md:w-auto bg-pearl rounded-3xl border-2 border-emerald-rich shadow-lg p-6 flex flex-col transform md:scale-105 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald/20 transition-all duration-300 relative group/tooltip overflow-hidden z-20 cursor-help">
                   <div className="absolute inset-0 bg-emerald-deep/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
                     <h4 className="font-bold text-emerald-light mb-3 text-lg">Palier Expert</h4>
-                    <p className="text-sm text-cream/90 leading-relaxed">Le grade d'élite. En dépassant 1 Million FCFA mensuels, vous obtenez notre meilleur taux de 4%. Frais Wave/Orange Money inclus. Zéro plafond de facturation.</p>
+                    <p className="text-sm text-cream/90 leading-relaxed">Le grade d'élite. En dépassant 1 Million FCFA mensuels, vous obtenez notre meilleur taux de 5%. Frais Wave/Orange Money inclus. Zéro plafond de facturation.</p>
                   </div>
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald text-white text-[10px] uppercase tracking-widest font-black px-4 py-1.5 rounded-full shadow-md whitespace-nowrap pointer-events-none z-10">
                     Meilleur taux (Populaire)
@@ -700,8 +700,8 @@ export default async function LandingPage() {
                   </div>
                   <div className="space-y-6 flex-1 text-center relative z-0">
                     <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">+ 1M FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-emerald scale-110">4%</div>
-                    <div className="h-12 flex items-center justify-center font-bold text-emerald-rich text-2xl mt-2 bg-emerald/10 rounded-full scale-110 px-4">96%</div>
+                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-emerald scale-110">5%</div>
+                    <div className="h-12 flex items-center justify-center font-bold text-emerald-rich text-2xl mt-2 bg-emerald/10 rounded-full scale-110 px-4">95%</div>
                     <div className="h-12 flex items-center justify-center text-sm font-bold text-emerald">Inclus</div>
                   </div>
                   </div>

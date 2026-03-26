@@ -62,7 +62,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
   const { data: product } = await supabase
     .from('Product')
     .select(`
-      id, name, description, price, type, images, category, resale_allowed, resale_commission, cash_on_delivery, digital_files, coaching_durations, coaching_is_pack, coaching_pack_count,
+      id, name, description, price, type, images, category, resale_allowed, resale_commission, cash_on_delivery, digital_files, coaching_durations, coaching_is_pack, coaching_pack_count, bump_active, bump_product_id, bump_offer_text,
       store:Store(id, name, slug, logo_url, primary_color, meta_pixel_id, tiktok_pixel_id, google_tag_id, contract_accepted, vendor_type, kyc_status, created_at, social_links, coaching_max_per_day, coaching_min_notice, free_shipping_threshold, gamification_active, gamification_config)
     `)
     .eq('id', params.id)
@@ -141,6 +141,18 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     orderBy: { created_at: 'asc' }
   })
 
+  // Charger le produit "Bump" s'il est configuré
+  let bumpProduct = null
+  if (product.bump_active && product.bump_product_id) {
+    const { data: bp } = await supabase
+      .from('Product')
+      .select('id, name, price, images, type')
+      .eq('id', product.bump_product_id)
+      .eq('active', true)
+      .maybeSingle()
+    if (bp) bumpProduct = bp
+  }
+
   // Récupérer les créneaux si produit_type === "coaching"
   let coachingSlots: any[] = []
   let blockedDates: any[] = []
@@ -211,7 +223,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         storeName={store.name}
       />
       <ProductPage
-        product={{ ...product, store: { ...store, productsCount: productsCount || 0 } }}
+        product={{ ...product, store: { ...store, productsCount: productsCount || 0 } } as any}
         variants={variants ?? []}
         computedPrice={computed}
         vendorPlan={vendorPlan}
@@ -222,6 +234,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         bookedSlots={bookedSlots}
         similarProducts={similarProducts}
         telegramCommunity={telegramCommunity}
+        bumpProduct={bumpProduct}
       />
     </>
   )

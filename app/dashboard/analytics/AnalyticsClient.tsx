@@ -217,7 +217,7 @@ export default function AnalyticsClient({
         <div className="space-y-8 animate-in fade-in duration-500">
 
           {/* KPI Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <StatCard
               title="Vues Produits"
               value={data.kpis.views.toLocaleString('fr-FR')}
@@ -233,6 +233,14 @@ export default function AnalyticsClient({
               label={`${currentPeriod} derniers jours`}
             />
             <StatCard
+              title="Revenu Net"
+              value={`${Math.round(data.kpis.revenue).toLocaleString('fr-FR')} F`}
+              icon={<DollarSign className="text-emerald-500" size={20} />}
+              trend={data.kpis.revenueTrend}
+              label="chiffre d'affaires"
+              highlight
+            />
+            <StatCard
               title="Taux de Conv."
               value={`${data.kpis.conversion.toFixed(1)}%`}
               icon={<TrendingUp className="text-orange-500" size={20} />}
@@ -240,12 +248,16 @@ export default function AnalyticsClient({
               label="visites → paiements"
             />
             <StatCard
-              title="Revenu Net"
-              value={`${Math.round(data.kpis.revenue).toLocaleString('fr-FR')} F`}
-              icon={<DollarSign className="text-emerald-500" size={20} />}
-              trend={data.kpis.revenueTrend}
-              label="chiffre d'affaires"
-              highlight
+              title="Closing COD"
+              value={`${data.kpis.codClosingRate.toFixed(1)}%`}
+              icon={<CheckCircle2 className="text-blue-500" size={20} />}
+              label="Livré sur total COD"
+            />
+            <StatCard
+              title="Ord. Bump"
+              value={`${data.kpis.bumpRate.toFixed(1)}%`}
+              icon={<Sparkles className="text-[#C9A84C]" size={20} />}
+              label="Taux d'ajout additionnel"
             />
           </div>
 

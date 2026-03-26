@@ -306,7 +306,7 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
 
       {role === 'vendeur' && (
         <p className="text-center text-xs text-dust mt-6 font-medium">
-          PDV Pro prélève <strong>7%</strong> sur vos premières ventes (dégressif jusqu&apos;à 4%).
+          PDV Pro prélève <strong>8%</strong> sur vos premières ventes (dégressif jusqu&apos;à 5%).
         </p>
       )}
 

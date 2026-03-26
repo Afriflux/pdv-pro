@@ -108,6 +108,7 @@ export default async function AffiliesPage() {
       <div className="w-full px-4 md:px-6 py-8">
         <AffiliateClient
           storeId={store.id}
+          storeSlug={store.slug}
           initialActive={store.affiliate_active}
           initialMargin={store.affiliate_margin ?? 0.15}
           affiliates={(affiliates ?? []) as unknown as AffiliateRow[]}

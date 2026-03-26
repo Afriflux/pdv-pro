@@ -4,23 +4,35 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
 /**
- * Met à jour le profil de l'utilisateur (nom et avatar)
+ * Met à jour le profil de l'utilisateur (nom, téléphone et avatar)
  */
-export async function updateProfile(formData: { name: string; avatarUrl: string | null }) {
+export async function updateProfile(formData: { name: string; phone?: string; avatarUrl: string | null }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Non autorisé')
 
+  const updateData: any = {
+    name: formData.name.trim(),
+    avatar_url: formData.avatarUrl,
+    updated_at: new Date().toISOString()
+  }
+
+  // N'ajouter/mettre à jour 'phone' que s'il est fourni (optionnel)
+  if (formData.phone !== undefined) {
+    updateData.phone = formData.phone.trim() || null
+  }
+
   const { error } = await supabase
     .from('User')
-    .update({
-      name: formData.name.trim(),
-      avatar_url: formData.avatarUrl,
-      updated_at: new Date().toISOString()
-    })
+    .update(updateData)
     .eq('id', user.id)
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    if (error.code === '23505' && error.message.includes('User_phone_key')) {
+      return { success: false, error: "Ce numéro de téléphone est déjà utilisé par un autre compte." }
+    }
+    return { success: false, error: "Erreur serveur: " + error.message }
+  }
 
   revalidatePath('/dashboard/settings')
   return { success: true }

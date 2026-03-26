@@ -43,7 +43,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       id, buyer_name, buyer_phone, delivery_address,
       quantity, subtotal, platform_fee, vendor_amount, total,
       status, payment_method, payment_ref, created_at,
-      product:Product(id, name, images, type, price),
+      product:Product!Order_product_id_fkey(id, name, images, type, price),
+      bump_product:Product!Order_bump_product_id_fkey(id, name, images, type, price),
       variant:ProductVariant(value_1, value_2, dimension_1, dimension_2),
       invoices:Invoice(pdf_url)
     `)
@@ -54,6 +55,9 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   if (!order) notFound()
 
   const product = (Array.isArray(order.product) ? order.product[0] : order.product) as {
+    id: string; name: string; images: string[]; type: string; price: number
+  } | null
+  const bump_product = (Array.isArray(order.bump_product) ? order.bump_product[0] : order.bump_product) as {
     id: string; name: string; images: string[]; type: string; price: number
   } | null
   const variant = (Array.isArray(order.variant) ? order.variant[0] : order.variant) as {
@@ -137,6 +141,27 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                   </div>
                 </div>
               </div>
+              {bump_product && (
+                <div className="flex gap-4 mt-4 pt-4 border-t border-line">
+                  <div className="w-16 h-16 rounded-2xl bg-cream flex-shrink-0 overflow-hidden border border-line">
+                    {bump_product.images?.[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={bump_product.images[0]} alt={bump_product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-300">🎁</div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0 justify-center flex flex-col">
+                    <p className="text-[10px] font-black uppercase text-emerald mb-0.5 tracking-wider">Order Bump</p>
+                    <p className="font-bold text-ink text-sm line-clamp-1">{bump_product.name}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm font-black text-ink">
+                        {bump_product.price.toLocaleString('fr-FR')} F
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </section>
 
             {/* Acheteur */}

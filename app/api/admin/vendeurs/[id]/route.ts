@@ -37,6 +37,48 @@ export async function PATCH(
     let logAction = ''
 
     // 2. Traitement selon l'action
+    if (action === 'edit_info') {
+      const { userId, updates } = await request.json()
+      
+      // Update Store
+      const storeRes = await supabaseAdmin
+        .from('Store')
+        .update({
+          whatsapp: updates.whatsapp,
+          onboarding_completed: updates.onboarding_completed,
+          kyc_status: updates.kyc_status,
+        })
+        .eq('id', vendorId)
+
+      if (storeRes.error) throw storeRes.error
+
+      // Update User (Public Table)
+      const userRes = await supabaseAdmin
+        .from('User')
+        .update({
+          role: updates.role,
+          email: updates.email,
+        })
+        .eq('id', userId)
+
+      if (userRes.error) throw userRes.error
+
+      // Update Supabase Auth Email (if trying to sync)
+      if (updates.email) {
+        await supabaseAdmin.auth.admin.updateUserById(userId, { email: updates.email })
+      }
+
+      await supabaseAdmin.from('AdminLog').insert({
+        admin_id: user.id,
+        action: 'EDIT_VENDOR_INFO',
+        target_type: 'vendor',
+        target_id: vendorId,
+        details: { fields_updated: Object.keys(updates) }
+      })
+
+      return NextResponse.json({ success: true })
+    }
+
     switch (action) {
       case 'suspend':
         updateData = { is_active: false }

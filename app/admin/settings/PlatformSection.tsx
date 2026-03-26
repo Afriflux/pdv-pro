@@ -71,17 +71,17 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
   }
 
   const inputCls =
-    'w-full bg-[#FAFAF7] border border-gray-200 rounded-xl py-2.5 px-4 text-sm text-[#1A1A1A] ' +
-    'focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all ' +
-    'placeholder:text-gray-400'
+    'w-full bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl py-3 px-4 text-sm font-medium text-[#1A1A1A] ' +
+    'focus:bg-white focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 outline-none transition-all duration-300 ' +
+    'shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] placeholder:text-gray-400'
 
   type FieldDef = { key: string; label: string; placeholder: string; type?: string; helper?: string }
 
   const renderFields = (fields: FieldDef[]) => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
       {fields.map(field => (
-        <div key={field.key} className={field.type === 'textarea' ? 'sm:col-span-2' : ''}>
-          <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">
+        <div key={field.key} className={`${field.type === 'textarea' ? 'sm:col-span-2' : ''} group`}>
+          <label className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1 group-focus-within:text-[#0F7A60] transition-colors">
             {field.label}
           </label>
           {field.type === 'textarea' ? (
@@ -117,16 +117,16 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-4 border-b border-gray-100 pb-2">
+      <div className="flex flex-wrap gap-2 border-b border-gray-200/50 pb-3">
         {tabs.map(tab => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id as 'general' | 'branding' | 'social')}
-            className={`pb-2 text-sm font-bold border-b-2 transition-colors ${
+            className={`px-4 py-2 text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 ${
               activeTab === tab.id 
-                ? 'text-[#0F7A60] border-[#0F7A60]' 
-                : 'text-gray-400 border-transparent hover:text-gray-600'
+                ? 'bg-[#0F7A60]/10 text-[#0F7A60] shadow-sm' 
+                : 'text-gray-500 hover:bg-gray-100/50 hover:text-gray-700'
             }`}
           >
             {tab.label}
@@ -140,12 +140,12 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
         {activeTab === 'branding' && renderFields(BRANDING_FIELDS)}
         {activeTab === 'social' && renderFields(SOCIAL_FIELDS)}
 
-        <div className="flex justify-end pt-2">
+        <div className="flex justify-end pt-4">
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#0F7A60] hover:bg-[#0D5C4A]
-              disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-all shadow-sm"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#0F7A60] to-teal-500 hover:from-[#0D5C4A] hover:to-[#0F7A60]
+              disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-2xl transition-all shadow-[0_4px_15px_rgba(15,122,96,0.2)] hover:shadow-[0_6px_20px_rgba(15,122,96,0.3)] border border-[#0F7A60]/50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             {saving ? 'Sauvegarde...' : 'Sauvegarder'}

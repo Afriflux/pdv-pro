@@ -22,9 +22,9 @@ interface AdminUser {
 // ----------------------------------------------------------------
 function RoleBadge({ role }: { role: string }) {
   const styles: Record<string, string> = {
-    super_admin:  'bg-[#0F7A60]/10 text-[#0F7A60] border-[#0F7A60]/20',
-    gestionnaire: 'bg-[#C9A84C]/10 text-[#C9A84C] border-[#C9A84C]/20',
-    support:      'bg-gray-100 text-gray-500 border-gray-200',
+    super_admin:  'bg-[#0F7A60]/10 text-[#0F7A60] border-[#0F7A60]/20 shadow-sm',
+    gestionnaire: 'bg-[#C9A84C]/10 text-[#C9A84C] border-[#C9A84C]/20 shadow-sm',
+    support:      'bg-white/60 text-gray-500 border-gray-200 shadow-sm',
   }
   const labels: Record<string, string> = {
     super_admin:  'Super Admin',
@@ -32,7 +32,7 @@ function RoleBadge({ role }: { role: string }) {
     support:      'Support',
   }
   return (
-    <span className={`px-2.5 py-1 border rounded-full text-[10px] font-black uppercase tracking-wider ${styles[role] ?? styles.support}`}>
+    <span className={`inline-flex items-center px-3 py-1.5 border rounded-xl text-[10px] font-black uppercase tracking-wider ${styles[role] ?? styles.support}`}>
       {labels[role] ?? role}
     </span>
   )
@@ -84,16 +84,20 @@ export default async function AdminRolesPage() {
     <div className="space-y-10 animate-in fade-in duration-500 max-w-5xl mx-auto">
 
       {/* ── EN-TÊTE ── */}
-      <header>
-        <div className="flex items-center gap-3 mb-1">
-          <div className="p-2 rounded-xl bg-[#0F7A60]/10 text-[#0F7A60]">
-            <ShieldCheck className="w-6 h-6" />
+      <header className="flex items-center justify-between bg-white/70 backdrop-blur-xl border border-white/50 p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0F7A60]/5 rounded-full blur-3xl -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2"></div>
+        
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-1">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#0F7A60]/10 to-teal-500/10 border border-[#0F7A60]/10 text-[#0F7A60] shadow-inner">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <h1 className="text-xl font-bold text-[#1A1A1A]">Rôles & Admins</h1>
           </div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">Rôles & Admins</h1>
+          <p className="text-sm text-gray-500 ml-14 font-medium">
+            Gérez les comptes administrateurs et leurs permissions sur PDV Pro.
+          </p>
         </div>
-        <p className="text-gray-400 text-sm">
-          Gérez les comptes administrateurs et leurs permissions sur PDV Pro.
-        </p>
       </header>
 
       {/* ── SECTION 1 — ADMINS ACTUELS ── */}
@@ -103,61 +107,66 @@ export default async function AdminRolesPage() {
           Équipe d&apos;administration ({adminList.length})
         </h2>
 
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+        <div className="relative bg-white/70 backdrop-blur-2xl border border-white/50 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          {/* Subtle Glow */}
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#0F7A60]/5 rounded-full blur-3xl -z-10 pointer-events-none -translate-x-1/4 -translate-y-1/3"></div>
+
+          <div className="overflow-x-auto relative z-10">
             <table className="w-full text-left">
               {/* Header émeraude subtil */}
-              <thead className="bg-[#0F7A60]/5 border-b border-gray-100 text-gray-400 uppercase text-[10px] font-black tracking-widest">
+              <thead className="bg-[#0F7A60]/[0.02] border-b border-white/40 text-gray-500 uppercase text-[10px] font-black tracking-widest">
                 <tr>
-                  <th className="px-6 py-4">Admin</th>
-                  <th className="px-6 py-4">Rôle</th>
-                  <th className="px-6 py-4">Date création</th>
-                  <th className="px-6 py-4 text-right">Action</th>
+                  <th className="px-6 py-5">Admin</th>
+                  <th className="px-6 py-5">Rôle</th>
+                  <th className="px-6 py-5">Date création</th>
+                  <th className="px-6 py-5 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-white/20">
                 {adminList.map((admin) => {
                   const initiale = (admin.name ?? admin.email).charAt(0).toUpperCase()
                   const isSuperAdmin = admin.role === 'super_admin'
 
                   return (
-                    <tr key={admin.id} className="hover:bg-[#FAFAF7] transition-colors">
+                    <tr key={admin.id} className="hover:bg-white/50 transition-colors border-b border-white/20 last:border-0 group">
                       {/* Avatar + nom + email */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0 ${
-                            isSuperAdmin ? 'bg-[#0F7A60]/10 text-[#0F7A60]' : 'bg-[#C9A84C]/10 text-[#C9A84C]'
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-sm font-black flex-shrink-0 shadow-inner border ${
+                            isSuperAdmin 
+                              ? 'bg-gradient-to-br from-[#0F7A60]/10 to-teal-500/10 text-[#0F7A60] border-[#0F7A60]/10' 
+                              : 'bg-gradient-to-br from-[#C9A84C]/10 to-amber-500/10 text-[#C9A84C] border-[#C9A84C]/10'
                           }`}>
                             {initiale}
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-[#1A1A1A]">
+                            <p className="text-sm font-bold text-[#1A1A1A] group-hover:text-[#0F7A60] transition-colors">
                               {admin.name ?? '—'}
                             </p>
-                            <p className="text-xs text-gray-400">{admin.email}</p>
+                            <p className="text-[11px] font-medium text-gray-500 mt-0.5">{admin.email}</p>
                           </div>
                         </div>
                       </td>
 
                       {/* Badge rôle */}
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <RoleBadge role={admin.role} />
                       </td>
 
                       {/* Date */}
-                      <td className="px-6 py-4 text-xs text-gray-400">
+                      <td className="px-6 py-5 text-xs font-semibold text-gray-500">
                         {format(new Date(admin.created_at), 'dd MMM yyyy', { locale: fr })}
                       </td>
 
                       {/* Action */}
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-5 text-right">
                         {isSuperAdmin ? (
-                          <span className="text-[10px] text-gray-400 italic">
+                          <span className="inline-flex px-2 py-1 bg-white/60 border border-white/80 rounded-lg text-[9px] font-black uppercase tracking-wider text-gray-400 shadow-sm">
                             Non modifiable
                           </span>
                         ) : (
-                          <span className="text-[10px] text-gray-400 italic">
-                            — (bientôt)
+                          <span className="inline-flex px-2 py-1 bg-white/60 border border-white/80 rounded-lg text-[9px] font-black uppercase tracking-wider text-gray-400 shadow-sm">
+                            Action à venir
                           </span>
                         )}
                       </td>
@@ -187,9 +196,12 @@ export default async function AdminRolesPage() {
         </h2>
 
         {/* Note d'avertissement */}
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-800">
-          <p className="font-bold mb-1">⚠️ À lire avant de créer un compte admin</p>
-          <ul className="list-disc list-inside space-y-1 text-xs font-medium text-amber-700">
+        <div className="bg-gradient-to-r from-amber-50 to-amber-100/50 border border-amber-200/60 rounded-3xl p-6 text-sm text-amber-900 shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-200/20 rounded-full blur-xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+          <p className="font-black tracking-wide mb-2 flex items-center gap-2">
+            <span className="p-1 bg-amber-200/50 rounded-lg">⚠️</span> À lire avant de créer un compte admin
+          </p>
+          <ul className="list-disc list-inside space-y-1.5 text-xs font-semibold text-amber-700/80 ml-2">
             <li>Les comptes admin n&apos;ont <strong>pas de boutique</strong> ni de code ambassadeur.</li>
             <li>Les comptes admin ne reçoivent <strong>aucune commission</strong>.</li>
             <li>Les retraits vendeurs sont <strong>automatiques</strong> — l&apos;admin débloque uniquement les retraits en erreur technique ou litige.</li>
@@ -198,7 +210,8 @@ export default async function AdminRolesPage() {
         </div>
 
         {/* Formulaire client */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+        <div className="bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] p-8 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-[#0F7A60]/5 rounded-full blur-3xl -z-10 pointer-events-none -translate-x-1/3 -translate-y-1/3" />
           <CreateAdminForm />
         </div>
       </section>
@@ -210,37 +223,39 @@ export default async function AdminRolesPage() {
           Matrice des permissions
         </h2>
 
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+        <div className="relative bg-white/70 backdrop-blur-2xl border border-white/50 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-[#C9A84C]/5 rounded-full blur-3xl -z-10 pointer-events-none translate-x-1/3 translate-y-1/3" />
+
+          <div className="overflow-x-auto relative z-10">
             <table className="w-full text-left">
               {/* Header */}
-              <thead className="bg-[#0F7A60]/5 border-b border-gray-100">
+              <thead className="bg-[#0F7A60]/[0.02] border-b border-white/40">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">
+                  <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-gray-500">
                     Permission
                   </th>
-                  <th className="px-6 py-4 text-center">
+                  <th className="px-6 py-5 text-center">
                     <div className="flex flex-col items-center gap-1">
-                      <span className="text-xs font-black uppercase tracking-widest text-[#0F7A60]">Super Admin</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#0F7A60] bg-[#0F7A60]/10 px-2.5 py-1 rounded-lg border border-[#0F7A60]/20">Super Admin</span>
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-center">
-                    <span className="text-xs font-black uppercase tracking-widest text-[#C9A84C]">Gestionnaire</span>
+                  <th className="px-6 py-5 text-center">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#C9A84C] bg-[#C9A84C]/10 px-2.5 py-1 rounded-lg border border-[#C9A84C]/20">Gestionnaire</span>
                   </th>
-                  <th className="px-6 py-4 text-center">
-                    <span className="text-xs font-black uppercase tracking-widest text-gray-400">Support</span>
+                  <th className="px-6 py-5 text-center">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 bg-white/60 px-2.5 py-1 rounded-lg border border-gray-200">Support</span>
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-white/20">
                 {PERMISSIONS.map((perm, i) => (
-                  <tr key={i} className="hover:bg-[#FAFAF7] transition-colors">
-                    <td className="px-6 py-3.5 text-sm font-medium text-[#1A1A1A]">
+                  <tr key={i} className="hover:bg-white/50 transition-colors border-b border-white/20 last:border-0 group">
+                    <td className="px-6 py-4 text-sm font-bold text-[#1A1A1A] group-hover:text-[#0F7A60] transition-colors">
                       {perm.label}
                     </td>
-                    <td className="px-6 py-3.5 text-center text-lg">{perm.super_admin}</td>
-                    <td className="px-6 py-3.5 text-center text-lg">{perm.gestionnaire}</td>
-                    <td className="px-6 py-3.5 text-center text-lg">{perm.support}</td>
+                    <td className="px-6 py-4 text-center text-lg">{perm.super_admin}</td>
+                    <td className="px-6 py-4 text-center text-lg">{perm.gestionnaire}</td>
+                    <td className="px-6 py-4 text-center text-lg">{perm.support}</td>
                   </tr>
                 ))}
               </tbody>
@@ -248,10 +263,10 @@ export default async function AdminRolesPage() {
           </div>
 
           {/* Légende */}
-          <div className="px-6 py-3 border-t border-gray-100 bg-[#FAFAF7] flex flex-wrap gap-4 text-xs text-gray-500 font-medium">
-            <span>✅ Accès total</span>
-            <span>👁️ Lecture seule</span>
-            <span>❌ Aucun accès</span>
+          <div className="px-6 py-4 border-t border-white/20 bg-white/40 backdrop-blur-md flex flex-wrap gap-5 text-xs text-gray-600 font-bold relative z-10">
+            <span className="flex items-center gap-1.5"><span className="text-base">✅</span> Accès total</span>
+            <span className="flex items-center gap-1.5"><span className="text-base">👁️</span> Lecture seule</span>
+            <span className="flex items-center gap-1.5"><span className="text-base">❌</span> Aucun accès</span>
           </div>
         </div>
       </section>

@@ -182,10 +182,14 @@ export default async function AdminOrderDetailPage({
       </div>
 
       {/* ── Card principale ── */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden">
         {/* Header avec gradient */}
-        <div className="px-6 py-5 bg-gradient-to-r from-[#0D5C4A] to-[#0F7A60] text-white">
-          <div className="flex items-start justify-between">
+        <div className="px-8 py-8 bg-gradient-to-r from-[#0D5C4A] to-[#0F7A60] text-white relative overflow-hidden">
+          {/* Effets Glass interne */}
+          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-teal-400/20 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="flex items-start justify-between relative z-10">
             <div>
               <p className="text-xs text-white/60 uppercase tracking-wider mb-1">Commande PDV Pro</p>
               <h1 className="text-xl font-black">#{shortId}</h1>
@@ -201,19 +205,19 @@ export default async function AdminOrderDetailPage({
         </div>
 
         {/* Corps */}
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-white/20">
 
           {/* ── Produits commandés ── */}
-          <div className="px-6 py-5">
+          <div className="px-8 py-6">
             <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-3">
               📦 Produits commandés
             </h2>
             {items.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {items.map((item, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between bg-[#FAFAF7] rounded-xl px-4 py-3"
+                    className="flex items-center justify-between bg-white/60 backdrop-blur-sm border border-gray-100 rounded-2xl px-5 py-4 shadow-sm"
                   >
                     <div>
                       <p className="text-sm font-bold text-[#1A1A1A]">
@@ -232,7 +236,7 @@ export default async function AdminOrderDetailPage({
                 ))}
               </div>
             ) : product ? (
-              <div className="bg-[#FAFAF7] rounded-xl px-4 py-3 flex items-center justify-between">
+              <div className="bg-white/60 backdrop-blur-sm border border-gray-100 rounded-2xl px-5 py-4 shadow-sm flex items-center justify-between">
                 <div>
                   <p className="text-sm font-bold text-[#1A1A1A]">{product.name}</p>
                   <p className="text-xs text-gray-400 capitalize">{product.type}</p>
@@ -247,26 +251,26 @@ export default async function AdminOrderDetailPage({
           </div>
 
           {/* ── Finances ── */}
-          <div className="px-6 py-5">
-            <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-3">
+          <div className="px-8 py-6 bg-gradient-to-br from-emerald-50/50 to-transparent">
+            <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-4">
               💰 Finances
             </h2>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-[#FAFAF7] rounded-xl p-3 text-center">
-                <p className="text-[11px] text-gray-400 font-medium mb-1">Total client</p>
-                <p className="text-base font-black text-[#1A1A1A]">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-white/80 backdrop-blur-sm border border-gray-100 rounded-2xl p-4 text-center shadow-sm">
+                <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-1">Total client</p>
+                <p className="text-lg font-black text-[#1A1A1A]">
                   {formatAmount(Number(orderData.total_amount))}
                 </p>
               </div>
-              <div className="bg-red-50 rounded-xl p-3 text-center">
-                <p className="text-[11px] text-red-400 font-medium mb-1">Commission PDV</p>
-                <p className="text-base font-black text-red-600">
+              <div className="bg-red-50/80 backdrop-blur-sm border border-red-100 rounded-2xl p-4 text-center shadow-sm">
+                <p className="text-[11px] text-red-500 font-bold uppercase tracking-wider mb-1">Commission PDV</p>
+                <p className="text-lg font-black text-red-600">
                   {formatAmount(Number(orderData.commission_amount ?? 0))}
                 </p>
               </div>
-              <div className="bg-emerald-50 rounded-xl p-3 text-center">
-                <p className="text-[11px] text-emerald-600 font-medium mb-1">Versé vendeur</p>
-                <p className="text-base font-black text-[#0F7A60]">
+              <div className="bg-emerald-50/80 backdrop-blur-sm border border-emerald-100 rounded-2xl p-4 text-center shadow-sm">
+                <p className="text-[11px] text-[#0F7A60] font-bold uppercase tracking-wider mb-1">Versé vendeur</p>
+                <p className="text-lg font-black text-[#0F7A60]">
                   {formatAmount(Number(orderData.vendor_amount ?? 0))}
                 </p>
               </div>
@@ -274,7 +278,7 @@ export default async function AdminOrderDetailPage({
           </div>
 
           {/* ── Acheteur ── */}
-          <div className="px-6 py-5">
+          <div className="px-8 py-6">
             <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-3">
               👤 Acheteur
             </h2>
@@ -310,7 +314,7 @@ export default async function AdminOrderDetailPage({
 
           {/* ── Boutique ── */}
           {store && (
-            <div className="px-6 py-5">
+            <div className="px-8 py-6 bg-gradient-to-br from-emerald-50/30 to-transparent">
               <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-3">
                 🏪 Boutique
               </h2>
@@ -341,8 +345,8 @@ export default async function AdminOrderDetailPage({
 
           {/* ── Notes ── */}
           {orderData.notes && (
-            <div className="px-6 py-5">
-              <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-2">
+            <div className="px-8 py-6">
+              <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-3">
                 📝 Notes
               </h2>
               <p className="text-sm text-gray-600 leading-relaxed">{orderData.notes}</p>
@@ -350,8 +354,8 @@ export default async function AdminOrderDetailPage({
           )}
 
           {/* ── Changer le statut ── */}
-          <div className="px-6 py-5">
-            <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-3">
+          <div className="px-8 py-8 bg-gray-50/50">
+            <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-4">
               ⚙️ Changer le statut
             </h2>
             <OrderStatusUpdater

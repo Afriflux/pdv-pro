@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { X, Clock, MessageCircle, Phone, MapPin, Receipt, Check } from 'lucide-react'
+import Image from 'next/image'
 import CallButton from '@/components/orders/CallButton'
 import { OrderActions } from './[id]/OrderActions'
 
@@ -38,6 +39,7 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
 
   const product = order.product
   const variant = order.variant
+  const bump_product = order.bump_product
 
   const status = STATUS_LABELS[order.status] ?? { label: order.status, color: 'bg-gray-100 text-gray-600' }
   const isCod  = order.payment_method === 'cod'
@@ -104,10 +106,9 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
           {/* Produit */}
           <section className="bg-white rounded-2xl shadow-sm border border-line p-5">
             <div className="flex gap-4">
-              <div className="w-16 h-16 rounded-xl bg-cream flex-shrink-0 overflow-hidden border border-line">
+              <div className="relative w-16 h-16 rounded-xl bg-cream flex-shrink-0 overflow-hidden border border-line">
                 {product?.images?.[0] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={product.images[0]} alt="Produit" className="w-full h-full object-cover" />
+                  <Image src={product.images[0]} alt="Produit" fill className="object-cover" unoptimized />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300">📦</div>
                 )}
@@ -129,6 +130,25 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
                 </div>
               </div>
             </div>
+            
+            {bump_product && (
+              <div className="flex gap-4 mt-4 pt-4 border-t border-line">
+                <div className="relative w-12 h-12 rounded-xl bg-cream flex-shrink-0 overflow-hidden border border-line">
+                  {bump_product.images?.[0] ? (
+                    <Image src={bump_product.images[0]} alt="Bump Produit" fill className="object-cover" unoptimized />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300">🎁</div>
+                  )}
+                </div>
+                <div className="flex-1 flex flex-col justify-center">
+                  <span className="text-[9px] font-black uppercase text-emerald tracking-wider mb-0.5">Order Bump</span>
+                  <p className="font-bold text-ink text-xs line-clamp-1">{bump_product.name}</p>
+                  <p className="text-xs font-black text-ink mt-0.5">
+                    {bump_product.price.toLocaleString('fr-FR')} F
+                  </p>
+                </div>
+              </div>
+            )}
           </section>
 
           {/* Client & Livraison */}

@@ -32,8 +32,8 @@ export default function TermsPage() {
             <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4">
               <p className="font-bold text-[#0F7A60]">Plan Gratuit :</p>
               <ul className="list-disc ml-6 space-y-1">
-                <li>Commission dégressive automatique de 7% à 4% selon le volume de ventes mensuel.</li>
-                <li>0 - 100K FCFA : 7% | 100K - 500K : 6% | 500K - 1M : 5% | +1M : 4%.</li>
+                <li>Commission dégressive automatique de 8% à 5% selon le volume de ventes mensuel.</li>
+                <li>0 - 100K FCFA : 8% | 100K - 500K : 7% | 500K - 1M : 6% | +1M : 5%.</li>
                 <li>PDV Pro absorbe tous les frais de transaction et de retrait.</li>
                 <li>Fonds disponibles immédiatement après paiement.</li>
               </ul>

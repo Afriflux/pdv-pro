@@ -11,7 +11,7 @@ export default async function MarketingHubPage() {
   // 1. Charger l'espace (avec les IDs de pixels)
   const { data: store } = await supabase
     .from('Store')
-    .select('id, name, slug, meta_pixel_id, tiktok_pixel_id')
+    .select('id, name, slug, meta_pixel_id, tiktok_pixel_id, whatsapp, whatsapp_abandoned_cart')
     .eq('user_id', user.id)
     .single()
 

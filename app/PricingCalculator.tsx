@@ -8,10 +8,10 @@ export default function PricingCalculator() {
 
   // Commission dégressive
   const getCommissionRate = (revenue: number) => {
-    if (revenue <= 100000) return 0.07
-    if (revenue <= 500000) return 0.06
-    if (revenue <= 1000000) return 0.05
-    return 0.04
+    if (revenue <= 100000) return 0.08
+    if (revenue <= 500000) return 0.07
+    if (revenue <= 1000000) return 0.06
+    return 0.05
   }
 
   const currentRate = getCommissionRate(monthlySales)

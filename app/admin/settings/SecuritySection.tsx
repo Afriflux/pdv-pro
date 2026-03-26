@@ -61,11 +61,11 @@ export default function SecuritySection() {
   }
 
   const inputCls =
-    'w-full bg-[#FAFAF7] border border-gray-200 rounded-xl py-2.5 px-4 text-sm text-[#1A1A1A] pr-11 ' +
-    'focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all ' +
-    'placeholder:text-gray-400'
+    'w-full bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl py-3 px-4 text-sm font-semibold text-[#1A1A1A] pr-11 ' +
+    'focus:bg-white focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 outline-none transition-all duration-300 ' +
+    'shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] placeholder:text-gray-400'
 
-  const labelCls = 'block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider'
+  const labelCls = 'block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1'
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -147,12 +147,12 @@ export default function SecuritySection() {
         </div>
       </div>
 
-      <div className="flex justify-end pt-2">
+      <div className="flex justify-end pt-4">
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0F7A60] hover:bg-[#0D5C4A]
-            disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-all shadow-sm"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#0F7A60] to-teal-500 hover:from-[#0D5C4A] hover:to-[#0F7A60]
+            disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-2xl transition-all shadow-[0_4px_15px_rgba(15,122,96,0.2)] hover:shadow-[0_6px_20px_rgba(15,122,96,0.3)] border border-[#0F7A60]/50"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
           {loading ? 'Mise à jour...' : 'Changer le mot de passe'}

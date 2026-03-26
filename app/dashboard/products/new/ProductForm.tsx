@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import AIProductGenerator from '@/components/dashboard/AIProductGenerator'
 import { Sparkles, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react'
@@ -110,12 +111,18 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   const [coachingPackCount, setCoachingPackCount] = useState('1')
 
   // ── États Telegram ──
-  const [telegramCommunities, setTelegramCommunities] = useState<any[]>([])
+  const [telegramCommunities, setTelegramCommunities] = useState<{ id: string; name: string }[]>([])
   const [selectedCommunityId, setSelectedCommunityId] = useState<string>('')
 
   // ── États Affiliation ──
   const [affiliateActive, setAffiliateActive] = useState<boolean | null>(null)
   const [affiliateMargin, setAffiliateMargin] = useState<string>('')
+
+  // ── États Order Bump ──
+  const [bumpActive, setBumpActive] = useState(false)
+  const [bumpProductId, setBumpProductId] = useState('')
+  const [bumpOfferText, setBumpOfferText] = useState('Profitez aussi de cette offre exclusive à prix réduit !')
+  const [storeProducts, setStoreProducts] = useState<{id:string, name:string, price:number}[]>([])
 
   // Fetch Telegram Communities
   useEffect(() => {
@@ -129,6 +136,20 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
       if (data) setTelegramCommunities(data)
     }
     fetchCommunities()
+  }, [storeId])
+
+  // Fetch Store Products for Order Bumps
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('Product')
+        .select('id, name, price')
+        .eq('store_id', storeId)
+        .eq('active', true)
+      if (data) setStoreProducts(data)
+    }
+    fetchProducts()
   }, [storeId])
 
   // ----------------------------------------------------------------
@@ -270,7 +291,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                 }
               })
               
-              upload.findPreviousUploads().then((previousUploads: any) => {
+              upload.findPreviousUploads().then((previousUploads: unknown[]) => {
                  if (previousUploads.length) {
                     upload.resumeFromPreviousUpload(previousUploads[0])
                  }
@@ -281,8 +302,8 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
             // La vidéo est chez Bunny
             digitalFileUrl = `https://iframe.mediadelivery.net/embed/${process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID}/${videoId}`
 
-          } catch (e: any) {
-             setError('Erreur lors du transfert sécurisé Bunny CDN: ' + e.message)
+          } catch (e: unknown) {
+             setError('Erreur lors du transfert sécurisé Bunny CDN: ' + (e instanceof Error ? e.message : 'Unknown error'))
              setLoading(false)
              return
           }
@@ -354,6 +375,9 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           active:          active,
           affiliate_active: affiliateActive,
           affiliate_margin: affiliateMargin ? parseFloat(affiliateMargin) / 100 : null,
+          bump_active:     bumpActive,
+          bump_product_id: bumpActive ? (bumpProductId || null) : null,
+          bump_offer_text: bumpActive ? (bumpOfferText.trim() || null) : null,
           seo_title:       seoTitle.trim() || null,
           seo_description: seoDescription.trim() || null,
           created_at:  new Date().toISOString(),
@@ -959,7 +983,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                 className="relative w-20 h-20 group cursor-grab active:cursor-grabbing transition-all rounded-xl"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt={`Image produit ${i + 1}`} className="w-full h-full rounded-xl object-cover border border-gray-200" />
+                  <Image src={src} alt={`Image produit ${i + 1}`} fill unoptimized className="object-cover rounded-xl border border-gray-200" />
                 
                 {/* Badge "Couverture" sur la première image */}
                 {i === 0 && (
@@ -1248,6 +1272,63 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                   )}
                 </div>
               )}
+            </div>
+
+            {/* ORDER BUMP */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-sm font-semibold text-ink">🚀 Order Bump (Vente Additionnelle)</h3>
+                <div className="group relative">
+                  <HelpCircle size={16} className="text-gray-400 cursor-help" />
+                  <div className="absolute bottom-full left-0 mb-2 w-56 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                    Proposez un produit additionnel en un clic sur la page de paiement. Idéal pour augmenter le panier moyen.
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 border border-gray-100 p-4 rounded-xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Activer l'Order Bump</label>
+                    <p className="text-[10px] text-gray-400 mt-1">Affichera une option sur le checkout.</p>
+                  </div>
+                  <div
+                    onClick={() => setBumpActive(v => !v)}
+                    className={`w-10 h-6 rounded-full transition-colors cursor-pointer relative ${bumpActive ? 'bg-gold' : 'bg-gray-200'}`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${bumpActive ? 'left-5' : 'left-1'}`} />
+                  </div>
+                </div>
+
+                {bumpActive && (
+                  <div className="space-y-4 pt-3 border-t border-gray-200">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Produit à proposer</label>
+                      <select
+                        value={bumpProductId}
+                        onChange={e => setBumpProductId(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition bg-white"
+                      >
+                        <option value="">-- Sélectionnez un produit --</option>
+                        {storeProducts.map(p => (
+                          <option key={p.id} value={p.id}>{p.name} ({p.price} FCFA)</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Texte d'incitation</label>
+                      <input
+                        type="text"
+                        value={bumpOfferText}
+                        onChange={e => setBumpOfferText(e.target.value)}
+                        placeholder="Oui, je veux aussi ajouter le manuel avancé !"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* AFFILIATION */}

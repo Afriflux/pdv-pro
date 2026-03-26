@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
 const GATEWAYS = [
   { id: 'wave', name: 'Wave Mobile Money', fee: 0.01, icon: '🌊' },
@@ -12,6 +13,11 @@ export function DepositModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [amount, setAmount] = useState<number>(0)
   const [gateway, setGateway] = useState(GATEWAYS[0])
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const feeAmount = amount * gateway.fee
   const totalAmount = amount + feeAmount
@@ -44,16 +50,16 @@ export function DepositModal() {
         </div>
       </button>
 
-      {isOpen && (
+      {mounted && isOpen && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
-            <div className="p-8 space-y-6">
-              <div className="flex items-center justify-between">
+            <div className="p-8 space-y-6 flex flex-col max-h-[90vh]">
+              <div className="flex items-center justify-between shrink-0">
                 <h3 className="text-xl font-display font-black text-ink">Recharger mon solde</h3>
                 <button onClick={() => setIsOpen(false)} className="text-slate hover:text-ink transition text-2xl">×</button>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-4 overflow-y-auto flex-1 pr-2">
                 <div>
                   <label className="text-[10px] font-mono font-bold text-dust uppercase tracking-wider block mb-2">Montant à recharger (FCFA)</label>
                   <input
@@ -104,21 +110,24 @@ export function DepositModal() {
                 </div>
               </div>
 
-              <button
-                disabled={amount <= 0}
-                onClick={handleDeposit}
-                className="w-full py-5 bg-emerald hover:bg-emerald-rich disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-2xl transition shadow-lg shadow-emerald/20 flex items-center justify-center gap-3"
-              >
-                🚀 Recharger maintenant
-              </button>
-              
-              <p className="text-[10px] text-center text-slate font-light leading-relaxed">
-                Les frais de transaction sont à la charge du vendeur pour les recharges de solde. 
-                Le traitement est instantané.
-              </p>
+              <div className="shrink-0 pt-2">
+                <button
+                  disabled={amount <= 0}
+                  onClick={handleDeposit}
+                  className="w-full py-5 bg-emerald hover:bg-emerald-rich disabled:opacity-50 disabled:cursor-not-allowed text-white font-black rounded-2xl transition shadow-lg shadow-emerald/20 flex items-center justify-center gap-3"
+                >
+                  🚀 Recharger maintenant
+                </button>
+                
+                <p className="text-[10px] text-center text-slate font-light leading-relaxed mt-4">
+                  Les frais de transaction sont à la charge du vendeur pour les recharges de solde. 
+                  Le traitement est instantané.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

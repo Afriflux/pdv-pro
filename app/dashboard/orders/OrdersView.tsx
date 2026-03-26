@@ -2,7 +2,8 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Search, ArrowRight, Download, CheckSquare, Square, Filter, ChevronDown, AlertCircle, Loader2, LayoutGrid, List as ListIcon, Clock as ClockIcon, Phone as PhoneIcon } from 'lucide-react'
+import { Search, Download, CheckSquare, Square, ChevronDown, Loader2, LayoutGrid, List as ListIcon, Clock as ClockIcon, Phone as PhoneIcon, PackageOpen, ArrowRight, Filter } from 'lucide-react'
+import Image from 'next/image'
 import { bulkUpdateOrdersStatus } from '@/app/actions/orders'
 import { OrderDetailsDrawer } from './OrderDetailsDrawer'
 
@@ -51,8 +52,13 @@ interface Order {
   platform_fee?: number
   vendor_amount?: number
   payment_ref?: string
-  variant?: any
-  invoices?: any[]
+  variant?: {
+    value_1: string | null
+    value_2: string | null
+    dimension_1: string | null
+    dimension_2: string | null
+  } | null
+  invoices?: { pdf_url: string }[] | null
 }
 
 interface OrdersViewProps {
@@ -389,11 +395,16 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
                 <tbody className="divide-y divide-gray-50">
                 {filteredOrders.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-16 text-center">
-                      <div className="flex flex-col items-center justify-center">
-                        <AlertCircle size={40} className="text-dust opacity-30 mb-4" />
-                        <p className="font-display font-black text-ink text-lg uppercase tracking-tight">Aucune commande</p>
-                        <p className="text-sm font-medium text-slate mt-1 max-w-xs">Modifiez vos filtres ou effectuez une nouvelle recherche pour voir vos commandes.</p>
+                    <td colSpan={6} className="py-24 text-center">
+                      <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
+                        <div className="w-24 h-24 bg-gradient-to-br from-[#0F7A60]/10 to-transparent rounded-full flex items-center justify-center mb-6 relative">
+                          <div className="absolute inset-0 bg-[#0F7A60]/20 blur-xl rounded-full animate-pulse" />
+                          <PackageOpen size={48} className="text-[#0F7A60] relative z-10 drop-shadow-md" />
+                        </div>
+                        <p className="font-display font-black text-ink text-2xl uppercase tracking-tight mb-2">Aucune commande</p>
+                        <p className="text-sm font-medium text-slate text-center">
+                          Modifiez vos filtres ou effectuez une nouvelle recherche. Si vous venez de lancer votre boutique, partagez votre lien pour obtenir votre première vente !
+                        </p>
                       </div>
                     </td>
                   </tr>
@@ -450,10 +461,9 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
                         </td>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden hidden sm:flex items-center justify-center shrink-0">
+                            <div className="relative w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden hidden sm:flex items-center justify-center shrink-0">
                               {order.product?.images?.[0] ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={order.product.images[0]} alt={order.product?.name || "Image produit"} className="w-full h-full object-cover" />
+                                <Image src={order.product.images[0]} alt={order.product?.name || "Image produit"} fill className="object-cover" unoptimized />
                               ) : (
                                 <span className="text-gray-300 text-[10px]">📦</span>
                               )}

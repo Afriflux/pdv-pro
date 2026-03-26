@@ -35,6 +35,9 @@ interface Product {
   coaching_durations?: number[] | null
   coaching_is_pack?: boolean | null
   coaching_pack_count?: number | null
+  bump_active?: boolean | null
+  bump_offer_text?: string | null
+  bump_product_id?: string | null
   store: {
     id: string
     name: string
@@ -65,6 +68,13 @@ interface CheckoutFormProps {
   defaultUseCOD?: boolean
   defaultVariantId?: string | null
   defaultQuantity?: number
+  bumpProduct?: {
+    id: string
+    name: string
+    price: number
+    images: string[]
+    type: string
+  } | null
 }
 
 // ----------------------------------------------------------------
@@ -82,6 +92,7 @@ export function CheckoutForm({
   coachingSlots = [],
   blockedDates = [],
   bookedSlots = {},
+  bumpProduct,
 }: CheckoutFormProps) {
   const router = useRouter()
   const accent = product.store.primary_color || '#0F7A60'
@@ -143,6 +154,9 @@ export function CheckoutForm({
   const [step, setStep]                   = useState<CheckoutStep>('form')
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null)
 
+  // ── État Order Bump ───────────────────────────────────────────
+  const [bumpAccepted, setBumpAccepted] = useState(false)
+
   // ── États Scarcity ──────────────────────────────────────────────
   const [activeViewers, setActiveViewers] = useState(12)
   useEffect(() => {
@@ -154,11 +168,12 @@ export function CheckoutForm({
   const variant = variants.find(v => v.id === selectedVariant)
   const basePrice = baseProductPrice + (variant?.price_adjust ?? 0)
 
-  const grossSubtotal      = basePrice * quantity
+  const bumpPrice = bumpProduct && bumpAccepted ? bumpProduct.price : 0
+  const grossSubtotal      = (basePrice * quantity) + bumpPrice
   const promoDiscountAmount = appliedPromo?.discount ?? 0
   const subtotal           = Math.max(0, grossSubtotal - promoDiscountAmount)
 
-  const commissionRate = vendorPlan === 'pro' ? 0.05 : 0.07
+  const commissionRate = vendorPlan === 'pro' ? 0.06 : 0.08
   const platformFee    = Math.round(subtotal * commissionRate)
   
   const selectedZone   = deliveryZones?.find(z => z.id === selectedZoneId)
@@ -310,6 +325,7 @@ export function CheckoutForm({
         booking_date:     selectedDate || null,
         booking_start_time: selectedSlotStr ? selectedSlotStr.split('-')[0] : null,
         booking_end_time:   selectedSlotStr ? selectedSlotStr.split('-')[1] : null,
+        bump_product_id:  bumpAccepted && bumpProduct ? bumpProduct.id : null,
       }
 
       const res = await fetch('/api/checkout/initiate', {
@@ -375,8 +391,14 @@ export function CheckoutForm({
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Récapitulatif</p>
           <div className="flex justify-between text-sm text-gray-600">
             <span>{product.name} × {quantity}</span>
-            <span>{grossSubtotal.toLocaleString('fr-FR')} F</span>
+            <span>{(basePrice * quantity).toLocaleString('fr-FR')} F</span>
           </div>
+          {bumpAccepted && bumpProduct && (
+            <div className="flex justify-between text-sm text-gray-600 mt-1">
+              <span>+ {bumpProduct.name}</span>
+              <span>{bumpProduct.price.toLocaleString('fr-FR')} F</span>
+            </div>
+          )}
           {appliedPromo && (
             <div className="flex justify-between text-sm font-bold pt-1" style={{ color: accent }}>
               <span>PROMO ({appliedPromo.code})</span>
@@ -858,6 +880,74 @@ export function CheckoutForm({
           </section>
         )}
 
+        {/* ORDER BUMP - OFFRE ADDITIONNELLE 🚀 */}
+        {bumpProduct && product.bump_active && (
+          <section 
+            className="rounded-2xl border-2 p-4 md:p-5 relative overflow-hidden transition-all duration-300"
+            style={{ 
+              borderColor: bumpAccepted ? accent : '#f1f1f1',
+              backgroundColor: bumpAccepted ? `${accent}08` : '#ffffff',
+              boxShadow: bumpAccepted ? `0 4px 20px -5px ${accent}40` : 'none'
+            }}
+          >
+            {/* Liseré indicateur (optionnel, pour faire premium) */}
+            <div className="absolute top-0 left-0 bottom-0 w-1.5" style={{ backgroundColor: accent }} />
+
+            <div className="flex items-start gap-4">
+              {/* Image du produit bump */}
+              {bumpProduct.images?.[0] ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img 
+                  src={bumpProduct.images[0]} 
+                  alt={bumpProduct.name} 
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-gray-100 shadow-sm shrink-0" 
+                />
+              ) : (
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
+                  <span className="text-2xl">🎁</span>
+                </div>
+              )}
+
+              <div className="flex-1">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-extrabold text-gray-900 text-sm sm:text-base pr-4 leading-tight">
+                    {product.bump_offer_text || "Profitez de cette offre exclusive !"}
+                  </h3>
+                  
+                  {/* Checkbox "Je veux" */}
+                  <label className="flex items-center cursor-pointer shrink-0 mt-1">
+                    <div className="relative">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only" 
+                        checked={bumpAccepted}
+                        onChange={() => setBumpAccepted(!bumpAccepted)}
+                      />
+                      <div className="block w-6 h-6 rounded border-2 transition-colors" style={{ 
+                        borderColor: bumpAccepted ? accent : '#d1d5db',
+                        backgroundColor: bumpAccepted ? accent : 'transparent'
+                      }}>
+                        {bumpAccepted && (
+                          <svg className="w-4 h-4 text-white mx-auto mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  </label>
+                </div>
+                
+                <p className="text-xs text-gray-500 mt-2 line-clamp-2">
+                  <span className="font-bold text-gray-700">{bumpProduct.name}</span>
+                </p>
+                <p className="text-sm font-black mt-2 inline-flex items-center px-2.5 py-1 rounded-lg" style={{ backgroundColor: `${accent}15`, color: accent }}>
+                  + {bumpProduct.price.toLocaleString('fr-FR')} FCFA
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Récapitulatif */}
         <div className="mt-8">
           <div className="bg-red-50 border border-red-100 rounded-xl p-3 mb-3 flex items-center gap-3">
@@ -886,8 +976,14 @@ export function CheckoutForm({
           </div>
           <div className="flex justify-between text-base font-medium text-gray-700">
             <span>{product.name} × {quantity}</span>
-            <span>{grossSubtotal.toLocaleString('fr-FR')} F</span>
+            <span>{(basePrice * quantity).toLocaleString('fr-FR')} F</span>
           </div>
+          {bumpAccepted && bumpProduct && (
+            <div className="flex justify-between text-sm text-gray-700 pb-1">
+              <span>+ {bumpProduct.name}</span>
+              <span>{bumpProduct.price.toLocaleString('fr-FR')} F</span>
+            </div>
+          )}
           {appliedPromo && (
             <div className="flex justify-between text-sm font-bold pt-1" style={{ color: accent }}>
               <span>PROMO ({appliedPromo.code})</span>

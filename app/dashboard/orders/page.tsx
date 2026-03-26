@@ -21,7 +21,8 @@ export default async function OrdersPage() {
       id, buyer_name, buyer_phone, delivery_address,
       quantity, subtotal, platform_fee, vendor_amount, total,
       status, payment_method, payment_ref, created_at,
-      product:Product(id, name, images, type, price),
+      product:Product!Order_product_id_fkey(id, name, images, type, price),
+      bump_product:Product!Order_bump_product_id_fkey(id, name, images, type, price),
       variant:ProductVariant(value_1, value_2, dimension_1, dimension_2),
       invoices:Invoice(pdf_url)
     `)
@@ -33,6 +34,7 @@ export default async function OrdersPage() {
   const formattedOrders = (orders ?? []).map(order => ({
     ...order,
     product: Array.isArray(order.product) ? order.product[0] : order.product,
+    bump_product: Array.isArray(order.bump_product) ? order.bump_product[0] : order.bump_product,
     variant: Array.isArray(order.variant) ? order.variant[0] : order.variant,
     invoices: Array.isArray(order.invoices) ? order.invoices : order.invoices ? [order.invoices] : []
   }))

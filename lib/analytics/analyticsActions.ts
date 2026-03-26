@@ -19,6 +19,8 @@ export interface AnalyticsData {
     revenueTrend:    number
     conversion:      number
     conversionTrend: number
+    bumpRate:        number
+    codClosingRate:  number
   }
   chartData:   { date: string; revenue: number }[]
   topProducts: { id: string; name: string; sales: number; revenue: number }[]
@@ -44,8 +46,10 @@ interface AffRow     { user: { name?: string } | null; clicks: number; conversio
 interface OrderRow {
   id:           string
   product_id:   string
+  bump_product_id: string | null
   vendor_amount: number
   status:        string
+  payment_method: string
   created_at:    string
   promo_discount: number | null
   product:       { name?: string } | null
@@ -126,7 +130,7 @@ export async function getStoreAnalytics(
   const { data: ordersRaw } = await supabase
     .from('Order')
     .select(`
-      id, product_id, vendor_amount, status, created_at, promo_discount,
+      id, product_id, bump_product_id, vendor_amount, status, payment_method, created_at, promo_discount,
       product:Product(name),
       promo_code:PromoCode(code)
     `)
@@ -197,6 +201,25 @@ export async function getStoreAnalytics(
   const currentConv = currentViews > 0 ? (currentSales / currentViews) * 100 : 0
   const prevConv    = prevViews    > 0 ? (prevSales    / prevViews)    * 100 : 0
 
+  let currentAddons = 0
+  let currentCodTotal = 0
+  let currentCodClosed = 0
+
+  orders.filter(o => isCurrent(o.created_at)).forEach(o => {
+    if (o.bump_product_id) currentAddons++
+    if (o.payment_method === 'cod') {
+      currentCodTotal++
+      if (['delivered', 'completed', 'cod_confirmed'].includes(o.status)) {
+        currentCodClosed++
+      }
+    }
+  })
+
+  // Le taux d'ajouts bump sur le nombre total de commandes avec bump sur la période
+  const orderCountCurrent = orders.filter(o => isCurrent(o.created_at)).length
+  const bumpRate = orderCountCurrent > 0 ? (currentAddons / orderCountCurrent) * 100 : 0
+  const codClosingRate = currentCodTotal > 0 ? (currentCodClosed / currentCodTotal) * 100 : 0
+
   const kpis = {
     views:           currentViews,
     viewsTrend:      calculateTrend(currentViews, prevViews),
@@ -206,6 +229,8 @@ export async function getStoreAnalytics(
     revenueTrend:    calculateTrend(currentRevenue, prevRevenue),
     conversion:      currentConv,
     conversionTrend: currentConv - prevConv,
+    bumpRate,
+    codClosingRate,
   }
 
   // ── Chart (revenus journaliers) ────────────────────────────────────────────

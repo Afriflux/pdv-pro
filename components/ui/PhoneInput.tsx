@@ -163,17 +163,18 @@ export function PhoneInput({
   )
 
   return (
-    <div className={`relative w-full ${className}`} ref={dropdownRef}>
-      <div className={`flex bg-cream border border-line rounded-xl transition-all focus-within:border-[#0F7A60] focus-within:ring-2 focus-within:ring-[#0F7A60]/15 ${error ? 'border-red-400 focus-within:border-red-400 focus-within:ring-red-400/20' : ''}`}>
+    <div className={`relative w-full group/input ${className}`} ref={dropdownRef}>
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-[16px] blur opacity-0 group-focus-within/input:opacity-15 transition duration-500"></div>
+      <div className={`relative flex bg-white/80 backdrop-blur-md border border-gray-200/60 rounded-[14px] transition-all focus-within:bg-white focus-within:border-[#0F7A60] hover:border-gray-300 shadow-[0_2px_10px_rgb(0,0,0,0.02)] ${error ? 'border-red-400 focus-within:border-red-500 shadow-red-500/10' : ''}`}>
         
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-3 py-3 border-r border-line hover:bg-black/5 transition-colors rounded-l-xl text-sm whitespace-nowrap"
+          className="flex items-center gap-2 px-4 py-3.5 border-r border-gray-200/60 hover:bg-white transition-colors rounded-l-[14px] text-sm whitespace-nowrap"
         >
           <span className="text-xl leading-none">{selectedCountry.flag}</span>
-          <span className="font-medium text-charcoal">{selectedCountry.dialCode}</span>
-          <ChevronDown size={14} className="text-dust" />
+          <span className="font-semibold text-gray-700">{selectedCountry.dialCode}</span>
+          <ChevronDown size={14} className="text-gray-400" />
         </button>
 
         <input
@@ -182,7 +183,7 @@ export function PhoneInput({
           onChange={handleNumberChange}
           placeholder={placeholder}
           required={required}
-          className="flex-1 w-full px-4 py-3 bg-transparent text-ink placeholder:text-dust focus:outline-none focus:ring-0 text-sm font-mono"
+          className="flex-1 w-full px-4 py-3.5 bg-transparent text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0 text-[15px] font-medium"
         />
       </div>
 

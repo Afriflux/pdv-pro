@@ -1,16 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { Truck, Loader2 } from 'lucide-react'
 import LivraisonsView from './LivraisonsView'
+import { getDeliveriesDataAction } from './actions'
 
 export default function LivraisonsDashboard() {
   const [orders, setOrders] = useState<any[]>([])
+  const [deliverers, setDeliverers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [store, setStore] = useState<{ id: string, name: string } | null>(null)
-  const supabase = createClient()
 
   useEffect(() => {
     fetchDeliveries()
@@ -19,34 +19,16 @@ export default function LivraisonsDashboard() {
   const fetchDeliveries = async () => {
     try {
       setLoading(true)
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      const res = await getDeliveriesDataAction()
+      
+      if (!res.success) {
+        throw new Error(res.error || 'Erreur inconnue')
+      }
 
-      // Récupérer la boutique
-      const { data: storeData, error: storeError } = await supabase
-        .from('Store')
-        .select('id, name')
-        .eq('user_id', user.id)
-        .single()
-
-      if (storeError) throw new Error('Boutique introuvable')
-      setStore(storeData)
-
-      // Récupérer les commandes avec les statuts pertinents
-      const { data: ordersData, error: ordersError } = await supabase
-        .from('Order')
-        .select(`
-          id, created_at, buyer_name, buyer_phone, delivery_address, delivery_zone_id, status, total,
-          deliveryZone:DeliveryZone(name),
-          product:Product(name, images)
-        `)
-        .eq('store_id', storeData.id)
-        .in('status', ['confirmed', 'preparing', 'shipped'])
-        .order('created_at', { ascending: false })
-
-      if (ordersError) throw ordersError
-
-      setOrders(ordersData || [])
+      setStore(res.store || null)
+      setOrders(res.orders || [])
+      setDeliverers(res.deliverers || [])
+      
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -89,6 +71,7 @@ export default function LivraisonsDashboard() {
       ) : (
         <LivraisonsView 
           initialOrders={orders} 
+          initialDeliverers={deliverers}
           storeName={store?.name} 
           storeId={store?.id} 
         />

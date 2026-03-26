@@ -31,9 +31,38 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Champ non autorisé ou invalide' }, { status: 400 })
     }
 
-    const updatePayload = {
+    // ── BLOCAGE MENSUEL POUR VENDOR_TYPE ──
+    if (field === 'vendor_type') {
+      const { data: storeData, error: storeError } = await supabase
+        .from('Store')
+        .select('vendor_type_updated_at')
+        .eq('user_id', user.id)
+        .single()
+      
+      if (!storeError && storeData?.vendor_type_updated_at) {
+        // Obtenir la différence en jours
+        const lastUpdated = new Date(storeData.vendor_type_updated_at)
+        const now = new Date()
+        const diffTime = Math.abs(now.getTime() - lastUpdated.getTime())
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        
+        if (diffDays < 30) {
+          return NextResponse.json(
+            { error: `Vous ne pouvez modifier votre modèle économique qu'une fois tous les 30 jours. Prochain changement possible dans ${30 - diffDays + 1} jour(s).` }, 
+            { status: 403 }
+          )
+        }
+      }
+    }
+
+    const updatePayload: Record<string, any> = {
       [field]: value || null,
       updated_at: new Date().toISOString()
+    }
+
+    // Si on met à jour le vendor_type, on actualise aussi la date de modification
+    if (field === 'vendor_type') {
+      updatePayload['vendor_type_updated_at'] = new Date().toISOString()
     }
 
     const { error: updateError } = await supabase

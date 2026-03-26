@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Info, Settings, Trash2, TrendingUp, CheckCircle, Plus, Users, Award, Wallet, Search, MousePointer2, BadgeDollarSign, ExternalLink, MessageCircle, XCircle, Layers, Store, Packages, AppWindow, Package, Layout, AlertCircle } from 'lucide-react'
+import { Settings, Trash2, TrendingUp, CheckCircle, Plus, Users, MousePointer2, BadgeDollarSign, ExternalLink, MessageCircle, XCircle, Layers, Store, Package, Layout, AlertCircle } from 'lucide-react'
 import { updateStoreAffiliateSettings, approveAffiliate, rejectAffiliate, updateProductAffiliateSettings, updateSalePageAffiliateSettings } from '@/lib/affiliates/affiliateActions'
 
 import { toast } from 'sonner'

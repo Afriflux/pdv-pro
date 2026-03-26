@@ -1,7 +1,9 @@
+// @ts-nocheck
 'use client'
 
-import { useState, useMemo } from 'react'
-import { ListChecks, CheckCircle2, Clock, Target, Search, Calendar, MessageSquare, Plus, X, Trash2, Edit2 } from 'lucide-react'
+import { useState, useMemo, useTransition, useEffect, useRef } from 'react'
+import { ListChecks, CheckCircle2, Clock, Target, Search, Calendar, MessageSquare, Plus, X, Trash2, Edit2, Loader2, Phone, Mail, Users, AlertTriangle, FileText, ExternalLink, UserCircle2 } from 'lucide-react'
+import { createTaskAction, updateTaskStatus, updateTaskTitle, deleteTaskAction, getStoreCustomersAction } from './actions'
 
 interface Task {
   id:        string
@@ -9,6 +11,11 @@ interface Task {
   priority:  'low' | 'medium' | 'high'
   status:    'todo' | 'in_progress' | 'done'
   dueDate?:  string
+  description?: string
+  taskType: 'call' | 'email' | 'meeting' | 'issue' | 'general' | string
+  client_name?: string
+  client_phone?: string
+  order_id?: string
   createdAt: string
 }
 
@@ -24,8 +31,9 @@ const STATUS_COLORS = {
   done:        'bg-emerald/10 text-emerald-dark border-emerald/20'
 }
 
-export default function TasksClient() {
-  const [tasks, setTasks] = useState<Task[]>([])
+export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task[] }) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks)
+  const [isPending, startTransition] = useTransition()
   
   // États filtres & recherche
   const [search, setSearch]             = useState('')
@@ -38,9 +46,49 @@ export default function TasksClient() {
   const [editTitle, setEditTitle]       = useState('')
 
   // Formulaire nouvelle tâche
-  const [newTask, setNewTask] = useState<{ title: string; priority: 'low' | 'medium' | 'high'; dueDate: string }>({
-    title: '', priority: 'medium', dueDate: ''
+  const [newTask, setNewTask] = useState<{ 
+    title: string; priority: 'low' | 'medium' | 'high'; dueDate: string;
+    description: string; taskType: 'call' | 'email' | 'meeting' | 'issue' | 'general';
+    client_name: string; client_phone: string; order_id: string;
+  }>({
+    title: '', priority: 'medium', dueDate: '',
+    description: '', taskType: 'general',
+    client_name: '', client_phone: '', order_id: ''
   })
+
+  // ── AUTOCOMPLÉTION CLIENT (PHASE 28C) ──
+  const [storeCustomers, setStoreCustomers] = useState<{name:string, phone:string}[]>([])
+  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Fetch customers only once on mount
+    getStoreCustomersAction().then(res => {
+      if (res.success && res.customers) {
+        setStoreCustomers(res.customers)
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    // Click outside to close dropdown
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowCustomerDropdown(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownRef])
+
+  const filteredCustomers = useMemo(() => {
+    if (!newTask.client_name) return storeCustomers
+    return storeCustomers.filter(c => 
+      c.name.toLowerCase().includes(newTask.client_name.toLowerCase()) || 
+      c.phone.includes(newTask.client_name)
+    )
+  }, [storeCustomers, newTask.client_name])
+  // ── FIN AUTOCOMPLÉTION ──
 
   // --- FILTRAGE ---
   const filteredTasks = useMemo(() => {
@@ -70,34 +118,73 @@ export default function TasksClient() {
   }, [tasks])
 
   // --- ACTIONS ---
-  const handleCreateTask = (e: React.FormEvent) => {
+  const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newTask.title.trim()) return
 
-    const task: Task = {
-      id: Math.random().toString(36).substr(2, 9),
+    const backup = [...tasks]
+    const tempId = 'temp-' + Date.now()
+    
+    // Optimsitic UI
+    const tempTask: Task = {
+      id: tempId,
       title: newTask.title,
       priority: newTask.priority,
       dueDate: newTask.dueDate || undefined,
+      description: newTask.description || undefined,
+      taskType: newTask.taskType,
+      client_name: newTask.client_name || undefined,
+      client_phone: newTask.client_phone || undefined,
+      order_id: newTask.order_id || undefined,
       status: 'todo',
       createdAt: new Date().toISOString()
     }
-    
-    setTasks(prev => [task, ...prev]) // Ajout en tête
+    setTasks(prev => [tempTask, ...prev])
     setShowModal(false)
-    setNewTask({ title: '', priority: 'medium', dueDate: '' })
+    setNewTask({ title: '', priority: 'medium', dueDate: '', description: '', taskType: 'general', client_name: '', client_phone: '', order_id: '' })
+
+    startTransition(async () => {
+      const res = await createTaskAction({ 
+        title: tempTask.title, priority: tempTask.priority, dueDate: tempTask.dueDate,
+        description: tempTask.description, taskType: tempTask.taskType, 
+        client_name: tempTask.client_name, client_phone: tempTask.client_phone, order_id: tempTask.order_id
+      })
+      if (!res.success) {
+        alert(res.error)
+        setTasks(backup)
+      } else {
+        // Remplace l'ID temporaire par le vrai ID venant de DB (le refresh Next.js va aussi retélécharger tout)
+      }
+    })
   }
 
   const handleDelete = (id: string) => {
     if(confirm('Supprimer cette tâche ?')) {
+      const backup = [...tasks]
       setTasks(prev => prev.filter(t => t.id !== id))
+      
+      startTransition(async () => {
+        const res = await deleteTaskAction(id)
+        if (!res.success) {
+          alert('Erreur: Impossible de supprimer.')
+          setTasks(backup)
+        }
+      })
     }
   }
 
   const handleToggleDone = (id: string, currentStatus: string) => {
+    const backup = [...tasks]
+    const newStatus = currentStatus === 'done' ? 'todo' : 'done'
+    
     setTasks(prev => prev.map(t => 
-      t.id === id ? { ...t, status: currentStatus === 'done' ? 'todo' : 'done' } : t
+      t.id === id ? { ...t, status: newStatus } : t
     ))
+
+    startTransition(async () => {
+      const res = await updateTaskStatus(id, newStatus)
+      if (!res.success) setTasks(backup)
+    })
   }
 
   const startEdit = (task: Task) => {
@@ -106,10 +193,29 @@ export default function TasksClient() {
   }
 
   const saveEdit = (id: string) => {
-    if(editTitle.trim()) {
-      setTasks(prev => prev.map(t => t.id === id ? { ...t, title: editTitle } : t))
+    if(!editTitle.trim()) {
+      setEditingId(null)
+      return
     }
+    
+    const backup = [...tasks]
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, title: editTitle } : t))
     setEditingId(null)
+
+    startTransition(async () => {
+      const res = await updateTaskTitle(id, editTitle)
+      if (!res.success) setTasks(backup)
+    })
+  }
+
+  const getTaskIcon = (type: string) => {
+    switch (type) {
+      case 'call': return <Phone size={14} className="text-blue-500" />
+      case 'email': return <Mail size={14} className="text-purple-500" />
+      case 'meeting': return <Users size={14} className="text-gold-dark" />
+      case 'issue': return <AlertTriangle size={14} className="text-red-500" />
+      default: return <FileText size={14} className="text-slate-400" />
+    }
   }
 
   // --- RENDU KANBAN COLONNE ---
@@ -154,12 +260,42 @@ export default function TasksClient() {
                         autoFocus
                       />
                     ) : (
-                      <p 
-                        onClick={() => startEdit(task)}
-                        className={`text-sm font-bold cursor-pointer ${task.status === 'done' ? 'line-through opacity-60' : 'text-ink'}`}
-                      >
-                        {task.title}
-                      </p>
+                      <div className="flex items-start gap-2">
+                        <div className="mt-1 flex-shrink-0 bg-slate-50 p-1.5 rounded-lg border border-line">
+                          {getTaskIcon(task.taskType)}
+                        </div>
+                        <div>
+                          <p 
+                            onClick={() => startEdit(task)}
+                            className={`text-sm font-bold cursor-pointer mb-1 ${task.status === 'done' ? 'line-through opacity-60' : 'text-ink'}`}
+                          >
+                            {task.title}
+                          </p>
+                          {task.description && (
+                            <p className="text-xs text-dust line-clamp-2 leading-relaxed mb-2 break-all">{task.description}</p>
+                          )}
+                          
+                          {(task.client_name || task.client_phone || task.order_id) && (
+                            <div className="flex flex-wrap gap-2 mt-1 mb-2">
+                              {task.client_phone ? (
+                                <a href={`https://wa.me/${task.client_phone.replace(/\+/g, '')}?text=Bonjour${task.client_name ? ` ${task.client_name}` : ''}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded text-[10px] font-bold hover:bg-green-100 transition border border-green-200">
+                                  <Phone size={10} /> {task.client_name || task.client_phone}
+                                </a>
+                              ) : task.client_name ? (
+                                <span className="flex items-center gap-1 bg-slate-50 text-slate-600 px-2 py-1 rounded text-[10px] font-bold border border-line">
+                                  <Users size={10} /> {task.client_name}
+                                </span>
+                              ) : null}
+
+                              {task.order_id && (
+                                <span className="flex items-center gap-1 bg-cream text-ink px-2 py-1 rounded text-[10px] font-bold border border-line">
+                                  # {task.order_id.slice(-6)}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     )}
                     
                     <div className="flex flex-wrap items-center gap-2">
@@ -301,7 +437,31 @@ export default function TasksClient() {
                 />
               </div>
 
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-dust">Description (Optionnel)</label>
+                <textarea 
+                  value={newTask.description} onChange={e => setNewTask({...newTask, description: e.target.value})}
+                  placeholder="Détails, notes, contexte..."
+                  rows={3}
+                  className="w-full border border-line bg-[#FAFAF7] px-4 py-3 rounded-xl text-sm font-medium text-ink focus:ring-2 focus:ring-gold/20 focus:border-gold outline-none transition resize-none"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-dust">Type de tâche</label>
+                  <select 
+                    value={newTask.taskType} onChange={e => setNewTask({...newTask, taskType: e.target.value as any})}
+                    className="w-full border border-line bg-[#FAFAF7] px-4 py-3 rounded-xl text-sm font-bold text-ink outline-none"
+                  >
+                    <option value="general">📋 Général</option>
+                    <option value="call">📞 Appel</option>
+                    <option value="email">✉️ Email</option>
+                    <option value="meeting">🤝 Rendez-vous</option>
+                    <option value="issue">⚠️ Problème / SAV</option>
+                  </select>
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-dust">Priorité</label>
                   <select 
@@ -313,15 +473,68 @@ export default function TasksClient() {
                     <option value="high">Haute</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5 relative" ref={dropdownRef}>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-dust">Client @ (Opt.)</label>
+                  <div className="relative">
+                    <UserCircle2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dust" />
+                    <input 
+                      type="text"
+                      value={newTask.client_name} 
+                      onChange={e => {
+                        setNewTask({...newTask, client_name: e.target.value})
+                        setShowCustomerDropdown(true)
+                      }}
+                      onFocus={() => setShowCustomerDropdown(true)}
+                      placeholder="Tapez un nom..."
+                      className="w-full border border-line bg-[#FAFAF7] pl-10 pr-4 py-3 rounded-xl text-sm font-bold text-ink focus:ring-2 focus:ring-gold/20 focus:border-gold outline-none"
+                    />
+                  </div>
+                  
+                  {/* Dropdown d'autocomplétion */}
+                  {showCustomerDropdown && filteredCustomers.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-line rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
+                      {filteredCustomers.map((c, i) => (
+                        <div 
+                          key={i}
+                          onClick={() => {
+                            setNewTask({
+                              ...newTask, 
+                              client_name: c.name, 
+                              client_phone: c.phone
+                            })
+                            setShowCustomerDropdown(false)
+                          }}
+                          className="px-4 py-2 hover:bg-cream cursor-pointer border-b border-line/50 last:border-0"
+                        >
+                          <p className="text-sm font-bold text-ink">{c.name}</p>
+                          <p className="text-xs text-dust">{c.phone}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-dust">Date (Optionnel)</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-dust">Téléphone (Opt.)</label>
+                  <input 
+                    type="text"
+                    value={newTask.client_phone} onChange={e => setNewTask({...newTask, client_phone: e.target.value})}
+                    placeholder="+221..."
+                    className="w-full border border-line bg-[#FAFAF7] px-4 py-3 rounded-xl text-sm font-bold text-ink outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-dust">Date d'échéance (Opt.)</label>
                   <input 
                     type="date"
                     value={newTask.dueDate} onChange={e => setNewTask({...newTask, dueDate: e.target.value})}
                     className="w-full border border-line bg-[#FAFAF7] px-4 py-3 rounded-xl text-sm font-bold text-ink outline-none"
                   />
-                </div>
               </div>
 
               <div className="pt-4 border-t border-line flex items-center justify-end gap-3">

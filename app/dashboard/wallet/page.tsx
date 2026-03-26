@@ -1,10 +1,9 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import WithdrawForm from './WithdrawForm'
 import { DepositModal } from '@/components/dashboard/DepositModal'
+import { WithdrawModal } from './WithdrawModal'
 import { WalletDashboardClient, TransactionRow } from './WalletDashboardClient'
-import { AutoWithdrawSettings } from './AutoWithdrawSettings'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -64,7 +63,7 @@ export default async function WalletPage() {
       .single(),
     supabase
       .from('Order')
-      .select('id, created_at, vendor_amount, status, buyer_name')
+      .select('id, created_at, vendor_amount, platform_fee, delivery_fee, subtotal, status, buyer_name')
       .eq('store_id', store.id)
       .in('status', ['completed', 'paid'])
       .gte('created_at', sixtyDaysAgo.toISOString())
@@ -93,6 +92,9 @@ export default async function WalletPage() {
       type: 'order' as const,
       created_at: o.created_at,
       amount: Number(o.vendor_amount),
+      platform_fee: Number(o.platform_fee) || 0,
+      delivery_fee: Number(o.delivery_fee) || 0,
+      subtotal: Number(o.subtotal) || 0,
       status: o.status,
       label: o.buyer_name || 'Client Inconnu'
     })),
@@ -101,6 +103,9 @@ export default async function WalletPage() {
       type: 'withdrawal' as const,
       created_at: w.requested_at,
       amount: Number(w.amount),
+      platform_fee: 0,
+      delivery_fee: 0,
+      subtotal: 0,
       status: w.status,
       label: `Retrait ${METHOD_LABELS[w.payment_method] || 'Transfert'}`,
       notes: w.notes
@@ -138,8 +143,17 @@ export default async function WalletPage() {
           </div>
         </div>
         
-        <div className="relative z-10 shrink-0 w-full sm:w-auto mt-4 sm:mt-0">
+        <div className="relative z-10 shrink-0 w-full sm:w-auto mt-5 sm:mt-0 flex flex-col sm:flex-row gap-3">
           <DepositModal />
+          <WithdrawModal 
+            balance={balance}
+            withdrawalMethod={store.withdrawal_method ?? 'wave'}
+            withdrawalNumber={store.withdrawal_number ?? ''}
+            withdrawalName={store.withdrawal_name ?? ''}
+            storeId={store.id}
+            hasWithdrawalAccount={hasWithdrawalAccount}
+            canWithdraw={canWithdraw}
+          />
         </div>
       </header>
 
@@ -167,140 +181,24 @@ export default async function WalletPage() {
         </div>
       )}
 
-      {/* ── Layout en 2 colonnes (Pleine largeur) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-        
-        {/* ── Colonne Gauche Interactive (Stats, Graphique & Transactions) ── */}
-        <WalletDashboardClient 
-          balance={balance}
-          pending={pending}
-          totalEarned={totalEarned}
-          initialTransactions={transactions}
-          autoWithdrawEnabled={autoWithdrawEnabled}
-          autoWithdrawThreshold={autoWithdrawThreshold}
-          monthlyGoal={monthlyGoal}
-          walletId={wallet?.id || ''}
-        />
-
-        {/* ── Colonne Droite (Actions de Retrait) ── */}
-        <div className="lg:col-span-4 space-y-6 lg:sticky top-6">
-          
-          {/* Composant de paramétrage de retraits automatisés */}
-          {hasWithdrawalAccount && (
-            <AutoWithdrawSettings 
-              walletId={wallet?.id || ''}
-              initialEnabled={autoWithdrawEnabled}
-              initialThreshold={autoWithdrawThreshold}
-            />
-          )}
-
-          {/* Compte de retrait (readonly) */}
-          {hasWithdrawalAccount && (
-            <div className="bg-[#1A1A1A] rounded-3xl p-6 shadow-xl text-white relative overflow-hidden group">
-              <div className="absolute -right-4 -top-4 w-32 h-32 bg-white/5 rounded-full pointer-events-none blur-xl group-hover:bg-white/10 transition-colors duration-500" />
-              
-              <div className="flex items-center justify-between mb-6 relative z-10">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">💳</span>
-                  <p className="text-sm font-bold text-white/90">Compte de retrait</p>
-                </div>
-                <Link
-                  href="/dashboard/settings#retrait"
-                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors shadow-inner"
-                  title="Modifier"
-                >
-                  <span className="text-[11px]">✏️</span>
-                </Link>
-              </div>
-
-              <div className="relative z-10 space-y-4">
-                <div>
-                  <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider mb-1.5">Opérateur</p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-sm bg-white/10 flex items-center justify-center text-sm shadow-inner backdrop-blur-sm overflow-hidden">
-                      {store.withdrawal_method === 'wave' ? (
-                        <img src="/wave.svg" alt="Wave" className="w-full h-full object-cover" />
-                      ) : store.withdrawal_method === 'orange_money' ? (
-                        <img src="/orange-money.svg" alt="Orange Money" className="w-full h-full object-cover bg-orange-500" />
-                      ) : (
-                        '🏦'
-                      )}
-                    </div>
-                    <p className="text-base font-black">{methodLabel}</p>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider mb-1">Numéro de réception</p>
-                  <p className="text-lg font-mono tracking-widest text-[#FFF] opacity-95">{store.withdrawal_number}</p>
-                </div>
-
-                {store.withdrawal_name && (
-                  <div className="pt-2">
-                    <p className="text-[10px] font-bold text-white/50 uppercase tracking-wider mb-1">Bénéficiaire</p>
-                    <p className="text-sm font-bold truncate text-white/80">{store.withdrawal_name}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Section retrait (Formulaire) */}
-          <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-            <div className="mb-6">
-              <h2 className="text-base font-black text-[#1A1A1A] flex items-center gap-2">
-                <span className="text-lg">💸</span> Demander un retrait
-              </h2>
-              <p className="text-xs text-[#0F7A60] font-bold mt-1.5 bg-[#0F7A60]/10 inline-block px-2.5 py-1 rounded-lg">
-                ⚡ Minimum : {formatAmount(5000)} · Traitement instantané
-              </p>
-            </div>
-
-            {canWithdraw ? (
-              <WithdrawForm
-                balance={balance}
-                withdrawalMethod={store.withdrawal_method ?? 'wave'}
-                withdrawalNumber={store.withdrawal_number ?? ''}
-                withdrawalName={store.withdrawal_name ?? ''}
-                storeId={store.id}
-              />
-            ) : (
-              <div className="space-y-4">
-                <div className="bg-[#FAFAF7] rounded-2xl p-5 text-center border border-gray-50">
-                  {!hasWithdrawalAccount ? (
-                    <div className="space-y-3">
-                      <span className="text-2xl">⚙️</span>
-                      <p className="text-sm font-bold text-gray-600">Configuration requise</p>
-                      <p className="text-[11px] text-gray-400 leading-relaxed max-w-[200px] mx-auto">
-                        Ajoutez un moyen de retrait pour débloquer cette section.
-                      </p>
-                      <Link href="/dashboard/settings#retrait" className="inline-flex items-center justify-center mt-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-[#1A1A1A] hover:bg-gray-50 transition-colors shadow-sm">
-                        Paramètres →
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="space-y-2 py-3">
-                      <span className="text-2xl">🔒</span>
-                      <p className="text-sm font-bold text-gray-600">Solde insuffisant</p>
-                      <p className="text-[11px] text-gray-400 leading-relaxed">
-                        Il vous manque <strong className="text-gray-600 font-bold">{formatAmount(5000 - balance)}</strong> pour atteindre le seuil de retrait.
-                      </p>
-                    </div>
-                  )}
-                </div>
-                <button
-                  disabled
-                  className="w-full py-4 text-sm font-bold text-white bg-gray-200 rounded-xl cursor-not-allowed transition-colors"
-                >
-                  Demander un retrait
-                </button>
-              </div>
-            )}
-          </div>
-
-        </div>
-      </div>
-
+      {/* ── Client Component avec Onglets ── */}
+      <WalletDashboardClient 
+        balance={balance}
+        pending={pending}
+        totalEarned={totalEarned}
+        initialTransactions={transactions}
+        autoWithdrawEnabled={autoWithdrawEnabled}
+        autoWithdrawThreshold={autoWithdrawThreshold}
+        monthlyGoal={monthlyGoal}
+        walletId={wallet?.id || ''}
+        hasWithdrawalAccount={hasWithdrawalAccount}
+        canWithdraw={canWithdraw}
+        methodLabel={methodLabel}
+        withdrawalMethod={store.withdrawal_method ?? 'wave'}
+        withdrawalNumber={store.withdrawal_number ?? ''}
+        withdrawalName={store.withdrawal_name ?? ''}
+        storeId={store.id}
+      />
     </div>
   )
 }

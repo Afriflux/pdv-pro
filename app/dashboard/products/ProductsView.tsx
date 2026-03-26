@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import ProductCard from '@/components/dashboard/ProductCard'
 import { toggleProductStatus } from '@/app/actions/products'
@@ -54,7 +55,7 @@ function ProductListRow({ product, baseUrl }: { product: Product; baseUrl: strin
       {/* Image miniature */}
       <div className="w-14 h-14 rounded-xl bg-gray-50 flex-shrink-0 overflow-hidden border border-gray-100 shadow-sm relative z-10">
         {product.images?.[0] ? (
-          <img src={product.images[0]} alt={product.name || "Image du produit"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+          <Image src={product.images[0]} alt={product.name || "Image du produit"} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-xl">📦</div>
         )}
@@ -140,7 +141,7 @@ function LargeProductCard({ product, baseUrl }: { product: Product; baseUrl: str
       {/* Image large */}
       <div className="md:w-2/5 aspect-[16/10] md:aspect-auto relative bg-gray-50/50 border-b md:border-b-0 md:border-r border-gray-100/50 overflow-hidden z-10">
         {product.images?.[0] ? (
-          <img src={product.images[0]} alt={product.name || "Image du produit"} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <Image src={product.images[0]} alt={product.name || "Image du produit"} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-50">📦</div>
         )}
@@ -264,6 +265,7 @@ export default function ProductsView({ products, storeName, baseUrl }: ProductsV
                 key={mode}
                 onClick={() => updateViewMode(mode)}
                 title={labels[mode]}
+                aria-label={labels[mode]}
                 className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all ${
                   viewMode === mode 
                   ? 'bg-gold text-white shadow-md shadow-gold/20' 

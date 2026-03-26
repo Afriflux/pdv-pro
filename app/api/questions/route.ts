@@ -1,6 +1,7 @@
-// app/api/questions/route.ts
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { executeWorkflows } from '@/lib/workflows/execution'
 
 // GET /api/questions?product_id=xxx
 export async function GET(req: Request) {
@@ -65,6 +66,31 @@ export async function POST(req: Request) {
       .single()
 
     if (error) throw error
+
+    // Workflow Engine Trigger
+    try {
+      const productData = await prisma.product.findUnique({
+        where: { id: product_id },
+        select: { name: true, store_id: true, store: { select: { name: true } } }
+      });
+      
+      if (productData) {
+        // En mode serveur, récupérer les meta du user Supabase pour son nom peut être fastidieux, on utilise une valeur par défaut
+        // Idéalement on query la table "User" Prisma via l'ID Supabase.
+        const buyerData = await prisma.user.findUnique({ where: { id: user.id }, select: { name: true, email: true, phone: true } });
+        
+        executeWorkflows(productData.store_id, 'Nouvelle Question Client', {
+          client_name: buyerData?.name || 'Client',
+          client_phone: buyerData?.phone || '',
+          client_email: buyerData?.email || user.email || '',
+          product_name: productData.name,
+          question: question.trim(),
+          store_name: productData.store?.name || 'PDV Pro',
+        }).catch(e => console.error('[Workflow Engine Question Error]', e));
+      }
+    } catch (wfErr) {
+       console.error('[Workflow Engine Fetch Error]', wfErr);
+    }
 
     return NextResponse.json({ success: true, question: data })
   } catch (err: any) {
