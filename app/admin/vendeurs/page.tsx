@@ -1,7 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import Link from 'next/link'
 import {
-  Search, Users, Clock, CheckCircle2, XCircle, AlertCircle, List, LayoutGrid, Store as StoreIcon
+  Search, Users, List, LayoutGrid, Store as StoreIcon, Filter
 } from 'lucide-react'
 import AdminVendorsTable, { VendorDisplayRow } from '@/components/admin/AdminVendorsTable'
 import AdminVendorsKanban from '@/components/admin/AdminVendorsKanban'
@@ -147,7 +147,7 @@ export default async function AdminVendorsPage({ searchParams }: PageProps) {
   const totalPages = Math.ceil((count ?? 0) / pageSize)
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-[#FAFAF7] w-full animate-in fade-in duration-500">
+    <div className="flex-1 flex flex-col min-h-screen bg-[#FAFAF7] w-full animate-in fade-in duration-500 pb-0">
       
       {/* ── HEADER FULL-BLEED (COVER PREMIUM) ── */}
       <header className="w-full bg-gradient-to-r from-[#0D5C4A] via-[#0F7A60] to-teal-700 pt-10 pb-24 px-6 lg:px-10 relative overflow-hidden shrink-0 shadow-lg">
@@ -207,52 +207,71 @@ export default async function AdminVendorsPage({ searchParams }: PageProps) {
         </div>
       </header>
 
-      {/* ── SPLIT VIEW (Superposé au Cover) ── */}
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 px-6 lg:px-10 -mt-12 relative z-20 pb-20 items-start">
+      {/* ── SPLIT VIEW (Sidebar Secondaire Accolée) ── */}
+      <div className="flex flex-col lg:flex-row items-start gap-6 w-full relative z-20 px-6 lg:px-10 -mt-16 pb-20">
         
         {/* -- SECONDAIRE SIDEBAR (Filtres Rapides) -- */}
-        <div className="w-full lg:w-72 bg-white rounded-3xl p-6 lg:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex-shrink-0 sticky top-24">
-          <h2 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-4 mb-4">Filtres Rapides</h2>
-          
-          <div className="flex flex-col gap-1.5">
-            <Link 
-              href="/admin/vendeurs" 
-              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${kycFilter === 'all' && statusFilter === 'all' ? 'bg-[#0F7A60] text-white shadow-[0_4px_15px_rgba(15,122,96,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A] hover:shadow-sm border border-transparent hover:border-gray-100'}`}
-            >
-              <Users className="w-4.5 h-4.5" /> <span>Toutes les boutiques</span>
-            </Link>
-            <Link 
-              href="/admin/vendeurs?kyc=pending" 
-              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${kycFilter === 'pending' ? 'bg-[#C9A84C] text-white shadow-[0_4px_15px_rgba(201,168,76,0.2)]' : 'text-gray-500 hover:bg-amber-50 hover:text-[#C9A84C] border border-transparent hover:border-amber-100/50'}`}
-            >
-              <Clock className="w-4.5 h-4.5" /> <span>En attente KYC</span>
-            </Link>
-            <Link 
-              href="/admin/vendeurs?kyc=verified" 
-              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${kycFilter === 'verified' ? 'bg-[#0F7A60] text-white shadow-[0_4px_15px_rgba(15,122,96,0.2)]' : 'text-gray-500 hover:bg-emerald-50 hover:text-[#0F7A60] border border-transparent hover:border-emerald-100/50'}`}
-            >
-              <CheckCircle2 className="w-4.5 h-4.5" /> <span>KYC Vérifiés</span>
-            </Link>
-            <Link 
-              href="/admin/vendeurs?status=suspended" 
-              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${statusFilter === 'suspended' ? 'bg-red-500 text-white shadow-[0_4px_15px_rgba(239,68,68,0.2)]' : 'text-gray-500 hover:bg-red-50 hover:text-red-500 border border-transparent hover:border-red-100/50'}`}
-            >
-              <XCircle className="w-4.5 h-4.5" /> <span>Suspendus</span>
-            </Link>
-            <Link 
-              href="/admin/vendeurs?kyc=rejected" 
-              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${kycFilter === 'rejected' ? 'bg-gray-800 text-white shadow-[0_4px_15px_rgba(31,41,55,0.2)]' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border border-transparent hover:border-gray-200'}`}
-            >
-              <AlertCircle className="w-4.5 h-4.5" /> <span>KYC Rejetés</span>
-            </Link>
+        <aside className="w-full lg:w-[280px] flex-shrink-0 sticky top-[100px] z-10 bg-white border border-gray-100 p-5 rounded-3xl shadow-xl shadow-black-[0.02] flex flex-col gap-6 animate-in slide-in-from-bottom-2 duration-300">
+          <div>
+            <h2 className="text-[10px] items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">
+              <Filter size={14} /> Filtres Rapides
+            </h2>
+            <nav className="flex flex-col gap-1.5">
+              <Link 
+                href="/admin/vendeurs" 
+                className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${kycFilter === 'all' && statusFilter === 'all' ? 'bg-[#0F7A60] text-white shadow-md shadow-[#0F7A60]/20' : 'text-gray-500 hover:bg-emerald-50 hover:text-gray-900 border border-transparent'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`w-2.5 h-2.5 rounded-full ${kycFilter === 'all' && statusFilter === 'all' ? 'bg-white' : 'bg-gray-300'}`} />
+                  <span>Toutes boutiques</span>
+                </div>
+              </Link>
+              <Link 
+                href="/admin/vendeurs?kyc=pending" 
+                className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${kycFilter === 'pending' ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20' : 'text-gray-500 hover:bg-amber-50 hover:text-gray-900 border border-transparent'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`w-2.5 h-2.5 rounded-full ${kycFilter === 'pending' ? 'bg-white' : 'bg-gray-300'}`} />
+                  <span>En attente KYC</span>
+                </div>
+              </Link>
+              <Link 
+                href="/admin/vendeurs?kyc=verified" 
+                className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${kycFilter === 'verified' ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md shadow-teal-500/20' : 'text-gray-500 hover:bg-teal-50 hover:text-gray-900 border border-transparent'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`w-2.5 h-2.5 rounded-full ${kycFilter === 'verified' ? 'bg-white' : 'bg-gray-300'}`} />
+                  <span>KYC Vérifiés</span>
+                </div>
+              </Link>
+              <Link 
+                href="/admin/vendeurs?status=suspended" 
+                className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${statusFilter === 'suspended' ? 'bg-gradient-to-r from-red-500 to-red-400 text-white shadow-md shadow-red-500/20' : 'text-gray-500 hover:bg-red-50 hover:text-gray-900 border border-transparent'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`w-2.5 h-2.5 rounded-full ${statusFilter === 'suspended' ? 'bg-white' : 'bg-gray-300'}`} />
+                  <span>Suspendus</span>
+                </div>
+              </Link>
+              <Link 
+                href="/admin/vendeurs?kyc=rejected" 
+                className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${kycFilter === 'rejected' ? 'bg-gray-900 text-white shadow-md shadow-gray-900/20' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-transparent'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`w-2.5 h-2.5 rounded-full ${kycFilter === 'rejected' ? 'bg-white' : 'bg-gray-300'}`} />
+                  <span>KYC Rejetés</span>
+                </div>
+              </Link>
+            </nav>
           </div>
-        </div>
+        </aside>
 
         {/* -- ZONE PRINCIPALE (Data Area) -- */}
-        <div className="flex-1 min-w-0 bg-transparent lg:bg-white rounded-3xl lg:shadow-[0_8px_30px_rgba(0,0,0,0.04)] lg:border border-gray-100 relative z-10 overflow-hidden">
+        <div className="flex-1 min-w-0 w-full animate-in slide-in-from-bottom-2 duration-300 delay-75">
+          <div className="bg-white rounded-3xl shadow-xl shadow-black-[0.02] border border-gray-100 relative z-10 overflow-hidden">
           
           {/* Header de la zone de données (Toggle) */}
-          <div className="px-6 lg:px-8 py-5 border-b border-gray-100 flex items-center justify-between bg-white rounded-t-3xl">
+          <div className="px-6 lg:px-8 py-5 border-b border-gray-100 flex items-center justify-between bg-white">
             <h2 className="font-black text-gray-900 flex items-center gap-2">
               <StoreIcon className="w-5 h-5 text-emerald-600" />
               Résultats ({count ?? 0})
@@ -305,6 +324,7 @@ export default async function AdminVendorsPage({ searchParams }: PageProps) {
           </div>
         </div>
       </div>
+    </div>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { Search } from 'lucide-react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { AdminPageWrapper } from '@/components/admin/AdminPageWrapper'
+import GlobalCoach from '@/components/dashboard/GlobalCoach'
 
 // ----------------------------------------------------------------
 // TYPES
@@ -11,6 +12,8 @@ import { AdminPageWrapper } from '@/components/admin/AdminPageWrapper'
 interface AdminUser {
   role: string
   email: string
+  name: string
+  avatar_url: string | null
 }
 
 // ----------------------------------------------------------------
@@ -33,7 +36,7 @@ export default async function AdminLayout({
   const supabaseAdmin = createAdminClient()
   const { data: userData } = await supabaseAdmin
     .from('User')
-    .select('role, email')
+    .select('role, email, name, avatar_url')
     .eq('id', user.id)
     .single<AdminUser>()
 
@@ -49,16 +52,16 @@ export default async function AdminLayout({
           SIDEBAR DYNAMIQUE — Gestion des états desktop/mobile
       ───────────────────────────────────────────────────────── */}
       <AdminSidebar
-        adminName={userData?.email?.split('@')[0] ?? 'Admin'}
+        adminName={userData?.name || userData?.email?.split('@')[0] || 'Admin'}
         adminEmail={userData?.email ?? ''}
         adminRole={userData?.role ?? 'support'}
-        avatarUrl={null}
+        avatarUrl={userData?.avatar_url ?? null}
       />
 
       {/* ─────────────────────────────────────────────────────────
           CONTENU PRINCIPAL
       ───────────────────────────────────────────────────────── */}
-      <main className="flex-1 min-w-0 bg-[#FAFAF7] h-screen overflow-y-auto relative flex flex-col pt-14 lg:pt-0">
+      <main className="flex-1 min-w-0 bg-[#FAFAF7] h-screen overflow-y-auto overflow-x-hidden relative flex flex-col pt-14 lg:pt-0">
 
         {/* ── HEADER DESKTOP ── Fond blanc / Glassmorphism */}
         <header className="hidden lg:flex h-[64px] bg-white/80 backdrop-blur-xl border-b border-gray-200 sticky top-0 z-40 px-6 items-center justify-between shadow-sm shrink-0">
@@ -81,6 +84,9 @@ export default async function AdminLayout({
           {children}
         </AdminPageWrapper>
       </main>
+
+      {/* Le Cerveau IA pour les Admins aussi ! */}
+      <GlobalCoach />
     </div>
   )
 }

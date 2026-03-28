@@ -1,30 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { INTEGRATION_CATEGORIES } from '@/app/admin/integrations/config'
 
-// ─── POST /api/admin/integrations/update ─────────────────────────────────
-// Upsert une clé API dans PlatformConfig.
-// Protégé : super_admin uniquement.
-// Body : { key: string, value: string }
-// ─────────────────────────────────────────────────────────────────────────
-
-// Clés autorisées (whitelist de sécurité)
-const ALLOWED_KEYS = new Set([
-  'ANTHROPIC_API_KEY',
-  'WAVE_API_KEY',
-  'WAVE_API_SECRET',
-  'ORANGE_MONEY_API_KEY',
-  'ORANGE_MONEY_MERCHANT_KEY',
-  'CINETPAY_API_KEY',
-  'CINETPAY_SITE_ID',
-  'TELEGRAM_BOT_TOKEN',
-  'TWILIO_ACCOUNT_SID',
-  'TWILIO_AUTH_TOKEN',
-])
+// Clés autorisées (whitelist générée depuis la config orientée Service)
+const ALLOWED_KEYS = new Set(
+  INTEGRATION_CATEGORIES.flatMap(c => 
+    c.services.flatMap(s => 
+      s.fields.flatMap(f => f.testKey ? [f.key, f.testKey] : [f.key])
+    )
+  )
+)
 
 interface UpdateBody {
-  key:   string
-  value: string
+  payload: Record<string, string>
 }
 
 export async function POST(req: NextRequest) {
@@ -37,38 +26,41 @@ export async function POST(req: NextRequest) {
     const supabaseAdmin = createAdminClient()
     const { data: caller } = await supabaseAdmin
       .from('User')
-      .select('role')
+      .select('name, role')
       .eq('id', user.id)
-      .single<{ role: string }>()
+      .single<{ name: string, role: string }>()
 
     if (caller?.role !== 'super_admin') {
       return NextResponse.json({ error: 'Accès refusé — super_admin requis.' }, { status: 403 })
     }
 
-    const body = await req.json() as UpdateBody
-    const { key, value } = body
+    const { payload } = await req.json() as UpdateBody
 
-    if (!key || !value?.trim()) {
-      return NextResponse.json({ error: 'Clé et valeur obligatoires.' }, { status: 400 })
+    if (!payload || typeof payload !== 'object' || Object.keys(payload).length === 0) {
+      return NextResponse.json({ error: 'Payload invalide ou vide.' }, { status: 400 })
     }
 
-    // Whitelist : refuser toute clé non autorisée
-    if (!ALLOWED_KEYS.has(key)) {
-      return NextResponse.json({ error: `Clé non autorisée : "${key}".` }, { status: 400 })
+    const rowsToUpsert: { key: string, value: string, updated_by: string }[] = []
+    const authorName = caller?.name || user.email || 'Admin'
+    
+    for (const [key, value] of Object.entries(payload)) {
+      if (!ALLOWED_KEYS.has(key)) {
+        return NextResponse.json({ error: `Clé non autorisée : "${key}".` }, { status: 400 })
+      }
+      rowsToUpsert.push({ key, value: value.trim(), updated_by: authorName })
     }
 
-    // Upsert dans PlatformConfig
+    // Bulk Upsert dans IntegrationKey
     const { error } = await supabaseAdmin
-      .from('PlatformConfig')
-      .upsert({ key, value: value.trim() }, { onConflict: 'key' })
+      .from('IntegrationKey')
+      .upsert(rowsToUpsert, { onConflict: 'key' })
 
     if (error) throw error
 
-    console.log(`[Admin Integrations] Clé mise à jour : ${key} par ${user.id}`)
-    return NextResponse.json({ success: true })
+    console.log(`[Admin Integrations] Bulk update par ${user.id} : ${Object.keys(payload).join(', ')}`)
+    return NextResponse.json({ success: true, updatedKeys: rowsToUpsert.map(r => r.key) })
   } catch (error: unknown) {
-
-    console.error('[Admin Integrations Update] Erreur:', error)
+    console.error('[Admin Integrations Bulk Update] Erreur:', error)
     return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

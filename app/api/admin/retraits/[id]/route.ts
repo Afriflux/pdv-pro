@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 import { triggerPaymentTelegram } from '@/lib/telegram/notify-hooks'
+import { sendWhatsApp, msgWithdrawalApproved, msgWithdrawalRejected } from '@/lib/whatsapp/sendWhatsApp'
 
 // ----------------------------------------------------------------
 // API : ACTIONS ADMIN SUR RETRAITS
@@ -112,15 +113,21 @@ export async function PATCH(
             .update({ status: 'paid', processed_at: new Date().toISOString(), notes: payoutResult.transactionId })
             .eq('id', withdrawalId)
             
-          // Notification Telegram
+          // Notification Telegram & WhatsApp
           try {
             await triggerPaymentTelegram(
               (withdrawal.Store as any).user_id,
               withdrawal.amount,
               withdrawal.payment_method
             )
-          } catch (tgError) {
-            console.warn('[Admin Withdrawal] Erreur notification Telegram:', tgError)
+            if (vendorPhone) {
+              await sendWhatsApp({
+                to: vendorPhone,
+                body: msgWithdrawalApproved({ amount: withdrawal.amount, method: withdrawal.payment_method })
+              })
+            }
+          } catch (notifyError) {
+            console.warn('[Admin Withdrawal] Erreur notification:', notifyError)
           }
         } else {
           // Échec du payout → Rejeter et recréditer
@@ -157,6 +164,22 @@ export async function PATCH(
         .from('Withdrawal')
         .update({ status: 'rejected' })
         .eq('id', withdrawalId)
+
+      try {
+        let vendorPhone = withdrawal.phone_or_iban
+        if (!vendorPhone) {
+          const storeData = withdrawal.Store as any
+          vendorPhone = storeData?.whatsapp || (storeData?.User && storeData.User[0]?.phone) || storeData?.User?.phone
+        }
+        if (vendorPhone) {
+           await sendWhatsApp({
+             to: vendorPhone,
+             body: msgWithdrawalRejected({ amount: withdrawal.amount, reason: reason || 'Motif non précisé par l\'administration.' })
+           })
+        }
+      } catch (notifyError) {
+        console.warn('[Admin Withdrawal] Erreur notification rejet:', notifyError)
+      }
     }
 
     // 5. Audit Log

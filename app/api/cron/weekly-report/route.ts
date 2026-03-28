@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendTransactionalEmail } from '@/lib/brevo/brevo-service'
+import { logCronExecution } from '@/lib/cron/cronLogger'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -185,6 +186,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       .eq('is_active', true)
 
     if (storesError) {
+      await logCronExecution('weekly-report', 'error', storesError.message)
       return NextResponse.json(
         { error: `Erreur récupération stores : ${storesError.message}` },
         { status: 500 }
@@ -243,13 +245,15 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     console.log(`[Cron weekly-report] Terminé — envoyés: ${sentCount}, erreurs: ${errors.length}`)
 
+    await logCronExecution('weekly-report', 'success', `Envoyés: ${sentCount}, Erreurs: ${errors.length}`)
+
     return NextResponse.json(
       { success: true, sent: sentCount, errors, total: activeStores.length },
       { status: 200 }
     )
 
   } catch (error: unknown) {
-
+    await logCronExecution('weekly-report', 'error', error instanceof Error ? error.message : 'Exception critique')
     return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

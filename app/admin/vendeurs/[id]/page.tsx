@@ -6,7 +6,6 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import KYCAdminActions from '@/app/admin/kyc/KYCAdminActions'
 import VendorActions from './VendorActions'
 import AdminVendorEdit from '@/components/admin/AdminVendorEdit'
 import VendorAuditLogs from '@/components/admin/VendorAuditLogs'
@@ -428,7 +427,15 @@ export default async function VendeurDetailPage({
               {/* Actions KYC */}
               <div className="space-y-3">
                 {store.kyc_status === 'submitted' && (
-                  <KYCAdminActions storeId={store.id} storeName={store.name} />
+                  <div className="space-y-2">
+                    <p className="text-xs text-amber-600 font-bold flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center">⏳</span>
+                      Dossier KYC en attente d'audit.
+                    </p>
+                    <Link href="/admin/kyc?status=submitted" className="inline-flex items-center gap-2 bg-[#0F7A60] text-white hover:bg-emerald-700 px-4 py-2 rounded-xl text-xs font-bold transition-colors shadow-sm">
+                      Ouvrir le Hub KYC ↗
+                    </Link>
+                  </div>
                 )}
                 {store.kyc_status === 'verified' && (
                   <p className="text-xs text-emerald-600 font-bold flex items-center gap-2">

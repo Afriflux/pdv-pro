@@ -10,7 +10,11 @@ const ADMIN_ROLES  = ['super_admin', 'gestionnaire', 'support'] as const
 type Role = typeof ADMIN_ROLES[number] | 'vendeur' | 'acheteur' | 'client' | 'ambassador' | 'affilie'
 
 export async function middleware(req: NextRequest) {
+  // Configurer la réponse par défaut et injecter le pathname
   const res = NextResponse.next()
+  const pathname = req.nextUrl.pathname
+  res.headers.set('x-pathname', pathname)
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -26,7 +30,6 @@ export async function middleware(req: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-  const pathname = req.nextUrl.pathname
 
   // ── 1. Routes publiques → toujours autoriser ────────────────────────────────
   // /admin/login est public pour permettre la connexion sans session
@@ -143,9 +146,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
+  res.headers.set('x-pathname', pathname)
   return res
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 }

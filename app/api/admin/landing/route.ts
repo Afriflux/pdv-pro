@@ -5,6 +5,17 @@ import { createAdminClient } from '@/lib/supabase/admin'
 const ALLOWED_KEYS = new Set([
   'landing_testimonials',
   'landing_faq',
+  'landing_hero_cta_primary',
+  'landing_hero_cta_secondary',
+  'landing_ticker_text',
+  'landing_banner_text',
+  'landing_banner_date',
+  'landing_banner_active',
+  'landing_cod_price',
+  'landing_abonnement_price',
+  'landing_instagram_url',
+  'landing_facebook_url',
+  'landing_whatsapp_support'
 ])
 
 export async function POST(req: NextRequest) {

@@ -329,65 +329,71 @@ export async function resolveReport(reportId: string, status: string, notes: str
 // ─── CONFIGURATION GLOBALE ───────────────────────────────────────────────────
 
 export interface AdminPlatformConfig {
-  id: string
-  fee_percentage: number
-  fee_fixed: number
+  tier_1: number
+  tier_2: number
+  tier_3: number
+  tier_4: number
+  cod: number
   min_withdrawal: number
-  updated_at: string
+  fee_fixed: number
 }
 
 export async function getPlatformConfig(): Promise<AdminPlatformConfig> {
   const supabase = await createClient()
 
-  // On suppose qu'il y a toujours au moins une ligne de config globale (ID = 1 ou première)
-  const { data, error } = await supabase
-    .from('PlatformConfig')
-    .select('*')
-    .limit(1)
-    .single()
+  const keys = [
+    'commission_tier_1', 'commission_tier_2', 'commission_tier_3', 'commission_tier_4',
+    'commission_cod', 'min_withdrawal', 'fee_fixed'
+  ]
 
-  // Si pas de config instanciée, on renvoie des valeurs par défaut (ou on la crée)
-  if (error || !data) {
-    return {
-      id: 'default',
-      fee_percentage: 10,
-      fee_fixed: 0,
-      min_withdrawal: 5000,
-      updated_at: new Date().toISOString()
-    }
-  }
+  const { data: kvRows } = await supabase
+    .from('PlatformConfig')
+    .select('key, value')
+    .in('key', keys)
+
+  const kv = (kvRows || []).reduce((acc: Record<string, number>, row: { key: string | null, value: string | null }) => {
+    if (row.key && row.value) acc[row.key] = Number(row.value)
+    return acc
+  }, {})
 
   return {
-    id: data.id,
-    fee_percentage: data.fee_percentage,
-    fee_fixed: data.fee_fixed,
-    min_withdrawal: data.min_withdrawal,
-    updated_at: data.updated_at
+    tier_1: kv['commission_tier_1'] ?? 8,
+    tier_2: kv['commission_tier_2'] ?? 7,
+    tier_3: kv['commission_tier_3'] ?? 6,
+    tier_4: kv['commission_tier_4'] ?? 5,
+    cod: kv['commission_cod'] ?? 5,
+    min_withdrawal: kv['min_withdrawal'] ?? 5000,
+    fee_fixed: kv['fee_fixed'] ?? 0,
   }
 }
 
-export async function updatePlatformConfig(payload: { fee_percentage: number, fee_fixed: number, min_withdrawal: number }) {
+export async function updatePlatformConfig(payload: AdminPlatformConfig) {
   const supabase = await createClient()
 
-  // Chercher la 1ère config
-  const { data: existing } = await supabase.from('PlatformConfig').select('id').limit(1).single()
+  const upserts = [
+    { key: 'commission_tier_1', value: String(payload.tier_1) },
+    { key: 'commission_tier_2', value: String(payload.tier_2) },
+    { key: 'commission_tier_3', value: String(payload.tier_3) },
+    { key: 'commission_tier_4', value: String(payload.tier_4) },
+    { key: 'commission_cod', value: String(payload.cod) },
+    { key: 'min_withdrawal', value: String(payload.min_withdrawal) },
+    { key: 'fee_fixed', value: String(payload.fee_fixed) },
+  ]
 
-  let error
-  if (existing) {
-    const res = await supabase.from('PlatformConfig').update(payload).eq('id', existing.id)
-    error = res.error
-  } else {
-    // S'il n'y en avait pas encore en BDD
-    const res = await supabase.from('PlatformConfig').insert([payload])
-    error = res.error
+  // Upsert the kv pairs
+  for (const item of upserts) {
+    const { data: exist } = await supabase.from('PlatformConfig').select('id').eq('key', item.key).limit(1).single()
+    if (exist) {
+      await supabase.from('PlatformConfig').update({ value: item.value, commission_rate: 0 }).eq('id', exist.id)
+    } else {
+      await supabase.from('PlatformConfig').insert([{ key: item.key, value: item.value, commission_rate: 0 }])
+    }
   }
 
-  if (error) throw new Error(error.message)
-
   await logAdminAction(
-    'Mise à jour de la configuration globale',
+    'Mise à jour des règles de commission (KV)',
     'PlatformConfig',
-    existing?.id || 'new',
+    'dynamic-tiers',
     payload
   )
 }

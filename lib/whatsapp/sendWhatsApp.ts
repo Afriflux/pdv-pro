@@ -142,3 +142,35 @@ Raison : ${params.reason}
 Le montant est de nouveau disponible sur votre solde.
 _Support PDV Pro_`
 }
+
+export function msgMasterclassReminder(params: {
+  vendorName: string
+  academyLink: string
+}) {
+  return `🚀 *Salut ${params.vendorName}, bienvenue sur PDV Pro !*
+
+Nous avons remarqué que tu n'as pas encore jeté un œil à l'Académie PDV Pro. 
+Des stratégies inédites t'y attendent (gratuitement) pour lancer ta boutique et exploser tes ventes en Afrique.
+
+👉 Découvre les secrets du Top 1% ici : 
+${params.academyLink}
+
+À très vite ! 🎓`
+}
+
+export function msgVendorEmptyStore(params: {
+  vendorName: string
+  dashboardLink: string
+}) {
+  return `🛑 *C'est dommage de t'arrêter en si bon chemin...*
+
+Salut ${params.vendorName}, l'équipe PDV Pro au rapport ! 🫡
+
+Il ne te manque qu'une seule étape pour encaisser ta première vente sur Wave ou Orange Money : **Publier ton premier produit.**
+Que ce soit un Ebook, un vêtement, ou une session de coaching, ça prend littéralement 30 secondes.
+
+👉 Va sur ton tableau de bord et lance la machine :
+${params.dashboardLink}
+
+Si tu bloques, réponds juste à ce message ! 🙌`
+}

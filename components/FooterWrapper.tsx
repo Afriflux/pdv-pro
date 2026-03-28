@@ -8,6 +8,7 @@ export default function FooterWrapper() {
   
   // Masquer le footer sur le dashboard, l'admin, l'onboarding et le checkout (pour ne pas distraire l'achat)
   if (
+    pathname === '/' ||
     pathname.startsWith('/dashboard') || 
     pathname.startsWith('/admin') || 
     pathname.startsWith('/onboarding') ||

@@ -56,11 +56,11 @@ export function SettingsLayout({ store, profile, userId }: any) {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 pb-20">
+    <div className="flex flex-col lg:flex-row w-full pb-20 items-start relative z-20">
       
-      {/* ── MENU LATÉRAL ── */}
-      <aside className="lg:w-80 flex-shrink-0 lg:block overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 z-20">
-        <nav className="flex lg:flex-col gap-1.5 sticky top-32 min-w-max lg:min-w-0 bg-white/40 backdrop-blur-3xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.03)] p-4 rounded-[2rem] lg:bg-transparent lg:shadow-none lg:border-none lg:backdrop-blur-none lg:p-0">
+      {/* ── MENU LATÉRAL ACCOLÉ ── */}
+      <aside className="w-full lg:w-[300px] flex-shrink-0 sticky top-[80px] z-10 lg:h-[calc(100vh-80px)] overflow-y-auto bg-white/80 backdrop-blur-3xl border-r border-gray-200 p-5 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col gap-6">
+        <nav className="flex lg:flex-col gap-1.5 min-w-max lg:min-w-0">
           <MenuBtn active={activeSection === 'profil'} icon={<User size={18}/>} label="Général" onClick={() => setActiveSection('profil')} />
           <MenuBtn active={activeSection === 'lien'} icon={<Globe size={18}/>} label="Lien Boutique" onClick={() => setActiveSection('lien')} />
           <MenuBtn active={activeSection === 'apparence'} icon={<Palette size={18}/>} label="Apparence" onClick={() => setActiveSection('apparence')} />
@@ -95,7 +95,7 @@ export function SettingsLayout({ store, profile, userId }: any) {
       </aside>
 
       {/* ── CONTENU (Sections) ── */}
-      <div className="flex-1 max-w-4xl relative z-10">
+      <div className="flex-1 w-full relative z-10 p-4 md:p-6 lg:p-8 max-w-5xl">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeSection}

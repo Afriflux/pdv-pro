@@ -4,9 +4,21 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Timer, ArrowRight } from 'lucide-react'
 
-export function CountdownBanner() {
-  const LAUNCH_DATE = new Date('2026-04-01T00:00:00+00:00')
+interface BannerProps {
+  active: boolean;
+  dateStr: string;
+  text: string;
+}
+
+export function CountdownBanner({ config }: { config?: BannerProps }) {
   const [mounted, setMounted] = useState(false)
+  
+  const isActive = config?.active ?? true;
+  const targetDateStr = config?.dateStr || '2026-04-01T00:00:00Z';
+  const textMsg = config?.text || 'Lancement officiel le 1er Avril 2026';
+  
+  const LAUNCH_DATE = new Date(targetDateStr);
+
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -16,8 +28,7 @@ export function CountdownBanner() {
 
   useEffect(() => {
     setMounted(true)
-    // Objectif: 1er Avril 2026 à 00:00:00
-    const TARGET_DATE = new Date('2026-04-01T00:00:00Z').getTime()
+    const TARGET_DATE = new Date(targetDateStr).getTime()
     
     const updateTimer = () => {
       const now = new Date().getTime()
@@ -40,7 +51,7 @@ export function CountdownBanner() {
     return () => clearInterval(interval)
   }, [])
 
-  if (!mounted) return null
+  if (!mounted || !isActive) return null
   if (new Date() >= LAUNCH_DATE) return null
 
   return (
@@ -52,7 +63,7 @@ export function CountdownBanner() {
           <span className="bg-white/20 p-1.5 rounded-full animate-pulse">
             <Timer size={16} />
           </span>
-          <span className="font-bold">Lancement officiel le 1er Avril 2026</span>
+          <span className="font-bold">{textMsg}</span>
           <span className="hidden md:inline">— Inscrivez-vous maintenant et soyez parmi les premiers vendeurs !</span>
         </div>
 

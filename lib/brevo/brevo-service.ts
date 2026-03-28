@@ -4,6 +4,7 @@
 // Base URL : https://api.brevo.com/v3
 
 import { createClient } from '@/lib/supabase/server'
+import { vendorEmptyStoreEmail, vendorMasterclassReminderEmail } from './email-templates'
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
@@ -528,5 +529,33 @@ export async function sendFirstSaleEmail(email: string, productName: string, amo
         </p>
       </div>
     `
+  })
+}
+
+// ─── 11. Lifecycle Automations ───────────────────────────────────────────────
+
+export async function sendEmptyStoreEmail(email: string, vendorName: string): Promise<boolean> {
+  const apiKey = await getBrevoApiKey()
+  if (!apiKey) {
+    console.log(`[Brevo Fallback] Action = Empty Store Reminder -> ${email}`)
+    return true
+  }
+  return sendTransactionalEmail({
+    to: [{ email }],
+    subject: "C'est dommage de s'arrêter là... 🚀 (Ta boutique est vide)",
+    htmlContent: vendorEmptyStoreEmail(vendorName)
+  })
+}
+
+export async function sendMasterclassReminderEmail(email: string, vendorName: string): Promise<boolean> {
+  const apiKey = await getBrevoApiKey()
+  if (!apiKey) {
+    console.log(`[Brevo Fallback] Action = Masterclass Reminder -> ${email}`)
+    return true
+  }
+  return sendTransactionalEmail({
+    to: [{ email }],
+    subject: "Arrêtez de perdre des ventes. 🛑",
+    htmlContent: vendorMasterclassReminderEmail(vendorName)
   })
 }

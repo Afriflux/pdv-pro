@@ -7,6 +7,7 @@ import ProductCard from '@/components/dashboard/ProductCard'
 import { toggleProductStatus } from '@/app/actions/products'
 import { useTransition } from 'react'
 import CopyButton from '@/components/dashboard/CopyButton'
+import FlashFunnelButton from '@/components/dashboard/FlashFunnelButton'
 import { Package } from 'lucide-react'
 
 // ----------------------------------------------------------------
@@ -110,6 +111,7 @@ function ProductListRow({ product, baseUrl }: { product: Product; baseUrl: strin
 
       {/* Actions */}
       <div className="flex items-center gap-2">
+        <FlashFunnelButton productId={product.id} compact />
         <CopyButton url={`${baseUrl}/pay/${product.id}`} compact />
         <Link 
           href={`/dashboard/products/${product.id}/edit`}
@@ -200,6 +202,7 @@ function LargeProductCard({ product, baseUrl }: { product: Product; baseUrl: str
           </div>
           
           <div className="flex gap-2">
+            <FlashFunnelButton productId={product.id} className="h-[48px]" />
             <CopyButton url={`${baseUrl}/pay/${product.id}`} />
             <Link 
               href={`/dashboard/products/${product.id}/edit`}

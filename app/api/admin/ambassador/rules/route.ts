@@ -11,7 +11,10 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 const ALLOWED_AMBASSADOR_KEYS = new Set([
   'ambassador_commission_rate',
+  'ambassador_commission_fixed',
   'ambassador_validity_months',
+  'ambassador_min_revenue',
+  'ambassador_observation_days',
   'ambassador_max_referrals',
   'ambassador_program_active',
 ])
@@ -55,6 +58,18 @@ export async function POST(req: NextRequest) {
       .upsert(upserts, { onConflict: 'key' })
 
     if (error) throw error
+
+    // LOG AUDIT
+    await supabaseAdmin.from('AdminLog').insert({
+      admin_id: user.id,
+      action: 'UPDATE_CONFIG',
+      target_type: 'AMBASSADOR_PROGRAM',
+      target_id: 'global_config',
+      details: {
+        reason: 'Mise à jour des paramètres du programme Ambassadeur',
+        updated_keys: upserts.map(u => u.key)
+      }
+    })
 
     return NextResponse.json({ success: true })
   } catch (error: unknown) {

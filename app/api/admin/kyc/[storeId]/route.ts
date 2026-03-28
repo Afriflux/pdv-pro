@@ -251,6 +251,15 @@ export async function PATCH(
         }).catch(() => {})
       }
 
+      // ── Audit Log ────────────────────────────────────────────────────────
+      await supabaseAdmin.from('AdminLog').insert({
+        admin_id: user.id,
+        action: 'APPROVE_KYC',
+        target_type: 'store',
+        target_id: storeId,
+        details: { store_name: storeData.name }
+      })
+
     } else {
       // ── Rejet ────────────────────────────────────────────────────────────────
 
@@ -287,6 +296,15 @@ export async function PATCH(
           htmlContent: buildRejectionEmail(vendorName, storeData.name as string, reason!.trim()),
         }).catch(() => {})
       }
+
+      // ── Audit Log ────────────────────────────────────────────────────────
+      await supabaseAdmin.from('AdminLog').insert({
+        admin_id: user.id,
+        action: 'REJECT_KYC',
+        target_type: 'store',
+        target_id: storeId,
+        details: { store_name: storeData.name, reason: reason!.trim() }
+      })
     }
 
     return NextResponse.json({ success: true }, { status: 200 })

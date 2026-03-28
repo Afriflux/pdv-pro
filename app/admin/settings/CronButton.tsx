@@ -7,13 +7,14 @@ interface CronButtonProps {
   label: string
   endpoint: string
   description?: string
+  lastRunStr?: string
 }
 
 /**
  * Bouton client pour déclencher manuellement un CRON.
  * Gère l'état de chargement et affiche le résultat JSON.
  */
-export default function CronButton({ label, endpoint, description }: CronButtonProps) {
+export default function CronButton({ label, endpoint, description, lastRunStr }: CronButtonProps) {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<Record<string, unknown> | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -74,6 +75,26 @@ export default function CronButton({ label, endpoint, description }: CronButtonP
           {loading ? 'Exécution...' : 'Lancer'}
         </button>
       </div>
+
+      {lastRunStr && (
+        <div className="flex items-center gap-2 mt-2">
+           <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">Dernière exécution :</span>
+           {(() => {
+             try {
+               const parsed = JSON.parse(lastRunStr)
+               const isErr = parsed.status === 'error'
+               const d = new Date(parsed.time)
+               return (
+                 <span className={`px-2 py-0.5 rounded border text-[10px] font-bold ${isErr ? 'bg-red-50 text-red-600 border-red-200' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
+                   {isErr ? 'Erreur' : 'Succès'} • {d.toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour:'2-digit', minute:'2-digit' })}
+                 </span>
+               )
+             } catch {
+               return <span className="text-gray-400 text-xs">Inconnu</span>
+             }
+           })()}
+        </div>
+      )}
 
       {/* Résultat JSON */}
       {(result || error) && (

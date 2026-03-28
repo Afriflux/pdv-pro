@@ -1,5 +1,6 @@
 import { verifyCronSecret, cronResponse } from '@/lib/cron/cron-helpers'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { logCronExecution } from '@/lib/cron/cronLogger'
 
 export async function POST(req: Request) {
   // 1. Secret vérification
@@ -21,6 +22,7 @@ export async function POST(req: Request) {
 
   if (fetchError) {
     console.error('[CRON retrait-auto] Erreur fetch withdrawals:', fetchError.message)
+    await logCronExecution('retrait-auto', 'error', fetchError.message)
     return cronResponse({ error: fetchError.message }, 500)
   }
 
@@ -124,5 +126,6 @@ export async function POST(req: Request) {
     }
   }
 
+  await logCronExecution('retrait-auto', 'success', `Traités: ${processed}, Échoués: ${failed}`)
   return cronResponse({ checked: withdrawals.length, processed, failed })
 }

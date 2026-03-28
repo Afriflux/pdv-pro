@@ -21,29 +21,55 @@ const mono = Space_Mono({
   variable: '--font-mono',
 })
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'),
-  title: "PDV Pro — Vendez en ligne en Afrique de l'Ouest",
-  description: "Créez votre boutique en ligne en 10 minutes. Zéro abonnement. PDV Pro, la plateforme e-commerce pour l'Afrique de l'Ouest.",
-  icons: {
-    icon: '/icon-192x192.png',
-    apple: '/icon-192x192.png',
-  },
-  manifest: '/manifest.json',
-  openGraph: { 
-    type: 'website', 
-    locale: 'fr_FR', 
-    url: 'https://pdvpro.com', 
-    siteName: 'PDV Pro', 
-    title: "PDV Pro — La plateforme e-commerce #1 en Afrique de l'Ouest", 
-    description: "Créez votre boutique en ligne gratuitement. Vendez vos produits physiques, digitaux et coaching. Zéro abonnement.", 
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }] 
-  },
-  twitter: { 
-    card: 'summary_large_image', 
-    title: 'PDV Pro', 
-    description: "La plateforme e-commerce #1 en Afrique de l'Ouest", 
-    images: ['/og-image.png'] 
+import { createAdminClient } from '@/lib/supabase/admin'
+
+export const revalidate = 60 // Refresh cache every minute to apply admin SEO changes
+
+export async function generateMetadata(): Promise<Metadata> {
+  const supabase = createAdminClient()
+  const { data: configRows } = await supabase
+    .from('PlatformConfig')
+    .select('key, value')
+    .in('key', ['seo_title', 'seo_description', 'seo_keywords', 'seo_og_image', 'platform_name'])
+
+  const kv = (configRows || []).reduce((acc: Record<string, string>, r) => {
+    if (r.key && r.value) acc[r.key] = r.value
+    return acc
+  }, {})
+
+  const siteTitle = kv['seo_title'] || kv['platform_name'] || "PDV Pro — Vendez en ligne en Afrique de l'Ouest"
+  const siteDesc  = kv['seo_description'] || "Créez votre boutique en ligne en 10 minutes. Zéro abonnement. PDV Pro, la plateforme e-commerce pour l'Afrique de l'Ouest."
+  const siteKeys  = kv['seo_keywords'] ? kv['seo_keywords'].split(',').map(k => k.trim()) : ["ecommerce", "afrique", "boutique en ligne"]
+  const siteImage = kv['seo_og_image'] || '/og-image.png'
+
+  return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'),
+    title: {
+      template: `%s | ${kv['platform_name'] || 'PDV Pro'}`,
+      default: siteTitle,
+    },
+    description: siteDesc,
+    keywords: siteKeys,
+    icons: {
+      icon: '/icon-192x192.png',
+      apple: '/icon-192x192.png',
+    },
+    manifest: '/manifest.json',
+    openGraph: {
+      type: 'website',
+      locale: 'fr_FR',
+      url: 'https://pdvpro.com',
+      siteName: kv['platform_name'] || 'PDV Pro',
+      title: siteTitle,
+      description: siteDesc,
+      images: [{ url: siteImage, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: siteTitle,
+      description: siteDesc,
+      images: [siteImage],
+    }
   }
 }
 
@@ -51,22 +77,52 @@ import FooterWrapper from '@/components/FooterWrapper'
 import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
 import { Suspense } from 'react'
 import AffiliateTracker from '@/components/affiliation/AffiliateTracker'
+import MaintenanceScreen from '@/components/MaintenanceScreen'
+import { headers } from 'next/headers'
 
-export default function RootLayout({
+import { Toaster } from 'sonner'
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Query maintenance mode using the Admin Client
+  const supabase = createAdminClient()
+  const { data: configRows } = await supabase
+    .from('PlatformConfig')
+    .select('key, value')
+    .in('key', ['maintenance_active', 'maintenance_message'])
+
+  const kv = (configRows || []).reduce((acc: Record<string, string>, row) => {
+    if (row.key && row.value) acc[row.key] = row.value
+    return acc
+  }, {})
+
+  const isMaintenanceActive = kv['maintenance_active'] === 'true'
+  const pathname = headers().get('x-pathname') || ''
+  
+  // By-pass maintenance for any /admin... route
+  const isAdminRoute = pathname.startsWith('/admin')
+  const showMaintenance = isMaintenanceActive && !isAdminRoute
+
   return (
     <html lang="fr" className={`${cormorant.variable} ${dm.variable} ${mono.variable}`}>
       <body className={`antialiased font-body bg-cream text-ink selection:bg-gold/30 selection:text-ink`}>
-        <OrganizationJsonLd />
-        <WebSiteJsonLd />
-        <Suspense fallback={null}>
-          <AffiliateTracker />
-        </Suspense>
-        {children}
-        <FooterWrapper />
+        {showMaintenance ? (
+          <MaintenanceScreen message={kv['maintenance_message']} />
+        ) : (
+          <>
+            <OrganizationJsonLd />
+            <WebSiteJsonLd />
+            <Suspense fallback={null}>
+              <AffiliateTracker />
+            </Suspense>
+            <Toaster position="top-right" richColors closeButton />
+            {children}
+            <FooterWrapper />
+          </>
+        )}
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js').catch(() => {})

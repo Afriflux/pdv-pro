@@ -1,3 +1,4 @@
+import React from 'react'
 import Link from 'next/link'
 import { 
   ArrowRight, 
@@ -18,6 +19,7 @@ import {
   Briefcase
 } from 'lucide-react'
 import PricingCalculator from './PricingCalculator'
+import { getCommissionTiers } from '@/lib/commission/commission-service'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { HeroStats } from './components/HeroStats'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -27,19 +29,6 @@ import { LiveCounters } from '@/components/landing/LiveCounters'
 import { TestimonialSlider } from '@/components/landing/TestimonialSlider'
 import { Package, Wallet } from 'lucide-react'
 
-export const metadata = {
-  title: 'PDV Pro — Vendez en ligne en Afrique de l\'Ouest',
-  description: 'Créez votre boutique en ligne en 10 minutes. Zéro abonnement, zéro frais fixe. Paiements Wave, Orange Money et Mobile Money intégrés. Commission dégressive 8% → 5%.',
-  openGraph: {
-    title: 'PDV Pro — Votre boutique e-commerce en 10 minutes',
-    description: 'Vendez sur WhatsApp, Instagram et Facebook avec une vraie boutique. Paiements Mobile Money intégrés.',
-    url: 'https://pdvpro.com',
-    siteName: 'PDV Pro',
-    images: [{ url: '/og-image.svg', width: 1200, height: 630 }],
-    locale: 'fr_FR',
-    type: 'website',
-  }
-}
 
   // Types pour les données dynamiques
   interface LandingTestimonial {
@@ -97,19 +86,37 @@ export default async function LandingPage() {
 
   // Chargement config dynamique depuis PlatformConfig
   const supabaseAdmin = createAdminClient()
+  const { TIERS: dynamicTiers } = await getCommissionTiers()
   const allowedKeys = [
     'landing_hero_badge',
     'landing_hero_h1',
     'landing_hero_subtitle',
     'landing_hero_cta_primary',
+    'landing_hero_cta_secondary',
+    'landing_problem_supertitle',
+    'landing_problem_title',
+    'landing_problem_subtitle',
+    'landing_solution_supertitle',
+    'landing_solution_title',
+    'landing_solution_subtitle',
+    'landing_features_supertitle',
+    'landing_features_title',
+    'landing_sectors_supertitle',
+    'landing_sectors_title',
+    'landing_sectors_subtitle',
+    'landing_telegram_supertitle',
+    'landing_telegram_title',
+    'landing_telegram_subtitle',
     'landing_cod_price',
     'landing_cta_title',
     'landing_cta_button',
     'landing_testimonials',
     'landing_faq',
     'landing_instagram_url',
-    'landing_facebook_url',
-    'landing_whatsapp_support'
+    'landing_whatsapp_support',
+    'landing_banner_active',
+    'landing_banner_date',
+    'landing_banner_text'
   ]
   const { data: cfgRows } = await supabaseAdmin
     .from('PlatformConfig')
@@ -181,7 +188,11 @@ export default async function LandingPage() {
 
   return (
     <div className="bg-cream min-h-screen text-ink font-body selection:bg-emerald/20 selection:text-ink">
-      <CountdownBanner />
+      <CountdownBanner config={{
+        active: get('landing_banner_active', 'true') === 'true',
+        dateStr: get('landing_banner_date', '2026-04-01T00:00:00Z'),
+        text: get('landing_banner_text', 'Lancement officiel le 1er Avril 2026')
+      }} />
       {/* ── HEADER NAVIGATION ── */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-line shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -220,14 +231,14 @@ export default async function LandingPage() {
           </svg>
 
           <div className="max-w-5xl mx-auto text-center space-y-8 relative z-10">
-            {new Date() < new Date('2026-03-31T00:00:00+00:00') && (
+            {(cfg['landing_hero_badge'] || new Date() < new Date('2026-03-31T00:00:00+00:00')) && (
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-full px-4 py-1.5 mb-6 animate-in fade-in slide-in-from-bottom-2">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
                 </span>
                 <span className="text-sm font-semibold text-amber-700">
-                  🚀 Launch Week — Commission à 5% pour les 100 premiers vendeurs
+                  {get('landing_hero_badge', '🚀 Launch Week — Commission à 5% pour les 100 premiers vendeurs')}
                 </span>
               </div>
             )}
@@ -247,7 +258,7 @@ export default async function LandingPage() {
                 {isLoggedIn ? "Mon espace" : get('landing_hero_cta_primary', 'Lancer ma boutique')} <ArrowRight size={20} />
               </Link>
               <Link href="/vendeurs" className="w-full sm:w-auto px-8 py-4 bg-white border border-emerald text-emerald hover:bg-emerald/5 rounded-full font-medium text-lg transition flex items-center justify-center shadow-sm">
-                Voir les boutiques actives →
+                {get('landing_hero_cta_secondary', 'Voir les boutiques actives →')}
               </Link>
             </div>
             
@@ -267,30 +278,12 @@ export default async function LandingPage() {
             }
           `}</style>
           <div className="animate-marqueeHero flex items-center gap-8 text-sm">
-            <span>🔒 Paiements sécurisés Wave & Orange Money</span>
-            <span>•</span>
-            <span>💰 Zéro abonnement — ne payez que sur vos ventes</span>
-            <span>•</span>
-            <span>🚀 Boutique en ligne en 2 minutes</span>
-            <span>•</span>
-            <span>📦 Gestion des livraisons intégrée</span>
-            <span>•</span>
-            <span>🤖 IA marketing incluse</span>
-            <span>•</span>
-            <span>🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l'Afrique de l'Ouest</span>
-            <span>•</span>
-            <span>🔒 Paiements sécurisés Wave & Orange Money</span>
-            <span>•</span>
-            <span>💰 Zéro abonnement — ne payez que sur vos ventes</span>
-            <span>•</span>
-            <span>🚀 Boutique en ligne en 2 minutes</span>
-            <span>•</span>
-            <span>📦 Gestion des livraisons intégrée</span>
-            <span>•</span>
-            <span>🤖 IA marketing incluse</span>
-            <span>•</span>
-            <span>🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l'Afrique de l'Ouest</span>
-            <span>•</span>
+            {[...get('landing_ticker_text', '🔒 Paiements sécurisés Wave & Orange Money , 💰 Zéro abonnement — ne payez que sur vos ventes , 🚀 Boutique en ligne en 2 minutes , 📦 Gestion des livraisons intégrée , 🤖 IA marketing incluse , 🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l\'Afrique de l\'Ouest').split(',').map(s=>s.trim()).filter(Boolean), ...get('landing_ticker_text', '🔒 Paiements sécurisés Wave & Orange Money , 💰 Zéro abonnement — ne payez que sur vos ventes , 🚀 Boutique en ligne en 2 minutes , 📦 Gestion des livraisons intégrée , 🤖 IA marketing incluse , 🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l\'Afrique de l\'Ouest').split(',').map(s=>s.trim()).filter(Boolean)].map((item, i) => (
+              <React.Fragment key={i}>
+                <span>{item}</span>
+                <span>•</span>
+              </React.Fragment>
+            ))}
           </div>
         </div>
 
@@ -301,9 +294,9 @@ export default async function LandingPage() {
           
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="text-center mb-16">
-              <span className="inline-block bg-red-500/10 text-red-500 border border-red-500/20 rounded-full px-4 py-1.5 font-mono tracking-widest uppercase text-xs mb-6 font-bold shadow-sm">Le Casse-tête</span>
-              <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-white">La vente sur WhatsApp est brisée.</h2>
-              <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">Vous perdez des ventes tous les jours à cause d'un processus chaotique.</p>
+              <span className="inline-block bg-red-500/10 text-red-500 border border-red-500/20 rounded-full px-4 py-1.5 font-mono tracking-widest uppercase text-xs mb-6 font-bold shadow-sm">{get('landing_problem_supertitle', 'Le Casse-tête')}</span>
+              <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-white">{get('landing_problem_title', 'La vente sur WhatsApp est brisée.')}</h2>
+              <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">{get('landing_problem_subtitle', 'Vous perdez des ventes tous les jours à cause d\'un processus chaotique.')}</p>
             </div>
           </div>
             
@@ -357,9 +350,13 @@ export default async function LandingPage() {
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
               <div>
-                <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">La Solution</span>
-                <h2 className="text-4xl md:text-6xl font-display font-black mb-6 text-ink leading-tight">Passez au niveau <span className="text-emerald">supérieur</span>.</h2>
-                <p className="text-xl text-slate font-light mb-16 leading-relaxed">Avec PDV Pro, centralisez votre activité et offrez une expérience <span className="font-medium text-emerald bg-emerald/10 px-2 py-0.5 rounded-md">premium</span> à vos clients.</p>
+                <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">{get('landing_solution_supertitle', 'La Solution')}</span>
+                <h2 className="text-4xl md:text-6xl font-display font-black mb-6 text-ink leading-tight">{get('landing_solution_title', 'Passez au niveau supérieur.')}</h2>
+                <p className="text-xl text-slate font-light mb-16 leading-relaxed">
+                  {cfg['landing_solution_subtitle'] ? get('landing_solution_subtitle', '') : (
+                    <>Avec PDV Pro, centralisez votre activité et offrez une expérience <span className="font-medium text-emerald bg-emerald/10 px-2 py-0.5 rounded-md">premium</span> à vos clients.</>
+                  )}
+                </p>
                 
                 <div className="flex flex-col gap-8 relative before:absolute before:inset-y-4 before:left-[35px] md:before:left-[43px] before:w-[2px] before:bg-emerald/20">
                   {[
@@ -453,9 +450,11 @@ export default async function LandingPage() {
         <section id="features" className="py-24 bg-white border-y border-line overflow-hidden">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16 max-w-3xl mx-auto">
-              <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">L'arsenal complet</span>
+              <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">{get('landing_features_supertitle', "L'arsenal complet")}</span>
               <h2 className="text-4xl md:text-6xl font-display font-black mb-6 tracking-tight text-ink">
-                Tout ce dont vous avez besoin pour <span className="text-emerald relative inline-block">grandir.<span className="absolute -bottom-2 left-0 w-full h-3 bg-gold/30 -rotate-2"></span></span>
+                {cfg['landing_features_title'] ? get('landing_features_title', '') : (
+                  <>Tout ce dont vous avez besoin pour <span className="text-emerald relative inline-block">grandir.<span className="absolute -bottom-2 left-0 w-full h-3 bg-gold/30 -rotate-2"></span></span></>
+                )}
               </h2>
             </div>
           </div>
@@ -542,9 +541,9 @@ export default async function LandingPage() {
           
           <div className="max-w-7xl mx-auto relative z-10 text-center">
              <div className="mb-14 max-w-3xl mx-auto">
-                <p className="font-bold text-gold uppercase tracking-widest text-sm mb-4">Déjà utilisé au Sénégal, en Côte d'Ivoire et au Mali.</p>
-                <h2 className="text-4xl md:text-5xl font-display font-black mb-6 text-white">Parfait pour tous les business.</h2>
-                <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">Peu importe ce que vous vendez, nous gérons le processus de la vitrine jusqu'à votre poche.</p>
+                <p className="font-bold text-gold uppercase tracking-widest text-sm mb-4">{get('landing_sectors_supertitle', "Déjà utilisé au Sénégal, en Côte d'Ivoire et au Mali.")}</p>
+                <h2 className="text-4xl md:text-5xl font-display font-black mb-6 text-white">{get('landing_sectors_title', "Parfait pour tous les business.")}</h2>
+                <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">{get('landing_sectors_subtitle', "Peu importe ce que vous vendez, nous gérons le processus de la vitrine jusqu'à votre poche.")}</p>
              </div>
 
              <div className="flex flex-wrap justify-center gap-4 mb-16 max-w-4xl mx-auto">
@@ -738,7 +737,7 @@ export default async function LandingPage() {
               <span className="mr-2">💡</span> Vous ne payez qu&apos;une commission sur vos ventes réelles. Plus vous vendez, moins vous payez. Le système s'ajuste pour vous.
             </p>
 
-            <PricingCalculator />
+            <PricingCalculator tiers={dynamicTiers} />
 
           </div>
         </section>
@@ -749,17 +748,13 @@ export default async function LandingPage() {
           <div className="max-w-6xl mx-auto px-4 relative z-10">
             <div className="text-center mb-12">
               <span className="inline-block bg-emerald/10 border border-emerald/30 text-emerald text-xs font-bold px-3 py-1 rounded-full mb-4 shadow-sm">
-                EXCLUSIF PDV PRO
+                {get('landing_telegram_supertitle', "EXCLUSIF PDV PRO")}
               </span>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-                Vendez l&apos;accès à vos groupes<br />
-                <span className="text-white">
-                  Telegram privés
-                </span>
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-4 whitespace-pre-wrap">
+                {get('landing_telegram_title', "Vendez l'accès à vos groupes\nTelegram privés")}
               </h2>
               <p className="text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                Formations, coaching, contenus exclusifs — créez un produit, liez-le à votre groupe Telegram, 
-                et vos clients reçoivent automatiquement leur invitation après paiement.
+                {get('landing_telegram_subtitle', "Formations, coaching, contenus exclusifs — créez un produit, liez-le à votre groupe Telegram, et vos clients reçoivent automatiquement leur invitation après paiement.")}
               </p>
             </div>
 
@@ -883,15 +878,14 @@ export default async function LandingPage() {
           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gold/10 blur-[120px] rounded-full pointer-events-none" />
 
           <div className="max-w-4xl mx-auto text-center relative z-10">
-            <h2 className="text-4xl md:text-6xl font-display font-black mb-6 tracking-tight text-white leading-tight">
-              Prêt à lancer votre business en ligne ?
+            <h2 className="text-4xl md:text-6xl font-display font-black mb-6 tracking-tight text-white leading-tight whitespace-pre-line">
+              {get('landing_cta_title', 'Prêt à lancer votre business en ligne ?')}
             </h2>
-            <div className="text-xl text-cream/80 font-light mb-12 max-w-2xl mx-auto space-y-2">
-              <p>Rejoignez PDV Pro gratuitement.</p>
-              <p>Aucun abonnement, vous ne payez que quand vous vendez.</p>
+            <div className="text-xl text-cream/80 font-light mb-12 max-w-2xl mx-auto space-y-2 whitespace-pre-line">
+              <p>{get('landing_cta_subtitle', 'Rejoignez PDV Pro gratuitement.\nAucun abonnement, vous ne payez que quand vous vendez.')}</p>
             </div>
             <Link href={isLoggedIn ? "/dashboard" : "/register"} className="inline-block px-14 py-6 bg-red-600 text-white rounded-2xl font-black text-xl hover:bg-red-700 hover:scale-105 transition-all shadow-2xl shadow-red-600/20 mb-8 animate-pulse">
-              {isLoggedIn ? "Mon espace" : "Créer ma boutique maintenant"}
+              {isLoggedIn ? "Mon espace" : get('landing_cta_button', 'Créer ma boutique maintenant')}
             </Link>
             {!isLoggedIn && (
               <div className="mt-8 pt-8 border-t border-white/10">

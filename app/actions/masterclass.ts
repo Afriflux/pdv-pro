@@ -103,3 +103,34 @@ export async function deleteMasterclassArticle(id: string) {
     return { success: false, error: "Erreur lors de la suppression" }
   }
 }
+
+// ── GAMIFICATION: PROGRESSION ──
+
+export async function markMasterclassCompleted(articleId: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Non autorisé')
+
+    await prisma.masterclassProgress.upsert({
+      where: {
+        user_id_article_id: {
+          user_id: user.id,
+          article_id: articleId
+        }
+      },
+      update: {},
+      create: {
+        user_id: user.id,
+        article_id: articleId
+      }
+    })
+    
+    // We don't revalidatePath here because it will refresh the page abruptly 
+    // it's better purely for client side state OR we let the client refresh state
+    return { success: true }
+  } catch (error) {
+    console.error('Gamification tracking error:', error)
+    return { success: false, error: "Impossible de marquer comme terminé" }
+  }
+}

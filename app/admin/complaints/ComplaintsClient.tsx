@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { ExternalLink, AlertTriangle, AlertCircle, RefreshCw, CheckCircle2, XCircle } from 'lucide-react'
+import { toast } from 'sonner'
+import { ExternalLink, AlertTriangle, AlertCircle, RefreshCw, CheckCircle2, XCircle, LayoutGrid, List, ChevronRight, MessageSquare, ShieldAlert } from 'lucide-react'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface ComplaintRow {
@@ -23,6 +24,7 @@ interface ComplaintRow {
 
 interface ComplaintsClientProps {
   complaints: ComplaintRow[]
+  isDemoMode?: boolean
 }
 
 type StatusFilter = 'all' | 'pending' | 'investigating' | 'resolved' | 'dismissed'
@@ -58,7 +60,56 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 // ─── COMPOSANT PRINCIPAL ───────────────────────────────────────────────────────
-export default function ComplaintsClient({ complaints }: ComplaintsClientProps) {
+export default function ComplaintsClient({ complaints, isDemoMode = false }: ComplaintsClientProps) {
+  const [localComplaints, setLocalComplaints] = useState<ComplaintRow[]>(complaints)
+  const [viewMode, setViewMode] = useState<'TABLE' | 'CARDS'>('CARDS')
+  const [selectedComplaint, setSelectedComplaint] = useState<ComplaintRow | null>(null)
+  const [adminNotes, setAdminNotes] = useState('')
+
+  useEffect(() => {
+    if (selectedComplaint) setAdminNotes(selectedComplaint.admin_notes || '')
+  }, [selectedComplaint])
+
+  const handleSaveNotes = async () => {
+    if (!selectedComplaint) return
+    if (isDemoMode) {
+      setLocalComplaints(prev => prev.map(c => c.id === selectedComplaint.id ? { ...c, admin_notes: adminNotes } : c))
+      toast.success('Note sauvegardée (Mode Démo)')
+      return
+    }
+    const promise = fetch(`/api/admin/complaints/${selectedComplaint.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ admin_notes: adminNotes })
+    }).then(async res => { if (!res.ok) throw new Error() })
+    
+    toast.promise(promise, { loading: 'Sauvegarde...', success: 'Note sauvegardée', error: 'Erreur lors de la sauvegarde' })
+    promise.then(() => {
+      setLocalComplaints(prev => prev.map(c => c.id === selectedComplaint.id ? { ...c, admin_notes: adminNotes } : c))
+    }).catch(() => {})
+  }
+
+  const handleStatusChange = async (newStatus: ComplaintRow['status']) => {
+    if (!selectedComplaint) return
+    if (isDemoMode) {
+      setLocalComplaints(prev => prev.map(c => c.id === selectedComplaint.id ? { ...c, status: newStatus } : c))
+      setSelectedComplaint(prev => prev ? { ...prev, status: newStatus } : null)
+      toast.success(`Statut passé à ${newStatus} (Mode Démo)`)
+      return
+    }
+    const promise = fetch(`/api/admin/complaints/${selectedComplaint.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    }).then(async res => { if (!res.ok) throw new Error() })
+
+    toast.promise(promise, { loading: 'Mise à jour...', success: 'Statut du litige mis à jour', error: 'Erreur lors de la mise à jour' })
+    promise.then(() => {
+      setLocalComplaints(prev => prev.map(c => c.id === selectedComplaint.id ? { ...c, status: newStatus } : c))
+      setSelectedComplaint(prev => prev ? { ...prev, status: newStatus } : null)
+    }).catch(() => {})
+  }
+  
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [dateFilter, setDateFilter] = useState<DateFilter>('all')
   const [currentPage, setCurrentPage] = useState(1)
@@ -68,7 +119,7 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
 
   // Filtrage
   const now = new Date()
-  const filtered = complaints.filter(c => {
+  const filtered = localComplaints.filter(c => {
     if (statusFilter !== 'all' && c.status !== statusFilter) return false
     if (dateFilter !== 'all') {
       const created = new Date(c.created_at)
@@ -91,7 +142,7 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
     { id: 'dismissed',     label: `Rejetées (${complaints.filter(c => c.status === 'dismissed').length})` },
   ]
 
-  const ICONS: Record<StatusFilter, any> = {
+  const ICONS: Record<StatusFilter, React.ElementType> = {
     all: AlertTriangle,
     pending: AlertCircle,
     investigating: RefreshCw,
@@ -100,80 +151,87 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+    <div className="flex flex-col lg:flex-row items-start animate-in fade-in slide-in-from-bottom-2 duration-500 w-full">
       {/* ── COLONNE GAUCHE : ONGLETS LATÉRAUX ── */}
-      <div className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-1 sticky top-24 z-10">
-        <h2 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Filtrer par Statut</h2>
-        
-        <nav className="bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl p-3 flex flex-col gap-1 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+      <aside className="w-full lg:w-[300px] flex-shrink-0 sticky top-[64px] z-10 lg:h-[calc(100vh-64px)] overflow-y-auto bg-white/80 backdrop-blur-3xl border-r border-gray-200 p-5 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col gap-6">
+        <div>
+          <h2 className="text-[10px] items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">Filtrer par Statut</h2>
+          
+          <nav className="flex flex-col gap-1.5">
           {FILTERS.map(f => {
             const Icon = ICONS[f.id]
             const isSelected = statusFilter === f.id
             
-            let gradientClass = 'from-gray-800 to-black text-white shadow-[0_4px_15px_rgba(0,0,0,0.2)] border-gray-800/50'
+            let activeStyle = 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20'
             let indicatorColor = 'bg-white'
             
             if (f.id === 'pending') {
-              gradientClass = 'from-[#C9A84C] to-amber-500 text-white shadow-[0_4px_15px_rgba(201,168,76,0.3)] border-[#C9A84C]/50'
-              indicatorColor = 'bg-white'
+              activeStyle = 'bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20'
             }
             else if (f.id === 'investigating') {
-              gradientClass = 'from-blue-500 to-indigo-500 text-white shadow-[0_4px_15px_rgba(59,130,246,0.3)] border-blue-500/50'
-              indicatorColor = 'bg-white'
-            }
-            else if (f.id === 'resolved') {
-              gradientClass = 'from-[#0F7A60] to-teal-500 text-white shadow-[0_4px_15px_rgba(15,122,96,0.3)] border-[#0F7A60]/50'
-              indicatorColor = 'bg-white'
+              activeStyle = 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20'
             }
             else if (f.id === 'dismissed') {
-              gradientClass = 'from-gray-500 to-slate-600 text-white shadow-[0_4px_15px_rgba(100,116,139,0.3)] border-gray-500/50'
-              indicatorColor = 'bg-white'
+              activeStyle = 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-md shadow-red-500/20'
             }
 
             return (
               <button
                 key={f.id}
                 onClick={() => setStatusFilter(f.id)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 relative overflow-hidden group border ${
-                  isSelected ? `bg-gradient-to-r ${gradientClass}` : 'bg-transparent text-gray-500 border-transparent hover:bg-white/80 hover:text-gray-900'
-                }`}
+                className={`flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${isSelected ? activeStyle : 'bg-transparent text-gray-500 hover:bg-white hover:text-gray-900 border border-transparent'}`}
               >
-                {isSelected && <div className="absolute inset-0 bg-white/20 hover:translate-x-full transition-transform duration-700 -skew-x-12 -translate-x-full pointer-events-none" />}
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 relative z-10 shadow-sm ${isSelected ? indicatorColor : 'bg-gray-300'}`} />
-                <Icon className="w-4 h-4 relative z-10" /> 
-                <span className="flex-1 text-left relative z-10">{f.label}</span>
+                <div className="flex items-center gap-3">
+                  <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white' : 'bg-gray-300'}`} />
+                  <Icon className="w-4 h-4" /> 
+                  <span>{f.label}</span>
+                </div>
               </button>
             )
           })}
-        </nav>
+          </nav>
+        </div>
 
-        <h2 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-4 mb-3 mt-8">Période</h2>
-        <nav className="bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl p-3 flex flex-col gap-1 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+        <div>
+          <h2 className="text-[10px] items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4 mt-2">Période</h2>
+          <nav className="flex flex-col gap-1.5">
           {[
             { id: 'all', label: 'Toutes les dates' },
             { id: '7days', label: '7 derniers jours' },
             { id: '30days', label: '30 derniers jours' }
-          ].map(df => (
+          ].map(df => {
+            const isSelected = dateFilter === df.id
+            return (
             <button
               key={df.id}
               onClick={() => setDateFilter(df.id as DateFilter)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 text-left border ${
-                dateFilter === df.id 
-                  ? 'bg-gradient-to-r from-gray-800 to-black text-white shadow-[0_4px_15px_rgba(0,0,0,0.2)] border-gray-800/50' 
-                  : 'bg-transparent text-gray-500 border-transparent hover:bg-white/80 hover:text-gray-900'
-              }`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${isSelected ? 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-gray-900 border border-transparent'}`}
             >
-              <span className={`w-2 h-2 rounded-full flex-shrink-0 shadow-sm ${dateFilter === df.id ? 'bg-white' : 'bg-gray-300'}`} />
-              <span className="flex-1">{df.label}</span>
+              <div className="flex items-center gap-3">
+                <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white' : 'bg-gray-300'}`} />
+                <span>{df.label}</span>
+              </div>
             </button>
-          ))}
-        </nav>
-      </div>
+            )
+          })}
+          </nav>
+        </div>
+      </aside>
 
       {/* ── COLONNE DROITE : CONTENU ── */}
-      <div className="flex-1 w-full space-y-6">
+      <div className="flex-1 w-full space-y-6 p-4 md:p-6 lg:p-8">
+        
+        {isDemoMode && (
+          <div className="bg-amber-50 border border-amber-200 text-amber-800 px-5 py-4 rounded-3xl flex items-center gap-4 shadow-sm animate-in fade-in">
+            <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
+            <p className="text-sm font-medium">
+              <strong className="font-black text-amber-900">MODE DÉMO ACTIVÉ :</strong> Vous naviguez actuellement avec de fausses plaintes générées aléatoirement car votre base de données ne contient aucun ticket.
+            </p>
+          </div>
+        )}
+
         {/* En-tête de page intégré */}
-        <header className="flex items-center justify-between bg-white/70 backdrop-blur-xl border border-white/50 p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
+        <header className="flex flex-col md:flex-row items-start md:items-center justify-between bg-white/70 backdrop-blur-xl border border-white/50 p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden gap-4">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-500/5 rounded-full blur-3xl -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2"></div>
           
           <div className="relative z-10">
@@ -192,10 +250,29 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
             </div>
             <p className="text-sm text-gray-500 ml-14 font-medium">Traitez les signalements de fraude, plagiat et contenus inappropriés sur la marketplace.</p>
           </div>
+
+          <div className="flex items-center bg-white p-1.5 rounded-xl border border-gray-100 shrink-0 relative z-10 shadow-sm">
+             <button 
+               title="Vue Cartes"
+               onClick={() => setViewMode('CARDS')}
+               className={`p-1.5 rounded-lg transition-colors ${viewMode === 'CARDS' ? 'bg-gray-100 shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-900'}`}
+             >
+               <LayoutGrid size={18} strokeWidth={2.5} />
+             </button>
+             <button 
+               title="Vue Tableau"
+               onClick={() => setViewMode('TABLE')}
+               className={`p-1.5 rounded-lg transition-colors ${viewMode === 'TABLE' ? 'bg-gray-100 shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-900'}`}
+             >
+               <List size={18} strokeWidth={2.5} />
+             </button>
+          </div>
         </header>
 
-        {/* Tableau */}
-      <div className="relative bg-white/70 backdrop-blur-2xl border border-white/50 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+        {/* Le Contenu Hybride (Table/Cards) commence ici */}
+
+        {viewMode === 'TABLE' && (
+        <div className="relative bg-white/70 backdrop-blur-2xl border border-white/50 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)] animate-in fade-in">
         {/* Subtle Glow */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0F7A60]/5 rounded-full blur-3xl -z-10 pointer-events-none -translate-y-1/3"></div>
 
@@ -245,14 +322,14 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
                     {format(new Date(complaint.created_at), 'dd MMM yyyy', { locale: fr })}
                   </td>
 
-                  {/* Lien voir détails */}
+                  {/* Lien voir détails transformé en Bouton Tiroir */}
                   <td className="px-6 py-5 text-center">
-                    <Link
-                      href={`/admin/complaints/${complaint.id}`}
+                    <button
+                      onClick={() => setSelectedComplaint(complaint)}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0F7A60]/10 text-[#0F7A60] hover:bg-[#0F7A60] hover:text-white rounded-xl text-xs font-bold transition-all shadow-sm"
                     >
                       Voir <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -298,7 +375,201 @@ export default function ComplaintsClient({ complaints }: ComplaintsClientProps) 
             </div>
           </div>
         )}
-      </div>
+        </div>
+        )}
+        
+        {/* VUE KANBAN / CARDS */}
+        {viewMode === 'CARDS' && (
+          <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-2">
+            {paginated.map(complaint => (
+              <div key={complaint.id} className="bg-white border border-gray-100 rounded-[24px] p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col gap-5 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-2xl -z-10 group-hover:bg-red-500/10 transition-colors"></div>
+                
+                <div className="flex items-start justify-between">
+                  <StatusBadge status={complaint.status} />
+                  <span className="text-xs font-black text-gray-400 border border-gray-100 px-2 py-1 rounded-lg bg-gray-50">{format(new Date(complaint.created_at), 'dd MMM yyyy', { locale: fr })}</span>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-black text-[#1A1A1A] flex items-center gap-2">
+                    {complaint.type === 'fraude' && <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse"></span>}
+                    {complaint.type === 'plagiat' && <span className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]"></span>}
+                    {(complaint.type !== 'fraude' && complaint.type !== 'plagiat') && <span className="w-2 h-2 rounded-full bg-gray-400"></span>}
+                    {TYPE_LABELS[complaint.type] ?? complaint.type}
+                  </h3>
+                  <div className="mt-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center text-[10px]">🏪</div>
+                    <span className="text-xs font-bold text-gray-700 truncate">{complaint.Store?.name ?? complaint.store_id ?? 'Boutique Inconnue'}</span>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600 font-medium line-clamp-3 flex-1 leading-relaxed">
+                  "{complaint.description}"
+                </p>
+
+                <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+                  {complaint.evidence_url ? (
+                    <span className="text-xs font-bold text-[#0F7A60] bg-[#0F7A60]/10 px-2.5 py-1.5 rounded-lg border border-[#0F7A60]/20 flex items-center gap-1.5">
+                      <ExternalLink size={12} /> Preuve jointe
+                    </span>
+                  ) : (
+                    <span className="text-xs font-medium text-gray-400 italic">Aucune preuve</span>
+                  )}
+                  <button 
+                    onClick={() => setSelectedComplaint(complaint)}
+                    className="text-xs font-black text-white bg-gray-900 hover:bg-emerald-600 px-4 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2 transform active:scale-95 group-hover:bg-[#0F7A60]"
+                  >
+                    Instruire <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {filtered.length === 0 && (
+              <div className="col-span-full py-24 text-center">
+                 <div className="w-20 h-20 bg-white shadow-xl rounded-3xl flex items-center justify-center mx-auto mb-6 relative border border-white/50">
+                    <AlertCircle className="w-10 h-10 text-gray-300" />
+                 </div>
+                 <p className="text-lg font-bold text-gray-700">Aucune plainte trouvée</p>
+                 <p className="text-sm mt-2 text-gray-500">Essayez de modifier vos filtres de recherche.</p>
+              </div>
+            )}
+          </div>
+        )}
+      {/* ── TIROIR (DRAWER) DE RÉSOLUTION ── */}
+      {selectedComplaint && (
+        <div className="fixed inset-0 z-[100] flex justify-end">
+          {/* Overlay Flou */}
+          <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm animate-in fade-in duration-300 cursor-pointer" onClick={() => setSelectedComplaint(null)}></div>
+          
+          {/* Le Tiroir */}
+          <div className="w-full max-w-md bg-white h-full shadow-2xl animate-in slide-in-from-right duration-300 relative flex flex-col border-l border-gray-200">
+            {/* Header du tiroir */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white sticky top-0 z-10">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-red-50 text-red-600 rounded-xl border border-red-100 shadow-sm">
+                  <ShieldAlert size={20} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-black text-gray-900">Dossier de résolution</h2>
+                  <p className="text-xs font-bold text-gray-500">Clé d'identification : <span className="font-mono text-gray-400">#{selectedComplaint.id.slice(0, 8).toUpperCase()}</span></p>
+                </div>
+              </div>
+              <button onClick={() => setSelectedComplaint(null)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                <XCircle size={24} />
+              </button>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Date d'ouverture</h3>
+                  <p className="text-sm font-bold text-gray-900">{format(new Date(selectedComplaint.created_at), 'dd MMMM yyyy HH:mm', { locale: fr })}</p>
+                </div>
+                <StatusBadge status={selectedComplaint.status} />
+              </div>
+
+              {/* Box Info Boutique */}
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div className="bg-gray-50 border-b border-gray-100 px-4 py-3">
+                  <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest flex items-center gap-2">Boutique Signalée</h3>
+                </div>
+                <div className="p-4 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-gray-900 text-lg">{selectedComplaint.Store?.name ?? selectedComplaint.store_id}</span>
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <Link href={`/admin/vendeurs`} className="flex-1 py-2 text-xs font-bold text-[#0F7A60] bg-[#0F7A60]/10 hover:bg-[#0F7A60]/20 rounded-xl transition-colors border border-[#0F7A60]/20 text-center block">
+                      Voir Profil
+                    </Link>
+                    <button onClick={() => toast.success('Redirection vers WhatsApp vendeur...')} className="flex-1 py-2 text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-xl transition-colors border border-amber-200">
+                      Contacter
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Motif de la plainte */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center justify-between">
+                  Déclaration du plaignant
+                  <span className="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-lg">{TYPE_LABELS[selectedComplaint.type]}</span>
+                </h3>
+                <div className="bg-white p-5 rounded-2xl border border-red-100 shadow-sm relative">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-red-500 rounded-l-2xl"></div>
+                  <p className="text-sm font-medium text-gray-700 leading-relaxed italic relative z-10 whitespace-pre-line">
+                    "{selectedComplaint.description}"
+                  </p>
+                </div>
+              </div>
+
+              {/* Preuve jointe */}
+              {selectedComplaint.evidence_url && (
+                <div className="space-y-3">
+                  <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Preuve Fournie</h3>
+                  <div className="bg-white p-3 rounded-2xl border border-gray-200 shadow-sm">
+                    {/* Assuming it's an image, in production checking mime-type is better */}
+                    <img src={selectedComplaint.evidence_url} alt="Preuve" className="w-full h-auto rounded-xl max-h-64 object-contain bg-gray-100" />
+                    <a href={selectedComplaint.evidence_url} target="_blank" rel="noreferrer" className="mt-3 w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-gray-600 hover:text-black hover:bg-gray-100 rounded-lg transition-colors border border-gray-200">
+                      <ExternalLink size={14} /> Ouvrir la pièce jointe
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* Section Notes Administrateur */}
+              <div className="space-y-3 pt-4 border-t border-gray-200">
+                <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                  <MessageSquare size={14} /> Cahier d'Audit (Privé)
+                </h3>
+                <textarea 
+                  className="w-full bg-white border border-gray-200 shadow-inner rounded-2xl p-4 text-sm font-medium text-gray-700 focus:ring-2 focus:ring-[#0F7A60] focus:border-[#0F7A60] outline-none min-h-[140px] resize-none"
+                  placeholder="Note interne sur l'état d'avancement de cette enquête... (ex: Appel passé à l'acheteur)."
+                  value={adminNotes}
+                  onChange={(e) => setAdminNotes(e.target.value)}
+                />
+                <div className="flex justify-end">
+                  <button onClick={handleSaveNotes} className="text-xs font-bold text-white bg-gray-900 px-4 py-2 rounded-xl shadow-sm hover:bg-black transition-colors">Sauvegarder la note</button>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions critiques en sticky bottom */}
+            <div className="p-6 border-t border-gray-200 bg-white shadow-[0_-10px_30px_rgba(0,0,0,0.05)] space-y-3 shrink-0">
+              <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-1">Actions Décisionnelles</h4>
+              <button 
+                onClick={() => {
+                  handleStatusChange('investigating')
+                  toast.info("Suspension : Action redirigée vers la page vendeur")
+                }}
+                className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-colors shadow-sm shadow-red-600/20 flex justify-center items-center gap-2 group"
+              >
+                <XCircle size={18} className="group-hover:rotate-90 transition-transform" /> Suspendre la Boutique
+              </button>
+              <div className="grid grid-cols-2 gap-3">
+                <button 
+                  onClick={() => {
+                    handleStatusChange('resolved')
+                    toast.info("Remboursement Auto : Backend en construction")
+                  }}
+                  className="w-full py-3 border border-gray-900 hover:border-black text-gray-900 hover:bg-gray-50 rounded-xl font-bold text-xs transition-colors shadow-sm flex items-center justify-center"
+                >
+                  Rembourser
+                </button>
+                <button 
+                  onClick={() => handleStatusChange('dismissed')}
+                  className="w-full py-3 border border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl font-bold text-xs transition-colors shadow-sm"
+                >
+                  Classer sans suite
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
       </div>
     </div>
   )

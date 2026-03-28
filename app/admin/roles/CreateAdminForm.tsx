@@ -72,9 +72,9 @@ export default function CreateAdminForm() {
 
   // Classe commune pour les inputs — charte PDV Pro
   const inputCls =
-    'w-full bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl py-3 px-4 text-sm font-semibold text-[#1A1A1A] ' +
+    'w-full bg-[#FAFAF7] border border-gray-200 rounded-2xl py-3 px-4 text-sm font-bold text-[#1A1A1A] ' +
     'focus:bg-white focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 outline-none transition-all duration-300 ' +
-    'placeholder:text-gray-400 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] hover:bg-white/80'
+    'placeholder:text-gray-400 shadow-inner hover:bg-white/50'
 
   const labelCls = 'block text-[11px] font-black text-gray-500 mb-2 uppercase tracking-widest'
 
@@ -167,10 +167,10 @@ export default function CreateAdminForm() {
             rounded-2xl transition-all shadow-[0_4px_15px_rgba(15,122,96,0.3)] hover:shadow-[0_6px_20px_rgba(15,122,96,0.4)] border border-[#0F7A60]/50"
         >
           {loading
-            ? <Loader2 className="w-4.5 h-4.5 animate-spin" />
-            : <UserPlus className="w-4.5 h-4.5" />
+            ? <Loader2 className="w-4 h-4 animate-spin" />
+            : <UserPlus className="w-4 h-4" />
           }
-          {loading ? 'Création en cours...' : 'Créer le compte admin'}
+          {loading ? 'Création en cours...' : 'Inviter ce collaborateur'}
         </button>
       </div>
     </form>

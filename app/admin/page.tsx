@@ -189,123 +189,129 @@ export default async function AdminDashboard() {
   const capitalizedDate = dateFormatted.charAt(0).toUpperCase() + dateFormatted.slice(1)
 
   return (
-    <main className="min-h-screen font-sans border border-transparent">
-      {/* Ambient BG Glows */}
-      <div className="absolute top-0 right-10 w-[600px] h-[600px] bg-[#0F7A60]/[0.03] blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-[30%] left-0 w-[500px] h-[500px] bg-[#C9A84C]/[0.03] blur-[120px] rounded-full pointer-events-none" />
+    <main className="min-h-screen font-sans border border-transparent bg-[#FAFAF7] flex flex-col">
+      {/* ── SECTION 1 : HEADER FULL-BLEED EMERALD ──────────────────────── */}
+      <header className="w-full bg-gradient-to-r from-[#0D5C4A] via-[#0F7A60] to-teal-700 pt-10 pb-24 px-6 lg:px-14 relative overflow-hidden shrink-0 shadow-lg z-10">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white opacity-5 mix-blend-overlay rounded-full blur-3xl pointer-events-none translate-x-1/3 -translate-y-1/3" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#C9A84C] opacity-20 mix-blend-overlay rounded-full blur-3xl pointer-events-none -translate-x-1/2 translate-y-1/3" />
 
-      {/* ── SECTION 1 : HEADER ───────────────────────────────────────────── */}
-      <header className="bg-white/70 backdrop-blur-2xl border-b border-gray-100 px-6 lg:px-14 py-8 relative z-10 w-full mb-8">
         <div className="w-full flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
           <div>
-            <h1 className="text-3xl font-black text-[#1A1A1A] tracking-tight">
+            <h1 className="text-3xl font-black text-white tracking-tight drop-shadow-sm">
               {greeting}, {userName} ! 👋
             </h1>
-            <p className="text-sm font-medium text-gray-400 mt-2">
+            <p className="text-sm font-medium text-emerald-100/80 mt-1.5">
               Statistiques globales au {capitalizedDate}
             </p>
           </div>
-          <div className="flex-shrink-0 print:hidden">
+          <div className="flex-shrink-0 print:hidden opacity-90 hover:opacity-100 transition-opacity">
             <ExportButton />
           </div>
         </div>
       </header>
 
-      <div className="w-full px-6 lg:px-14 space-y-6 animate-in fade-in duration-500 mb-20">
+      {/* ── CONTENU (Overlap) ── */}
+      <div className="w-full px-6 lg:px-14 space-y-8 animate-in fade-in duration-500 mb-20 -mt-14 relative z-20">
 
-        {/* ── NOUVEAU : ACTION CENTER (Urgences) ─────────────────────────── */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
-          <Link href="/admin/retraits" className="bg-red-50 hover:bg-red-100/50 border border-red-100 p-4 rounded-2xl flex items-center justify-between group transition-colors shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500">
-                <Wallet size={18} />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-red-400 uppercase tracking-wider">Retraits d'urgence</p>
-                <p className="text-sm font-black text-red-900">{pendingWithdrawals ?? 0} demandes</p>
-              </div>
-            </div>
-            <ArrowRight className="text-red-300 group-hover:text-red-500 w-4 h-4 transition-colors" />
-          </Link>
+        {/* ── SECTION 2 : 4 KPI CARDS (OVERLAP) ── */}
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           
-          <Link href="/admin/kyc" className="bg-amber-50 hover:bg-amber-100/50 border border-amber-100 p-4 rounded-2xl flex items-center justify-between group transition-colors shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-500">
-                <ShieldAlert size={18} />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-amber-500/80 uppercase tracking-wider">KYC en attente</p>
-                <p className="text-sm font-black text-amber-900">{pendingKYC ?? 0} dossiers</p>
-              </div>
-            </div>
-            <ArrowRight className="text-amber-300 group-hover:text-amber-500 w-4 h-4 transition-colors" />
-          </Link>
-
-          <Link href="/admin/complaints" className="bg-blue-50 hover:bg-blue-100/50 border border-blue-100 p-4 rounded-2xl flex items-center justify-between group transition-colors shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
-                <AlertTriangle size={18} />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-blue-400 uppercase tracking-wider">Plaintes ouvertes</p>
-                <p className="text-sm font-black text-blue-900">{openComplaints ?? 0} tickets</p>
-              </div>
-            </div>
-            <ArrowRight className="text-blue-300 group-hover:text-blue-500 w-4 h-4 transition-colors" />
-          </Link>
-        </section>
-
-        {/* ── SECTION 2 : 4 KPI CARDS ── */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 relative z-10">
-          
-          <div className="bg-white/80 backdrop-blur-xl border border-white hover:border-[#0F7A60]/20 hover:shadow-2xl hover:shadow-[#0F7A60]/10 transition-all duration-500 rounded-[32px] p-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0F7A60]/[0.02] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#0F7A60] mb-2 relative z-10 flex items-center justify-between">
-              <span>Revenus Plateforme (Total)</span>
+          <div className="bg-[#1A1A1A] border border-gray-800 hover:border-[#C9A84C]/50 hover:shadow-2xl hover:shadow-[#C9A84C]/20 transition-all duration-500 rounded-[28px] p-6 relative overflow-hidden group shadow-lg">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-[#C9A84C] mb-2 relative z-10">
+              Revenus Plateforme (Total)
             </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] truncate relative z-10 tracking-tighter group-hover:text-[#0F7A60] transition-colors duration-500">
-              {totalPlatformRevenue.toLocaleString('fr-FR')} <span className="text-sm text-gray-400 font-bold ml-1">F</span>
+            <p className="text-3xl lg:text-4xl font-display font-black text-white truncate relative z-10 tracking-tighter group-hover:text-emerald-50 transition-colors duration-500">
+              {totalPlatformRevenue.toLocaleString('fr-FR')} <span className="text-sm text-gray-500 font-bold ml-1">F</span>
             </p>
           </div>
           
-          <div className="bg-white/80 backdrop-blur-xl border border-white hover:border-amber-500/20 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-500 rounded-[32px] p-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/[0.02] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="bg-white/90 backdrop-blur-xl border border-white hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-500 rounded-[28px] p-6 relative overflow-hidden group shadow-lg">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/[0.03] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 mb-2 relative z-10">
               Volume Ventes Global (Auj.)
             </p>
             <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] truncate relative z-10 tracking-tighter group-hover:text-amber-600 transition-colors duration-500">
-              {dailyGMV.toLocaleString('fr-FR')} <span className="text-sm font-bold opacity-40 ml-1 group-hover:opacity-100 text-[#1A1A1A]">F</span>
+              {dailyGMV.toLocaleString('fr-FR')} <span className="text-sm font-bold text-gray-400 ml-1">F</span>
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-xl border border-white hover:border-blue-500/20 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 rounded-[32px] p-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-2 relative z-10 flex items-center justify-between">
+          <div className="bg-white/90 backdrop-blur-xl border border-white hover:border-[#0F7A60]/30 hover:shadow-2xl hover:shadow-[#0F7A60]/10 transition-all duration-500 rounded-[28px] p-6 relative overflow-hidden group shadow-lg">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0F7A60]/[0.03] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-[#0F7A60] mb-2 relative z-10 flex items-center justify-between">
               Vendeurs Actifs
-              <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-md text-[9px] font-bold">+{newStoresWeek} 7j</span>
+              <span className="bg-[#0F7A60]/10 text-[#0F7A60] px-2 py-0.5 rounded-md text-[9px] font-bold">+{newStoresWeek} (7j)</span>
             </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] relative z-10 tracking-tighter group-hover:text-blue-600 transition-colors duration-500">
+            <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] relative z-10 tracking-tighter group-hover:text-[#0F7A60] transition-colors duration-500">
               {totalStores ?? 0}
             </p>
           </div>
 
-          <div className="bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] border border-white/10 rounded-[32px] p-6 shadow-2xl shadow-black/20 relative overflow-hidden group text-white hover:shadow-red-500/10 hover:-translate-y-1 transition-all duration-500">
-             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
-             <p className="text-[10px] font-black uppercase tracking-widest text-red-400 opacity-90 mb-2 relative z-10 flex items-center justify-between">
+          <div className="bg-red-500/5 backdrop-blur-xl border border-red-500/20 hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/20 transition-all duration-500 rounded-[28px] p-6 relative overflow-hidden group shadow-lg">
+             <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+             <p className="text-[10px] font-black uppercase tracking-widest text-red-600 mb-2 relative z-10 flex items-center justify-between">
               Retraits en attente
-              <span className="bg-red-500/20 text-red-300 px-2 py-0.5 rounded-md text-[9px] font-bold">{pendingWithdrawals ?? 0} req</span>
+              {pendingWithdrawals ? <span className="bg-red-500 text-white px-2 py-0.5 rounded-md text-[9px] font-bold animate-pulse">{pendingWithdrawals ?? 0} req</span> : null}
             </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-white truncate relative z-10 tracking-tighter flex items-center gap-1 group-hover:text-red-100 transition-colors duration-500">
+            <p className="text-3xl lg:text-4xl font-display font-black text-red-600 truncate relative z-10 tracking-tighter flex items-center gap-1 group-hover:text-red-700 transition-colors duration-500">
               {totalPendingAmount.toLocaleString('fr-FR')} <span className="text-sm font-bold opacity-60 mt-2">F</span>
             </p>
           </div>
+        </section>
+
+        {/* ── NOUVEAU : ACTION CENTER (Urgences) ─────────────────────────── */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link href="/admin/retraits" className="bg-white hover:bg-red-50/50 border border-gray-100 hover:border-red-200 p-4 rounded-2xl flex items-center justify-between group transition-all shadow-sm hover:shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center text-red-500 shadow-inner group-hover:scale-105 transition-transform">
+                <Wallet size={20} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-red-500/70 uppercase tracking-widest">Opérations de caisse</p>
+                <p className="text-sm font-black text-[#1A1A1A] group-hover:text-red-600 transition-colors">Retraits d'urgence <span className="text-red-500">({pendingWithdrawals ?? 0})</span></p>
+              </div>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors text-gray-400 group-hover:text-red-500">
+              <ArrowRight size={14} />
+            </div>
+          </Link>
+          
+          <Link href="/admin/kyc" className="bg-white hover:bg-amber-50/50 border border-gray-100 hover:border-amber-200 p-4 rounded-2xl flex items-center justify-between group transition-all shadow-sm hover:shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center text-amber-500 shadow-inner group-hover:scale-105 transition-transform">
+                <ShieldAlert size={20} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-amber-500/70 uppercase tracking-widest">Identités Vendeurs</p>
+                <p className="text-sm font-black text-[#1A1A1A] group-hover:text-amber-600 transition-colors">KYC en attente <span className="text-amber-500">({pendingKYC ?? 0})</span></p>
+              </div>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-amber-50 transition-colors text-gray-400 group-hover:text-amber-500">
+              <ArrowRight size={14} />
+            </div>
+          </Link>
+
+          <Link href="/admin/complaints" className="bg-white hover:bg-blue-50/50 border border-gray-100 hover:border-blue-200 p-4 rounded-2xl flex items-center justify-between group transition-all shadow-sm hover:shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-blue-500 shadow-inner group-hover:scale-105 transition-transform">
+                <AlertTriangle size={20} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-blue-500/70 uppercase tracking-widest">Service Clientèle</p>
+                <p className="text-sm font-black text-[#1A1A1A] group-hover:text-blue-600 transition-colors">Plaintes ouvertes <span className="text-blue-500">({openComplaints ?? 0})</span></p>
+              </div>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors text-gray-400 group-hover:text-blue-500">
+              <ArrowRight size={14} />
+            </div>
+          </Link>
         </section>
 
         {/* ── SECTION 3 : GRAPHIQUE + PIE CHART + LEADERBOARD ───────────────────── */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
           
           {/* Double Graphique (8 cols) */}
-          <div className="lg:col-span-8 bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] p-6 shadow-xl shadow-gray-200/50 flex flex-col group hover:shadow-2xl hover:shadow-gray-200/80 transition-all duration-500">
+          <div className="lg:col-span-8 bg-white border border-gray-100 rounded-[32px] p-6 shadow-xl shadow-gray-200/50 flex flex-col group hover:shadow-2xl hover:shadow-gray-200/80 transition-all duration-500">
             <div className="mb-6 flex justify-between items-start">
               <div>
                 <h2 className="font-black text-[#1A1A1A] text-lg">Activité Globale (7 derniers jours)</h2>
@@ -327,7 +333,7 @@ export default async function AdminDashboard() {
           <div className="lg:col-span-4 flex flex-col gap-6">
             
             {/* Pie Chart */}
-            <div className="bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] p-6 shadow-xl shadow-gray-200/50">
+            <div className="bg-white border border-gray-100 rounded-[32px] p-6 shadow-xl shadow-gray-200/50">
                <h2 className="font-black text-[#1A1A1A] text-sm mb-4">Statuts (7j)</h2>
                <AdminPieChart data={pieData} />
                <div className="flex justify-center gap-4 mt-2">
@@ -338,21 +344,22 @@ export default async function AdminDashboard() {
             </div>
 
             {/* Leaderboard */}
-            <div className="bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] p-6 shadow-xl shadow-gray-200/50 flex-1">
-               <h2 className="font-black text-[#1A1A1A] text-sm mb-4 flex items-center gap-2">🏆 Top Vendeurs (7j)</h2>
-               <div className="space-y-3">
+            <div className="bg-gradient-to-br from-[#0A5240] to-[#0F7A60] border border-teal-800 rounded-[32px] p-6 shadow-xl shadow-teal-900/20 flex-1 relative overflow-hidden group">
+               <div className="absolute inset-0 bg-[#C9A84C]/5 mix-blend-overlay opacity-50"></div>
+               <h2 className="font-black text-white text-sm mb-4 flex items-center gap-2 relative z-10">🏆 Top Vendeurs (7j)</h2>
+               <div className="space-y-3 relative z-10">
                  {leaderboardOpts.map((store, i) => (
-                   <div key={i} className="flex justify-between items-center bg-white/50 p-2.5 rounded-2xl border border-white shadow-sm">
+                   <div key={i} className="flex justify-between items-center bg-black/10 backdrop-blur-sm p-3 rounded-2xl border border-white/5 shadow-sm hover:bg-black/20 transition-colors">
                       <div className="flex items-center gap-3">
-                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black ${i===0?'bg-amber-100 text-amber-600':i===1?'bg-gray-200 text-gray-600':i===2?'bg-amber-50 text-amber-800':'bg-gray-50 text-gray-400'}`}>
+                        <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black ${i===0?'bg-[#C9A84C] text-white shadow-md shadow-[#C9A84C]/30':i===1?'bg-gray-300 text-gray-800':i===2?'bg-amber-700/50 text-amber-100':'bg-white/10 text-white/50'}`}>
                           {i + 1}
                         </span>
-                        <span className="text-xs font-bold text-[#1A1A1A] truncate max-w-[120px]">{store.name}</span>
+                        <span className="text-xs font-bold text-emerald-50 truncate max-w-[120px]">{store.name}</span>
                       </div>
-                      <span className="text-xs font-black text-[#0F7A60]">{store.volume.toLocaleString('fr-FR')} F</span>
+                      <span className="text-xs font-black text-[#C9A84C] drop-shadow-sm">{store.volume.toLocaleString('fr-FR')} F</span>
                    </div>
                  ))}
-                 {leaderboardOpts.length === 0 && <p className="text-xs text-center text-gray-400">Aucun vendeur actif</p>}
+                 {leaderboardOpts.length === 0 && <p className="text-xs text-center text-emerald-200/50 mt-4">Aucun vendeur actif</p>}
                </div>
             </div>
 
@@ -360,10 +367,10 @@ export default async function AdminDashboard() {
         </section>
 
         {/* ── SECTION 4 : DERNIÈRES COMMANDES ─────────────── */}
-        <section className="bg-white/80 backdrop-blur-2xl border border-white rounded-[32px] shadow-xl shadow-gray-200/40 overflow-hidden flex flex-col relative z-10 w-full mb-10">
-          <div className="px-6 py-6 border-b border-gray-100/50 flex items-center justify-between bg-white/50">
+        <section className="bg-white border border-gray-100 rounded-[32px] shadow-xl shadow-gray-200/40 overflow-hidden flex flex-col relative z-10 w-full mb-10">
+          <div className="px-6 py-6 border-b border-gray-100/50 flex items-center justify-between bg-gray-50/50">
             <h2 className="font-black text-[#1A1A1A] text-lg">Activités récentes (Commandes)</h2>
-            <Link href="/admin/orders" className="text-xs font-black text-[#0F7A60] hover:text-[#0B5C48] bg-[#0F7A60]/5 hover:bg-[#0F7A60]/10 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1">
+            <Link href="/admin/orders" className="text-xs font-black text-gray-500 hover:text-[#0F7A60] bg-white border border-gray-200 hover:border-[#0F7A60]/30 hover:bg-[#0F7A60]/5 px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
               Tout voir <ArrowRight size={14}/>
             </Link>
           </div>
@@ -372,7 +379,7 @@ export default async function AdminDashboard() {
             {latestOrders && latestOrders.length > 0 ? (
               <div className="space-y-1">
                 {(latestOrders as unknown as OrderWithStore[]).map(order => (
-                  <div key={order.id} className="px-4 py-3.5 rounded-2xl flex items-center justify-between hover:bg-[#FAFAF7] transition-all duration-300 group cursor-default">
+                  <div key={order.id} className="px-4 py-3.5 rounded-2xl flex items-center justify-between hover:bg-gray-50 transition-all duration-300 group cursor-default border border-transparent hover:border-gray-100">
                     <div className="flex items-center gap-4 min-w-0">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner ${
                           ['completed', 'delivered', 'paid'].includes(order.status) ? 'bg-[#0F7A60]/10 text-[#0F7A60]' :
@@ -399,8 +406,8 @@ export default async function AdminDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3">
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gray-50 m-2 rounded-2xl border border-dashed border-gray-200">
+                <div className="w-16 h-16 bg-white shadow-sm border border-gray-100 rounded-full flex items-center justify-center mb-3">
                   <ShoppingBag size={24} className="text-gray-300" />
                 </div>
                 <p className="text-sm font-bold text-gray-400">Aucune commande pour le moment</p>

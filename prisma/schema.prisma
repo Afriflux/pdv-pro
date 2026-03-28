@@ -86,6 +86,7 @@ model User {
   tipReads    TipRead[]
   notifications Notification[]
   npsResponses  NpsResponse[]
+  masterclassProgresses MasterclassProgress[]
   @@schema("public")
 }
 
@@ -478,6 +479,16 @@ model PlatformConfig {
   commission_rate Float    @default(0.10) // 10% par défaut
   updated_at      DateTime @updatedAt
   updated_by      String?
+  key             String?  @unique
+  value           String?
+  @@schema("public")
+}
+
+model IntegrationKey {
+  key        String   @id
+  value      String
+  updated_at DateTime @updatedAt
+  updated_by String?
   @@schema("public")
 }
 
@@ -750,6 +761,18 @@ model MasterclassArticle {
   @@schema("public")
 }
 
+model MasterclassProgress {
+  id           String   @id @default(uuid())
+  user_id      String
+  article_id   String
+  completed_at DateTime @default(now())
+
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, article_id])
+  @@schema("public")
+}
+
 model BlockedDate {
   id         String   @id @default(cuid())
   store_id   String
@@ -893,3 +916,13 @@ model Task {
   @@schema("public")
 }
 
+// ─── Apprentissage Automatique IA ─────────────────────────────────────────────
+
+model AIKnowledgeBase {
+  id           String   @id @default(uuid())
+  question     String   @db.Text
+  answer       String   @db.Text
+  created_at   DateTime @default(now())
+
+  @@schema("public")
+}

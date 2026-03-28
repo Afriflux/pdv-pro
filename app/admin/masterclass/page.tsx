@@ -7,13 +7,7 @@ export default async function AdminMasterclassPage() {
   const articles = await getMasterclassArticles(true)
   
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-ink">PDV Pro Academy</h1>
-          <p className="text-sm text-gray-500">Gérez les guides de formation pour les vendeurs.</p>
-        </div>
-      </div>
+    <div className="flex-1 w-full min-h-screen bg-[#FAFAF7] pb-20">
       <MasterclassClient initialArticles={articles} />
     </div>
   )

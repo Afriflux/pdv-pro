@@ -16,22 +16,11 @@
  * ─────────────────────────────────────────────────────────────
  */
 
-import { createAdminClient } from '@/lib/supabase/admin'
+import { getPlatformConfig } from '@/lib/admin/adminActions'
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CONSTANTES
+// CONSTANTES UTILES
 // ─────────────────────────────────────────────────────────────────────────────
-
-/** Paliers de commission dégressive pour les ventes en ligne */
-const COMMISSION_TIERS = [
-  { maxCA: 100_000,   rate: 0.08 },  // 8% — 0 à 100 000 FCFA/mois
-  { maxCA: 500_000,   rate: 0.07 },  // 7% — 100 001 à 500 000 FCFA/mois
-  { maxCA: 1_000_000, rate: 0.06 },  // 6% — 500 001 à 1 000 000 FCFA/mois
-  { maxCA: Infinity,  rate: 0.05 },  // 5% — Au-delà de 1 000 000 FCFA/mois
-] as const
-
-/** Taux fixe pour le COD — 5% indépendamment du CA */
-export const COD_RATE = 0.05
 
 /** Méthodes de paiement considérées comme "en ligne" (non-COD) */
 const ONLINE_PAYMENT_METHODS = new Set([
@@ -45,31 +34,40 @@ const ONLINE_PAYMENT_METHODS = new Set([
 ])
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FONCTIONS PURES (calculateurs)
+// FONCTIONS ASYNC (Configuration et Calculs)
 // ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Récupère la grille tarifaire (les paliers + COD) depuis la BDD dynamique.
+ */
+export async function getCommissionTiers() {
+  const cfg = await getPlatformConfig()
+  return {
+    COD_RATE: cfg.cod / 100,
+    TIERS: [
+      { maxCA: 100_000,   rate: cfg.tier_1 / 100 },
+      { maxCA: 500_000,   rate: cfg.tier_2 / 100 },
+      { maxCA: 1_000_000, rate: cfg.tier_3 / 100 },
+      { maxCA: Infinity,  rate: cfg.tier_4 / 100 },
+    ]
+  }
+}
 
 /**
  * Détermine le taux de commission applicable selon le CA mensuel du vendeur.
  * Utilise le modèle dégressif PDV Pro pour les ventes en ligne.
- *
- * @param monthlyCA - CA mensuel du vendeur en FCFA
- * @returns Taux de commission (ex: 0.07 pour 7%)
  */
-export function getCommissionRate(monthlyCA: number): number {
-  // Retourner le taux du premier palier dont le CA est inférieur au maxCA
-  const tier = COMMISSION_TIERS.find(t => monthlyCA <= t.maxCA)
-  // Le dernier palier (Infinity) garantit qu'un tier est toujours trouvé
+export async function getCommissionRate(monthlyCA: number): Promise<number> {
+  const { TIERS } = await getCommissionTiers()
+  const tier = TIERS.find(t => monthlyCA <= t.maxCA)
   return tier?.rate ?? 0.05
 }
 
 /**
  * Retourne le label du palier actif pour affichage UI.
- *
- * @param monthlyCA - CA mensuel du vendeur en FCFA
- * @returns Ex: "4% (CA > 1 000 000 FCFA)"
  */
-export function getCommissionTierLabel(monthlyCA: number): string {
-  const rate = getCommissionRate(monthlyCA)
+export async function getCommissionTierLabel(monthlyCA: number): Promise<string> {
+  const rate = await getCommissionRate(monthlyCA)
   const percent = Math.round(rate * 100)
 
   if (monthlyCA <= 100_000)   return `${percent}% (CA ≤ 100 000 FCFA)`
@@ -80,21 +78,18 @@ export function getCommissionTierLabel(monthlyCA: number): string {
 
 /**
  * Calcule la commission PDV Pro sur une vente.
- *
- * @param orderTotal     - Montant total de la commande en FCFA
- * @param paymentMethod  - 'cod' | 'wave' | 'orange_money' | 'cinetpay' | 'paytech' | 'card_*'
- * @param monthlyCA      - CA mensuel du vendeur (utilisé uniquement pour les ventes en ligne)
- * @returns Objet contenant le taux appliqué, la commission en FCFA, et le montant net vendeur
  */
-export function calculateCommission(
+export async function calculateCommission(
   productBase:   number, // (subtotal - promo_discount)
   deliveryFee:   number,
   paymentMethod: string,
   monthlyCA:     number
-): { rate: number; platformFee: number; deliveryCommission: number; vendorAmount: number } {
+): Promise<{ rate: number; platformFee: number; deliveryCommission: number; vendorAmount: number }> {
   // Déterminer le taux selon le type de paiement
   const isCOD = paymentMethod === 'cod'
-  const rate   = isCOD ? COD_RATE : getCommissionRate(monthlyCA)
+  const { COD_RATE } = await getCommissionTiers()
+  
+  const rate   = isCOD ? COD_RATE : await getCommissionRate(monthlyCA)
 
   const platformFee = Math.round(productBase * rate)
   const deliveryCommission = Math.round(deliveryFee * rate)
@@ -152,6 +147,7 @@ export async function canAcceptCOD(
   orderTotal: number, // subtotal - discount + delivery_fee
   closingFee: number = 0
 ): Promise<{ canAccept: boolean; walletBalance: number; commissionDue: number }> {
+  const { COD_RATE } = await getCommissionTiers()
   const supabase        = createAdminClient()
   const commissionDue   = Math.round(orderTotal * COD_RATE) + closingFee
 
@@ -200,7 +196,7 @@ export async function resolveOrderCommission(
     ? 0
     : await getVendorMonthlyCA(storeId)
 
-  const { rate, platformFee, deliveryCommission, vendorAmount } = calculateCommission(
+  const { rate, platformFee, deliveryCommission, vendorAmount } = await calculateCommission(
     productBase,
     deliveryFee,
     paymentMethod,

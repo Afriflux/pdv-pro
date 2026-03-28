@@ -6,6 +6,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AbonnementsClient from './AbonnementsClient'
+import { getCommissionTiers } from '@/lib/commission/commission-service'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,12 +32,7 @@ interface VendorLevel {
 
 // ─── Constantes métier ────────────────────────────────────────────────────────
 
-const TIERS: Tier[] = [
-  { name: '0 – 100K',    label: '0 → 100 000 FCFA/mois',           min: 0,         max: 100_000,   rate: 8, color: '#94a3b8' },
-  { name: '100K – 500K', label: '100 001 → 500 000 FCFA/mois',     min: 100_001,   max: 500_000,   rate: 7, color: '#3b82f6' },
-  { name: '500K – 1M',   label: '500 001 → 1 000 000 FCFA/mois',   min: 500_001,   max: 1_000_000, rate: 6, color: '#8b5cf6' },
-  { name: '+ 1M',        label: '+ 1 000 000 FCFA/mois',           min: 1_000_001, max: null,       rate: 5, color: '#C9A84C' },
-]
+// Note: TIERS rates are now dynamically hydrated inside the component
 
 const LEVELS: VendorLevel[] = [
   {
@@ -63,23 +59,8 @@ const LEVELS: VendorLevel[] = [
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function getCommissionRate(monthlyCA: number): number {
-  if (monthlyCA > 1_000_000) return 5
-  if (monthlyCA > 500_000)   return 6
-  if (monthlyCA > 100_000)   return 7
-  return 8
-}
-
-function getCurrentTierIndex(monthlyCA: number): number {
-  return TIERS.findIndex(t => t.max === null || monthlyCA <= t.max)
-}
-
 function getCurrentLevelIndex(totalEarned: number): number {
   return LEVELS.findIndex(l => l.max === null || totalEarned <= l.max)
-}
-
-function fmt(n: number): string {
-  return Math.round(n).toLocaleString('fr-FR')
 }
 
 function getMonthLabel(date: Date): string {
@@ -92,6 +73,24 @@ export default async function AbonnementsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+
+  const { TIERS: dynamicTiers } = await getCommissionTiers()
+
+  const TIERS: Tier[] = [
+    { name: '0 – 100K',    label: '0 → 100 000 FCFA/mois',           min: 0,         max: 100_000,   rate: dynamicTiers[0].rate * 100, color: '#94a3b8' },
+    { name: '100K – 500K', label: '100 001 → 500 000 FCFA/mois',     min: 100_001,   max: 500_000,   rate: dynamicTiers[1].rate * 100, color: '#3b82f6' },
+    { name: '500K – 1M',   label: '500 001 → 1 000 000 FCFA/mois',   min: 500_001,   max: 1_000_000, rate: dynamicTiers[2].rate * 100, color: '#8b5cf6' },
+    { name: '+ 1M',        label: '+ 1 000 000 FCFA/mois',           min: 1_000_001, max: null,       rate: dynamicTiers[3].rate * 100, color: '#C9A84C' },
+  ]
+
+  const getCommissionRate = (monthlyCA: number) => {
+    const tier = TIERS.find(t => t.max === null || monthlyCA <= t.max)
+    return tier?.rate ?? dynamicTiers[3].rate * 100
+  }
+
+  const getCurrentTierIndex = (monthlyCA: number) => {
+    return TIERS.findIndex(t => t.max === null || monthlyCA <= t.max)
+  }
 
   // ── Store ─────────────────────────────────────────────────────────────────
   const { data: store } = await supabase
@@ -160,20 +159,6 @@ export default async function AbonnementsPage() {
     : 100
 
   const totalEarned  = walletData?.total_earned ?? 0
-  const levelIdx     = getCurrentLevelIndex(totalEarned)
-  const currentLevel = LEVELS[levelIdx]
-  const nextLevel    = LEVELS[levelIdx + 1] ?? null
-
-  const levelProgress = currentLevel.max
-    ? Math.min(
-        (totalEarned - currentLevel.min) / (currentLevel.max - currentLevel.min) * 100,
-        100
-      )
-    : 100
-
-  const missingForNextLevel = nextLevel
-    ? (nextLevel.min - totalEarned)
-    : 0
 
   // ── Historique 3 mois ─────────────────────────────────────────────────────
   interface MonthStat {

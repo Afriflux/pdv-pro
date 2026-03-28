@@ -19,6 +19,7 @@ import {
   LayoutTemplate,
   PhoneCall,
   BookOpen,
+  Globe,
   LucideIcon,
   ChevronLeft,
   ChevronRight,
@@ -64,10 +65,10 @@ const NAV: NavSection[] = [
   {
     title: 'OUTILS',
     items: [
+      { name: 'Contenu Public', href: '/admin/marketplace', icon: Globe },
       { name: 'Intégrations', href: '/admin/integrations', icon: Puzzle },
       { name: 'Email Marketing', href: '/admin/email', icon: Mail },
       { name: 'Academy', href: '/admin/masterclass', icon: BookOpen },
-      { name: 'Landing Page', href: '/admin/landing', icon: LayoutTemplate },
     ]
   },
   {
@@ -160,7 +161,7 @@ function AdminSidebarContent({
     <div className="flex flex-col h-full py-4 relative">
       {/* Header (Logo + Bell + Toggle) */}
       <div className={`px-4 mt-4 mb-8 flex ${collapsed ? 'flex-col items-center gap-4' : 'items-center justify-between'} flex-shrink-0`}>
-        <Link href="/admin" className="flex items-center gap-1.5 focus:outline-none group/logo" onClick={onClose}>
+        <Link href="/" className="flex items-center gap-1.5 focus:outline-none group/logo" onClick={onClose}>
           {collapsed ? (
             <div className="w-11 h-11 bg-gradient-to-br from-white/20 to-white/5 border border-white/20 rounded-xl flex items-center justify-center shadow-lg group-hover/logo:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all">
               <span className="text-xl font-display font-black text-white tracking-tight">P</span>
@@ -342,10 +343,10 @@ export function AdminSidebar({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <div className="flex items-center gap-1.5 ml-1">
+            <Link href="/" className="flex items-center gap-1.5 ml-1" onClick={() => setMobileOpen(false)}>
               <span className="text-lg font-display font-black text-white">PDV</span>
               <span className="text-lg font-display font-black text-gold">Pro</span>
-            </div>
+            </Link>
           </div>
           <div className="flex items-center gap-2">
             <NotificationBell />

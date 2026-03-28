@@ -70,6 +70,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
+    // LOG AUDIT
+    await supabaseAdmin.from('AdminLog').insert({
+      admin_id: user.id,
+      action: isActive ? 'ACTIVATE' : 'SUSPEND',
+      target_type: 'AMBASSADOR',
+      target_id: ambassadorId,
+      details: {
+        reason: isActive ? 'Réactivation du badge Ambassadeur' : 'Suspension du programme Ambassadeur'
+      }
+    })
+
     console.log(
       `[ambassador/toggle] ✅ Ambassador ${ambassadorId} → is_active = ${isActive}`
     )

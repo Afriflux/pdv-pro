@@ -3,15 +3,17 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
-export default function PricingCalculator() {
+interface PricingCalculatorProps {
+  tiers: { maxCA: number; rate: number }[]
+}
+
+export default function PricingCalculator({ tiers }: PricingCalculatorProps) {
   const [monthlySales, setMonthlySales] = useState<number>(250000)
 
-  // Commission dégressive
+  // Commission dégressive dynamique
   const getCommissionRate = (revenue: number) => {
-    if (revenue <= 100000) return 0.08
-    if (revenue <= 500000) return 0.07
-    if (revenue <= 1000000) return 0.06
-    return 0.05
+    const tier = tiers.find(t => revenue <= t.maxCA)
+    return tier?.rate ?? (tiers.length ? tiers[tiers.length - 1].rate : 0.05)
   }
 
   const currentRate = getCommissionRate(monthlySales)

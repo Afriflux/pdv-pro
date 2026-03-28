@@ -6,6 +6,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { X, ShieldAlert } from 'lucide-react'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -33,21 +34,40 @@ export default function OrderStatusUpdater({ orderId, currentStatus }: Props) {
   const [selected, setSelected] = useState(currentStatus)
   const [loading,  setLoading]  = useState(false)
 
-  const hasChanged = selected !== currentStatus
+  const [reason,   setReason]   = useState('')
+  const [showModal, setShowModal] = useState(false)
 
-  async function handleUpdate() {
+  const hasChanged = selected !== currentStatus
+  const needsReason = ['cancelled', 'refunded'].includes(selected)
+
+  function initiateUpdate() {
     if (!hasChanged || loading) return
+    if (needsReason) {
+      setShowModal(true)
+    } else {
+      executeUpdate()
+    }
+  }
+
+  async function executeUpdate() {
+    if (needsReason && !reason.trim()) {
+      toast.error('Veuillez fournir un motif.')
+      return
+    }
+
     setLoading(true)
     try {
       const res = await fetch(`/api/admin/orders/${orderId}/status`, {
         method:  'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ status: selected }),
+        body:    JSON.stringify({ status: selected, reason: reason.trim() || undefined }),
       })
       const data = await res.json() as { success?: boolean; error?: string }
 
       if (res.ok && data.success) {
         toast.success(`✅ Statut mis à jour : ${ALL_STATUSES.find(s => s.value === selected)?.label}`)
+        setShowModal(false)
+        setReason('')
         router.refresh()
       } else {
         throw new Error(data.error ?? 'Erreur lors de la mise à jour')
@@ -60,6 +80,7 @@ export default function OrderStatusUpdater({ orderId, currentStatus }: Props) {
   }
 
   return (
+    <>
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
       <select
         aria-label="Statut de la commande"
@@ -75,7 +96,7 @@ export default function OrderStatusUpdater({ orderId, currentStatus }: Props) {
       </select>
       <button
         type="button"
-        onClick={handleUpdate}
+        onClick={initiateUpdate}
         disabled={!hasChanged || loading}
         className="px-5 py-2.5 text-sm font-bold text-white bg-[#0F7A60] hover:bg-[#0D6B53]
           rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all
@@ -91,5 +112,50 @@ export default function OrderStatusUpdater({ orderId, currentStatus }: Props) {
         )}
       </button>
     </div>
+
+    {/* Modale de justification */}
+    {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setShowModal(false)} />
+          <div className="relative bg-white rounded-3xl shadow-xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3 text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full">
+                <ShieldAlert className="w-4 h-4" />
+                <span className="text-xs font-black uppercase tracking-wider">Action sensible</span>
+              </div>
+              <button 
+                onClick={() => setShowModal(false)} 
+                aria-label="Fermer" 
+                title="Fermer" 
+                className="text-gray-400 hover:bg-gray-100 p-2 rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <h3 className="text-xl font-black text-gray-900 mb-2">Motif obligatoire</h3>
+            <p className="text-sm text-gray-500 mb-6">
+              Veuillez expliquer pourquoi cette commande passe en statut <strong>{ALL_STATUSES.find(s => s.value === selected)?.label}</strong>. Ce motif sera consigné dans le registre d'Audit de PDV Pro.
+            </p>
+
+            <div className="space-y-4">
+              <textarea
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder="Ex: Demande client, Produit en rupture..."
+                className="w-full h-24 p-4 text-sm bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 resize-none"
+              />
+              <button
+                onClick={executeUpdate}
+                disabled={!reason.trim() || loading}
+                className="w-full flex justify-center items-center py-3 px-4 bg-gray-900 hover:bg-black text-white text-sm font-bold rounded-xl transition-colors disabled:opacity-50"
+              >
+                {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Confirmer et Journaliser'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

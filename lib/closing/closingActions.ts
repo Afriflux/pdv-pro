@@ -125,6 +125,20 @@ export async function processClosingRequest(
 }
 
 /**
+ * Récupère l'historique complet des actions pour une demande donnée.
+ */
+export async function getClosingHistory(requestId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Non authentifié')
+
+  return await prisma.closingRequestHistory.findMany({
+    where: { closing_request_id: requestId },
+    orderBy: { created_at: 'desc' }
+  })
+}
+
+/**
  * Assigne une commande à l'agent courant pour éviter les conflits
  */
 export async function lockClosingRequest(requestId: string) {

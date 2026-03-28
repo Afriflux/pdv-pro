@@ -7,6 +7,7 @@ interface Tip {
   number: number
   title: string
   desc: string
+  imageUrl?: string
 }
 
 interface Article {
@@ -17,12 +18,17 @@ interface Article {
   color: string
   category: string
   readTime: string
-  tips:  Tip[]
+  tips:  any
 }
 
-export default function AcademyGrid({ articles }: { articles: Article[] }) {
+import { markMasterclassCompleted } from '@/app/actions/masterclass'
+import { CheckCircle2 } from 'lucide-react'
+
+export default function AcademyGrid({ articles, completedIds: initialCompletedIds = [] }: { articles: Article[], completedIds?: string[] }) {
+  const [localCompletedIds, setLocalCompletedIds] = useState<string[]>(initialCompletedIds)
   const [filter, setFilter] = useState('Tous')
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
+  const [isMarkingCompleted, setIsMarkingCompleted] = useState(false)
   
   const categories = ['Tous', ...Array.from(new Set(articles.map(a => a.category)))]
   
@@ -90,6 +96,9 @@ export default function AcademyGrid({ articles }: { articles: Article[] }) {
               <div className="text-6xl transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 z-10 drop-shadow-md">
                 {article.emoji}
               </div>
+              <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-ink text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
+                👁️ {(article.id.toString().charCodeAt(0) * 7) % 80 + 12}
+              </div>
               
               <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md text-ink text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
                 <Clock size={12} className="text-gray-400" /> {article.readTime}
@@ -97,6 +106,11 @@ export default function AcademyGrid({ articles }: { articles: Article[] }) {
               <div className="absolute top-3 left-3 bg-[#0F7A60] text-white text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm">
                 {article.category}
               </div>
+              {localCompletedIds.includes(article.id.toString()) && (
+                <div className="absolute top-3 right-1/2 translate-x-1/2 bg-emerald-500 text-white p-1 rounded-full z-10 shadow-lg shadow-emerald-500/40">
+                  <CheckCircle2 size={16} strokeWidth={3} />
+                </div>
+              )}
             </div>
 
             {/* Content */}
@@ -105,7 +119,11 @@ export default function AcademyGrid({ articles }: { articles: Article[] }) {
               <p className="text-[13px] text-gray-500 line-clamp-2 mb-6 flex-1 leading-relaxed">{article.intro}</p>
               
               <div className="flex items-center text-ink font-black text-sm mt-auto bg-gray-50 hover:bg-gray-100 px-4 py-2.5 rounded-xl w-fit transition-colors">
-                Commencer <ChevronRight size={16} className="ml-1 transform group-hover:translate-x-1 transition-transform" />
+                {localCompletedIds.includes(article.id.toString()) ? (
+                   <span className="text-[#0F7A60] flex items-center">Relire <ChevronRight size={16} className="ml-1" /></span>
+                ) : (
+                   <span>Commencer <ChevronRight size={16} className="ml-1 transform group-hover:translate-x-1" /></span>
+                )}
               </div>
             </div>
           </div>
@@ -138,6 +156,8 @@ export default function AcademyGrid({ articles }: { articles: Article[] }) {
                 </div>
                 <button 
                   onClick={() => setSelectedArticle(null)}
+                  title="Fermer"
+                  aria-label="Fermer"
                   className="w-9 h-9 flex items-center justify-center bg-gray-100 hover:bg-gray-200 hover:text-red-500 text-ink rounded-full transition-colors"
                 >
                   <X size={18} />
@@ -165,7 +185,7 @@ export default function AcademyGrid({ articles }: { articles: Article[] }) {
 
               {/* Article Steps */}
               <div className="space-y-8 max-w-3xl mx-auto pb-16">
-                {selectedArticle.tips.map((tip) => (
+                {(Array.isArray(selectedArticle.tips) ? selectedArticle.tips : (typeof selectedArticle.tips === 'string' ? JSON.parse(selectedArticle.tips) : [])).map((tip: any) => (
                   <div key={tip.number} className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow duration-300">
                     <div className="absolute top-0 right-0 w-48 h-48 bg-[#0F7A60]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     
@@ -175,7 +195,25 @@ export default function AcademyGrid({ articles }: { articles: Article[] }) {
                       </div>
                       <div className="flex-1">
                         <h3 className="text-xl font-black text-ink mb-3 leading-snug">{tip.title}</h3>
-                        <p className="text-gray-600 leading-relaxed text-[15px]">{tip.desc}</p>
+                        
+                        {tip.videoUrl && (
+                           <div className="w-full aspect-video mb-4 rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-black">
+                             <iframe 
+                               src={tip.videoUrl.replace('watch?v=', 'embed/')} 
+                               title={`Vidéo explicative: ${tip.title}`}
+                               className="w-full h-full" 
+                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                               allowFullScreen 
+                             />
+                           </div>
+                        )}
+                        {!tip.videoUrl && tip.imageUrl && (
+                           <div className="w-full h-48 sm:h-64 mb-4 rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
+                             <img src={tip.imageUrl} alt={tip.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                           </div>
+                        )}
+                        
+                        <p className="text-gray-600 leading-relaxed text-[15px] whitespace-pre-wrap">{tip.desc}</p>
                       </div>
                     </div>
                   </div>
@@ -184,17 +222,41 @@ export default function AcademyGrid({ articles }: { articles: Article[] }) {
               
               {/* Completion Block */}
               <div className={`max-w-2xl mx-auto pb-20 text-center transition-all duration-700 ease-out transform ${readProgress > 95 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                <div className="inline-block bg-gold/10 text-gold px-5 py-2 rounded-full text-xs font-black mb-5 uppercase tracking-widest border border-gold/20">
-                  Mission Complète 🎯
-                </div>
-                <h3 className="text-3xl font-black text-ink mb-3">Prêt à exploser vos ventes ?</h3>
-                <p className="text-gray-500 mb-8 font-medium">Appliquez ces stratégies dès aujourd'hui sur votre boutique PDV Pro.</p>
-                <button 
-                  onClick={() => setSelectedArticle(null)}
-                  className="bg-ink hover:bg-gray-800 text-white font-black px-10 py-4 rounded-2xl transition-all shadow-xl shadow-black/10 active:scale-95 text-lg"
-                >
-                  Fermer la Masterclass
-                </button>
+                {localCompletedIds.includes(selectedArticle.id.toString()) ? (
+                  <>
+                    <div className="inline-block bg-gold/10 text-gold px-5 py-2 rounded-full text-xs font-black mb-5 uppercase tracking-widest border border-gold/20 flex items-center gap-2 mx-auto w-fit">
+                      <CheckCircle2 size={16} /> Mission Complète
+                    </div>
+                    <h3 className="text-3xl font-black text-ink mb-3">Bravo, vous maîtrisez ce sujet !</h3>
+                    <p className="text-gray-500 mb-8 font-medium">Appliquez ces stratégies dès aujourd'hui sur votre boutique PDV Pro.</p>
+                    <button 
+                      onClick={() => setSelectedArticle(null)}
+                      className="bg-gray-100 hover:bg-gray-200 text-ink font-black px-10 py-4 rounded-2xl transition-all shadow-sm active:scale-95 text-lg"
+                    >
+                      Fermer la leçon
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-3xl font-black text-ink mb-3">Avez-vous bien assimilé ce cours ?</h3>
+                    <p className="text-gray-500 mb-8 font-medium">Marquez-le comme lu pour augmenter votre jauge de progression !</p>
+                    <button 
+                      disabled={isMarkingCompleted}
+                      onClick={async () => {
+                        setIsMarkingCompleted(true)
+                        const res = await markMasterclassCompleted(selectedArticle.id.toString())
+                        if (res.success) {
+                          setLocalCompletedIds(prev => [...prev, selectedArticle.id.toString()])
+                        }
+                        setIsMarkingCompleted(false)
+                        setSelectedArticle(null)
+                      }}
+                      className="bg-[#0F7A60] hover:bg-emerald-700 text-white font-black px-10 py-4 rounded-2xl transition-all shadow-xl shadow-emerald-900/10 active:scale-95 text-lg flex items-center justify-center gap-2 mx-auto min-w-[300px]"
+                    >
+                      {isMarkingCompleted ? "Validation en cours..." : "✨ J'ai compris la leçon !"}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
             
@@ -202,26 +264,6 @@ export default function AcademyGrid({ articles }: { articles: Article[] }) {
         </div>
       )}
       
-      {/* Custom styles for the scrollbar to make it invisible or elegant */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #E5E7EB;
-          border-radius: 20px;
-        }
-      `}} />
     </div>
   )
 }

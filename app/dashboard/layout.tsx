@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import ContractBanner from '@/components/vendor/ContractBanner'
+import GlobalCoach from '@/components/dashboard/GlobalCoach'
 
 export default async function DashboardLayout({
   children,
@@ -57,6 +58,9 @@ export default async function DashboardLayout({
           {children}
         </div>
       </main>
+
+      {/* Le Coach IA Ultime Omniprésent */}
+      <GlobalCoach />
     </div>
   )
 }

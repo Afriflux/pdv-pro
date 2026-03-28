@@ -21,6 +21,11 @@ const ALLOWED_KEYS = new Set([
   'landing_hero_subtitle',
   'landing_hero_cta_primary',
   'landing_hero_cta_secondary',
+  'landing_ticker_text',
+  'landing_banner_text',
+  'landing_banner_date',
+  'landing_banner_active',
+  'landing_abonnement_price',
   // Contacts & Réseaux sociaux
   'landing_whatsapp_support',
   'landing_instagram_url',
@@ -38,6 +43,39 @@ const ALLOWED_KEYS = new Set([
   'landing_cta_button',
   // Marchés
   'landing_markets',
+  // Medias supplémentaires
+  'landing_logo',
+  'auth_bg',
+  // SEO & Metadata
+  'seo_title',
+  'seo_description',
+  'seo_keywords',
+  'seo_og_image',
+  // Marketplace globale
+  'marketplace_active',
+  'marketplace_headline',
+  'marketplace_featured_limit',
+  'marketplace_require_approval',
+  'marketplace_show_urgency',
+  'marketplace_promo_banner',
+  'marketplace_vendor_contact',
+  'marketplace_seo_title',
+  'marketplace_seo_desc',
+  'marketplace_hero_image',
+  // Maintenance globale
+  'maintenance_active',
+  'maintenance_message',
+  // Paiements & Région
+  'payment_wave_active',
+  'payment_om_active',
+  'payment_freemoney_active',
+  // Communications
+  'email_sender_address',
+  'email_sender_name',
+  // Légal
+  'legal_cgu_url',
+  'legal_privacy_url',
+  'legal_refund_url',
 ])
 
 export async function POST(req: NextRequest) {

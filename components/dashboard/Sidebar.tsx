@@ -9,7 +9,6 @@ import {
   Package, 
   ShoppingBag, 
   ShoppingCart, 
-  Sparkles, 
   Wallet, 
   Share2, 
   Target, 
@@ -31,7 +30,8 @@ import {
   MapPin,
   Calendar,
   PhoneCall,
-  Send
+  Send,
+  GraduationCap
 } from 'lucide-react'
 import { NotificationBell } from './NotificationBell'
 
@@ -63,11 +63,17 @@ const NAV: NavSection[] = [
       { name: 'Mes Produits', href: '/dashboard/products', icon: Package },
       { name: 'Pages de vente', href: '/dashboard/pages', icon: ShoppingBag },
       { name: 'Commandes', href: '/dashboard/orders', icon: ShoppingCart },
+      { name: 'Clients & CRM', href: '/dashboard/customers', icon: Users, badge: 'LTV' },
       { name: 'Validation COD', href: '/dashboard/closing', icon: PhoneCall, for: ['physical', 'hybrid'] },
       { name: 'Livraisons', href: '/dashboard/livraisons', icon: Truck, for: ['physical', 'hybrid'] },
       { name: 'Zones tarifaires', href: '/dashboard/zones', icon: MapPin, for: ['physical', 'hybrid'] },
       { name: 'Agenda', href: '/dashboard/agenda', icon: Calendar },
-      { name: 'Nouveautés', href: '/dashboard/tips', icon: Sparkles },
+    ]
+  },
+  {
+    title: 'FORMATION',
+    items: [
+      { name: 'PDV Academy', href: '/dashboard/tips', icon: GraduationCap, badge: 'NEW' },
     ]
   },
   {
@@ -172,6 +178,7 @@ function SidebarContent({
 
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
     'FINANCES': false,
+    'FORMATION': false,
     'CROISSANCE': false,
     'AUTOMATISATIONS': false,
     'COMPTE': false
@@ -203,7 +210,7 @@ function SidebarContent({
     <div className="flex flex-col h-full py-4 relative">
       {/* Header (Logo + Bell + Toggle) */}
       <div className={`px-4 mt-4 mb-8 flex ${collapsed ? 'flex-col items-center gap-4' : 'items-center justify-between'} flex-shrink-0`}>
-        <Link href="/dashboard" className="flex items-center gap-1.5 focus:outline-none group/logo" onClick={onClose}>
+        <Link href="/" className="flex items-center gap-1.5 focus:outline-none group/logo" onClick={onClose}>
           {collapsed ? (
             <div className="w-11 h-11 bg-gradient-to-br from-white/20 to-white/5 border border-white/20 rounded-xl flex items-center justify-center shadow-lg group-hover/logo:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all">
               <span className="text-xl font-display font-black text-white tracking-tight">P</span>
@@ -388,10 +395,10 @@ export function Sidebar({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <div className="flex items-center gap-1.5 ml-1">
+            <Link href="/" className="flex items-center gap-1.5 ml-1" onClick={() => setMobileOpen(false)}>
               <span className="text-lg font-display font-black text-white">PDV</span>
               <span className="text-lg font-display font-black text-gold">Pro</span>
-            </div>
+            </Link>
           </div>
           <div className="flex items-center gap-2">
             <NotificationBell />

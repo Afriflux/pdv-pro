@@ -43,9 +43,13 @@ export async function PATCH(
       return NextResponse.json({ success: false, error: 'Body invalide' }, { status: 400 })
     }
 
-    const { status } = body as { status: string }
+    const { status, reason } = body as { status: string, reason?: string }
     if (!status || !VALID_STATUSES.includes(status as OrderStatus)) {
       return NextResponse.json({ success: false, error: 'Statut invalide' }, { status: 400 })
+    }
+
+    if (['cancelled', 'refunded'].includes(status) && !reason) {
+      return NextResponse.json({ success: false, error: 'Un motif est requis pour ce statut.' }, { status: 400 })
     }
 
     // 3. Mettre à jour le statut
@@ -58,9 +62,28 @@ export async function PATCH(
       return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
+    // 4. Trace dans l'Audit Center (Governance)
+    const { error: logErr } = await supabaseAdmin
+      .from('AdminLog')
+      .insert({
+        admin_id: user.id,
+        action: 'UPDATE_STATUS',
+        target_type: 'ORDER',
+        target_id: params.id,
+        details: {
+          new_status: status,
+          reason: reason || null,
+        }
+      })
+
+    if (logErr) {
+      console.error('[Gouvernance] Erreur log statut commande :', logErr.message)
+    }
+
     return NextResponse.json({ success: true }, { status: 200 })
 
-  } catch (err: unknown) {
+  } catch (error) {
+    console.error('[Gouvernance] Exception PATCH:', error)
     return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }
