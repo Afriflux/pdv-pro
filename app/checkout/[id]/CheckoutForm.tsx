@@ -61,8 +61,8 @@ interface CheckoutFormProps {
   }
   vendorPlan?: 'gratuit' | 'pro'
   deliveryZones?: { id: string; name: string; fee: number; delay: string | null; active: boolean }[]
-  coachingSlots?: any[]
-  blockedDates?: any[]
+  coachingSlots?: { day_of_week: number, start_time: string, end_time: string, active: boolean, [key: string]: unknown }[]
+  blockedDates?: { date: string | Date, start_time?: string | null, end_time?: string | null, [key: string]: unknown }[]
   bookedSlots?: Record<string, number>
   // Props optionnelles pour pré-remplir depuis ProductPage
   defaultUseCOD?: boolean
@@ -74,6 +74,13 @@ interface CheckoutFormProps {
     price: number
     images: string[]
     type: string
+  } | null
+  clientProfile?: {
+    name?: string | null
+    email?: string | null
+    phone?: string | null
+    client_payment_method?: string | null
+    client_payment_number?: string | null
   } | null
 }
 
@@ -93,6 +100,7 @@ export function CheckoutForm({
   blockedDates = [],
   bookedSlots = {},
   bumpProduct,
+  clientProfile,
 }: CheckoutFormProps) {
   const router = useRouter()
   const accent = product.store.primary_color || '#0F7A60'
@@ -108,9 +116,9 @@ export function CheckoutForm({
   }
 
   // ── États formulaire ──────────────────────────────────────────
-  const [name, setName]           = useState('')
-  const [email, setEmail]         = useState('')
-  const [phone, setPhone]         = useState('')
+  const [name, setName]           = useState(clientProfile?.name || '')
+  const [email, setEmail]         = useState(clientProfile?.email || '')
+  const [phone, setPhone]         = useState(clientProfile?.phone || '')
   const [address, setAddress]     = useState('')
   const [locating, setLocating]   = useState(false)
   const [locationDetected, setLocationDetected] = useState(false)
@@ -269,6 +277,22 @@ export function CheckoutForm({
     setPromoError(null)
   }
 
+  // ── Sauvetage Panier Abandonné ──────────────────────────────────
+  const reportAbandonedCart = () => {
+    if (!phone || phone.trim().length < 8) return
+    fetch('/api/checkout/abandon', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        product_id: product.id,
+        store_id: product.store.id,
+        buyer_name: name,
+        buyer_email: email,
+        buyer_phone: phone
+      })
+    }).catch() // silently fail
+  }
+
   // ── Étape 1 : Création de la commande ────────────────────────
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
@@ -298,9 +322,12 @@ export function CheckoutForm({
     setLoading(true)
 
     try {
-      // ── Lecture du Token d'Affiliation ──
+      // ── Lecture du Token d'Affiliation & Sub-ID ──
       const refMatch = document.cookie.match(/(?:^|; )pdv_affiliate_ref=([^;]*)/)
       const affiliateToken = refMatch ? decodeURIComponent(refMatch[1]) : null
+
+      const subidMatch = document.cookie.match(/(?:^|; )pdv_affiliate_subid=([^;]*)/)
+      const affiliateSubid = subidMatch ? decodeURIComponent(subidMatch[1]) : null
 
       const body = {
         product_id:       product.id,
@@ -322,6 +349,7 @@ export function CheckoutForm({
         total,
         applied_promo_id: appliedPromo?.id || null,
         affiliate_token:  affiliateToken,
+        affiliate_subid:  affiliateSubid,
         booking_date:     selectedDate || null,
         booking_start_time: selectedSlotStr ? selectedSlotStr.split('-')[0] : null,
         booking_end_time:   selectedSlotStr ? selectedSlotStr.split('-')[1] : null,
@@ -338,6 +366,9 @@ export function CheckoutForm({
         error?: string
         order_id?: string
         simulated?: boolean
+        cod?: boolean
+        oto?: boolean
+        oto_url?: string
       }
 
       if (!res.ok) {
@@ -346,9 +377,13 @@ export function CheckoutForm({
         return
       }
 
-      // COD → confirmation directe
+      // COD → confirmation directe ou redirection OTO Upsell
       if (useCOD) {
-        router.push(`/checkout/success?order=${data.order_id}&cod=true`)
+        if (data.oto && data.oto_url) {
+          router.push(data.oto_url)
+        } else {
+          router.push(`/checkout/success?order=${data.order_id}&cod=true`)
+        }
         return
       }
 
@@ -428,6 +463,7 @@ export function CheckoutForm({
           amount={total}
           orderId={createdOrderId}
           onSuccess={handlePaymentSuccess}
+          clientProfile={clientProfile}
         />
 
         {/* Retour étape 1 */}
@@ -608,12 +644,12 @@ export function CheckoutForm({
                   const baseAvailableSlots = coachingSlots.filter(s => s.day_of_week === dayOfWeek && s.active)
 
                   // Check if the entire day or specific hours are blocked
-                  const dayBlocks = blockedDates.filter((b: any) => {
+                  const dayBlocks = blockedDates.filter(b => {
                     const blockDateStr = new Date(b.date).toISOString().split('T')[0]
                     return blockDateStr === selectedDate
                   })
                   
-                  const isSlotBlocked = (slot: any) => {
+                  const isSlotBlocked = (slot: { start_time: string, end_time: string }) => {
                     for (const block of dayBlocks) {
                       if (!block.start_time || !block.end_time) {
                         return true // The entire day is blocked!
@@ -643,12 +679,12 @@ export function CheckoutForm({
                     return h * 60 + m;
                   }
 
-                  const finalSlots: { start: string, end: string, originalSlots: any[] }[] = [];
+                  const finalSlots: { start: string, end: string, originalSlots: { start_time: string, end_time: string }[] }[] = [];
                   const sortedSlots = [...availableSlots].sort((a,b) => timeToMins(a.start_time) - timeToMins(b.start_time));
                   
                   sortedSlots.forEach((slot, index) => {
                     let currentDur = timeToMins(slot.end_time) - timeToMins(slot.start_time);
-                    let originalSlots = [slot];
+                    const originalSlots = [slot];
                     let endTime = slot.end_time;
                     let i = index + 1;
                     
@@ -733,6 +769,7 @@ export function CheckoutForm({
               <label className="block text-xs font-medium text-gray-500 mb-1">Nom complet</label>
               <input
                 type="text" value={name} onChange={e => setName(e.target.value)}
+                onBlur={reportAbandonedCart}
                 placeholder="Votre nom"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition"
                 style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
@@ -748,6 +785,7 @@ export function CheckoutForm({
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
                 type="email" value={email} onChange={e => setEmail(e.target.value)} required
+                onBlur={reportAbandonedCart}
                 placeholder="votre@email.com (pour recevoir le reçu)"
                 className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition"
                 style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
@@ -761,6 +799,7 @@ export function CheckoutForm({
             </label>
             <input
               type="tel" value={phone} onChange={e => setPhone(e.target.value)} required
+              onBlur={reportAbandonedCart}
               placeholder="+221 77 ..."
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition"
               style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}

@@ -4,11 +4,13 @@ import { useState } from 'react'
 export function AutoWithdrawSettings({
   walletId,
   initialEnabled,
-  initialThreshold
+  initialThreshold,
+  targetContext = 'vendor'
 }: {
   walletId: string,
   initialEnabled: boolean,
-  initialThreshold: number
+  initialThreshold: number,
+  targetContext?: 'vendor' | 'closer' | 'affiliate'
 }) {
   const [enabled, setEnabled] = useState(initialEnabled)
   const [threshold, setThreshold] = useState(initialThreshold)
@@ -22,7 +24,7 @@ export function AutoWithdrawSettings({
       const res = await fetch('/api/wallet/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ walletId, auto_withdraw_enabled: newEnabled })
+        body: JSON.stringify({ walletId, auto_withdraw_enabled: newEnabled, targetContext })
       })
       if (res.ok) setEnabled(newEnabled)
     } finally {
@@ -37,7 +39,7 @@ export function AutoWithdrawSettings({
       const res = await fetch('/api/wallet/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ walletId, auto_withdraw_threshold: threshold })
+        body: JSON.stringify({ walletId, auto_withdraw_threshold: threshold, targetContext })
       })
       if (res.ok) {
         setSaved(true)
@@ -60,6 +62,7 @@ export function AutoWithdrawSettings({
           </p>
         </div>
         <button 
+          aria-label={enabled ? "Désactiver les retraits automatisés" : "Activer les retraits automatisés"}
           onClick={handleToggle}
           disabled={loading}
           className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 mt-1 shadow-inner focus:outline-none ${enabled ? 'bg-[#0F7A60]' : 'bg-gray-200'}`}
@@ -85,7 +88,7 @@ export function AutoWithdrawSettings({
               className={`px-4 py-2 text-xs font-bold rounded-xl transition-colors whitespace-nowrap ${
                 saved 
                   ? 'bg-green-100 text-green-700' 
-                  : 'bg-[#1A1A1A] text-white hover:bg-black'
+                  : 'bg-[#0F7A60] text-white hover:bg-[#0D5C4A]'
               }`}
             >
               {saved ? 'Enregistré ✓' : 'Valider'}

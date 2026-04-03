@@ -43,7 +43,7 @@ export default async function MarketingHubPage() {
         <div className="w-full flex flex-col md:flex-row md:items-start md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-xl bg-[#1A1A1A] flex items-center justify-center text-white shadow-md">
+              <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0F7A60] to-teal-700 flex items-center justify-center text-white shadow-md">
                 🎯
               </span>
               <h1 className="text-2xl md:text-3xl font-black text-[#1A1A1A] tracking-tight">Command Center</h1>

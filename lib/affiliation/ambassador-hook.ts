@@ -1,8 +1,10 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendMessage } from '@/lib/telegram/bot-service'
+import { notifyAffiliateSaleDelivered } from '@/lib/notifications/createNotification'
 
 /**
  * Crédite le portefeuille d'un ambassadeur (affilié) lorsqu'une commande
- * contenant son code de tracking est confirmée/livrée.
+ * contenant son token de tracking est confirmée/livrée.
  */
 export async function triggerAmbassadorCommission(
   orderId: string,
@@ -14,68 +16,51 @@ export async function triggerAmbassadorCommission(
   try {
     const supabaseAdmin = createAdminClient()
 
-    // 1. Trouver l'affilié via son code
+    // 1. Trouver l'affilié via son token
     const { data: affiliate, error: affError } = await supabaseAdmin
       .from('Affiliate')
-      .select('id, user_id, total_earnings, total_sales, status')
-      .eq('code', affiliateToken)
+      .select('id, user_id, total_earned, conversions, balance, status, telegram_chat_id')
+      .eq('token', affiliateToken)
       .single()
 
     if (affError || !affiliate || affiliate.status !== 'active') {
-      console.log(`[AmbassadorHook] Affilié ignoré (inactif ou non trouvé) - Code: ${affiliateToken}`)
+      console.log(`[AmbassadorHook] Affilié ignoré (inactif ou non trouvé) - Token: ${affiliateToken}`)
       return
     }
 
     // 2. Mettre à jour les statistiques globales de l'Affilié
-    const newTotalEarnings = (affiliate.total_earnings || 0) + affiliateAmount
-    const newTotalSales = (affiliate.total_sales || 0) + 1
+    const newTotalEarned = (affiliate.total_earned || 0) + affiliateAmount
+    const newConversions = (affiliate.conversions || 0) + 1
+    const newBalance = (affiliate.balance || 0) + affiliateAmount
 
     await supabaseAdmin
       .from('Affiliate')
       .update({
-        total_earnings: newTotalEarnings,
-        total_sales: newTotalSales
+        total_earned: newTotalEarned,
+        conversions: newConversions,
+        balance: newBalance
       })
       .eq('id', affiliate.id)
 
-    // 3. Trouver la boutique (Store) appartenant à cet utilisateur pour créditer son Wallet
-    //    En effet, chaque utilisateur gagnant de l'argent doit avoir un Wallet lié à son Store_id.
-    const { data: userStore, error: storeError } = await supabaseAdmin
-      .from('Store')
-      .select('id')
-      .eq('user_id', affiliate.user_id)
-      .single()
+    console.log(`[AmbassadorHook] Succès: ${affiliateAmount} F crédités à l'ambassadeur ${affiliateToken}.`)
 
-    if (!storeError && userStore) {
-      // Vérifier si le wallet existe
-      const { data: wallet } = await supabaseAdmin
-        .from('Wallet')
-        .select('id, balance, total_earned')
-        .eq('vendor_id', userStore.id)
-        .single()
+    // 3. Envoyer la notification in-app
+    notifyAffiliateSaleDelivered({
+      userId: affiliate.user_id,
+      productName: `Commande #${orderId.split('-')[0].toUpperCase()}`,
+      amount: affiliateAmount
+    }).catch(e => console.error('[AmbassadorHook] Erreur in-app notification:', e))
 
-      if (wallet) {
-        // Mettre à jour le Wallet existant
-        await supabaseAdmin
-          .from('Wallet')
-          .update({
-            balance: (wallet.balance || 0) + affiliateAmount,
-            total_earned: (wallet.total_earned || 0) + affiliateAmount
-          })
-          .eq('id', wallet.id)
-      } else {
-        // Créer le Wallet s'il n'existe pas encore
-        await supabaseAdmin.from('Wallet').insert({
-          vendor_id: userStore.id,
-          balance: affiliateAmount,
-          total_earned: affiliateAmount,
-          pending: 0
-        })
-      }
+    // 3. Envoyer Notification Telegram si connecté
+    if (affiliate.telegram_chat_id) {
+      const msg = `💸 <b>Nouvelle Commission !</b>\n\n` +
+                  `Félicitations, vous venez de générer une vente !\n\n` +
+                  `💰 Gain : <b>${affiliateAmount.toLocaleString()} FCFA</b>\n` +
+                  `🛒 Commande : <code>${orderId.split('-')[0].toUpperCase()}</code>\n\n` +
+                  `<i>Continuez comme ça !</i> 🚀`
       
-      console.log(`[AmbassadorHook] Succès: ${affiliateAmount} F crédités à l'ambassadeur ${affiliateToken} pour l'ordre ${orderId}.`)
-    } else {
-      console.warn(`[AmbassadorHook] Attention: L'affilié ${affiliateToken} n'a pas de Store/Wallet pour recevoir l'argent. Gain mis en attente sur son profil Affilié.`)
+      await sendMessage(affiliate.telegram_chat_id, msg)
+        .catch(e => console.error('[AmbassadorHook] Erreur envoi Telegram:', e))
     }
 
   } catch (err) {

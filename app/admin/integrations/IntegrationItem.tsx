@@ -181,9 +181,9 @@ export default function IntegrationItem({
 
              {/* Statut minimaliste en liste */}
              {isConfigured ? (
-               <CheckCircle2 className="w-4 h-4 text-emerald-500" title="Connecté" />
+               <span title="Connecté" className="flex items-center justify-center"><CheckCircle2 className="w-4 h-4 text-emerald-500" /></span>
              ) : (
-               <XCircle className="w-4 h-4 text-red-400" title="Manquant" />
+               <span title="Manquant" className="flex items-center justify-center"><XCircle className="w-4 h-4 text-red-400" /></span>
              )}
 
              {/* Actions Rapides */}
@@ -228,7 +228,7 @@ export default function IntegrationItem({
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                   <span className="hidden sm:inline">Valider</span>
                 </button>
-                <button onClick={handleCancel} disabled={saving} className="w-9 h-9 flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all border border-transparent hover:border-red-100">
+                <button title="Annuler" onClick={handleCancel} disabled={saving} className="w-9 h-9 flex items-center justify-center bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all border border-transparent hover:border-red-100">
                   <X className="w-4 h-4" />
                 </button>
               </div>

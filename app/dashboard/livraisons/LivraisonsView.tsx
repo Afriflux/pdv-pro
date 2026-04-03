@@ -1,11 +1,10 @@
-// @ts-nocheck
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Search, Download, CheckSquare, Square, ChevronDown, Loader2, MapPin, Phone as PhoneIcon, Clock as ClockIcon, Package, Target, ClipboardList, LayoutGrid, List as ListIcon, ArrowRightCircle, CheckCircle2, Trash2, Users } from 'lucide-react'
+import { Search, Download, CheckSquare, Square, ChevronDown, Loader2, MapPin, Phone as PhoneIcon, Clock as ClockIcon, Package, Target, ClipboardList, LayoutGrid, List as ListIcon, ArrowRightCircle, CheckCircle2, Users } from 'lucide-react'
 import Image from 'next/image'
 import { bulkUpdateOrdersStatus } from '@/app/actions/orders'
-import { createDelivererAction, deleteDelivererAction, assignDelivererToOrderAction } from './actions'
+import { assignDelivererToOrderAction } from './actions'
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; badgeBg: string }> = {
   confirmed: { label: 'Confirmée', color: 'text-amber-600', badgeBg: 'bg-amber-100 border-amber-200' },
@@ -45,22 +44,12 @@ interface DeliveryOrder {
   deliverer?: { id: string, name: string, phone: string } | null
 }
 
-interface LivraisonsViewProps {
-  initialOrders: DeliveryOrder[]
-  initialDeliverers?: any[]
-  storeName?: string
-  storeId?: string
-}
-
-export default function LivraisonsView({ initialOrders, initialDeliverers = [], storeName, storeId = '' }: LivraisonsViewProps) {
+export default function LivraisonsView({ storeId, storeName, initialOrders, deliverers: initialDeliverers }: { storeId: string, storeName?: string, initialOrders: DeliveryOrder[], deliverers: Array<{id: string, name: string, phone: string}> }) {
   const [orders, setOrders] = useState<DeliveryOrder[]>(initialOrders)
-  const [deliverers, setDeliverers] = useState<any[]>(initialDeliverers)
+  const [deliverers] = useState<Array<{id: string, name: string, phone: string}>>(initialDeliverers)
 
   // Mods Flotte
   const [showDeliverersModal, setShowDeliverersModal] = useState(false)
-  const [newDelivName, setNewDelivName] = useState('')
-  const [newDelivPhone, setNewDelivPhone] = useState('')
-  const [isCreatingDeliv, setIsCreatingDeliv] = useState(false)
 
   // Filtres
   const [search, setSearch] = useState('')
@@ -169,7 +158,7 @@ export default function LivraisonsView({ initialOrders, initialDeliverers = [], 
            return o
         }))
       }
-    } catch (e) {
+    } catch (_e) {
       alert('Erreur assignation livreur')
     }
   }
@@ -187,7 +176,6 @@ export default function LivraisonsView({ initialOrders, initialDeliverers = [], 
       if (res.success) {
         // Optimistic UI Update
         if (newStatus === 'delivered' || newStatus === 'cancelled') {
-           // On peut les retirer de la liste temporairement (car la page n'affiche pas Delivered en géneral)
            setOrders(prev => prev.filter(o => !arrIds.includes(o.id)))
         } else {
            setOrders(prev => prev.map(o => arrIds.includes(o.id) ? { ...o, status: newStatus } : o))
@@ -283,7 +271,7 @@ export default function LivraisonsView({ initialOrders, initialDeliverers = [], 
         <body>
           ${selectedOrdersData.map(order => {
             const waMsg = `Bonjour ${order.buyer_name}, c'est le livreur. Je suis en route pour votre commande (${storeName || 'La boutique'}).`
-            const waLink = `https://wa.me/${order.buyer_phone?.replace(/\\D/g, '') || ''}?text=${encodeURIComponent(waMsg)}`
+            const waLink = `https://wa.me/${order.buyer_phone?.replace(/\D/g, '') || ''}?text=${encodeURIComponent(waMsg)}`
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=1&color=0F7A60&data=${encodeURIComponent(waLink)}`
 
             return `
@@ -329,7 +317,6 @@ export default function LivraisonsView({ initialOrders, initialDeliverers = [], 
             </div>
           `}).join('')}
           <script>
-            // On attend que les images (QR codes) soient chargées
             window.onload = function() {
               setTimeout(function() {
                 window.print();
@@ -580,6 +567,7 @@ export default function LivraisonsView({ initialOrders, initialDeliverers = [], 
                         {statusConf.label}
                       </span>
                       <select
+                        aria-label="Assigner un livreur"
                         onChange={(e) => handleAssignDeliverer(order.id, e.target.value)}
                         value={order.deliverer_id || 'none'}
                         onClick={e => e.stopPropagation()}
@@ -672,8 +660,8 @@ export default function LivraisonsView({ initialOrders, initialDeliverers = [], 
                                <span className="font-black text-ink">💰 {order.total.toLocaleString('fr-FR')} FCFA</span>
                                {order.buyer_phone && (
                                  <div className="flex items-center gap-1.5">
-                                   <a href={`tel:${order.buyer_phone}`} className="hover:text-[#0F7A60] transition-colors p-1" onClick={e => e.stopPropagation()}>📞</a>
-                                   <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="text-[#25D366] hover:text-[#1EBE5C] p-0.5 transition-transform active:scale-95">
+                                   <a aria-label="Appeler l'acheteur" href={`tel:${order.buyer_phone}`} className="hover:text-[#0F7A60] transition-colors p-1" onClick={e => e.stopPropagation()}>📞</a>
+                                   <a aria-label="Contacter sur WhatsApp" href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="text-[#25D366] hover:text-[#1EBE5C] p-0.5 transition-transform active:scale-95">
                                      <WhatsAppIcon className="w-3.5 h-3.5" />
                                    </a>
                                  </div>
@@ -683,6 +671,7 @@ export default function LivraisonsView({ initialOrders, initialDeliverers = [], 
                              {/* Selector Flotte */}
                              <div className="pt-1">
                                 <select
+                                  aria-label="Assigner un livreur"
                                   onChange={(e) => handleAssignDeliverer(order.id, e.target.value)}
                                   value={order.deliverer_id || 'none'}
                                   onClick={e => e.stopPropagation()}

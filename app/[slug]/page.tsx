@@ -2,6 +2,7 @@
 import { cache } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
 import { getStorePromotions } from '@/lib/promotions/promotionActions'
@@ -136,8 +137,7 @@ export default async function StorePage({ params }: StorePageProps) {
       <div className="w-full bg-white pb-6 border-b border-gray-150 shadow-sm relative z-10">
         {store.banner_url ? (
           <div className="w-full h-48 md:h-64 overflow-hidden bg-gray-100 relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={store.banner_url} alt={store.name || "Bannière de la boutique"} className="w-full h-full object-cover" />
+            <Image src={store.banner_url} alt={store.name || "Bannière de la boutique"} fill className="object-cover" />
             <div className="absolute inset-0 bg-black/15" />
           </div>
         ) : (
@@ -150,10 +150,9 @@ export default async function StorePage({ params }: StorePageProps) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
           <div className="flex flex-col md:flex-row items-center md:items-end gap-5 -mt-16 md:-mt-20">
             {/* Logo */}
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-[6px] border-white overflow-hidden bg-white shadow-lg flex-shrink-0 z-10 transition-transform duration-300 hover:scale-105">
+            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-[6px] border-white overflow-hidden bg-white shadow-lg flex-shrink-0 z-10 transition-transform duration-300 hover:scale-105">
               {store.logo_url ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={store.logo_url} alt={store.name} className="w-full h-full object-contain" />
+                <Image src={store.logo_url} alt={store.name} fill className="object-contain" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-5xl font-black" style={{ color: accent, backgroundColor: '#f9f9f9' }}>
                   {store.name[0]}
@@ -227,9 +226,10 @@ export default async function StorePage({ params }: StorePageProps) {
                   className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group ring-1 ring-gray-100">
                   {page.cover_url
                     ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={page.cover_url} alt={page.title}
-                        className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-500" />
+                      <div className="relative w-full h-32">
+                        <Image src={page.cover_url} alt={page.title} fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                      </div>
                     )
                     : (
                       <div className="w-full h-32 flex items-center justify-center text-3xl"

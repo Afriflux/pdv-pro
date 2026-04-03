@@ -163,7 +163,6 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
             const isSelected = statusFilter === f.id
             
             let activeStyle = 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20'
-            let indicatorColor = 'bg-white'
             
             if (f.id === 'pending') {
               activeStyle = 'bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20'
@@ -455,7 +454,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
                   <p className="text-xs font-bold text-gray-500">Clé d'identification : <span className="font-mono text-gray-400">#{selectedComplaint.id.slice(0, 8).toUpperCase()}</span></p>
                 </div>
               </div>
-              <button onClick={() => setSelectedComplaint(null)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+              <button title="Fermer" onClick={() => setSelectedComplaint(null)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
                 <XCircle size={24} />
               </button>
             </div>
@@ -510,6 +509,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
                   <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Preuve Fournie</h3>
                   <div className="bg-white p-3 rounded-2xl border border-gray-200 shadow-sm">
                     {/* Assuming it's an image, in production checking mime-type is better */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={selectedComplaint.evidence_url} alt="Preuve" className="w-full h-auto rounded-xl max-h-64 object-contain bg-gray-100" />
                     <a href={selectedComplaint.evidence_url} target="_blank" rel="noreferrer" className="mt-3 w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-gray-600 hover:text-black hover:bg-gray-100 rounded-lg transition-colors border border-gray-200">
                       <ExternalLink size={14} /> Ouvrir la pièce jointe

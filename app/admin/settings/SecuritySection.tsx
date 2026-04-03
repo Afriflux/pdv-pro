@@ -62,7 +62,7 @@ export default function SecuritySection() {
 
   const inputCls =
     'w-full bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl py-3 px-4 text-sm font-semibold text-[#1A1A1A] pr-11 ' +
-    'focus:bg-white focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 outline-none transition-all duration-300 ' +
+    'focus:bg-white focus:border-[#0F7A60] focus-visible:ring-4 focus-visible:ring-[#0F7A60]/10 outline-none transition-all duration-300 ' +
     'shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] placeholder:text-gray-400'
 
   const labelCls = 'block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1'
@@ -83,9 +83,10 @@ export default function SecuritySection() {
 
       {/* Mot de passe actuel */}
       <div>
-        <label className={labelCls}>Mot de passe actuel</label>
+        <label htmlFor="currentPassword" className={labelCls}>Mot de passe actuel</label>
         <div className="relative">
           <input
+            id="currentPassword"
             type={showPasswords ? 'text' : 'password'}
             value={currentPassword}
             onChange={e => setCurrentPassword(e.target.value)}
@@ -94,16 +95,17 @@ export default function SecuritySection() {
             required
             autoComplete="current-password"
           />
-          <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+          <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none" />
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Nouveau mot de passe */}
         <div>
-          <label className={labelCls}>Nouveau mot de passe</label>
+          <label htmlFor="newPassword" className={labelCls}>Nouveau mot de passe</label>
           <div className="relative">
             <input
+              id="newPassword"
               type={showPasswords ? 'text' : 'password'}
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
@@ -113,34 +115,35 @@ export default function SecuritySection() {
               minLength={8}
               autoComplete="new-password"
             />
-            <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+            <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none" />
           </div>
         </div>
 
         {/* Confirmation */}
         <div>
-          <label className={labelCls}>Confirmer le mot de passe</label>
+          <label htmlFor="confirmPassword" className={labelCls}>Confirmer le mot de passe</label>
           <div className="relative">
             <input
+              id="confirmPassword"
               type={showPasswords ? 'text' : 'password'}
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               placeholder="Répétez le nouveau mot de passe"
               className={`${inputCls} ${
                 confirmPassword && confirmPassword !== newPassword
-                  ? 'border-red-300 ring-2 ring-red-100'
+                  ? 'border-red-300 focus-visible:ring-2 focus-visible:ring-red-100'
                   : confirmPassword && confirmPassword === newPassword
-                  ? 'border-[#0F7A60] ring-2 ring-[#0F7A60]/10'
+                  ? 'border-[#0F7A60] focus-visible:ring-2 focus-visible:ring-[#0F7A60]/10'
                   : ''
               }`}
               required
               autoComplete="new-password"
             />
-            <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+            <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 pointer-events-none" />
           </div>
           {/* Indicateur correspondance */}
           {confirmPassword && confirmPassword !== newPassword && (
-            <p className="mt-1 text-[10px] text-red-500 font-medium">
+            <p role="alert" aria-live="polite" className="mt-1 text-[10px] text-red-500 font-medium">
               Les mots de passe ne correspondent pas.
             </p>
           )}

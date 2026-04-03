@@ -24,6 +24,7 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronUp,
+  ArrowLeftRight,
   LogOut,
 
   Truck,
@@ -31,7 +32,7 @@ import {
   Calendar,
   PhoneCall,
   Send,
-  GraduationCap
+  GraduationCap,
 } from 'lucide-react'
 import { NotificationBell } from './NotificationBell'
 
@@ -88,6 +89,7 @@ const NAV: NavSection[] = [
       { name: 'Marketing', href: '/dashboard/marketing', icon: Share2 },
       { name: 'Offres & Promotions', href: '/dashboard/promotions', icon: Target },
       { name: 'Affiliés', href: '/dashboard/affilies', icon: Users },
+      { name: 'Closers', href: '/dashboard/closers', icon: PhoneCall, badge: 'NEW' },
       { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
     ]
   },
@@ -109,8 +111,9 @@ const NAV: NavSection[] = [
   {
     title: 'COMPTE',
     items: [
-      { name: 'Abonnement',       href: '/dashboard/abonnements', icon: Gem },
+      { name: 'Commissions',      href: '/dashboard/abonnements', icon: Gem },
       { name: 'Paramètres',       href: '/dashboard/settings',    icon: Settings },
+      { name: 'Espace Acheteur',  href: '#switch-to-buyer', icon: ArrowLeftRight },
     ]
   }
 ]
@@ -150,6 +153,37 @@ function NavLink({ item, active, onClick, collapsed }: { item: NavItem, active: 
           {item.name}
         </div>
       )}
+    </div>
+  )
+}
+
+function SwitchToBuyerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="bg-[#1A1A1A] border border-white/10 rounded-[2rem] p-8 max-w-sm w-full shadow-2xl relative animate-in fade-in zoom-in duration-300">
+        <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
+          <ArrowLeftRight size={32} />
+        </div>
+        <h3 className="text-xl font-black text-white text-center mb-2">Espace Acheteur</h3>
+        <p className="text-gray-400 text-sm text-center mb-8 leading-relaxed">
+          Voulez-vous basculer sur votre Espace Acheteur ? Vous pourrez revenir sur ce tableau de bord à tout moment depuis le menu Acheteur.
+        </p>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={onClose}
+            className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-all text-sm border border-white/10"
+          >
+            Annuler
+          </button>
+          <a
+            href="/api/dashboard/switch-to-buyer"
+            className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-center font-bold rounded-xl transition-all text-sm shadow-lg shadow-emerald-500/20"
+          >
+            Confirmer
+          </a>
+        </div>
+      </div>
     </div>
   )
 }
@@ -263,15 +297,34 @@ function SidebarContent({
               )}
               
               <div className={`space-y-1 transition-all overflow-hidden ${isSectionCollapsed && !collapsed ? 'max-h-0 opacity-0' : 'max-h-[500px] opacity-100 mt-1'}`}>
-                {section.items.filter(item => !item.for || item.for.includes(vendorType)).map(item => (
-                  <NavLink
-                    key={item.href}
-                    item={item}
-                    active={isActive(item.href)}
-                    onClick={onClose}
-                    collapsed={collapsed}
-                  />
-                ))}
+                {section.items.filter(item => !item.for || item.for.includes(vendorType)).map(item => {
+                  if (item.href === '/api/dashboard/switch-to-buyer') {
+                    return (
+                      <NavLink
+                        key={item.href}
+                        item={item}
+                        active={isActive(item.href)}
+                        onClick={() => {
+                          if (onClose) {
+                            onClose()
+                          }
+                          // We pass the special intercept logic down
+                          // Actually, we can intercept the click right here instead of changing NavLink
+                        }}
+                        collapsed={collapsed}
+                      />
+                    )
+                  }
+                  return (
+                    <NavLink
+                      key={item.href}
+                      item={item}
+                      active={isActive(item.href)}
+                      onClick={onClose}
+                      collapsed={collapsed}
+                    />
+                  )
+                })}
               </div>
             </div>
           )
@@ -339,6 +392,21 @@ export function Sidebar({
   // States exist outside rendering loop for persistence
   const [collapsed, setCollapsed] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [showSwitchModal, setShowSwitchModal] = useState(false)
+
+  // Global click interceptor (fallback)
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const link = target.closest('a')
+      if (link && link.getAttribute('href') === '#switch-to-buyer') {
+        e.preventDefault()
+        setShowSwitchModal(true)
+      }
+    }
+    document.addEventListener('click', handleGlobalClick)
+    return () => document.removeEventListener('click', handleGlobalClick)
+  }, [])
 
   // Load and apply the collapsed state securely on client
   useEffect(() => {
@@ -357,6 +425,7 @@ export function Sidebar({
 
   return (
     <>
+      <SwitchToBuyerModal isOpen={showSwitchModal} onClose={() => setShowSwitchModal(false)} />
       {/* ── DESKTOP : sidebar fixe gauche ── */}
       <aside 
         className={`hidden lg:flex flex-col flex-shrink-0 bg-[#052e22] h-screen sticky top-0 z-30 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] relative overflow-hidden border-r border-white/5 ${

@@ -1,3 +1,4 @@
+import { GlobalHomeButton } from '@/components/shared/GlobalHomeButton'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
@@ -61,7 +62,8 @@ export default async function AdminLayout({
       {/* ─────────────────────────────────────────────────────────
           CONTENU PRINCIPAL
       ───────────────────────────────────────────────────────── */}
-      <main className="flex-1 min-w-0 bg-[#FAFAF7] h-screen overflow-y-auto overflow-x-hidden relative flex flex-col pt-14 lg:pt-0">
+      <main className="relative flex-1 min-w-0 bg-[#FAFAF7] h-screen overflow-y-auto overflow-x-hidden relative flex flex-col pt-14 lg:pt-0">
+        <GlobalHomeButton />
 
         {/* ── HEADER DESKTOP ── Fond blanc / Glassmorphism */}
         <header className="hidden lg:flex h-[64px] bg-white/80 backdrop-blur-xl border-b border-gray-200 sticky top-0 z-40 px-6 items-center justify-between shadow-sm shrink-0">

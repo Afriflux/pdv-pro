@@ -21,47 +21,7 @@ interface Tier {
   name:  string
 }
 
-interface VendorLevel {
-  name:  string
-  emoji: string
-  min:   number
-  max:   number | null
-  color: string
-  perks: string[]
-}
-
-// ─── Constantes métier ────────────────────────────────────────────────────────
-
-// Note: TIERS rates are now dynamically hydrated inside the component
-
-const LEVELS: VendorLevel[] = [
-  {
-    name: 'Bronze', emoji: '🥉', min: 0, max: 499_999,
-    color: '#CD7F32',
-    perks: ['Accès à tous les outils PDV Pro', 'Support email standard'],
-  },
-  {
-    name: 'Silver', emoji: '🥈', min: 500_000, max: 1_999_999,
-    color: '#94A3B8',
-    perks: ['Badge "Vendeur Fiable" sur votre boutique', 'Support prioritaire', 'Analytics avancées'],
-  },
-  {
-    name: 'Gold', emoji: '🥇', min: 2_000_000, max: 9_999_999,
-    color: '#C9A84C',
-    perks: ['Badge Gold visible par vos acheteurs', 'Commission réduite prioritaire', 'Coaching mensuel PDV Pro'],
-  },
-  {
-    name: 'Platinum', emoji: '💎', min: 10_000_000, max: null,
-    color: '#0F7A60',
-    perks: ['Badge Platinum exclusif', 'Commission négociable', 'Account manager dédié', 'Mise en avant boutique'],
-  },
-]
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function getCurrentLevelIndex(totalEarned: number): number {
-  return LEVELS.findIndex(l => l.max === null || totalEarned <= l.max)
-}
 
 function getMonthLabel(date: Date): string {
   return date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
@@ -77,15 +37,15 @@ export default async function AbonnementsPage() {
   const { TIERS: dynamicTiers } = await getCommissionTiers()
 
   const TIERS: Tier[] = [
-    { name: '0 – 100K',    label: '0 → 100 000 FCFA/mois',           min: 0,         max: 100_000,   rate: dynamicTiers[0].rate * 100, color: '#94a3b8' },
-    { name: '100K – 500K', label: '100 001 → 500 000 FCFA/mois',     min: 100_001,   max: 500_000,   rate: dynamicTiers[1].rate * 100, color: '#3b82f6' },
-    { name: '500K – 1M',   label: '500 001 → 1 000 000 FCFA/mois',   min: 500_001,   max: 1_000_000, rate: dynamicTiers[2].rate * 100, color: '#8b5cf6' },
-    { name: '+ 1M',        label: '+ 1 000 000 FCFA/mois',           min: 1_000_001, max: null,       rate: dynamicTiers[3].rate * 100, color: '#C9A84C' },
+    { name: '0 – 100K',    label: '0 → 100 000 FCFA/mois',           min: 0,         max: 100_000,   rate: Number((dynamicTiers[0].rate * 100).toFixed(2)), color: '#94a3b8' },
+    { name: '100K – 500K', label: '100 001 → 500 000 FCFA/mois',     min: 100_001,   max: 500_000,   rate: Number((dynamicTiers[1].rate * 100).toFixed(2)), color: '#3b82f6' },
+    { name: '500K – 1M',   label: '500 001 → 1 000 000 FCFA/mois',   min: 500_001,   max: 1_000_000, rate: Number((dynamicTiers[2].rate * 100).toFixed(2)), color: '#8b5cf6' },
+    { name: '+ 1M',        label: '+ 1 000 000 FCFA/mois',           min: 1_000_001, max: null,       rate: Number((dynamicTiers[3].rate * 100).toFixed(2)), color: '#C9A84C' },
   ]
 
   const getCommissionRate = (monthlyCA: number) => {
     const tier = TIERS.find(t => t.max === null || monthlyCA <= t.max)
-    return tier?.rate ?? dynamicTiers[3].rate * 100
+    return tier?.rate ?? Number((dynamicTiers[3].rate * 100).toFixed(2))
   }
 
   const getCurrentTierIndex = (monthlyCA: number) => {
@@ -158,7 +118,7 @@ export default async function AbonnementsPage() {
     ? Math.min((currentMonthCA - currentTier.min) / (currentTier.max - currentTier.min) * 100, 100)
     : 100
 
-  const totalEarned  = walletData?.total_earned ?? 0
+
 
   // ── Historique 3 mois ─────────────────────────────────────────────────────
   interface MonthStat {
@@ -207,7 +167,6 @@ export default async function AbonnementsPage() {
       nextTier={nextTier}
       missingForNextTier={missingForNextTier}
       tierProgress={tierProgress}
-      totalEarned={totalEarned}
       monthStats={monthStats}
       tiers={TIERS}
     />

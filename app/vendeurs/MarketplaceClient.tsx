@@ -18,10 +18,14 @@ const CATEGORIES = [
 
 export default function MarketplaceClient({ 
   stores, 
-  sort 
+  sort,
+  isLoggedIn,
+  dashboardUrl 
 }: { 
   stores: any[], 
-  sort: string 
+  sort: string,
+  isLoggedIn?: boolean,
+  dashboardUrl?: string
 }) {
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('')
@@ -65,11 +69,16 @@ export default function MarketplaceClient({
               className="w-full bg-pearl border-transparent focus:bg-white focus:border-emerald focus:ring-2 focus:ring-emerald/10 rounded-full py-2 pl-10 pr-4 text-sm font-medium transition"
             />
           </div>
-          
-          <Link href="/register" className="bg-emerald hover:bg-emerald-rich text-white px-3 md:px-5 py-2 rounded-full text-xs md:text-sm font-bold transition shadow-md shadow-emerald/20 whitespace-nowrap">
-            <span className="hidden md:inline">Créer mon espace</span>
-            <span className="md:hidden">Ouvrir</span>
-          </Link>
+          {isLoggedIn ? (
+            <Link href={dashboardUrl || '/login'} className="bg-[#1A1A1A] hover:bg-black text-white px-3 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold transition shadow-md shadow-black/10 whitespace-nowrap">
+              Accéder à mon espace
+            </Link>
+          ) : (
+            <Link href="/register" className="bg-emerald hover:bg-emerald-rich text-white px-3 md:px-5 py-2 rounded-full text-xs md:text-sm font-bold transition shadow-md shadow-emerald/20 whitespace-nowrap">
+              <span className="hidden md:inline">Créer mon espace</span>
+              <span className="md:hidden">Ouvrir</span>
+            </Link>
+          )}
         </div>
       </header>
       

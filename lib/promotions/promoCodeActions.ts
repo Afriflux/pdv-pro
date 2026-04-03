@@ -15,6 +15,7 @@ export interface PromoCodeData {
   expires_at: string | null
   active: boolean
   product_ids: string[]
+  affiliate_id?: string | null
   created_at: string
 }
 
@@ -27,6 +28,7 @@ export interface CreatePromoCodeInput {
   max_uses: number | null
   expires_at: Date | null
   product_ids: string[]
+  affiliate_id?: string | null
 }
 
 /**
@@ -66,7 +68,8 @@ export async function createPromoCode(input: CreatePromoCodeInput) {
       min_order: input.min_order,
       max_uses: input.max_uses,
       expires_at: input.expires_at ? input.expires_at.toISOString() : null,
-      product_ids: input.product_ids || []
+      product_ids: input.product_ids || [],
+      affiliate_id: input.affiliate_id || null
     }])
     .select()
     .single()

@@ -34,8 +34,7 @@ export async function GET(req: Request) {
         }
       },
       include: {
-        store: true,
-        telegramMember: true
+        store: true
       },
       take: 20 // Batching pour ne pas exploser les limites d'API
     })
@@ -48,7 +47,7 @@ export async function GET(req: Request) {
 
     for (const user of usersToRemind) {
       let messageSent = false
-      const vendorName = user.store?.name || user.firstname || 'Partenaire PDV Pro'
+      const vendorName = user.store?.name || user.name || 'Partenaire PDV Pro'
       const academyLink = 'https://pdvpro.com/dashboard/tips'
 
       // Priorité 1 : WhatsApp
@@ -58,11 +57,11 @@ export async function GET(req: Request) {
         if (success) messageSent = true
       } 
       // Priorité 2 : Telegram
-      else if (user.telegramMember?.telegram_user_id) {
+      else if (user.store?.telegram_chat_id) {
         const text = `🚀 *Salut ${vendorName}, bienvenue sur PDV Pro !*\n\nNous avons remarqué que tu n'as pas encore jeté un œil à l'Académie PDV Pro.\nDes stratégies inédites t'y attendent (gratuitement) pour lancer ta boutique et exploser tes ventes en Afrique.\n\n👉 Découvre les secrets du Top 1% ici : \n${academyLink}\n\nÀ très vite ! 🎓`
         
         try {
-          await sendMessage(user.telegramMember.telegram_user_id, text, {
+          await sendMessage(user.store.telegram_chat_id, text, {
              parse_mode: 'Markdown'
           })
           messageSent = true
@@ -76,7 +75,6 @@ export async function GET(req: Request) {
       await prisma.notification.create({
         data: {
           user_id: user.id,
-          store_id: user.store?.id || '',
           type: 'masterclass_reminder',
           title: 'Relance Académie envoyée',
           message: 'Relance automatique J+3 envoyée via WhatsApp/Telegram.',

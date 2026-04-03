@@ -1,29 +1,36 @@
-// @ts-nocheck
+// Removed ts-nocheck
 'use client'
 
 import { useState } from 'react'
 import { 
-  Ticket, Search, Trash2, Power, Calendar, Target, ShoppingBag, Plus, Zap, Tags, 
-  TrendingUp, Activity, Tag, Clock, ArrowRight, MonitorSmartphone, Palette, Megaphone,
-  Truck, Gift
+  Ticket, Search, Trash2, Power, Calendar, Target, ShoppingBag, Plus, Zap, 
+  TrendingUp, Activity, Tag, Clock, ArrowRight, MonitorSmartphone, Megaphone,
+  Truck, Gift, Users
 } from 'lucide-react'
 import { PromotionData, PromotionType, DiscountType, BundleConfig } from '@/lib/promotions/promotionType'
 import { createPromotion, togglePromotionActive, updateStoreAnnouncement, updateStoreBoosters } from '@/lib/promotions/promotionActions'
 import { PromoCodeData, createPromoCode, togglePromoCodeActive, deletePromoCode } from '@/lib/promotions/promoCodeActions'
 import { toast } from 'sonner'
 
+export type AffiliateBase = {
+  id: string;
+  code: string;
+  user?: { name?: string | null } | null;
+}
+
 interface PromotionsClientProps {
   storeId: string
   promotions: PromotionData[]
   promoCodes: PromoCodeData[]
   products: { id: string; name: string }[]
+  affiliates?: AffiliateBase[]
   storeSettings?: {
     announcement_active: boolean
     announcement_text: string | null
     announcement_bg_color: string | null
     free_shipping_threshold?: number | null
     gamification_active?: boolean
-    gamification_config?: any | null
+    gamification_config?: Record<string, unknown> | null
   }
 }
 
@@ -41,6 +48,7 @@ export default function PromotionsClient({
   promotions: initialPromotions, 
   promoCodes: initialPromoCodes,
   products,
+  affiliates = [],
   storeSettings
 }: PromotionsClientProps) {
   const [activeTab, setActiveTab] = useState<'flash' | 'codes' | 'bandeau'>('flash')
@@ -74,6 +82,7 @@ export default function PromotionsClient({
   const [cMaxUses, setCMaxUses] = useState<string>('')
   const [cExpiresAt, setCExpiresAt] = useState('')
   const [cProductId, setCProductId] = useState<string>('all')
+  const [cAffiliateId, setCAffiliateId] = useState<string>('')
   const [cError, setCError] = useState<string | null>(null)
 
   // -- Form State Boosters --
@@ -83,7 +92,7 @@ export default function PromotionsClient({
   
   const [bFreeShipping, setBFreeShipping] = useState<number>(storeSettings?.free_shipping_threshold || 0)
   const [bGamificationActive, setBGamificationActive] = useState<boolean>(storeSettings?.gamification_active || false)
-  const [bGamificationPrize, setBGamificationPrize] = useState<string>(storeSettings?.gamification_config?.prize_code || '')
+  const [bGamificationPrize, setBGamificationPrize] = useState<string>((storeSettings?.gamification_config?.prize_code as string) || '')
 
   const [isSavingBandeau, setIsSavingBandeau] = useState(false)
 
@@ -188,7 +197,8 @@ export default function PromotionsClient({
       min_order: cMinOrder ? parseFloat(cMinOrder) : null,
       max_uses: cMaxUses ? parseInt(cMaxUses, 10) : null,
       expires_at: expiresAt,
-      product_ids: productIds
+      product_ids: productIds,
+      affiliate_id: cAffiliateId || null
     }
 
     const res = await createPromoCode(payload)
@@ -203,6 +213,7 @@ export default function PromotionsClient({
       setCMaxUses('')
       setCExpiresAt('')
       setCProductId('all')
+      setCAffiliateId('')
     } else {
       setCError(res.error || "Une erreur est survenue")
     }
@@ -363,6 +374,7 @@ export default function PromotionsClient({
                             <button 
                               onClick={() => handleToggleFlash(promo.id, promo.active)}
                               disabled={isExpired}
+                              title="Basculer le statut"
                               className={`w-12 h-6 rounded-full relative transition-colors ${promo.active ? (isBundle ? 'bg-purple-500' : 'bg-gold') : 'bg-gray-300'}`}
                             >
                               <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${promo.active ? 'left-7 shadow-sm' : 'left-1'}`} />
@@ -429,7 +441,7 @@ export default function PromotionsClient({
               </div>
               <button 
                 onClick={() => setShowCodeModal(true)}
-                className="w-full md:w-auto bg-[#1A1A1A] hover:bg-[#2D2D2D] text-white px-8 py-3.5 rounded-2xl font-black flex items-center justify-center gap-2 transition hover:shadow-xl hover:-translate-y-0.5"
+                className="w-full md:w-auto bg-[#0F7A60] hover:bg-[#0D5C4A] text-white px-8 py-3.5 rounded-2xl font-black flex items-center justify-center gap-2 transition hover:shadow-xl hover:-translate-y-0.5"
               >
                 <Ticket size={20} /> Nouveau Code Promo
               </button>
@@ -509,6 +521,20 @@ export default function PromotionsClient({
                          </div>
                        </div>
 
+                       {promo.affiliate_id && (
+                         <div className="flex items-center gap-3">
+                           <div className="w-8 h-8 rounded-full bg-emerald/10 flex items-center justify-center shrink-0">
+                              <Users size={14} className="text-emerald" />
+                           </div>
+                           <div className="flex-1">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase">Ambassadeur Assigné</p>
+                              <p className="text-sm font-black text-emerald truncate">
+                                 {affiliates.find(a => a.id === promo.affiliate_id)?.user?.name || affiliates.find(a => a.id === promo.affiliate_id)?.code || promo.affiliate_id}
+                              </p>
+                           </div>
+                         </div>
+                       )}
+
                        <div className="flex items-center gap-3">
                          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
                             <ShoppingBag size={14} className="text-gray-500" />
@@ -566,6 +592,7 @@ export default function PromotionsClient({
                        <button 
                          id="toggle-bandeau"
                          onClick={() => setBandeauActive(!bandeauActive)}
+                         title="Activer ou désactiver le bandeau"
                          className={`w-14 h-8 rounded-full relative transition-colors ${bandeauActive ? 'bg-emerald' : 'bg-gray-300'}`}
                        >
                          <div className={`absolute top-1 w-6 h-6 rounded-full bg-white transition-transform ${bandeauActive ? 'left-7 shadow-sm' : 'left-1'}`} />
@@ -593,7 +620,9 @@ export default function PromotionsClient({
                                key={color}
                                onClick={() => setBandeauColor(color)}
                                className={`w-10 h-10 rounded-full transition-transform outline-none ${bandeauColor === color ? 'scale-110 ring-4 ring-offset-2 ring-gray-200' : 'hover:scale-105'}`}
-                               style={{ backgroundColor: color }}
+                               aria-label={`Sélectionner la couleur de fond ${color}`}
+                               title={`Couleur : ${color}`}
+                               ref={el => { if (el) el.style.backgroundColor = color; }}
                             />
                           ))}
                        </div>
@@ -628,6 +657,7 @@ export default function PromotionsClient({
                          <div className="relative">
                            <input 
                              type="number" min={0}
+                             title="Seuil à atteindre" placeholder="0"
                              value={bFreeShipping} onChange={e => setBFreeShipping(Number(e.target.value))}
                              className="w-full bg-[#FAFAF7] border border-gray-200 rounded-xl p-3 pr-16 text-ink font-bold outline-none focus:border-orange-500 transition-all"
                            />
@@ -653,6 +683,7 @@ export default function PromotionsClient({
                          </div>
                          <button 
                            onClick={() => setBGamificationActive(!bGamificationActive)}
+                           title="Activer roue de la fortune"
                            className={`w-12 h-6 rounded-full relative transition-colors ${bGamificationActive ? 'bg-pink-500' : 'bg-gray-300'}`}
                          >
                            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${bGamificationActive ? 'left-7 shadow-sm' : 'left-1'}`} />
@@ -664,6 +695,7 @@ export default function PromotionsClient({
                            <label className="block text-[10px] font-black text-pink-700 uppercase tracking-widest pl-1">Sélectionnez le code à faire gagner</label>
                            <select 
                              value={bGamificationPrize} onChange={e => setBGamificationPrize(e.target.value)}
+                             title="Sélectionner le code à faire gagner"
                              className="w-full bg-white border border-pink-200 rounded-lg p-3 text-ink font-bold appearance-none outline-none focus:border-pink-500 transition-all shadow-sm"
                            >
                              <option value="">Sélectionnez un coupon existant...</option>
@@ -695,7 +727,7 @@ export default function PromotionsClient({
                        {bandeauActive ? (
                          <div 
                            className="w-full py-2.5 px-4 text-center text-white text-xs font-black tracking-wider shadow-sm transition-colors duration-300"
-                           style={{ backgroundColor: bandeauColor }}
+                           ref={el => { if (el) el.style.backgroundColor = bandeauColor; }}
                          >
                             {bandeauText || "Votre message d'annonce sera ici"}
                          </div>
@@ -799,6 +831,7 @@ export default function PromotionsClient({
                        <label className="block text-[10px] font-black text-yellow-800 uppercase tracking-widest pl-1">Réduction</label>
                        <select 
                          value={fDiscountType} onChange={e => setFDiscountType(e.target.value as DiscountType)}
+                         title="Type de réduction"
                          className="w-full bg-white border border-yellow-200 rounded-xl p-3 text-ink font-bold appearance-none outline-none focus:border-gold transition-all shadow-sm"
                        >
                          <option value="percentage">% Pourcentage</option>
@@ -809,6 +842,7 @@ export default function PromotionsClient({
                        <label className="block text-[10px] font-black text-yellow-800 uppercase tracking-widest pl-1">Valeur</label>
                        <input 
                          type="number" required min={1}
+                         title="Valeur de la réduction" placeholder="Ex: 10"
                          value={fDiscountValue} onChange={e => setFDiscountValue(Number(e.target.value))}
                          className="w-full bg-white border border-yellow-200 rounded-xl p-3 text-ink font-black outline-none focus:border-gold transition-all shadow-sm"
                        />
@@ -827,6 +861,7 @@ export default function PromotionsClient({
                            <div className="relative">
                              <input 
                                type="number" required min={1}
+                               title="Quantité Achetée" placeholder="Ex: 2"
                                value={bBuyQuantity} onChange={e => setBBuyQuantity(Number(e.target.value))}
                                className="w-full bg-white border border-purple-200 rounded-xl p-3 pr-8 text-ink font-black outline-none focus:border-purple-500 transition-all shadow-sm"
                              />
@@ -842,6 +877,7 @@ export default function PromotionsClient({
                            <label className="block text-[10px] font-black text-purple-800 uppercase tracking-widest pl-1">Récompense (Sur le {bBuyQuantity + 1}ème)</label>
                            <select 
                              value={bRewardType} onChange={e => setBRewardType(e.target.value as 'free_item' | 'percentage_off')}
+                             title="Type de récompense"
                              className="w-full bg-white border border-purple-200 rounded-xl p-3 text-ink font-bold appearance-none outline-none focus:border-purple-500 transition-all shadow-sm"
                            >
                              <option value="free_item">🎁 Offert Gratuitement (BOGO)</option>
@@ -853,6 +889,7 @@ export default function PromotionsClient({
                              <label className="block text-[10px] font-black text-purple-800 uppercase tracking-widest pl-1">Réduction (%)</label>
                              <input 
                                type="number" required min={1} max={99}
+                               title="Réduction (%)" placeholder="Ex: 50"
                                value={bRewardValue} onChange={e => setBRewardValue(Number(e.target.value))}
                                className="w-full bg-white border border-purple-200 rounded-xl p-3 text-ink font-black outline-none focus:border-purple-500 transition-all shadow-sm"
                              />
@@ -870,6 +907,7 @@ export default function PromotionsClient({
                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">S'applique au catalogue</label>
                    <select 
                      value={fProductId} onChange={e => setFProductId(e.target.value)}
+                     title="Produit concerné"
                      className="w-full bg-[#FAFAF7] border border-gray-200 rounded-2xl p-4 text-ink font-bold appearance-none outline-none focus:border-ink transition-all"
                    >
                      <option value="all">📦 S'applique à toute la boutique</option>
@@ -881,6 +919,7 @@ export default function PromotionsClient({
                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Durée et Pression (En Heures)</label>
                    <input 
                      type="number" required min={1} max={720}
+                     title="Durée de l'opération (Heures)" placeholder="Ex: 24"
                      value={fDuration} onChange={e => setFDuration(Number(e.target.value))}
                      className="w-full bg-[#FAFAF7] border border-gray-200 rounded-2xl p-4 text-ink font-bold outline-none focus:border-ink transition-all"
                    />
@@ -948,6 +987,7 @@ export default function PromotionsClient({
                      <label className="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1">Type de remise</label>
                      <select 
                        value={cType} onChange={e => setCType(e.target.value as 'percentage' | 'fixed')}
+                       title="Type de remise coupon"
                        className="w-full bg-[#FAFAF7] border border-gray-200 rounded-2xl p-4 text-ink font-bold outline-none focus:border-emerald transition-all appearance-none"
                      >
                        <option value="percentage">% Pourcentage</option>
@@ -958,6 +998,7 @@ export default function PromotionsClient({
                      <label className="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1">Valeur</label>
                      <input 
                        type="number" required min={1}
+                       title="Valeur de la remise" placeholder="Ex: 2000"
                        value={cValue} onChange={e => setCValue(Number(e.target.value))}
                        className="w-full bg-[#FAFAF7] border border-gray-200 rounded-2xl p-4 text-ink font-black outline-none focus:border-emerald transition-all"
                      />
@@ -968,11 +1009,31 @@ export default function PromotionsClient({
                    <label className="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1">Produit ciblé</label>
                    <select 
                      value={cProductId} onChange={e => setCProductId(e.target.value)}
+                     title="Produit ciblé"
                      className="w-full bg-[#FAFAF7] border border-gray-200 rounded-2xl p-4 text-ink font-bold outline-none focus:border-emerald transition-all appearance-none"
                    >
                      <option value="all">📦 Tout le catalogue</option>
                      {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                    </select>
+                 </div>
+
+                 <div className="space-y-1.5">
+                   <label className="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1">Assigner à un Affilié (Optionnel)</label>
+                   <select 
+                     value={cAffiliateId} onChange={e => setCAffiliateId(e.target.value)}
+                     title="Affilié assigné"
+                     className="w-full bg-[#FAFAF7] border border-gray-200 rounded-2xl p-4 text-ink font-bold outline-none focus:border-emerald transition-all appearance-none"
+                   >
+                     <option value="">Aucun affilié (Code générique)</option>
+                     {affiliates.map((a: AffiliateBase) => (
+                       <option key={a.id} value={a.id}>
+                         {a.user?.name || 'Inconnu'} - {a.code}
+                       </option>
+                     ))}
+                   </select>
+                   <p className="text-[10px] text-gray-400 font-medium pl-1 leading-tight">
+                     Si assigné, toutes les ventes via ce code seront attribuées à cet affilié, même s'il n'y a pas eu de clic sur son lien d'affiliation.
+                   </p>
                  </div>
 
                  <div className="grid grid-cols-2 gap-4">
@@ -998,6 +1059,7 @@ export default function PromotionsClient({
                    <label className="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1">Date d'Expiration (Opt.)</label>
                    <input 
                      type="datetime-local" 
+                     title="Date d'expiration" placeholder="JJ/MM/AAAA"
                      value={cExpiresAt} onChange={e => setCExpiresAt(e.target.value)}
                      className="w-full bg-[#FAFAF7] border border-gray-200 rounded-xl p-4 text-ink font-bold outline-none focus:border-emerald transition-all"
                    />

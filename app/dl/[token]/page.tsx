@@ -73,12 +73,12 @@ export default async function DigitalDeliveryPage({ params }: PageProps) {
   const otherFiles      = product.digital_files?.filter(f => f.type !== 'video') ?? []
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-orange-50 to-white flex flex-col items-center px-4 py-8">
+    <main className="min-h-screen bg-gradient-to-b from-emerald-50 to-white flex flex-col items-center px-4 py-8">
       <div className="w-full max-w-sm space-y-4">
 
         {/* ── Header PDV Pro ─────────────────────────────────────────── */}
         <div className="text-center space-y-0.5">
-          <p className="text-2xl font-black text-orange-500 tracking-tight">PDV Pro</p>
+          <p className="text-2xl font-black text-[#0F7A60] tracking-tight">PDV Pro</p>
           {order.store.name && (
             <p className="text-xs text-gray-400 font-medium">{order.store.name}</p>
           )}
@@ -122,7 +122,7 @@ export default async function DigitalDeliveryPage({ params }: PageProps) {
               </div>
               <div className="w-full bg-gray-100 rounded-full h-1.5">
                 <div
-                  className="h-1.5 rounded-full bg-orange-400 transition-all"
+                  className="h-1.5 rounded-full bg-[#0F7A60] transition-all"
                   style={{ width: `${100 - progressPct}%` }}
                 />
               </div>
@@ -164,7 +164,7 @@ export default async function DigitalDeliveryPage({ params }: PageProps) {
               <div className="px-4 pb-4">
                 <a
                   href={`/api/dl/${token}?file=${encodeURIComponent(vf.url)}`}
-                  className="flex items-center gap-2 text-sm text-orange-600 font-semibold underline"
+                  className="flex items-center gap-2 text-sm text-[#0F7A60] font-semibold underline"
                 >
                   🎬 {vf.filename || 'Voir la vidéo'}
                 </a>
@@ -189,7 +189,7 @@ export default async function DigitalDeliveryPage({ params }: PageProps) {
         {!hasFiles && (
           <a
             href={`/api/dl/${token}`}
-            className="flex items-center justify-center gap-3 w-full bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-bold py-4 rounded-2xl transition-all text-base shadow-lg shadow-orange-200"
+            className="flex items-center justify-center gap-3 w-full bg-[#0F7A60] hover:bg-[#0D5C4A] active:scale-95 text-white font-bold py-4 rounded-xl transition-all text-base shadow-lg shadow-[#0F7A60]/20"
           >
             <span className="text-xl">⬇️</span>
             Télécharger maintenant
@@ -259,7 +259,7 @@ function FileRow({ file, token }: { file: DigitalFile; token: string }) {
           href={file.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs font-semibold text-orange-500 bg-orange-50 px-3 py-1.5 rounded-lg hover:bg-orange-100 transition"
+          className="text-xs font-semibold text-[#0F7A60] bg-[#0F7A60]/10 px-3 py-1.5 rounded-lg hover:bg-[#0F7A60]/20 transition border border-[#0F7A60]/20"
         >
           Ouvrir →
         </a>
@@ -284,7 +284,7 @@ function FileRow({ file, token }: { file: DigitalFile; token: string }) {
       </div>
       <a
         href={`/api/dl/${token}?file=${encodeURIComponent(file.url)}`}
-        className="text-xl text-gray-400 hover:text-orange-500 transition px-2"
+        className="text-xl text-gray-400 hover:text-[#0F7A60] transition px-2"
         title="Télécharger"
       >
         ⬇️
@@ -326,10 +326,10 @@ function ErrorPage({ status }: { status: 'expired' | 'exhausted' | 'revoked' | '
   const cfg = configs[status] ?? configs.not_found
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen bg-emerald-50 flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-5">
         <div className="text-center">
-          <p className="text-2xl font-black text-orange-500">PDV Pro</p>
+          <p className="text-2xl font-black text-[#0F7A60]">PDV Pro</p>
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center space-y-3">
           <p className="text-4xl">{cfg.emoji}</p>
@@ -337,7 +337,7 @@ function ErrorPage({ status }: { status: 'expired' | 'exhausted' | 'revoked' | '
           <p className="text-sm text-gray-500">{cfg.message}</p>
         </div>
         <div className="text-center">
-          <Link href="/" className="text-xs text-gray-300 hover:text-gray-400 transition">
+          <Link href="/" className="text-xs text-gray-400 hover:text-gray-500 transition">
             Propulsé par PDV Pro 🚀
           </Link>
         </div>

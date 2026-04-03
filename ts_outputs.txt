@@ -1,0 +1,177 @@
+app/admin/audit/page.tsx(2,1): error TS6133: 'redirect' is declared but its value is never read.
+app/admin/complaints/ComplaintsClient.tsx(166,17): error TS6133: 'indicatorColor' is declared but its value is never read.
+app/admin/email/EmailCampaignsKanban.tsx(8,3): error TS6133: 'MoreVertical' is declared but its value is never read.
+app/admin/integrations/IntegrationItem.tsx(184,67): error TS2322: Type '{ className: string; title: string; }' is not assignable to type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+  Property 'title' does not exist on type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+app/admin/integrations/IntegrationItem.tsx(186,58): error TS2322: Type '{ className: string; title: string; }' is not assignable to type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+  Property 'title' does not exist on type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+app/admin/integrations/page.tsx(8,1): error TS6133: 'Puzzle' is declared but its value is never read.
+app/admin/integrations/ServiceCard.tsx(6,85): error TS6133: 'Copy' is declared but its value is never read.
+app/admin/integrations/ServiceCard.tsx(46,70): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(47,60): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(51,59): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(51,102): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(63,22): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(63,61): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(64,25): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(64,49): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(122,39): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(274,49): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(275,48): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(284,33): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(303,61): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(315,31): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(330,76): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(332,57): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(333,69): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(340,57): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(341,56): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(345,47): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(345,126): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(350,37): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/integrations/ServiceCard.tsx(353,41): error TS2339: Property 'actualKey' does not exist on type 'ServiceField'.
+app/admin/kyc/KYCClient.tsx(6,1): error TS6133: 'fr' is declared but its value is never read.
+app/admin/kyc/KYCClient.tsx(8,10): error TS6133: 'ExternalLink' is declared but its value is never read.
+app/admin/kyc/KYCClient.tsx(8,39): error TS6133: 'AlertCircle' is declared but its value is never read.
+app/admin/kyc/KYCClient.tsx(8,52): error TS6133: 'RefreshCw' is declared but its value is never read.
+app/admin/kyc/KYCClient.tsx(8,171): error TS6133: 'Search' is declared but its value is never read.
+app/admin/kyc/KYCClient.tsx(78,24): error TS7030: Not all code paths return a value.
+app/admin/kyc/KYCClient.tsx(84,11): error TS6133: 'newStatus' is declared but its value is never read.
+app/admin/masterclass/MasterclassClient.tsx(4,96): error TS6133: 'Activity' is declared but its value is never read.
+app/admin/masterclass/MasterclassClient.tsx(4,154): error TS6133: 'ChevronRight' is declared but its value is never read.
+app/admin/masterclass/MasterclassClient.tsx(97,14): error TS2739: Type '{ number: number; title: string; desc: string; }' is missing the following properties from type '{ number: number; title: string; desc: string; imageUrl: string; videoUrl: string; }': imageUrl, videoUrl
+app/admin/masterclass/MasterclassClient.tsx(184,17): error TS2345: Argument of type '(prev: { title: string; emoji: string; color: string; category: string; readTime: string; intro: string; is_active: boolean; tips: { number: number; title: string; desc: string; imageUrl: string; videoUrl: string; }[]; }) => { ...; }' is not assignable to parameter of type 'SetStateAction<{ title: string; emoji: string; color: string; category: string; readTime: string; intro: string; is_active: boolean; tips: { number: number; title: string; desc: string; imageUrl: string; videoUrl: string; }[]; }>'.
+  Type '(prev: { title: string; emoji: string; color: string; category: string; readTime: string; intro: string; is_active: boolean; tips: { number: number; title: string; desc: string; imageUrl: string; videoUrl: string; }[]; }) => { ...; }' is not assignable to type '(prevState: { title: string; emoji: string; color: string; category: string; readTime: string; intro: string; is_active: boolean; tips: { number: number; title: string; desc: string; imageUrl: string; videoUrl: string; }[]; }) => { ...; }'.
+    Call signature return types '{ tips: ({ number: number; title: string; desc: string; imageUrl: string; videoUrl: string; } | { number: number; title: string; desc: string; })[]; title: string; emoji: string; color: string; category: string; readTime: string; intro: string; is_active: boolean; }' and '{ title: string; emoji: string; color: string; category: string; readTime: string; intro: string; is_active: boolean; tips: { number: number; title: string; desc: string; imageUrl: string; videoUrl: string; }[]; }' are incompatible.
+      The types of 'tips' are incompatible between these types.
+        Type '({ number: number; title: string; desc: string; imageUrl: string; videoUrl: string; } | { number: number; title: string; desc: string; })[]' is not assignable to type '{ number: number; title: string; desc: string; imageUrl: string; videoUrl: string; }[]'.
+          Type '{ number: number; title: string; desc: string; imageUrl: string; videoUrl: string; } | { number: number; title: string; desc: string; }' is not assignable to type '{ number: number; title: string; desc: string; imageUrl: string; videoUrl: string; }'.
+            Type '{ number: number; title: string; desc: string; }' is missing the following properties from type '{ number: number; title: string; desc: string; imageUrl: string; videoUrl: string; }': imageUrl, videoUrl
+app/admin/masterclass/MasterclassClient.tsx(421,30): error TS6133: 'tipsLength' is declared but its value is never read.
+app/admin/orders/[id]/page.tsx(16,11): error TS6196: 'OrderRow' is declared but never used.
+app/admin/page.tsx(4,3): error TS6133: 'Users' is declared but its value is never read.
+app/admin/page.tsx(143,11): error TS6133: 'isPending' is declared but its value is never read.
+app/admin/retraits/RetraitsView.tsx(165,27): error TS7030: Not all code paths return a value.
+app/admin/retraits/WithdrawalActions.tsx(30,24): error TS7030: Not all code paths return a value.
+app/api/affiliates/track/route.ts(3,30): error TS2307: Cannot find module 'uuid' or its corresponding type declarations.
+app/api/affiliates/track/route.ts(28,11): error TS6133: 'ip' is declared but its value is never read.
+app/api/affiliates/withdrawals/export/route.ts(71,37): error TS2339: Property 'user' does not exist on type '{ code: any; store_id: any; user: { name: any; email: any; phone: any; }[]; }[]'.
+app/api/affiliates/withdrawals/export/route.ts(72,38): error TS2339: Property 'user' does not exist on type '{ code: any; store_id: any; user: { name: any; email: any; phone: any; }[]; }[]'.
+app/api/affiliates/withdrawals/export/route.ts(73,37): error TS2339: Property 'code' does not exist on type '{ code: any; store_id: any; user: { name: any; email: any; phone: any; }[]; }[]'.
+app/api/affiliates/withdrawals/export/route.ts(77,52): error TS2339: Property 'user' does not exist on type '{ code: any; store_id: any; user: { name: any; email: any; phone: any; }[]; }[]'.
+app/api/cron/remind-masterclass/route.ts(38,9): error TS2353: Object literal may only specify known properties, and 'telegramMember' does not exist in type 'UserInclude<DefaultArgs>'.
+app/api/cron/remind-masterclass/route.ts(51,31): error TS2339: Property 'store' does not exist on type '{ name: string; id: string; role: Role; created_at: Date; phone: string | null; email: string | null; address: string | null; location_lat: number | null; location_lng: number | null; ... 6 more ...; google_tag_id: string | null; }'.
+app/api/cron/remind-masterclass/route.ts(51,51): error TS2339: Property 'firstname' does not exist on type '{ name: string; id: string; role: Role; created_at: Date; phone: string | null; email: string | null; address: string | null; location_lat: number | null; location_lng: number | null; ... 6 more ...; google_tag_id: string | null; }'.
+app/api/cron/remind-masterclass/route.ts(55,16): error TS2339: Property 'store' does not exist on type '{ name: string; id: string; role: Role; created_at: Date; phone: string | null; email: string | null; address: string | null; location_lat: number | null; location_lng: number | null; ... 6 more ...; google_tag_id: string | null; }'.
+app/api/cron/remind-masterclass/route.ts(57,55): error TS2339: Property 'store' does not exist on type '{ name: string; id: string; role: Role; created_at: Date; phone: string | null; email: string | null; address: string | null; location_lat: number | null; location_lng: number | null; ... 6 more ...; google_tag_id: string | null; }'.
+app/api/cron/remind-masterclass/route.ts(61,21): error TS2339: Property 'telegramMember' does not exist on type '{ name: string; id: string; role: Role; created_at: Date; phone: string | null; email: string | null; address: string | null; location_lat: number | null; location_lng: number | null; ... 6 more ...; google_tag_id: string | null; }'.
+app/api/cron/remind-masterclass/route.ts(65,34): error TS2339: Property 'telegramMember' does not exist on type '{ name: string; id: string; role: Role; created_at: Date; phone: string | null; email: string | null; address: string | null; location_lat: number | null; location_lng: number | null; ... 6 more ...; google_tag_id: string | null; }'.
+app/api/cron/remind-masterclass/route.ts(79,11): error TS2353: Object literal may only specify known properties, and 'store_id' does not exist in type 'Without<NotificationCreateInput, NotificationUncheckedCreateInput> & NotificationUncheckedCreateInput'.
+app/api/cron/remind-masterclass/route.ts(79,26): error TS2339: Property 'store' does not exist on type '{ name: string; id: string; role: Role; created_at: Date; phone: string | null; email: string | null; address: string | null; location_lat: number | null; location_lng: number | null; ... 6 more ...; google_tag_id: string | null; }'.
+app/dashboard/abonnements/AbonnementsClient.tsx(5,10): error TS6133: 'CheckCircle2' is declared but its value is never read.
+app/dashboard/abonnements/AbonnementsClient.tsx(5,47): error TS6133: 'ArrowRight' is declared but its value is never read.
+app/dashboard/abonnements/page.tsx(62,10): error TS6133: 'getCurrentLevelIndex' is declared but its value is never read.
+app/dashboard/abonnements/page.tsx(210,7): error TS2322: Type '{ storeName: any; currentMonthCA: number; rate: number; commissionAmt: number; vendorNet: number; currentTierIdx: number; nextTier: Tier; missingForNextTier: number; tierProgress: number; totalEarned: number; monthStats: MonthStat[]; tiers: Tier[]; }' is not assignable to type 'IntrinsicAttributes & AbonnementsClientProps'.
+  Property 'totalEarned' does not exist on type 'IntrinsicAttributes & AbonnementsClientProps'.
+app/dashboard/affilies/AffiliateClient.tsx(126,147): error TS2339: Property 'affiliates' does not exist on type 'AffiliateClientProps'.
+app/dashboard/affilies/AffiliateClient.tsx(767,18): error TS2304: Cannot find name 'withdrawals'.
+app/dashboard/affilies/AffiliateClient.tsx(774,19): error TS2304: Cannot find name 'withdrawals'.
+app/dashboard/affilies/page.tsx(126,11): error TS2322: Type '{ storeId: any; storeSlug: any; initialActive: any; initialMargin: any; initialGamificationActive: any; initialGamificationConfig: any; affiliates: AffiliateRow[]; withdrawals: { ...; }[]; products: OverrideItem[]; salePages: OverrideItem[]; }' is not assignable to type 'IntrinsicAttributes & AffiliateClientProps'.
+  Property 'affiliates' does not exist on type 'IntrinsicAttributes & AffiliateClientProps'.
+app/dashboard/products/new/ProductForm.tsx(137,40): error TS2345: Argument of type '{ id: any; chat_title: any; members_count: any; }[]' is not assignable to parameter of type 'SetStateAction<{ id: string; name: string; }[]>'.
+  Type '{ id: any; chat_title: any; members_count: any; }[]' is not assignable to type '{ id: string; name: string; }[]'.
+    Property 'name' is missing in type '{ id: any; chat_title: any; members_count: any; }' but required in type '{ id: string; name: string; }'.
+app/dashboard/products/new/ProductForm.tsx(1080,26): error TS2339: Property 'chat_title' does not exist on type '{ id: string; name: string; }'.
+app/dashboard/products/new/ProductForm.tsx(1080,42): error TS2339: Property 'members_count' does not exist on type '{ id: string; name: string; }'.
+app/dashboard/settings/tabs/AppearanceTab.tsx(5,24): error TS6133: 'LayoutTemplate' is declared but its value is never read.
+app/dashboard/settings/tabs/AppearanceTab.tsx(5,58): error TS6133: 'Smartphone' is declared but its value is never read.
+app/dashboard/settings/tabs/AppearanceTab.tsx(5,70): error TS6133: 'Sparkles' is declared but its value is never read.
+app/dashboard/settings/tabs/FinanceTab.tsx(17,20): error TS7030: Not all code paths return a value.
+app/dashboard/settings/tabs/KycTab.tsx(9,40): error TS6133: 'UploadCloud' is declared but its value is never read.
+app/dashboard/settings/tabs/KycTab.tsx(41,20): error TS7030: Not all code paths return a value.
+app/dashboard/settings/tabs/ProfileTab.tsx(7,25): error TS6133: 'ImageIcon' is declared but its value is never read.
+app/dashboard/tips/AcademyGrid.tsx(6,11): error TS6196: 'Tip' is declared but never used.
+app/dashboard/wallet/page.tsx(27,10): error TS6133: 'formatAmount' is declared but its value is never read.
+app/dashboard/wallet/WalletDashboardClient.tsx(660,15): error TS2322: Type 'boolean | undefined' is not assignable to type 'boolean'.
+  Type 'undefined' is not assignable to type 'boolean'.
+app/dashboard/wallet/WalletDashboardClient.tsx(661,15): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+app/portal/analytics/AnalyticsClient.tsx(170,19): error TS2322: Type '(value: number) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType> & ((value: ValueType, name: NameType, item: TooltipPayloadEntry, index: number, payload: TooltipPayload) => ReactNode | [...])'.
+  Type '(value: number) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType>'.
+    Types of parameters 'value' and 'value' are incompatible.
+      Type 'ValueType | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+app/portal/marketplace/actions.ts(42,11): error TS6133: 'newAffiliate' is declared but its value is never read.
+app/portal/marketplace/actions.ts(43,7): error TS2322: Type '{ user_id: string; vendor_id: string; status: string; commission_rate: number; token: string; }' is not assignable to type '(Without<AffiliateCreateInput, AffiliateUncheckedCreateInput> & AffiliateUncheckedCreateInput) | (Without<...> & AffiliateCreateInput)'.
+  Type '{ user_id: string; vendor_id: string; status: string; commission_rate: number; token: string; }' is not assignable to type 'Without<AffiliateUncheckedCreateInput, AffiliateCreateInput> & AffiliateCreateInput'.
+    Type '{ user_id: string; vendor_id: string; status: string; commission_rate: number; token: string; }' is missing the following properties from type 'AffiliateCreateInput': code, Store
+app/portal/marketplace/MarketplaceClient.tsx(4,66): error TS6133: 'MapPin' is declared but its value is never read.
+app/portal/marketplace/MarketplaceClient.tsx(222,66): error TS6133: 'userId' is declared but its value is never read.
+app/portal/PortalClient.tsx(17,1): error TS6192: All imports in import declaration are unused.
+app/portal/PortalClient.tsx(58,7): error TS6133: 'progressStr' is declared but its value is never read.
+app/portal/resources/ResourcesClient.tsx(4,77): error TS6133: 'ExternalLink' is declared but its value is never read.
+app/portal/sales/page.tsx(62,20): error TS2322: Type '{ id: any; created_at: any; total: any; affiliate_amount: any; status: any; Product: { name: any; }[]; }[]' is not assignable to type 'OrderRow[]'.
+  Type '{ id: any; created_at: any; total: any; affiliate_amount: any; status: any; Product: { name: any; }[]; }' is not assignable to type 'OrderRow'.
+    Types of property 'Product' are incompatible.
+      Property 'name' is missing in type '{ name: any; }[]' but required in type '{ name: string; }'.
+app/portal/sales/SalesClient.tsx(4,39): error TS6133: 'ExternalLink' is declared but its value is never read.
+app/portal/settings/page.tsx(46,9): error TS2322: Type 'User' is not assignable to type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'User'.
+app/portal/settings/SettingsClient.tsx(4,88): error TS6133: 'Loader2' is declared but its value is never read.
+app/portal/settings/SettingsClient.tsx(4,106): error TS6133: 'ImageIcon' is declared but its value is never read.
+app/portal/settings/SettingsClient.tsx(4,155): error TS6133: 'ShieldCheck' is declared but its value is never read.
+app/portal/settings/SettingsClient.tsx(25,104): error TS2339: Property 'avatar_url' does not exist on type '{}'.
+app/portal/settings/SettingsClient.tsx(25,142): error TS2339: Property 'picture' does not exist on type '{}'.
+app/portal/settings/SettingsClient.tsx(403,27): error TS2322: Type '{}' is not assignable to type 'string | number | readonly string[] | undefined'.
+app/portal/settings/SettingsClient.tsx(476,155): error TS2339: Property 'provider' does not exist on type '{}'.
+app/portal/settings/SettingsClient.tsx(478,47): error TS2339: Property 'provider' does not exist on type '{}'.
+app/portal/settings/SettingsClient.tsx(520,93): error TS2339: Property 'name' does not exist on type '{}'.
+app/portal/settings/tabs/AffiliateContractTab.tsx(13,60): error TS6133: 'affiliateName' is declared but its value is never read.
+app/portal/wallet/actions.ts(28,9): error TS2365: Operator '>' cannot be applied to types 'number' and 'Decimal'.
+app/portal/wallet/actions.ts(28,18): error TS18047: 'affiliate.balance' is possibly 'null'.
+app/portal/wallet/actions.ts(52,9): error TS2322: Type '{ affiliate_id: string; amount: number; payment_method: string; phone: string; status: "pending"; }' is not assignable to type '(Without<AffiliateWithdrawalCreateInput, AffiliateWithdrawalUncheckedCreateInput> & AffiliateWithdrawalUncheckedCreateInput) | (Without<...> & AffiliateWithdrawalCreateInput)'.
+  Type '{ affiliate_id: string; amount: number; payment_method: string; phone: string; status: "pending"; }' is not assignable to type 'Without<AffiliateWithdrawalCreateInput, AffiliateWithdrawalUncheckedCreateInput> & AffiliateWithdrawalUncheckedCreateInput'.
+    Property 'id' is missing in type '{ affiliate_id: string; amount: number; payment_method: string; phone: string; status: "pending"; }' but required in type 'AffiliateWithdrawalUncheckedCreateInput'.
+app/portal/wallet/PortalWalletClient.tsx(206,9): error TS6133: 'pendingGains' is declared but its value is never read.
+components/admin/AdminAuditTable.tsx(6,10): error TS6133: 'FormEvent' is declared but its value is never read.
+components/admin/AdminCharts.tsx(6,24): error TS6133: 'Legend' is declared but its value is never read.
+components/admin/AdminCharts.tsx(47,15): error TS2322: Type '(value: unknown, name: string) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType> & ((value: ValueType, name: NameType, item: TooltipPayloadEntry, index: number, payload: TooltipPayload) => ReactNode | [...])'.
+  Type '(value: unknown, name: string) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType>'.
+    Types of parameters 'name' and 'name' are incompatible.
+      Type 'NameType | undefined' is not assignable to type 'string'.
+        Type 'undefined' is not assignable to type 'string'.
+components/admin/AdminCharts.tsx(112,26): error TS6133: 'entry' is declared but its value is never read.
+components/admin/AdminCharts.tsx(117,15): error TS2322: Type '(value: number) => [string]' is not assignable to type 'Formatter<ValueType, NameType> & ((value: ValueType, name: NameType, item: TooltipPayloadEntry, index: number, payload: TooltipPayload) => ReactNode | [...])'.
+  Type '(value: number) => [string]' is not assignable to type 'Formatter<ValueType, NameType>'.
+    Types of parameters 'value' and 'value' are incompatible.
+      Type 'ValueType | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+components/admin/AdminPageWrapper.tsx(6,9): error TS6133: 'pathname' is declared but its value is never read.
+components/admin/AdminSidebar.tsx(19,3): error TS6133: 'LayoutTemplate' is declared but its value is never read.
+components/admin/AdminVendorsKanban.tsx(9,3): error TS6133: 'XCircle' is declared but its value is never read.
+components/admin/AmbassadorDetailsDrawer.tsx(141,30): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+components/admin/AmbassadorDetailsDrawer.tsx(148,121): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'unknown' is not assignable to parameter of type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'unknown' is not assignable to parameter of type 'string | number'.
+components/admin/AmbassadorDetailsDrawer.tsx(157,44): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+components/admin/AmbassadorDetailsDrawer.tsx(172,106): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+components/admin/AmbassadorDetailsDrawer.tsx(190,28): error TS2322: Type 'unknown' is not assignable to type 'Key | null | undefined'.
+components/admin/AmbassadorDetailsDrawer.tsx(197,89): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'unknown' is not assignable to parameter of type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'unknown' is not assignable to parameter of type 'string | number'.
+components/admin/AmbassadorDetailsDrawer.tsx(198,31): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+components/admin/AmbassadorDetailsDrawer.tsx(198,92): error TS2322: Type '{}' is not assignable to type 'ReactNode'.
+components/admin/AmbassadorDetailsDrawer.tsx(203,31): error TS18046: 'tx.amount' is of type 'unknown'.
+components/admin/AmbassadorDetailsDrawer.tsx(206,30): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+lib/admin/adminActions.ts(397,5): error TS2345: Argument of type 'AdminPlatformConfig' is not assignable to parameter of type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'AdminPlatformConfig'.
+lib/brevo/brevo-service.ts(7,10): error TS2305: Module '"./email-templates"' has no exported member 'vendorEmptyStoreEmail'.
+lib/brevo/brevo-service.ts(7,33): error TS2305: Module '"./email-templates"' has no exported member 'vendorMasterclassReminderEmail'.
+lib/commission/commission-service.ts(114,20): error TS2304: Cannot find name 'createAdminClient'.
+lib/commission/commission-service.ts(134,31): error TS7006: Parameter 'acc' implicitly has an 'any' type.
+lib/commission/commission-service.ts(134,36): error TS7006: Parameter 'order' implicitly has an 'any' type.
+lib/commission/commission-service.ts(151,27): error TS2304: Cannot find name 'createAdminClient'.

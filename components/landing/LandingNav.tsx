@@ -1,10 +1,10 @@
 import Link from 'next/link'
 
-export function LandingNav({ isLoggedIn }: { isLoggedIn?: boolean }) {
+export function LandingNav({ isLoggedIn, dashboardUrl = '/dashboard' }: { isLoggedIn?: boolean, dashboardUrl?: string }) {
   if (isLoggedIn) {
     return (
       <Link
-        href="/dashboard"
+        href={dashboardUrl}
         className="bg-emerald hover:bg-emerald-rich text-white px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-lg shadow-emerald/20"
       >
         Mon espace →

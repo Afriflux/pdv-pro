@@ -40,6 +40,7 @@ interface WalletDashboardClientProps {
   withdrawalNumber: string
   withdrawalName: string
   storeId: string
+  targetContext?: 'vendor' | 'closer' | 'affiliate'
 }
 
 function formatAmount(n: number): string {
@@ -73,6 +74,8 @@ export function WalletDashboardClient({
   withdrawalMethod,
   withdrawalNumber,
   withdrawalName,
+  storeId,
+  targetContext = 'vendor'
 }: WalletDashboardClientProps) {
   
   const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'withdrawals'>('overview')
@@ -381,9 +384,9 @@ export function WalletDashboardClient({
                   <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden mt-1 mb-1">
                     <div 
                       className="h-full bg-[#0F7A60] rounded-full transition-all duration-1000 ease-out relative"
-                      style={{ width: `${Math.min(100, (totalEarned / Math.max(1, activeGoal)) * 100)}%` }}
+                      ref={el => { if (el) el.style.width = `${Math.min(100, (totalEarned / Math.max(1, activeGoal)) * 100)}%` }}
                     >
-                      <div className="absolute inset-0 bg-white/20 w-full h-full" style={{ backgroundImage: 'linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent)', backgroundSize: '1rem 1rem' }}></div>
+                      <div className="absolute inset-0 bg-white/20 w-full h-full" ref={el => { if (el) { el.style.backgroundImage = 'linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent)'; el.style.backgroundSize = '1rem 1rem'; } }}></div>
                     </div>
                   </div>
                 )}
@@ -654,17 +657,16 @@ export function WalletDashboardClient({
         <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-300">
           
           {/* Composant de paramétrage de retraits automatisés */}
-          {hasWithdrawalAccount && (
-            <AutoWithdrawSettings 
-              walletId={walletId}
-              initialEnabled={autoWithdrawEnabled}
-              initialThreshold={autoWithdrawThreshold}
-            />
-          )}
+          <AutoWithdrawSettings 
+            walletId={walletId}
+            initialEnabled={autoWithdrawEnabled ?? false}
+            initialThreshold={autoWithdrawThreshold ?? 100000}
+            targetContext={targetContext}
+          />
 
           {/* Compte de retrait (readonly) */}
           {hasWithdrawalAccount && (
-            <div className="bg-[#1A1A1A] rounded-3xl p-6 shadow-xl text-white relative overflow-hidden group">
+            <div className="bg-gradient-to-br from-[#0F7A60] to-teal-800 rounded-3xl p-6 shadow-xl text-white relative overflow-hidden group">
               <div className="absolute -right-4 -top-4 w-32 h-32 bg-white/5 rounded-full pointer-events-none blur-xl group-hover:bg-white/10 transition-colors duration-500" />
               
               <div className="flex items-center justify-between mb-6 relative z-10">

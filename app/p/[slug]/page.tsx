@@ -1,7 +1,9 @@
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 import { PDVAnalytics } from '@/components/tracking/PDVAnalytics'
+import { AffiliateTracker } from '@/components/tracking/AffiliateTracker'
 import { LiveCheckoutDrawer } from '@/components/pages/LiveCheckoutDrawer'
 import { 
   Section, Product, Theme, DEFAULT_THEME, PageRendererConfig,
@@ -152,6 +154,10 @@ export default async function PublicSalePage({ params }: SalePagePublicProps) {
           <AnnouncementBar theme={theme} />
           
           <PDVAnalytics pageId={page.id} />
+          
+          <Suspense fallback={null}>
+            <AffiliateTracker />
+          </Suspense>
           
           {/* Sections dans l'ordre, wrappées avec Scroll Reveal */}
           {visualSections.map((s, i) => {

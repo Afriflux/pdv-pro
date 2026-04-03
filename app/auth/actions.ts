@@ -200,7 +200,15 @@ export async function signUp(formData: FormData): Promise<void> {
   })
 
   revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  if (role === 'acheteur' || role === 'client') {
+    redirect('/client')
+  } else if (role === 'affilie') {
+    redirect('/portal')
+  } else if (role === 'closer') {
+    redirect('/closer')
+  } else {
+    redirect('/dashboard')
+  }
 }
 
 // ----------------------------------------------------------------
@@ -228,7 +236,24 @@ export async function signIn(formData: FormData): Promise<void> {
   }
 
   // Après connexion réussie
-  redirect('/dashboard')
+  const supabaseAdmin = createSupabaseAdmin(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+  const { data: userData } = await supabaseAdmin.from('User').select('role').eq('id', authData.user.id).single()
+  const userRole = userData?.role
+
+  if (userRole === 'acheteur' || userRole === 'client') {
+    redirect('/client')
+  } else if (userRole === 'affilie') {
+    redirect('/portal')
+  } else if (userRole === 'closer') {
+    redirect('/closer')
+  } else if (userRole === 'super_admin' || userRole === 'gestionnaire' || userRole === 'support') {
+    redirect('/admin')
+  } else {
+    redirect('/dashboard')
+  }
 }
 
 // ----------------------------------------------------------------

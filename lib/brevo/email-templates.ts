@@ -531,3 +531,31 @@ export function weeklyReportEmail(vendorName: string, stats: VendorStats): strin
 
   return emailWrapper(body, `Votre bilan semaine : ${formattedRevenue} FCFA — ${stats.totalOrders} commandes`)
 }
+
+// ─── 8. Emails Automations ──────────────────────────────────────────────
+
+export function vendorEmptyStoreEmail(vendorName: string): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const body = `
+    <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F7A60;">C'est dommage de s'arrêter là... 🚀</h2>
+    <p style="margin:0 0 20px;font-size:15px;color:#444444;line-height:1.6;">
+      Bonjour <strong>${vendorName}</strong>,<br/>
+      votre boutique est créée mais elle est encore vide. Ajoutez votre premier produit en moins de 2 minutes pour commencer à générer des ventes !
+    </p>
+    ${ctaButton('Ajouter un produit', `${appUrl}/dashboard/products/new`)}
+  `
+  return emailWrapper(body, "Votre boutique PDV Pro attend son premier produit !")
+}
+
+export function vendorMasterclassReminderEmail(vendorName: string): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const body = `
+    <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F7A60;">Arrêtez de perdre des ventes 🛑</h2>
+    <p style="margin:0 0 20px;font-size:15px;color:#444444;line-height:1.6;">
+      Bonjour <strong>${vendorName}</strong>,<br/>
+      Nous avons créé une formation vidéo (masterclass) totalement gratuite pour vous aider à débloquer vos premières ventes avec des méthodes prouvées en Afrique.
+    </p>
+    ${ctaButton('Voir la formation', `${appUrl}/dashboard/academy`)}
+  `
+  return emailWrapper(body, "Découvrez les méthodes pour vendre plus sur PDV Pro.")
+}

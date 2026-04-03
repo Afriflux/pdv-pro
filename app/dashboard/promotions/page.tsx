@@ -46,6 +46,16 @@ export default async function PromotionsHubPage() {
     .eq('store_id', storeId)
     .order('created_at', { ascending: false })
 
+  // 5. Affiliés Actifs (pour l'assignation des codes promos)
+  const { data: affiliates } = await supabase
+    .from('Affiliate')
+    .select(`
+      id, code, status,
+      user:User(name)
+    `)
+    .eq('store_id', storeId)
+    .eq('status', 'active')
+
   return (
     <main className="min-h-screen bg-[#FAFAF7]">
       {/* Header */}
@@ -63,6 +73,7 @@ export default async function PromotionsHubPage() {
           promotions={promotions}
           promoCodes={promos ?? []}
           products={products ?? []}
+          affiliates={(affiliates ?? []) as any[]}
           storeSettings={{
             announcement_active: store.announcement_active,
             announcement_text: store.announcement_text,

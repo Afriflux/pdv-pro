@@ -17,6 +17,7 @@
  */
 
 import { getPlatformConfig } from '@/lib/admin/adminActions'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONSTANTES UTILES

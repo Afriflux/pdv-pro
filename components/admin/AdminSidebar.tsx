@@ -64,7 +64,7 @@ const NAV: NavSection[] = [
   },
   {
     title: 'OUTILS',
-    items: [
+    items: [,
       { name: 'Contenu Public', href: '/admin/marketplace', icon: Globe },
       { name: 'Intégrations', href: '/admin/integrations', icon: Puzzle },
       { name: 'Email Marketing', href: '/admin/email', icon: Mail },

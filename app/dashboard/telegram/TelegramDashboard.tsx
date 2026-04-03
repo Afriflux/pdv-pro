@@ -290,7 +290,7 @@ export default function TelegramDashboard({
     <div className="space-y-8 animate-in fade-in duration-700 pb-12">
       
       {/* ─── HERO AERO ────────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-[#1A1A1A] rounded-[2rem] p-6 lg:p-10 shadow-2xl">
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#0D5C4A] to-[#0F7A60] rounded-[2rem] p-6 lg:p-10 shadow-xl border border-teal-800">
         {/* Effets de lumière / Glassmorphism */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/4 pointer-events-none" />
@@ -317,7 +317,7 @@ export default function TelegramDashboard({
           {step === 'idle' && (
             <button
               onClick={handleGenerateCode}
-              className="group bg-white hover:bg-emerald-50 text-[#1A1A1A] px-6 py-4 rounded-2xl text-sm font-black transition-all flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
+              className="group bg-white hover:bg-emerald-50 text-[#0F7A60] px-6 py-4 rounded-2xl text-sm font-black transition-all flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
             >
               <Plus size={20} className="text-[#0F7A60] group-hover:scale-110 transition-transform" />
               Connecter un Groupe
@@ -434,7 +434,7 @@ export default function TelegramDashboard({
 
                         <button
                           onClick={() => setWizardStep(2)}
-                          className="w-full mt-2 px-6 py-4 rounded-2xl bg-[#1A1A1A] font-display text-white text-base font-black shadow-xl shadow-black/10 hover:bg-black transition-all hover:-translate-y-1 flex items-center justify-between group"
+                          className="w-full mt-2 px-6 py-4 rounded-2xl bg-[#0F7A60] hover:bg-[#0D5C4A] font-display text-white text-base font-black shadow-lg transition-all flex items-center justify-between group"
                         >
                           C'est fait, le bot est administrateur !
                           <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
@@ -509,7 +509,7 @@ export default function TelegramDashboard({
                   </div>
                   <button
                     onClick={resetFlow}
-                    className="bg-[#1A1A1A] hover:bg-black text-white px-10 py-4 rounded-xl font-black mt-4 shadow-xl shadow-black/10 transition-all hover:-translate-y-1"
+                    className="bg-[#0F7A60] hover:bg-emerald-700 text-white px-10 py-4 rounded-xl font-black mt-4 shadow-xl transition-all hover:-translate-y-1"
                   >
                     Fermer l'assistant
                   </button>
@@ -524,7 +524,7 @@ export default function TelegramDashboard({
                   <p className="font-black text-xl text-red-600 max-w-md mx-auto">{error}</p>
                   <button
                     onClick={handleGenerateCode}
-                    className="bg-[#1A1A1A] text-white px-8 py-3.5 rounded-xl text-sm font-black transition-transform hover:-translate-y-1"
+                    className="bg-[#0F7A60] hover:bg-emerald-700 text-white px-8 py-3.5 rounded-xl text-sm font-black transition-all hover:-translate-y-1"
                   >
                     Générer un nouveau code
                   </button>
@@ -878,7 +878,7 @@ export default function TelegramDashboard({
               title="Envoyer le message"
               onClick={sendBroadcast}
               disabled={broadcasting || !broadcastMessage.trim()}
-              className="w-full bg-[#1A1A1A] hover:bg-black text-white px-5 py-4 rounded-xl font-black transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full bg-[#0F7A60] hover:bg-[#0D5C4A] text-white px-5 py-4 rounded-xl font-black transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-md"
             >
               {broadcasting ? (
                 <><RefreshCw size={18} className="animate-spin" /> Envoi en cours...</>

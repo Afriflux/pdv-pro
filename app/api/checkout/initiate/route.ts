@@ -5,10 +5,10 @@ import {
   resolveOrderCommission,
   canAcceptCOD,
 } from '@/lib/commission/commission-service'
-import { notifyNewOrder } from '@/lib/notifications/createNotification'
+import { notifyNewOrder, notifyNewAffiliateSale } from '@/lib/notifications/createNotification'
 import { sendTransactionalEmail } from '@/lib/brevo/brevo-service'
 import { orderConfirmationEmail } from '@/lib/brevo/email-templates'
-import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
+import { sendWhatsApp, msgVendorNewOrder, msgOrderConfirmed } from '@/lib/whatsapp/sendWhatsApp'
 import { sendSaleNotification } from '@/lib/telegram/community-service'
 import { executeWorkflows } from '@/lib/workflows/execution'
 
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     const {
       product_id, store_id, variant_id, quantity = 1,
       buyer_name, buyer_email, buyer_phone, delivery_address, delivery_zone_id,
-      payment_method, applied_promo_id, affiliate_token,
+      payment_method, applied_promo_id, affiliate_token, affiliate_subid,
       booking_date, booking_start_time, booking_end_time,
       bump_product_id
     } = body
@@ -113,6 +113,7 @@ export async function POST(req: NextRequest) {
 
     const grossSubtotal = (basePrice * quantity) + (bumpProduct ? bumpProduct.price : 0)
     let promoDiscountAmount = 0
+    let promoAffiliateId: string | null = null
 
     // ── 2. VALIDATION SERVEUR DU CODE PROMO ───────────────────────
     if (applied_promo_id) {
@@ -139,6 +140,10 @@ export async function POST(req: NextRequest) {
         promoDiscountAmount = promo.value
       }
       if (promoDiscountAmount > grossSubtotal) promoDiscountAmount = grossSubtotal
+
+      if (promo.affiliate_id) {
+        promoAffiliateId = promo.affiliate_id
+      }
     }
 
     const subtotal = Math.max(0, grossSubtotal - promoDiscountAmount)
@@ -201,15 +206,24 @@ export async function POST(req: NextRequest) {
     let finalVendorAmount = initialVendorAmount
     let affiliateAmount = 0
     let finalAffiliateToken = affiliate_token || null
+    let targetAffiliateData: any = null
 
-    if (finalAffiliateToken) {
-      // 1. Vérifier si l'affilié existe et est actif
-      const affiliateData = await prisma.affiliate.findUnique({
-        where: { token: finalAffiliateToken }
+    // 1. Vérifier si l'affilié existe via Code Promo (priorité absolue) OU via le Cookie
+    if (promoAffiliateId) {
+      targetAffiliateData = await prisma.affiliate.findUnique({
+        where: { id: promoAffiliateId }
       })
+    } else if (finalAffiliateToken) {
+      targetAffiliateData = await prisma.affiliate.findUnique({
+        where: { code: finalAffiliateToken }
+      })
+    }
 
-      if (affiliateData && affiliateData.status === 'active') {
-        // 2. Déterminer le taux
+    if (targetAffiliateData && targetAffiliateData.status === 'active') {
+      // Remplacer le code par le token interne pour le stocker dans Order
+      finalAffiliateToken = targetAffiliateData.token
+
+      // 2. Déterminer le taux
         let appliedMargin = 0
         if (product.affiliate_active === true && product.affiliate_margin !== null) {
           appliedMargin = product.affiliate_margin
@@ -236,7 +250,6 @@ export async function POST(req: NextRequest) {
       } else {
          finalAffiliateToken = null
       }
-    }
 
     const supabase = await createClient()
 
@@ -295,6 +308,7 @@ export async function POST(req: NextRequest) {
             applied_promo_id: applied_promo_id ?? null,
             affiliate_token: finalAffiliateToken,
             affiliate_amount: affiliateAmount,
+            affiliate_subid: affiliate_subid || null,
             status: requiresClosing ? 'cod_pending_confirmation' : 'pending',
             is_subscription: product.payment_type === 'recurring',
             next_billing_at: nextBillingAt,
@@ -317,6 +331,15 @@ export async function POST(req: NextRequest) {
 
       const results = await prisma.$transaction(operations)
       orderRecord = results[results.length - 1] // La commande est la dernière op
+
+      // Nettoyer les paniers abandonnés du prospect
+      try {
+        await prisma.lead.deleteMany({
+          where: { phone: buyer_phone, product_id: product_id, source: 'abandoned_cart' }
+        })
+      } catch (e) {
+        // silent fail
+      }
 
     } catch (dbErr: any) {
       if (payment_method === 'cod') {
@@ -383,8 +406,28 @@ export async function POST(req: NextRequest) {
     if (storeRecordData?.user?.phone) {
       sendWhatsApp({ 
         to: storeRecordData.user.phone, 
-        body: `Vous avez reçu une nouvelle commande de ${total} FCFA pour ${product.name}. Connectez-vous pour la traiter.` 
+        body: msgVendorNewOrder({
+          productName: product.name,
+          buyerName: buyer_name,
+          buyerPhone: buyer_phone,
+          amount: total,
+          vendorAmount: finalVendorAmount,
+          address: delivery_address || undefined
+        })
       }).catch(err => console.error('[WhatsApp Vendeur Error]', err))
+    }
+
+    if (buyer_phone && payment_method === 'cod') {
+      sendWhatsApp({
+        to: buyer_phone,
+        body: msgOrderConfirmed({
+          buyerName: buyer_name,
+          productName: product.name,
+          amount: total,
+          orderId: orderRecord.id,
+          vendorName: storeRecordData?.name || 'la boutique'
+        })
+      }).catch(err => console.error('[WhatsApp Acheteur COD Error]', err))
     }
 
     // ── 6. REPONSE FINALE ─────────────────────────────────────────
@@ -397,6 +440,12 @@ export async function POST(req: NextRequest) {
 
       sendSaleNotification(store_id, total, buyer_name, product.name).catch(e => console.error('[Telegram Sale Notify ERROR]', e))
 
+      if (targetAffiliateData && affiliateAmount > 0) {
+        notifyNewAffiliateSale({
+          userId: targetAffiliateData.user_id, productName: product.name, buyerName: buyer_name, amount: affiliateAmount, paymentMethod: 'cod'
+        }).catch(console.error)
+      }
+
       executeWorkflows(store_id, 'Nouvelle Commande (Validée COD)', {
         client_name: buyer_name,
         client_phone: buyer_phone,
@@ -407,6 +456,15 @@ export async function POST(req: NextRequest) {
         customer_city: city || 'Inconnue',
         store_name: storeRecordData?.name || 'PDV Pro',
       }).catch(e => console.error('[Workflow Engine Error]', e));
+
+      if (product.oto_active && product.oto_product_id) {
+         return NextResponse.json({ 
+           order_id: orderRecord.id, 
+           cod: true, 
+           oto: true, 
+           oto_url: `/checkout/upsell?o=${orderRecord.id}&p=${product.oto_product_id}&d=${product.oto_discount ?? 0}` 
+         })
+      }
 
       return NextResponse.json({ order_id: orderRecord.id, cod: true })
     }

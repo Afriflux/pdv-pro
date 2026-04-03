@@ -5,7 +5,6 @@ import {
   FileEdit, 
   Send, 
   Clock, 
-  MoreVertical,
   Mail,
   PieChart
 } from 'lucide-react'

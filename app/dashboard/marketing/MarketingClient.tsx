@@ -138,8 +138,8 @@ export default function MarketingClient({ store, links, products, domain }: Mark
                     <div className="flex items-center gap-3">
                       <div className="h-2 w-32 bg-gray-100 rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-blue-500 rounded-full" 
-                          style={{ width: `${Math.min(100, (link.clicks / (totalClicks || 1)) * 100)}%` }}
+                          className="h-full bg-blue-500 rounded-full w-[var(--bar-width)]" 
+                          style={{ '--bar-width': `${Math.min(100, (link.clicks / (totalClicks || 1)) * 100)}%` } as React.CSSProperties}
                         />
                       </div>
                       <span className="text-sm font-black text-[#1A1A1A] w-6">{link.clicks}</span>
@@ -157,7 +157,7 @@ export default function MarketingClient({ store, links, products, domain }: Mark
 
       {/* MODAL QR CODE */}
       {qrCodeData && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#1A1A1A]/80 backdrop-blur-md animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-sm rounded-3xl p-8 flex flex-col items-center text-center shadow-2xl">
             <h3 className="text-xl font-black text-[#1A1A1A] mb-1">Votre Code QR</h3>
             <p className="text-gray-500 font-medium text-sm mb-6">Prêt à être scanné.</p>
@@ -177,7 +177,7 @@ export default function MarketingClient({ store, links, products, domain }: Mark
               <a 
                 href={qrCodeData} 
                 download={`QR_Code.png`}
-                className="flex-1 bg-[#1A1A1A] text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-colors"
+                className="flex-1 bg-[#0F7A60] text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#0D5C4A] transition-colors"
               >
                 <Download size={16} /> Sauver
               </a>

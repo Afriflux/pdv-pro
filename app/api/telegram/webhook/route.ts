@@ -233,9 +233,44 @@ async function handleStart(chatId: string, fullText: string, from: TelegramUser)
   const rawToken = parts.length > 1 ? parts[1] : null
   const token = rawToken ? rawToken.toUpperCase() : null
 
-  if (rawToken && rawToken.length > 20) {
+  if (rawToken && rawToken.length > 20 && !rawToken.toLowerCase().startsWith('aff_')) {
     // C'est très probablement un ID de Commande (Gateway Bot Auto-Kick)
     return handleBuyerGateway(chatId, rawToken, from)
+  }
+
+  if (rawToken && rawToken.toLowerCase().startsWith('aff_')) {
+    // Liaison d'un compte Affilié
+    const affiliateId = rawToken.substring(4) // Retire 'aff_'
+    
+    // Vérifier si l'affilié existe
+    const { data: affiliate, error } = await supabaseAdmin
+      .from('Affiliate')
+      .select('id, Store:store_id(name)')
+      .eq('id', affiliateId)
+      .single()
+
+    if (error || !affiliate) {
+      await sendMessage(chatId, `❌ <b>Lien affilié invalide ou expiré.</b>\n\nVeuillez générer un nouveau lien depuis votre portail.`)
+      return
+    }
+
+    // Mettre à jour l'affilié
+    const { error: updateError } = await supabaseAdmin
+      .from('Affiliate')
+      .update({ telegram_chat_id: chatId })
+      .eq('id', affiliateId)
+
+    if (updateError) {
+      console.error('[Telegram Webhook] Erreur liaison Affiliate:', updateError)
+      await sendMessage(chatId, `❌ Une erreur technique est survenue lors de la liaison.`)
+      return
+    }
+
+    const storeName = (Array.isArray(affiliate.Store) ? affiliate.Store[0] : affiliate.Store)?.name || 'PDV Pro'
+    const successMsg = `✅ <b>Félicitations ${from.first_name} !</b>\n\nVotre compte ambassadeur est maintenant lié.\n\nVous recevrez ici une notification instantanée à chaque nouvelle commission générée pour <b>${storeName}</b> ! 💸`
+    
+    await sendMessage(chatId, successMsg)
+    return
   }
 
   if (token) {

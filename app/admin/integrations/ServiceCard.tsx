@@ -38,7 +38,7 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
   const hasRecentLogs = stats && stats.recentLogs && stats.recentLogs.length > 0
   const isNetworkLive = hasRecentLogs || isLivePinged
 
-  const activeFields = isSandbox ? service.fields.filter(f => f.testKey) : service.fields.map(f => ({
+  const activeFields = (isSandbox ? service.fields.filter(f => f.testKey) : service.fields).map(f => ({
     ...f,
     actualKey: (isSandbox && f.testKey) ? f.testKey : f.key
   }))

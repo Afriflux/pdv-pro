@@ -30,7 +30,8 @@ export default function WithdrawalActions({ withdrawalId, status }: WithdrawalAc
   const handleAction = async () => {
     if (!actionType) return
     if (!reason.trim()) {
-      return toast.error('Un motif de validation/rejet est obligatoire.')
+      toast.error('Un motif de validation/rejet est obligatoire.')
+      return
     }
 
     setLoading(actionType)

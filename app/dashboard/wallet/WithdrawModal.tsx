@@ -37,7 +37,7 @@ export function WithdrawModal({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="relative overflow-hidden w-full sm:w-auto px-6 py-3.5 bg-gradient-to-br from-[#1A1A1A] to-[#2D2D2D] text-white rounded-2xl transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group ring-4 ring-[#1A1A1A]/10 hover:ring-[#1A1A1A]/30 shadow-[0_8px_30px_rgba(26,26,26,0.2)]"
+        className="relative overflow-hidden w-full sm:w-auto px-6 py-3.5 bg-gradient-to-br from-[#0F7A60] to-teal-800 text-white rounded-2xl transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group ring-4 ring-[#0F7A60]/10 hover:ring-[#0F7A60]/30 shadow-md"
       >
         <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-500" />
         
@@ -54,7 +54,7 @@ export function WithdrawModal({
       </button>
 
       {mounted && isOpen && createPortal(
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
             <div className="p-8 space-y-6 flex flex-col max-h-[90vh]">
               <div className="flex items-center justify-between shrink-0">

@@ -36,9 +36,12 @@ export interface AffiliateClientProps {
   storeSlug: string
   initialActive: boolean
   initialMargin: number
-  affiliates: AffiliateData[]
+  initialGamificationActive: boolean | null
+  initialGamificationConfig: any
   products: OverrideItem[]
   salePages: OverrideItem[]
+  withdrawals: any[]
+  affiliates: AffiliateData[]
 }
 
 function OverrideRow({ item, onSave, onRemove, isLoading }: { item: OverrideItem, onSave: (active: boolean|null, margin: number|null) => void, onRemove: () => void, isLoading: boolean }) {
@@ -121,14 +124,21 @@ function OverrideRow({ item, onSave, onRemove, isLoading }: { item: OverrideItem
   )
 }
 
-export default function AffiliateClient({ storeId, storeSlug, initialActive, initialMargin, affiliates: initialAffiliates, products: initialProducts, salePages: initialSalePages }: AffiliateClientProps) {
+export default function AffiliateClient({ storeId, storeSlug, initialActive, initialMargin, initialGamificationActive, initialGamificationConfig, affiliates: initialAffiliates, withdrawals: initialWithdrawals, products: initialProducts, salePages: initialSalePages }: AffiliateClientProps) {
   const [isActive, setIsActive] = useState(initialActive)
+  const [mainTab, setMainTab] = useState<'general' | 'withdrawals'>('general')
   const [margin, setMargin] = useState(initialMargin * 100) // stocké en décimal, affiché en %
   const [affiliates, setAffiliates] = useState<AffiliateData[]>(initialAffiliates)
   const [products, setProducts] = useState<OverrideItem[]>(initialProducts)
   const [salePages, setSalePages] = useState<OverrideItem[]>(initialSalePages)
   const [activeTab, setActiveTab] = useState<'products' | 'pages'>('products')
   
+  // Gamification states
+  const [gamificationActive, setGamificationActive] = useState(initialGamificationActive || false)
+  const [gamificationGoal, setGamificationGoal] = useState(initialGamificationConfig?.goal_sales || 50)
+  const [gamificationReward, setGamificationReward] = useState(initialGamificationConfig?.reward_amount || 50000)
+  const [isSavingGamification, setIsSavingGamification] = useState(false)
+
   const [visibleProductIds, setVisibleProductIds] = useState<string[]>(
     initialProducts.filter(p => p.affiliate_active !== null || p.affiliate_margin !== null).map(p => p.id)
   )
@@ -138,6 +148,23 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
 
   const [isSaving, setIsSaving] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+
+  const handleSaveGamification = async () => {
+    setIsSavingGamification(true)
+    const res = await fetch('/api/store/gamification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        storeId,
+        active: gamificationActive,
+        config: { goal_sales: gamificationGoal, reward_amount: gamificationReward }
+      })
+    })
+
+    if (res.ok) toast.success('Challenge Gamification mis à jour !')
+    else toast.error('Erreur lors de la sauvegarde du challenge')
+    setIsSavingGamification(false)
+  }
 
   const handleSaveSettings = async () => {
     setIsSaving(true)
@@ -232,10 +259,49 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
     setActionLoading(null)
   }
 
+  const handleExportCSV = async () => {
+    // Client-side export for simplicity if we already have the data
+    if (!initialWithdrawals.length) {
+      toast.info('Aucun retrait à exporter')
+      return
+    }
+    
+    // Using API for standardised CSV (Mass Payout compatibility)
+    try {
+      window.open(`/api/affiliates/withdrawals/export?storeId=${storeId}`, '_blank')
+    } catch (e) {
+      toast.error('Erreur lors de l\'export')
+    }
+  }
+
   return (
     <div className="space-y-6 pb-12">
-      {/* BANNIÈRE AIDE / CONSEIL */}
-      <div className="bg-gradient-to-r from-[#1A1A1A] to-[#2D2D2D] rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+      
+      {/* ── TABS DE NAVIGATION GLOBALE ── */}
+      <div className="flex items-center gap-2 border-b border-gray-200 pb-px mb-6">
+        <button 
+          onClick={() => setMainTab('general')}
+          className={`pb-3 px-4 text-sm font-bold border-b-2 transition-colors ${mainTab === 'general' ? 'border-[#0F7A60] text-[#0F7A60]' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+        >
+          Gestion & Règles
+        </button>
+        <button 
+          onClick={() => setMainTab('withdrawals')}
+          className={`pb-3 px-4 text-sm font-bold border-b-2 transition-colors ${mainTab === 'withdrawals' ? 'border-[#0F7A60] text-[#0F7A60]' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+        >
+          Demandes de Retraits
+          {initialWithdrawals.filter((w: any) => w.status === 'pending').length > 0 && (
+            <span className="ml-2 bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+              {initialWithdrawals.filter((w: any) => w.status === 'pending').length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {mainTab === 'general' ? (
+        <>
+          {/* BANNIÈRE AIDE / CONSEIL */}
+          <div className="bg-gradient-to-r from-[#0F7A60] to-[#0D5C4A] rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2" />
         <TrendingUp className="absolute right-10 text-white/5 w-40 h-40 transform -rotate-12 pointer-events-none hidden md:block" />
         
@@ -327,7 +393,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
               <button 
                 onClick={handleSaveSettings}
                 disabled={isSaving}
-                className="w-full md:w-auto bg-[#1A1A1A] hover:bg-black text-white px-8 py-3.5 rounded-2xl font-bold transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-70"
+                className="w-full md:w-auto bg-[#0F7A60] hover:bg-[#0D5C4A] text-white px-8 py-3.5 rounded-2xl font-bold transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {isSaving ? 'Enregistrement...' : 'Enregistrer le mode global'}
               </button>
@@ -449,6 +515,69 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
                  {isSaving ? 'Enregistrement...' : 'Valider le Mode Personnalisé'}
                </button>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* GAMIFICATION / CHALLENGE */}
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+        <div className="p-6 md:p-8 border-b border-gray-50 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${gamificationActive ? 'bg-amber-50 text-amber-500' : 'bg-gray-50 text-gray-400'}`}>
+               <BadgeDollarSign size={22} />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-[#1A1A1A]">Challenge Mensuel (Gamification)</h3>
+              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Motivez vos affiliés avec un objectif</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+             <span className="text-sm font-bold text-gray-500">{gamificationActive ? 'Activé' : 'Désactivé'}</span>
+             <button 
+               title="Activer la gamification"
+               onClick={() => setGamificationActive(!gamificationActive)}
+               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${gamificationActive ? 'bg-amber-500' : 'bg-gray-300'}`}
+             >
+               <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${gamificationActive ? 'translate-x-6' : 'translate-x-1'}`} />
+             </button>
+          </div>
+        </div>
+
+        {gamificationActive && (
+          <div className="p-6 md:p-8 bg-amber-50/30 flex flex-col md:flex-row gap-6 items-end">
+            <div className="flex-1">
+              <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Objectif de Ventes Mensuelles</label>
+              <div className="relative">
+                <input 
+                  type="number" 
+                  title="Objectif de Ventes Mensuelles"
+                  value={gamificationGoal} 
+                  onChange={e => setGamificationGoal(Number(e.target.value))}
+                  className="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-amber-500/20 font-bold"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">Ventes</span>
+              </div>
+            </div>
+            <div className="flex-1">
+              <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Prime à gagner</label>
+              <div className="relative">
+                <input 
+                  type="number" 
+                  title="Prime à gagner"
+                  value={gamificationReward} 
+                  onChange={e => setGamificationReward(Number(e.target.value))}
+                  className="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-amber-500/20 font-bold"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">FCFA</span>
+              </div>
+            </div>
+            <button 
+               onClick={handleSaveGamification}
+               disabled={isSavingGamification}
+               className="bg-amber-500 hover:bg-amber-600 px-6 py-3 rounded-xl text-white font-bold transition-colors disabled:opacity-70 shadow-sm"
+            >
+               {isSavingGamification ? '...' : 'Valider'}
+            </button>
           </div>
         )}
       </div>
@@ -608,6 +737,75 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
               )}
             </tbody>
           </table>
+        </div>
+      )}
+      </>
+      ) : (
+        /* ONGLET RETRAITS */
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden animate-fade-in">
+          <div className="p-6 md:p-8 border-b border-gray-50 flex flex-col md:flex-row items-center justify-between gap-4 bg-white">
+            <div>
+              <h3 className="text-xl font-black text-[#1A1A1A]">Demandes de Retraits</h3>
+              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-1">Gérez les paiements de vos affiliés</p>
+            </div>
+            <button 
+              onClick={handleExportCSV}
+              className="bg-[#0F7A60] hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-sm flex items-center gap-2 transition-colors shrink-0"
+            >
+              <ExternalLink size={16} /> Exporter CSV (Mass Payout)
+            </button>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-left whitespace-nowrap">
+              <thead className="bg-[#FAFAF7]/50 text-gray-400 text-[10px] font-bold uppercase tracking-wider border-b border-gray-100">
+                <tr>
+                  <th className="px-6 py-4">Date</th>
+                  <th className="px-6 py-4">Affilié</th>
+                  <th className="px-6 py-4">Montant</th>
+                  <th className="px-6 py-4">Méthode</th>
+                  <th className="px-6 py-4">Statut</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50 text-sm">
+                {initialWithdrawals.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-gray-400 font-medium">
+                      Aucune demande de retrait.
+                    </td>
+                  </tr>
+                ) : (
+                  initialWithdrawals.map((w: any) => (
+                    <tr key={w.id} className="hover:bg-gray-50/50 transition">
+                      <td className="px-6 py-4 text-xs font-medium text-gray-500">
+                        {new Date(w.requested_at).toLocaleDateString('fr-FR')}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-black text-gray-900">{w.Affiliate.user?.name || 'Inconnu'}</span>
+                          <span className="text-[10px] text-gray-400 font-mono">{w.Affiliate.code}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 font-black text-[#1A1A1A]">
+                        {w.amount.toLocaleString('fr-FR')} FCFA
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-xs font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
+                          {w.payment_method.toUpperCase()}
+                        </span>
+                        {w.phone && <p className="text-[10px] text-gray-400 mt-1 font-mono">{w.phone}</p>}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${w.status === 'pending' ? 'bg-orange-50 text-orange-600' : w.status === 'completed' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                          {w.status === 'pending' ? 'En attente' : w.status === 'completed' ? 'Payé' : 'Rejeté'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

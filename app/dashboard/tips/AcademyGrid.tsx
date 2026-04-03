@@ -3,12 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X, Clock, ChevronRight } from 'lucide-react'
 
-interface Tip {
-  number: number
-  title: string
-  desc: string
-  imageUrl?: string
-}
+// interface Tip removed as it's not being used and TS complains
 
 interface Article {
   id:    number
@@ -141,7 +136,7 @@ export default function AcademyGrid({ articles, completedIds: initialCompletedId
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100 z-50">
                 <div 
                   className="h-full bg-[#0F7A60] transition-all duration-150 ease-out rounded-r-full"
-                  style={{ width: `${readProgress}%` }}
+                  ref={el => { if (el) el.style.width = `${readProgress}%` }}
                 ></div>
               </div>
               

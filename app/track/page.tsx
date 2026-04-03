@@ -1,5 +1,5 @@
 'use client'
-
+import Image from 'next/image'
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -73,10 +73,13 @@ function TrackOrderContent() {
       <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Header & Retours */}
-        <div className="flex flex-col items-center justify-center space-y-3 relative mb-10">
-          <div className="absolute left-0 top-0">
+        <div className="flex flex-col items-center justify-center space-y-3 relative mb-10 pt-6 sm:pt-0">
+          <div className="absolute left-0 top-0 w-full flex justify-between items-center z-10">
             <Link href="/" className="text-gray-400 hover:text-gray-900 font-medium text-sm transition-colors border-b border-transparent hover:border-gray-900 border-dashed pb-0.5">
-              ← Retour à l'accueil
+              ← Accueil
+            </Link>
+            <Link href="/client/orders" className="text-[#0F7A60] hover:text-[#0D5C4A] font-bold text-sm bg-[#0F7A60]/10 hover:bg-[#0F7A60]/20 px-4 py-1.5 sm:py-2 rounded-full transition-colors">
+              Espace Client →
             </Link>
           </div>
           <div className="w-16 h-16 bg-[#0F7A60]/10 text-[#0F7A60] rounded-full flex items-center justify-center mx-auto mt-4 md:mt-0">
@@ -211,8 +214,17 @@ function TrackOrderContent() {
                   </h3>
                   {order.product ? (
                     <div className="flex gap-4 p-4 bg-gray-50 border border-gray-100 rounded-2xl md:hover:shadow-md transition-shadow">
-                      <div className="w-16 h-16 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-2xl shadow-sm flex-shrink-0">
-                        📦
+                      <div className="w-16 h-16 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-2xl shadow-sm flex-shrink-0 relative overflow-hidden">
+                        {order.product.images?.[0] ? (
+                          <Image
+                            src={order.product.images[0]}
+                            alt={order.product.name}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          "📦"
+                        )}
                       </div>
                       <div className="flex-1 flex flex-col justify-center">
                         <p className="font-bold text-gray-900 leading-snug line-clamp-2">{order.product.name}</p>

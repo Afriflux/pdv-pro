@@ -12,34 +12,69 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { walletId, auto_withdraw_enabled, auto_withdraw_threshold, monthly_goal } = body
+    const { walletId, auto_withdraw_enabled, auto_withdraw_threshold, monthly_goal, targetContext } = body
 
     if (!walletId) {
       return NextResponse.json({ error: 'Wallet ID required' }, { status: 400 })
     }
 
-    // Build Prisma update payload
-    const dataToUpdate: any = {}
-    if (auto_withdraw_enabled !== undefined) dataToUpdate.auto_withdraw_enabled = auto_withdraw_enabled
-    if (auto_withdraw_threshold !== undefined) dataToUpdate.auto_withdraw_threshold = Number(auto_withdraw_threshold)
-    if (monthly_goal !== undefined) dataToUpdate.monthly_goal = Number(monthly_goal)
+    // Determine context (default to 'vendor')
+    const ctx = targetContext || 'vendor'
 
-    // Verify ownership indirectly by fetching the wallet and its associated store
-    const wallet = await prisma.wallet.findUnique({
-      where: { id: walletId },
-      include: { vendor: true }
-    })
+    if (ctx === 'vendor') {
+      const dataToUpdate: any = {}
+      if (auto_withdraw_enabled !== undefined) dataToUpdate.auto_withdraw_enabled = auto_withdraw_enabled
+      if (auto_withdraw_threshold !== undefined) dataToUpdate.auto_withdraw_threshold = Number(auto_withdraw_threshold)
+      if (monthly_goal !== undefined) dataToUpdate.monthly_goal = Number(monthly_goal)
 
-    if (!wallet || wallet.vendor.user_id !== user.id) {
-       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      const wallet = await prisma.wallet.findUnique({
+        where: { id: walletId },
+        include: { vendor: true }
+      })
+
+      if (!wallet || wallet.vendor.user_id !== user.id) {
+         return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
+
+      const updated = await prisma.wallet.update({
+        where: { id: walletId },
+        data: dataToUpdate
+      })
+      return NextResponse.json({ success: true, target: 'wallet', updated })
     }
 
-    const updated = await prisma.wallet.update({
-      where: { id: walletId },
-      data: dataToUpdate
-    })
+    if (ctx === 'closer') {
+      const dataToUpdate: any = {}
+      if (auto_withdraw_enabled !== undefined) dataToUpdate.closer_auto_withdraw = auto_withdraw_enabled
+      if (auto_withdraw_threshold !== undefined) dataToUpdate.closer_auto_withdraw_threshold = Number(auto_withdraw_threshold)
 
-    return NextResponse.json({ success: true, wallet: updated })
+      // walletId actually matches user.id
+      if (walletId !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+      const updated = await prisma.user.update({
+        where: { id: user.id },
+        data: dataToUpdate
+      })
+      return NextResponse.json({ success: true, target: 'closer', updated })
+    }
+
+    if (ctx === 'affiliate') {
+      const dataToUpdate: any = {}
+      if (auto_withdraw_enabled !== undefined) dataToUpdate.affiliate_auto_withdraw = auto_withdraw_enabled
+      if (auto_withdraw_threshold !== undefined) dataToUpdate.affiliate_auto_withdraw_threshold = Number(auto_withdraw_threshold)
+
+      // walletId matches user.id
+      if (walletId !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+      // @ts-ignore : waiting for Prisma db push on affiliate_auto_withdraw
+      const updated = await prisma.user.update({
+        where: { id: user.id },
+        data: dataToUpdate
+      })
+      return NextResponse.json({ success: true, target: 'affiliate', updated })
+    }
+
+    return NextResponse.json({ error: 'Invalid config targetContext' }, { status: 400 })
   } catch (error) {
     console.error('[WALLET_SETTINGS_API] Error:', error)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })

@@ -60,28 +60,29 @@ export function SettingsLayout({ store, profile, userId }: any) {
       
       {/* ── MENU LATÉRAL ACCOLÉ ── */}
       <aside className="w-full lg:w-[300px] flex-shrink-0 sticky top-[80px] z-10 lg:h-[calc(100vh-80px)] overflow-y-auto bg-white/80 backdrop-blur-3xl border-r border-gray-200 p-5 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col gap-6">
-        <nav className="flex lg:flex-col gap-1.5 min-w-max lg:min-w-0">
-          <MenuBtn active={activeSection === 'profil'} icon={<User size={18}/>} label="Général" onClick={() => setActiveSection('profil')} />
-          <MenuBtn active={activeSection === 'lien'} icon={<Globe size={18}/>} label="Lien Boutique" onClick={() => setActiveSection('lien')} />
-          <MenuBtn active={activeSection === 'apparence'} icon={<Palette size={18}/>} label="Apparence" onClick={() => setActiveSection('apparence')} />
-          <MenuBtn active={activeSection === 'vendor'} icon={<StoreIcon size={18}/>} label="Type de Vendeur" onClick={() => setActiveSection('vendor')} />
+        <nav className="flex lg:flex-col gap-1.5 min-w-max lg:min-w-0" aria-label="Menu des paramètres du vendeur">
+          <MenuBtn active={activeSection === 'profil'} icon={<User className="w-5 h-5" />} label="Général" onClick={() => setActiveSection('profil')} />
+          <MenuBtn active={activeSection === 'lien'} icon={<Globe className="w-5 h-5" />} label="Lien Boutique" onClick={() => setActiveSection('lien')} />
+          <MenuBtn active={activeSection === 'apparence'} icon={<Palette className="w-5 h-5" />} label="Apparence" onClick={() => setActiveSection('apparence')} />
+          <MenuBtn active={activeSection === 'vendor'} icon={<StoreIcon className="w-5 h-5" />} label="Type de Vendeur" onClick={() => setActiveSection('vendor')} />
           <div className="hidden lg:block h-6" />
-          <MenuBtn active={activeSection === 'reseaux'} icon={<Share2 size={18}/>} label="Réseaux Sociaux" onClick={() => setActiveSection('reseaux')} />
-          <MenuBtn active={activeSection === 'pixels'} icon={<Target size={18}/>} label="Tracking & Pixels" onClick={() => setActiveSection('pixels')} />
-          <MenuBtn active={activeSection === 'securite'} icon={<ShieldCheck size={18}/>} label="Sécurité" onClick={() => setActiveSection('securite')} />
-          <MenuBtn active={activeSection === 'notifications'} icon={<Bell size={18}/>} label="Notifications" onClick={() => setActiveSection('notifications')} />
+          <MenuBtn active={activeSection === 'reseaux'} icon={<Share2 className="w-5 h-5" />} label="Réseaux Sociaux" onClick={() => setActiveSection('reseaux')} />
+          <MenuBtn active={activeSection === 'pixels'} icon={<Target className="w-5 h-5" />} label="Tracking & Pixels" onClick={() => setActiveSection('pixels')} />
+          <MenuBtn active={activeSection === 'securite'} icon={<ShieldCheck className="w-5 h-5" />} label="Sécurité" onClick={() => setActiveSection('securite')} />
+          <MenuBtn active={activeSection === 'notifications'} icon={<Bell className="w-5 h-5" />} label="Notifications" onClick={() => setActiveSection('notifications')} />
           <div className="hidden lg:block h-6" />
-          <MenuBtn active={activeSection === 'retrait'} icon={<Wallet size={18}/>} label="Retraits" onClick={() => setActiveSection('retrait')} />
-          <MenuBtn active={activeSection === 'kyc'} icon={<CheckCircle2 size={18}/>} label="Vérification KYC" onClick={() => setActiveSection('kyc')} />
-          <MenuBtn active={activeSection === 'contrat'} icon={<FileText size={18}/>} label="Contrat Partenaire" onClick={() => setActiveSection('contrat')} />
+          <MenuBtn active={activeSection === 'retrait'} icon={<Wallet className="w-5 h-5" />} label="Retraits" onClick={() => setActiveSection('retrait')} />
+          <MenuBtn active={activeSection === 'kyc'} icon={<CheckCircle2 className="w-5 h-5" />} label="Vérification KYC" onClick={() => setActiveSection('kyc')} />
+          <MenuBtn active={activeSection === 'contrat'} icon={<FileText className="w-5 h-5" />} label="Contrat Partenaire" onClick={() => setActiveSection('contrat')} />
           <div className="hidden lg:block h-6" />
           <button 
             onClick={() => setActiveSection('danger')}
-            className={`w-full flex items-center gap-3 px-5 py-4 rounded-[1.2rem] text-sm font-bold transition-all duration-300 ${
+            aria-current={activeSection === 'danger' ? 'page' : undefined}
+            className={`w-full flex items-center gap-3 px-5 py-4 rounded-[1.2rem] text-sm font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-400 ${
               activeSection === 'danger' ? 'bg-red-50 text-red-600 ring-1 ring-red-200 shadow-sm' : 'text-red-400 hover:bg-white/80 hover:text-red-600 hover:translate-x-1 hover:shadow-sm'
             }`}
           >
-            <AlertTriangle size={18} /> <span className="hidden lg:inline">Danger Zone</span>
+            <AlertTriangle className="w-5 h-5 flex-shrink-0" /> <span className="hidden lg:inline">Danger Zone</span>
           </button>
           
           <div className="hidden lg:block mt-10 p-6 bg-white/80 backdrop-blur-xl rounded-3xl border border-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] group-hover:shadow-[0_4px_30px_rgb(0,0,0,0.06)] transition-all">
@@ -118,11 +119,12 @@ function MenuBtn({ active, icon, label, onClick }: any) {
   return (
     <button
       onClick={onClick}
-      className={`relative flex items-center gap-3 px-5 py-4 rounded-[1.2rem] text-[14.5px] transition-all duration-400 lg:w-full shrink-0 outline-none group overflow-hidden
+      aria-current={active ? 'page' : undefined}
+      className={`relative flex items-center gap-3 px-5 py-4 rounded-[1.2rem] text-[14.5px] transition-all duration-400 lg:w-full shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#0F7A60] focus-visible:ring-offset-2 group overflow-hidden
         ${active ? 'font-bold text-[#0F7A60] bg-white/90 backdrop-blur-xl shadow-[0_8px_20px_rgb(15,122,96,0.1)] border border-white scale-[1.03]' : 'font-medium text-gray-500 hover:text-gray-900 hover:bg-white/60 hover:backdrop-blur-lg hover:shadow-sm hover:translate-x-1 hover:border hover:border-white/50 lg:hover:translate-x-1.5'}
       `}
     >
-      <div className={`relative z-10 transition-transform duration-300 ${active ? 'text-[#0F7A60] scale-110 drop-shadow-[0_2px_8px_rgba(15,122,96,0.4)]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+      <div className={`relative z-10 transition-transform duration-300 flex-shrink-0 flex items-center justify-center ${active ? 'text-[#0F7A60] scale-110 drop-shadow-[0_2px_8px_rgba(15,122,96,0.4)]' : 'text-gray-400 group-hover:text-gray-600'}`}>
         {icon}
       </div>
       <span className={`relative z-10 ${!active ? 'hidden lg:inline' : 'inline'}`}>{label}</span>

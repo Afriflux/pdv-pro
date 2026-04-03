@@ -16,8 +16,8 @@ export function FinanceTab({ store }: { store: any }) {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!withdrawalNumber.trim()) return toast.error('Le numéro de compte est obligatoire.')
-    if (!withdrawalName.trim()) return toast.error('Le nom du titulaire est obligatoire.')
+    if (!withdrawalNumber.trim()) { toast.error('Le numéro de compte est obligatoire.'); return; }
+    if (!withdrawalName.trim()) { toast.error('Le nom du titulaire est obligatoire.'); return; }
     
     setLoading(true)
     try {
@@ -56,7 +56,7 @@ export function FinanceTab({ store }: { store: any }) {
           <div className="absolute inset-0 bg-gradient-to-br from-[#064E3B] via-[#022C22] to-[#0F766E] opacity-90"></div>
           
           {/* Motifs géométriques */}
-          <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'linear-gradient(45deg, #10B981 1px, transparent 1px), linear-gradient(-45deg, #10B981 1px, transparent 1px)', backgroundSize: '60px 60px', backgroundPosition: '0 0, 30px 30px' }}></div>
+          <div className="absolute inset-0 opacity-[0.15] bg-[linear-gradient(45deg,#10B981_1px,transparent_1px),linear-gradient(-45deg,#10B981_1px,transparent_1px)] [background-size:60px_60px] [background-position:0_0,30px_30px]"></div>
           
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 animate-pulse duration-[10000ms] pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-400/20 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>

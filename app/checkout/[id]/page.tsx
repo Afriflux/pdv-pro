@@ -58,6 +58,22 @@ export async function generateMetadata({ params }: CheckoutPageProps): Promise<M
 export default async function CheckoutPage({ params }: CheckoutPageProps) {
   const supabase = await createClient()
 
+  // Retrieve possible client profile
+  let clientProfile = null
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    clientProfile = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        name: true,
+        email: true,
+        phone: true,
+        client_payment_method: true,
+        client_payment_number: true,
+      }
+    })
+  }
+
   // Charger le produit + sa boutique
   const { data: product } = await supabase
     .from('Product')
@@ -235,6 +251,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         similarProducts={similarProducts}
         telegramCommunity={telegramCommunity}
         bumpProduct={bumpProduct}
+        clientProfile={clientProfile}
       />
     </>
   )

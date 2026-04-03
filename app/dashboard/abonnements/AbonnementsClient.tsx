@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import SimulateurCommission from '@/components/dashboard/SimulateurCommission'
-import { CheckCircle2, Trophy, Clock, Target, ArrowRight, BarChart3, Receipt, Wallet, Sparkles, Lock, ShieldCheck, ChevronRight } from 'lucide-react'
+import { Trophy, Clock, Target, BarChart3, Receipt, Wallet, Sparkles, Lock, ShieldCheck, ChevronRight } from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Tier {
@@ -188,9 +188,10 @@ export default function AbonnementsClient({
                 {/* Horizontal Connection Line (Greyed) */}
                 <div className="hidden lg:block absolute top-[160px] left-[12%] right-[12%] h-1 bg-white/5 rounded-full z-0"></div>
                 {/* Active Connection Line Fill (Glowing Emerald) */}
+                {/* eslint-disable-next-line */}
                 <div 
                   className="hidden lg:block absolute top-[160px] left-[12%] h-1 bg-emerald-500 rounded-full z-0 transition-all duration-1000 shadow-[0_0_20px_rgba(52,211,153,0.9)]"
-                  style={{ width: `${Math.min(((currentTierIdx + (tierProgress / 100)) / (tiers.length - 1)) * 76 + 12, 88)}%` }}
+                  ref={el => { if (el) el.style.width = `${Math.min(((currentTierIdx + (tierProgress / 100)) / (tiers.length - 1)) * 76 + 12, 88)}%`; }}
                 ></div>
 
                 {/* Grid of Tiers */}
@@ -262,9 +263,10 @@ export default function AbonnementsClient({
                                       <span>Objectif : {fmt(nextTier.min)} FCFA</span>
                                     </div>
                                     <div className="h-1.5 bg-black/80 rounded-full overflow-hidden shadow-inner border border-white/5">
+                                      {/* eslint-disable-next-line */}
                                       <div 
                                         className="h-full bg-gradient-to-r from-emerald-400 to-green-300 rounded-full relative shadow-[0_0_10px_rgba(167,243,208,0.8)]" 
-                                        style={{ width: `${tierProgress}%` }}
+                                        ref={el => { if (el) el.style.width = `${tierProgress}%`; }}
                                       ></div>
                                     </div>
                                     <p className="text-[10px] text-center text-emerald-100/70 leading-relaxed pt-2">

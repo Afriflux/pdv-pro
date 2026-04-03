@@ -174,27 +174,29 @@ export default function ProfileSection({
 
       {/* Nom */}
       <div>
-        <label className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1">
+        <label htmlFor="adminName" className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1">
           Nom affiché
         </label>
         <input
+          id="adminName"
           type="text"
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="Prénom Nom"
           className="w-full bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl py-3 px-4 text-sm font-semibold text-[#1A1A1A]
-            focus:bg-white focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 outline-none transition-all duration-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]"
+            focus:bg-white focus:border-[#0F7A60] focus-visible:ring-4 focus-visible:ring-[#0F7A60]/10 outline-none transition-all duration-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]"
           required
         />
       </div>
 
       {/* Email readonly + badge rôle */}
       <div>
-        <label className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1">
+        <label htmlFor="adminEmail" className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1">
           Email & Rôle
         </label>
         <div className="flex items-center gap-3">
           <input
+            id="adminEmail"
             aria-label="Email"
             title="Email"
             type="email"

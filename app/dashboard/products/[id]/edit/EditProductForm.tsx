@@ -61,6 +61,7 @@ interface Product {
   // Nouveaux champs d'affiliation
   affiliate_active?: boolean | null
   affiliate_margin?: number | null
+  affiliate_media_kit_url?: string | null
 
   // ── Order Bump (Upsell 1-Click) ──
   bump_active?: boolean
@@ -165,11 +166,18 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
   // ── États Affiliation ──
   const [affiliateActive, setAffiliateActive] = useState<boolean | null>(product.affiliate_active ?? null)
   const [affiliateMargin, setAffiliateMargin] = useState<string>(product.affiliate_margin != null ? String(product.affiliate_margin * 100) : '')
+  const [affiliateMediaKitUrl, setAffiliateMediaKitUrl] = useState<string>(product.affiliate_media_kit_url ?? '')
 
   // ── États Order Bump ──
   const [bumpActive, setBumpActive] = useState(product.bump_active ?? false)
   const [bumpProductId, setBumpProductId] = useState(product.bump_product_id ?? '')
   const [bumpOfferText, setBumpOfferText] = useState(product.bump_offer_text ?? 'Profitez aussi de cette offre exclusive à prix réduit !')
+  
+  // ── États OTO Upsell Post-Achat ──
+  const [otoActive, setOtoActive] = useState(product.oto_active ?? false)
+  const [otoProductId, setOtoProductId] = useState(product.oto_product_id ?? '')
+  const [otoDiscount, setOtoDiscount] = useState(product.oto_discount != null ? String(product.oto_discount) : '')
+
   const [storeProducts, setStoreProducts] = useState<{id:string, name:string, price:number}[]>([])
 
   // Fetch Telegram Communities
@@ -341,9 +349,13 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
           active,
           affiliate_active: affiliateActive,
           affiliate_margin: affiliateMargin ? parseFloat(affiliateMargin) / 100 : null,
+          affiliate_media_kit_url: affiliateMediaKitUrl.trim() || null,
           bump_active:     bumpActive,
           bump_product_id: bumpActive ? (bumpProductId || null) : null,
           bump_offer_text: bumpActive ? (bumpOfferText.trim() || null) : null,
+          oto_active:      otoActive,
+          oto_product_id:  otoActive ? (otoProductId || null) : null,
+          oto_discount:    otoActive ? (parseFloat(otoDiscount) || null) : null,
           ...typeExtra,
         })
         .eq('id', product.id)
@@ -1117,6 +1129,51 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
               </div>
             )}
           </div>
+
+          <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-xl space-y-4 mt-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="block text-sm font-medium text-emerald-900">Activer l'Upsell O-T-O</label>
+                <p className="text-[10px] text-emerald-700 mt-1">Affichera une page "One Time Offer" juste après l'achat (réservé au COD).</p>
+              </div>
+              <div
+                onClick={() => setOtoActive(v => !v)}
+                className={`w-10 h-6 rounded-full transition-colors cursor-pointer relative ${otoActive ? 'bg-emerald-600' : 'bg-emerald-200'}`}
+              >
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${otoActive ? 'left-5' : 'left-1'}`} />
+              </div>
+            </div>
+
+            {otoActive && (
+              <div className="space-y-4 pt-3 border-t border-emerald-200/50">
+                <div>
+                  <label className="block text-sm font-medium text-emerald-900 mb-1">Produit à proposer</label>
+                  <select
+                    value={otoProductId}
+                    onChange={e => setOtoProductId(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition bg-white text-emerald-900"
+                  >
+                    <option value="">-- Sélectionnez un produit --</option>
+                    {storeProducts.map(p => (
+                      <option key={p.id} value={p.id}>{p.name} ({p.price} FCFA)</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-emerald-900 mb-1">Réduction exceptionnelle (%)</label>
+                  <input
+                    type="number"
+                    min="0" max="100"
+                    value={otoDiscount}
+                    onChange={e => setOtoDiscount(e.target.value)}
+                    placeholder="Ex: 50 (pour -50%)"
+                    className="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition text-emerald-900"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </section>
 
         {/* ── AFFILIATION ── */}
@@ -1166,6 +1223,21 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
                 />
               </div>
             )}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Lien du Kit Média (Optionnel)
+              </label>
+              <input
+                aria-label="Kit Média Affilié"
+                title="Lien Google Drive, Notion, etc."
+                type="url"
+                value={affiliateMediaKitUrl}
+                onChange={(e) => setAffiliateMediaKitUrl(e.target.value)}
+                placeholder="Ex: https://drive.google.com/drive/folders/..."
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+              />
+              <p className="text-[10px] text-gray-400 mt-1">Fournissez vos visuels, bannières et textes pour aider les ambassadeurs à vendre.</p>
+            </div>
           </div>
         </section>
 

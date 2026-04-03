@@ -13,22 +13,32 @@ interface Notification {
   created_at: string
 }
 
+let sharedFetchPromise: Promise<any> | null = null
+let lastFetchTime = 0
+
 export function NotificationBell() {
   const router = useRouter()
   const [open, setOpen]         = useState(false)
-  const [notifications, setNotifications] = useState<Notification[]>([])
   const [unread, setUnread]     = useState(0)
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading]   = useState(true)
 
-  const fetchNotifications = useCallback(async () => {
+  const fetchNotifications = useCallback(async (force: boolean = false) => {
+    // Si déjà répliqué récemment (< 5s) et pas forcé, on ignore
+    if (!force && Date.now() - lastFetchTime < 5000) return
+    
     try {
-      const res  = await fetch('/api/notifications')
-      const data = await res.json() as { notifications: Notification[]; unread: number }
+      if (!sharedFetchPromise) {
+        sharedFetchPromise = fetch('/api/notifications').then(res => res.json())
+      }
+      const data = await sharedFetchPromise as { notifications: Notification[]; unread: number }
       setNotifications(data.notifications ?? [])
       setUnread(data.unread ?? 0)
+      lastFetchTime = Date.now()
     } catch {
       // Silencieux
     } finally {
+      sharedFetchPromise = null
       setLoading(false)
     }
   }, [])
@@ -47,6 +57,7 @@ export function NotificationBell() {
       await fetch('/api/notifications', { method: 'PATCH' })
       setUnread(0)
       setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+      lastFetchTime = 0 // Forcer le refresh sur la prochaine ouverture ou tab
     }
   }
 

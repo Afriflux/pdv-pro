@@ -11,6 +11,8 @@ import { format, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Minus, Plus, Lock, ShieldCheck, BadgeCheck, MessageCircle, ChevronDown, Facebook, Link2, Check, Timer, Tags } from 'lucide-react'
 import { CheckoutForm } from './CheckoutForm'
+import { EleganceTemplate } from './templates/EleganceTemplate'
+import { SalesLetterTemplate } from './templates/SalesLetterTemplate'
 import SocialProofBanner from '@/components/widgets/SocialProofBanner'
 import { ReviewWidget } from '@/components/reviews/ReviewWidget'
 import { ProductQA } from '@/components/reviews/ProductQA'
@@ -46,7 +48,7 @@ interface ProductPageProps {
     recurring_interval?: string | null
     resale_allowed?: boolean
     resale_commission?: number | null
-    digital_files?: any[]
+    digital_files?: unknown[]
     coaching_durations?: number[] | null
     coaching_is_pack?: boolean | null
     coaching_pack_count?: number | null
@@ -60,12 +62,12 @@ interface ProductPageProps {
       kyc_status: string | null
       created_at: string
       productsCount: number
-      social_links?: any
+      social_links?: Record<string, string>
       coaching_max_per_day?: number | null
       coaching_min_notice?: number | null
       free_shipping_threshold?: number | null
       gamification_active?: boolean
-      gamification_config?: any | null
+      gamification_config?: unknown | null
     }
     bump_active?: boolean
     bump_product_id?: string | null
@@ -81,8 +83,8 @@ interface ProductPageProps {
   vendorPlan?: 'gratuit' | 'pro'
   storeId: string
   deliveryZones?: { id: string; name: string; fee: number; delay: string | null; active: boolean }[]
-  coachingSlots?: any[]
-  blockedDates?: any[]
+  coachingSlots?: unknown[]
+  blockedDates?: unknown[]
   bookedSlots?: Record<string, number>
   similarProducts?: {
     id: string
@@ -107,6 +109,7 @@ interface ProductPageProps {
     images: string[]
     type: string
   } | null
+  clientProfile?: unknown
 }
 
 // ─── Composant Galerie ────────────────────────────────────────────────────────
@@ -250,6 +253,7 @@ export default function ProductPage({
   similarProducts = [],
   telegramCommunity,
   bumpProduct,
+  clientProfile,
 }: ProductPageProps) {
   const accent = product.store.primary_color || '#0F7A60'
 
@@ -264,7 +268,7 @@ export default function ProductPage({
   }
 
   const bunnyVideoId = product.digital_files?.find(
-    (f: any) => f.bunny_video_id
+    (f: {bunny_video_id?: string}) => f.bunny_video_id
   )?.bunny_video_id as string | undefined
 
   const bunnyLibraryId = process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID
@@ -366,6 +370,78 @@ export default function ProductPage({
     return acc
   }, {})
 
+  const checkoutFormNode = (
+    <CheckoutForm
+      product={{ ...product, store: product.store }}
+      variants={variants}
+      computedPrice={computedPrice}
+      vendorPlan={vendorPlan}
+      defaultUseCOD={formMode === 'cod'}
+      defaultVariantId={selectedVariantId}
+      defaultQuantity={quantity}
+      deliveryZones={deliveryZones}
+      coachingSlots={coachingSlots}
+      blockedDates={blockedDates}
+      bookedSlots={bookedSlots}
+      bumpProduct={bumpProduct}
+      clientProfile={clientProfile}
+    />
+  )
+
+  const imageGalleryNode = (
+    <ImageGallery
+      images={product.images ?? []}
+      productName={product.name}
+      accent={accent}
+    />
+  )
+
+  if (product.template === 'elegance') {
+    return (
+      <>
+        <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
+        <EleganceTemplate 
+          product={product} 
+          accent={accent}
+          bunnyVideoId={bunnyVideoId}
+          bunnyLibraryId={bunnyLibraryId}
+          groupedVariants={groupedVariants}
+          basePrice={computedPrice.finalPrice}
+          handleOpenForm={handleOpenForm}
+          showForm={showForm}
+          checkoutFormNode={checkoutFormNode}
+          imageGalleryNode={imageGalleryNode}
+        />
+        <FortuneWheelPopup
+          storeId={product.store.id}
+          active={product.store.gamification_active ?? false}
+          config={product.store.gamification_config}
+        />
+      </>
+    )
+  }
+
+  if (product.template === 'sales_letter') {
+    return (
+      <>
+        <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
+        <SalesLetterTemplate 
+          product={product} 
+          basePrice={computedPrice.finalPrice}
+          handleOpenForm={handleOpenForm}
+          showForm={showForm}
+          checkoutFormNode={checkoutFormNode}
+          imageGalleryNode={imageGalleryNode}
+        />
+        <FortuneWheelPopup
+          storeId={product.store.id}
+          active={product.store.gamification_active ?? false}
+          config={product.store.gamification_config}
+        />
+      </>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#FAFAF7]">
       <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
@@ -436,11 +512,7 @@ export default function ProductPage({
                 />
               </div>
             )}
-            <ImageGallery
-              images={product.images ?? []}
-              productName={product.name}
-              accent={accent}
-            />
+            {imageGalleryNode}
           </div>
 
           {/* ═══ Colonne droite — Infos produit ══════════════════════════════ */}
@@ -862,20 +934,7 @@ export default function ProductPage({
                     </button>
                   </div>
                   {/* CheckoutForm — réutilise le composant existant tel quel */}
-                  <CheckoutForm
-                    product={{ ...product, store: product.store }}
-                    variants={variants}
-                    computedPrice={computedPrice}
-                    vendorPlan={vendorPlan}
-                    defaultUseCOD={formMode === 'cod'}
-                    defaultVariantId={selectedVariantId}
-                    defaultQuantity={quantity}
-                    deliveryZones={deliveryZones}
-                    coachingSlots={coachingSlots}
-                    blockedDates={blockedDates}
-                    bookedSlots={bookedSlots}
-                    bumpProduct={bumpProduct}
-                  />
+                  {checkoutFormNode}
                 </div>
               )}
             </div>

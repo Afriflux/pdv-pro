@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useState } from 'react'
@@ -11,7 +10,7 @@ export default function ScriptsIA() {
   const [objective, setObjective] = useState('ventes')
   const [duration, setDuration] = useState('30s')
   const [generating, setGenerating] = useState(false)
-  const [result, setResult] = useState<any>(null)
+  const [result, setResult] = useState<{script: string} | null>(null)
   const [copied, setCopied] = useState(false)
 
   const handleGenerate = async () => {
@@ -29,8 +28,8 @@ export default function ScriptsIA() {
       if (!res.ok) throw new Error('Erreur serveur')
       const data = await res.json()
       setResult(data)
-    } catch (err: any) {
-      toast.error(err.message || 'Erreur lors de la génération.')
+    } catch (err: unknown) {
+      toast.error((err as Error).message || 'Erreur lors de la génération.')
     } finally {
       setGenerating(false)
     }
@@ -72,6 +71,7 @@ export default function ScriptsIA() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="relative">
             <select
+              aria-label="Sélectionnez la plateforme ciblée pour le script publicitaire"
               value={platform}
               onChange={(e) => setPlatform(e.target.value)}
               className="w-full appearance-none bg-[#FAFAF7] border border-gray-200 rounded-xl py-3.5 pl-4 pr-10 text-sm font-bold text-[#1A1A1A] outline-none focus:border-[#C9A84C] transition-colors cursor-pointer"
@@ -85,6 +85,7 @@ export default function ScriptsIA() {
 
           <div className="relative">
              <select
+              aria-label="Sélectionnez l'objectif du script publicitaire"
               value={objective}
               onChange={(e) => setObjective(e.target.value)}
               className="w-full appearance-none bg-[#FAFAF7] border border-gray-200 rounded-xl py-3.5 pl-4 pr-10 text-sm font-bold text-[#1A1A1A] outline-none focus:border-[#C9A84C] transition-colors cursor-pointer"
@@ -98,6 +99,7 @@ export default function ScriptsIA() {
 
            <div className="relative">
              <select
+              aria-label="Sélectionnez la durée du script publicitaire"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
               className="w-full appearance-none bg-[#FAFAF7] border border-gray-200 rounded-xl py-3.5 pl-4 pr-10 text-sm font-bold text-[#1A1A1A] outline-none focus:border-[#C9A84C] transition-colors cursor-pointer"
@@ -113,7 +115,7 @@ export default function ScriptsIA() {
         <button
           onClick={handleGenerate}
           disabled={generating || !productName.trim()}
-          className="w-full py-4 mt-2 bg-[#1A1A1A] hover:bg-black text-white rounded-xl font-black transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-md"
+          className="w-full py-4 mt-2 bg-[#0F7A60] hover:bg-[#0D5C4A] text-white rounded-xl font-black transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-md"
         >
           {generating ? (
              <span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 animate-spin"/> Création de la magie...</span>

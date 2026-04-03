@@ -88,3 +88,35 @@ export async function notifyCodReminder(params: {
     link:    `/dashboard/orders/${params.orderId}`,
   })
 }
+
+export async function notifyNewAffiliateSale(params: {
+  userId: string
+  productName: string
+  buyerName: string
+  amount: number
+  paymentMethod: string
+}) {
+  const methodLabel = params.paymentMethod === 'cod' ? 'Paiement à la livraison (En attente)' : 'Prépayé (Immédiat)'
+  
+  return createNotification({
+    userId:  params.userId,
+    type:    'affiliate_sale_pending',
+    title:   '🎉 Boom ! Nouvelle vente référée !',
+    message: `Votre lien a généré une vente de "${params.productName}" pour ${params.buyerName}. Commission estimée : ${params.amount.toLocaleString('fr-FR')} FCFA. (${methodLabel})`,
+    link:    `/portal`,
+  })
+}
+
+export async function notifyAffiliateSaleDelivered(params: {
+  userId: string
+  productName: string
+  amount: number
+}) {
+  return createNotification({
+    userId:  params.userId,
+    type:    'affiliate_sale_delivered',
+    title:   '✅ Commission Confirmée !',
+    message: `La commande pour "${params.productName}" a été livrée. Votre commission de ${params.amount.toLocaleString('fr-FR')} FCFA a été créditée !`,
+    link:    `/portal/wallet`,
+  })
+}

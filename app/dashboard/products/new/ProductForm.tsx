@@ -6,7 +6,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import AIProductGenerator from '@/components/dashboard/AIProductGenerator'
-import { Sparkles, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Sparkles, HelpCircle, ChevronDown, ChevronUp, Smartphone } from 'lucide-react'
+import { MobilePreviewer } from '@/components/ui/MobilePreviewer'
 
 // ----------------------------------------------------------------
 // Types
@@ -73,6 +74,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [seoTitle, setSeoTitle] = useState('')
   const [seoDescription, setSeoDescription] = useState('')
+  const [template, setTemplate] = useState('default')
 
   // ── Tarification Récurrente ──
   const [paymentType, setPaymentType] = useState<'one_time' | 'recurring'>('one_time')
@@ -111,17 +113,23 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   const [coachingPackCount, setCoachingPackCount] = useState('1')
 
   // ── États Telegram ──
-  const [telegramCommunities, setTelegramCommunities] = useState<{ id: string; name: string }[]>([])
+  const [telegramCommunities, setTelegramCommunities] = useState<{ id: string; chat_title: string; members_count: number | null }[]>([])
   const [selectedCommunityId, setSelectedCommunityId] = useState<string>('')
 
   // ── États Affiliation ──
   const [affiliateActive, setAffiliateActive] = useState<boolean | null>(null)
   const [affiliateMargin, setAffiliateMargin] = useState<string>('')
+  const [affiliateMediaKitUrl, setAffiliateMediaKitUrl] = useState<string>('')
 
   // ── États Order Bump ──
   const [bumpActive, setBumpActive] = useState(false)
   const [bumpProductId, setBumpProductId] = useState('')
   const [bumpOfferText, setBumpOfferText] = useState('Profitez aussi de cette offre exclusive à prix réduit !')
+  
+  // ── États OTO Upsell Post-Achat ──
+  const [otoActive, setOtoActive] = useState(false)
+  const [otoProductId, setOtoProductId] = useState('')
+  const [otoDiscount, setOtoDiscount] = useState('')
   const [storeProducts, setStoreProducts] = useState<{id:string, name:string, price:number}[]>([])
 
   // Fetch Telegram Communities
@@ -375,11 +383,16 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           active:          active,
           affiliate_active: affiliateActive,
           affiliate_margin: affiliateMargin ? parseFloat(affiliateMargin) / 100 : null,
+          affiliate_media_kit_url: affiliateMediaKitUrl.trim() || null,
           bump_active:     bumpActive,
           bump_product_id: bumpActive ? (bumpProductId || null) : null,
           bump_offer_text: bumpActive ? (bumpOfferText.trim() || null) : null,
+          oto_active:      otoActive,
+          oto_product_id:  otoActive ? (otoProductId || null) : null,
+          oto_discount:    otoActive ? (parseFloat(otoDiscount) || null) : null,
           seo_title:       seoTitle.trim() || null,
           seo_description: seoDescription.trim() || null,
+          template:        template,
           created_at:  new Date().toISOString(),
           updated_at:  new Date().toISOString(),
           ...typeExtra,
@@ -456,7 +469,10 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   }, [currentStep])
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6 pb-20">
+    <form onSubmit={handleSubmit} className="max-w-7xl mx-auto pb-20">
+      <div className="flex flex-col xl:flex-row gap-8 items-start">
+        {/* Colonne Gauche : Éditeur */}
+        <div className="flex-1 space-y-6 min-w-0 w-full relative">
       {/* --- FORM WIZARD STEPPER (Glassmorphism) --- */}
       <div className="bg-white/80 backdrop-blur-xl border border-white max-w-2xl mx-auto shadow-sm shadow-black/5 rounded-[20px] p-2 flex items-center justify-between overflow-x-auto hide-scrollbar sticky top-[80px] z-20">
         {steps.map(step => (
@@ -486,7 +502,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
             <span>{uploadProgress}%</span>
           </div>
           <div className="w-full bg-blue-100 rounded-full h-2">
-            <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+            <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" ref={el => { if(el) el.style.width = `${uploadProgress}%` }} />
           </div>
           <p className="text-xs text-blue-600">Veuillez patienter sans fermer la page.</p>
         </div>
@@ -857,6 +873,8 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                 <input
                   type="number" value={maxParticipants} onChange={e => setMaxParticipants(e.target.value)}
                   min="2"
+                  title="Places maximum"
+                  placeholder="2"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
                 />
               </div>
@@ -1070,6 +1088,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                 <select
                   value={selectedCommunityId}
                   onChange={(e) => setSelectedCommunityId(e.target.value)}
+                  title="Choisir un groupe à lier"
                   className="w-full px-4 py-3 rounded-xl border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition bg-white"
                 >
                   <option value="">— Aucun groupe lié —</option>
@@ -1307,6 +1326,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                       <select
                         value={bumpProductId}
                         onChange={e => setBumpProductId(e.target.value)}
+                        title="Produit à proposer"
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition bg-white"
                       >
                         <option value="">-- Sélectionnez un produit --</option>
@@ -1324,6 +1344,52 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                         onChange={e => setBumpOfferText(e.target.value)}
                         placeholder="Oui, je veux aussi ajouter le manuel avancé !"
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* OTO UPSELL */}
+              <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="block text-sm font-medium text-emerald-900">Activer l'Upsell O-T-O</label>
+                    <p className="text-[10px] text-emerald-700 mt-1">Affichera une page "One Time Offer" juste après l'achat (réservé au COD).</p>
+                  </div>
+                  <div
+                    onClick={() => setOtoActive(v => !v)}
+                    className={`w-10 h-6 rounded-full transition-colors cursor-pointer relative ${otoActive ? 'bg-emerald-600' : 'bg-emerald-200'}`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${otoActive ? 'left-5' : 'left-1'}`} />
+                  </div>
+                </div>
+
+                {otoActive && (
+                  <div className="space-y-4 pt-3 border-t border-emerald-200/50">
+                    <div>
+                      <label className="block text-sm font-medium text-emerald-900 mb-1">Produit à proposer</label>
+                      <select
+                        value={otoProductId}
+                        onChange={e => setOtoProductId(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition bg-white text-emerald-900"
+                      >
+                        <option value="">-- Sélectionnez un produit --</option>
+                        {storeProducts.map(p => (
+                          <option key={p.id} value={p.id}>{p.name} ({p.price} FCFA)</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-emerald-900 mb-1">Réduction exceptionnelle (%)</label>
+                      <input
+                        type="number"
+                        min="0" max="100"
+                        value={otoDiscount}
+                        onChange={e => setOtoDiscount(e.target.value)}
+                        placeholder="Ex: 50 (pour -50%)"
+                        className="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition text-emerald-900"
                       />
                     </div>
                   </div>
@@ -1352,6 +1418,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                       if (e.target.value === 'default') setAffiliateActive(null)
                       else setAffiliateActive(e.target.value === 'true')
                     }}
+                    title="Statut de l'affiliation"
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition bg-white"
                   >
                     <option value="default">Par défaut (Hériter de la boutique)</option>
@@ -1375,6 +1442,22 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                     />
                   </div>
                 )}
+                
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Lien du Kit Média (Optionnel)
+                  </label>
+                  <input
+                    aria-label="Kit Média Affilié"
+                    title="Lien Google Drive, Notion, etc."
+                    type="url"
+                    value={affiliateMediaKitUrl}
+                    onChange={(e) => setAffiliateMediaKitUrl(e.target.value)}
+                    placeholder="Ex: https://drive.google.com/drive/folders/..."
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                  />
+                  <p className="text-[10px] text-gray-400 mt-1">Fournissez vos visuels, bannières et textes pour aider les ambassadeurs à vendre.</p>
+                </div>
               </div>
             </div>
 
@@ -1442,7 +1525,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           <button
             type="button"
             onClick={handleNext}
-            className="flex-1 max-w-sm bg-ink text-white hover:bg-[#1A1A1A] font-bold py-4 rounded-2xl transition shadow-lg flex items-center justify-center gap-2"
+            className="flex-1 max-w-sm bg-[#0F7A60] text-white hover:bg-[#0D5C4A] font-bold py-4 rounded-2xl transition shadow-lg flex items-center justify-center gap-2"
           >
             Étape Suivante →
           </button>
@@ -1460,6 +1543,24 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           </button>
         )}
       </div>
+
+       </div> {/* Fin Colonne Gauche */}
+
+      {/* Colonne Droite : Previewer (Sticky) */}
+      <div className="hidden xl:block w-[350px] shrink-0 sticky top-[100px]">
+        <div className="bg-white/80 backdrop-blur-xl border border-gray-100 rounded-[2.5rem] p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+           <MobilePreviewer 
+             name={name}
+             price={price}
+             description={description}
+             images={imagePreviews}
+             template={template}
+             type={type}
+           />
+        </div>
+      </div>
+
+     </div>
     </form>
   )
 }

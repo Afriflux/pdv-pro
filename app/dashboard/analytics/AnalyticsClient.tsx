@@ -37,6 +37,7 @@ interface InsightsResponse {
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
 const COLORS  = ['#0F7A60', '#F97316', '#6366F1', '#EC4899', '#8B5CF6']
+const COLORS_BG = ['bg-[#0F7A60]', 'bg-[#F97316]', 'bg-[#6366F1]', 'bg-[#EC4899]', 'bg-[#8B5CF6]']
 
 const INSIGHT_STYLES: Record<
   Insight['type'],
@@ -123,6 +124,12 @@ export default function AnalyticsClient({
   // ── Score santé → couleur ──────────────────────────────────────────────────
   const scoreColor = (s: number) =>
     s >= 75 ? '#0F7A60' : s >= 50 ? '#F97316' : '#EF4444'
+
+  const scoreColorBgClass = (s: number) =>
+    s >= 75 ? 'bg-[#0F7A60]' : s >= 50 ? 'bg-[#F97316]' : 'bg-[#EF4444]'
+
+  const scoreColorTextClass = (s: number) =>
+    s >= 75 ? 'text-[#0F7A60]' : s >= 50 ? 'text-[#F97316]' : 'text-[#EF4444]'
 
   // Calcul funnel pour affichage HTML personnalisé
   const fwCount = data.funnel.views || 1
@@ -307,7 +314,7 @@ export default function AnalyticsClient({
                      <Brain size={14} /> Score Santé IA
                    </p>
                    <div className="relative w-40 h-40 flex items-center justify-center">
-                     <div className="absolute inset-0 rounded-full blur-2xl opacity-40 transition-colors duration-1000" style={{ backgroundColor: scoreColor(insights.score) }} />
+                     <div className={`absolute inset-0 rounded-full blur-2xl opacity-40 transition-colors duration-1000 ${scoreColorBgClass(insights.score)}`} />
                      <svg className="absolute inset-0 -rotate-90 drop-shadow-lg" viewBox="0 0 120 120">
                        <circle cx="60" cy="60" r="50" fill="none" stroke="#f1f5f9" strokeWidth="10" strokeLinecap="round" />
                        <circle
@@ -320,7 +327,7 @@ export default function AnalyticsClient({
                        />
                      </svg>
                      <div className="text-center relative z-10 bg-white/80 w-24 h-24 rounded-full flex flex-col items-center justify-center backdrop-blur-sm border border-white/40 shadow-sm">
-                       <p className="text-4xl font-black drop-shadow-sm transition-colors duration-1000" style={{ color: scoreColor(insights.score) }}>
+                       <p className={`text-4xl font-black drop-shadow-sm transition-colors duration-1000 ${scoreColorTextClass(insights.score)}`}>
                          {insights.score}
                        </p>
                        <p className="text-[10px] text-slate-400 font-bold">/ 100</p>
@@ -550,11 +557,8 @@ export default function AnalyticsClient({
                        </div>
                        <div className="w-full h-2.5 bg-slate-100/50 rounded-full overflow-hidden shadow-inner flex items-stretch">
                          <div
-                           className="h-full transition-all duration-1000 ease-out rounded-full shadow-sm"
-                           style={{
-                             width: `${(g.value / (data.geography[0]?.value || 1)) * 100}%`,
-                             backgroundColor: COLORS[i % COLORS.length],
-                           }}
+                           className={`h-full transition-all duration-1000 ease-out rounded-full shadow-sm w-[var(--bar-width)] ${COLORS_BG[i % COLORS_BG.length]}`}
+                           style={{ '--bar-width': `${(g.value / (data.geography[0]?.value || 1)) * 100}%` } as React.CSSProperties}
                          />
                        </div>
                      </div>
@@ -678,7 +682,7 @@ export default function AnalyticsClient({
                    <button 
                      disabled={exportLoading === 'orders'}
                      onClick={() => downloadCsv('orders')}
-                     className="w-full bg-[#1A1A1A] text-white py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-slate-800 disabled:opacity-50 transition-colors"
+                     className="w-full bg-[#0F7A60] text-white py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#0D5C4A] disabled:opacity-50 transition-colors"
                    >
                      {exportLoading === 'orders' ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
                      Format CSV
@@ -699,7 +703,7 @@ export default function AnalyticsClient({
                    <button 
                      disabled={exportLoading === 'full'}
                      onClick={() => downloadCsv('full')}
-                     className="w-full bg-[#1A1A1A] text-white py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-slate-800 disabled:opacity-50 transition-colors"
+                     className="w-full bg-[#0F7A60] text-white py-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#0D5C4A] disabled:opacity-50 transition-colors"
                    >
                      {exportLoading === 'full' ? <RefreshCw size={14} className="animate-spin" /> : <Download size={14} />}
                      Format CSV
@@ -741,14 +745,14 @@ export default function AnalyticsClient({
                 </p>
 
                 <div className="space-y-3 mb-8">
-                  <div className="bg-black/20 border border-white/5 p-4 rounded-2xl flex items-center justify-between opacity-80 backdrop-blur-sm">
+                  <div className="bg-emerald-900/40 border border-white/5 p-4 rounded-2xl flex items-center justify-between opacity-80 backdrop-blur-sm">
                     <div className="flex items-center gap-3">
                       <CalendarDays size={18} className="text-emerald-300" />
                       <span className="text-white font-bold text-sm">Tous les vendredis, 18H</span>
                     </div>
                     <Lock size={16} className="text-emerald-400" />
                   </div>
-                  <div className="bg-black/20 border border-white/5 p-4 rounded-2xl flex items-center justify-between opacity-80 backdrop-blur-sm">
+                  <div className="bg-emerald-900/40 border border-white/5 p-4 rounded-2xl flex items-center justify-between opacity-80 backdrop-blur-sm">
                     <div className="flex items-center gap-3">
                       <FileSpreadsheet size={18} className="text-emerald-300" />
                       <span className="text-white font-bold text-sm">Rapport Complet PDF</span>
@@ -794,7 +798,7 @@ function StatCard({
       <div className="flex justify-between items-start mb-6 relative z-10">
         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner
           group-hover:scale-110 group-hover:rotate-3 transition-all duration-500
-          ${highlight ? 'bg-gradient-to-br from-[#C9A84C] to-[#b3923a] text-white shadow-lg shadow-[#C9A84C]/30' : 'bg-white border border-slate-100 text-[#1A1A1A] group-hover:bg-[#1A1A1A] group-hover:text-white group-hover:border-[#1A1A1A]'}`}>
+          ${highlight ? 'bg-gradient-to-br from-[#C9A84C] to-[#b3923a] text-white shadow-lg shadow-[#C9A84C]/30' : 'bg-white border border-slate-100 text-[#1A1A1A] group-hover:bg-[#0F7A60] group-hover:text-white group-hover:border-[#0F7A60]'}`}>
           {icon}
         </div>
         {trend !== undefined && (

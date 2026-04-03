@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export interface Section {
   type: string
@@ -318,8 +319,9 @@ export function ProductCards({ products, theme = DEFAULT_THEME }: { products: Pr
           {products.map(p => (
             <div key={p.id} id={`product-${p.id}`} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition">
               {p.images?.[0] && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.images[0]} alt={p.name} className="w-full h-56 object-cover" />
+                 <div className="relative w-full h-56 overflow-hidden">
+                   <Image src={p.images[0]} alt={p.name} fill className="object-cover" />
+                 </div>
               )}
               <div className="p-6 md:p-8 space-y-4">
                 <h3 className="font-bold text-gray-900 text-xl">{p.name}</h3>
@@ -475,8 +477,7 @@ export function CrossSellSection({ products, theme = DEFAULT_THEME }: { products
             <div key={p.id} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group">
               <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
                 {p.images?.[0] ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <Image src={p.images[0]} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-4xl">🛍️</div>
                 )}

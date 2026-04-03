@@ -44,7 +44,7 @@ export const AdminDoubleChart = dynamic(
             <YAxis hide={true} domain={['dataMin', 'auto']} />
             <RechartsTooltip 
               contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-              formatter={(value: unknown, name: string) => [
+              formatter={(value: any, name: any) => [
                 `${Number(value).toLocaleString('fr-FR')} F`, 
                 name === 'total_revenu' ? 'Revenus (Commissions)' : 'Volume (GMV)'
               ]}
@@ -109,12 +109,12 @@ export const AdminPieChart = dynamic(
               stroke="none"
               animationDuration={1500}
             >
-              {data.map((entry, index) => (
+              {data.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
             <RechartsTooltip 
-              formatter={(value: number) => [`${value} commandes`]}
+              formatter={(value: any) => [`${value} commandes`]}
               contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
             />
           </PieChart>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Plus, Edit2, Trash2, X, Save, Eye, EyeOff, GraduationCap, Search, Sparkles, BookOpen, Activity, LayoutGrid, List, GripVertical, Loader2, Clock, ChevronRight } from 'lucide-react'
+import { Plus, Edit2, Trash2, X, Save, Eye, EyeOff, GraduationCap, Search, Sparkles, BookOpen, LayoutGrid, List, GripVertical, Loader2, Clock } from 'lucide-react'
 import {
   createMasterclassArticle,
   updateMasterclassArticle,
@@ -11,7 +11,7 @@ import {
 import GenerateMasterclassModal from './GenerateMasterclassModal'
 import { toast } from 'sonner'
 
-export default function MasterclassClient({ initialArticles }: { initialArticles: any[] }) {
+export default function MasterclassClient({ initialArticles }: { initialArticles: Record<string, any>[] }) {
   const [articles, setArticles] = useState(initialArticles)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false)
@@ -21,12 +21,13 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
   const [editingId, setEditingId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [draggedTipIndex, setDraggedTipIndex] = useState<number | null>(null)
-  const [previewArticle, setPreviewArticle] = useState<any>(null)
+  const [previewArticle, setPreviewArticle] = useState<Record<string, any> | null>(null)
   const [readProgress, setReadProgress] = useState(0)
 
   // Scroll logic for the preview modal
-  const handleScroll = (e: any) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
+  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
+    const target = e.target as HTMLElement;
+    const { scrollTop, scrollHeight, clientHeight } = target;
     if (scrollHeight <= clientHeight) {
       setReadProgress(100);
     } else {
@@ -50,7 +51,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
   // Computed data
   const filteredArticles = useMemo(() => {
     if (!searchQuery.trim()) return articles
-    return articles.filter((a: any) => 
+    return articles.filter((a: Record<string, any>) => 
       a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.category.toLowerCase().includes(searchQuery.toLowerCase())
     )
@@ -94,12 +95,12 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
       readTime: '5 min',
       intro: '',
       is_active: true,
-      tips: [{ number: 1, title: '', desc: '' }]
+      tips: [{ number: 1, title: '', desc: '', imageUrl: '', videoUrl: '' }]
     })
     setEditingId(null)
   }
 
-  const handleOpenEdit = (article: any) => {
+  const handleOpenEdit = (article: Record<string, any>) => {
     setFormData({
       ...article,
       tips: typeof article.tips === 'string' ? JSON.parse(article.tips) : article.tips
@@ -114,7 +115,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
   }
 
   // Pre-fill form from AI
-  const handleAIGenerated = (generatedArticle: any) => {
+  const handleAIGenerated = (generatedArticle: Record<string, any>) => {
     setFormData({
       title: generatedArticle.title || '',
       emoji: generatedArticle.emoji || '📖',
@@ -123,7 +124,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
       readTime: generatedArticle.readTime || '5 min',
       intro: generatedArticle.intro || '',
       is_active: false, // Brouillon par défaut pour relecture
-      tips: generatedArticle.tips || [{ number: 1, title: '', desc: '' }]
+      tips: generatedArticle.tips || [{ number: 1, title: '', desc: '', imageUrl: '', videoUrl: '' }]
     })
     setEditingId(null)
     setIsModalOpen(true) // Ouvre le formulaire d'édition auto complété
@@ -153,7 +154,8 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
           toast.error(res.error)
         }
       }
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       toast.error("Erreur serveur inattendue.")
     } finally {
       setIsLoading(false)
@@ -183,7 +185,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
   const addTip = () => {
     setFormData(prev => ({
       ...prev,
-      tips: [...prev.tips, { number: prev.tips.length + 1, title: '', desc: '' }]
+      tips: [...prev.tips, { number: prev.tips.length + 1, title: '', desc: '', imageUrl: '', videoUrl: '' }]
     }))
   }
 
@@ -338,7 +340,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredArticles.map((article: any) => {
+                  {filteredArticles.map((article: Record<string, any>) => {
                     const tipsLength = Array.isArray(article.tips) ? article.tips.length : (typeof article.tips === 'string' ? JSON.parse(article.tips).length : 0);
                     // Génération déterministe pour éviter les Hydration Errors de Next.js
                     const simulatedViews = (article.id.charCodeAt(0) * 7) % 80 + 12;
@@ -417,8 +419,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
 
                    {/* Grille de Cartes pour cette catégorie */}
                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                     {col.items.map((article: any) => {
-                       const tipsLength = Array.isArray(article.tips) ? article.tips.length : (typeof article.tips === 'string' ? JSON.parse(article.tips).length : 0);
+                     {col.items.map((article: Record<string, any>) => {
                        const simulatedViews = ((article.id.toString().charCodeAt(0) || 0) * 7) % 80 + 12;
                        return (
                          <div key={article.id} onClick={() => setPreviewArticle(article)} className="bg-white border text-left border-gray-100/80 rounded-[2rem] shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-emerald-500/20 transition-all duration-300 cursor-pointer group flex flex-col relative h-full overflow-hidden transform hover:-translate-y-1">
@@ -663,7 +664,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
             <div className="relative flex-shrink-0">
               {/* Progress Bar */}
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100 z-50">
-                <div className="h-full bg-[#0F7A60] transition-all duration-150 ease-out rounded-r-full" style={{ width: `${readProgress}%` }}></div>
+                <div className="h-full bg-[#0F7A60] transition-all duration-150 ease-out rounded-r-full" ref={el => { if(el) el.style.width = `${readProgress}%` }}></div>
               </div>
               
               <div className="flex items-center justify-between p-4 px-6 border-b border-gray-100 bg-white/95 backdrop-blur-xl absolute top-1.5 left-0 w-full z-40">
@@ -705,7 +706,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
 
               {/* Steps */}
               <div className="space-y-8 max-w-3xl mx-auto pb-16">
-                {(Array.isArray(previewArticle.tips) ? previewArticle.tips : (typeof previewArticle.tips === 'string' ? JSON.parse(previewArticle.tips) : [])).map((tip: any) => (
+                {(Array.isArray(previewArticle.tips) ? previewArticle.tips : (typeof previewArticle.tips === 'string' ? JSON.parse(previewArticle.tips) : [])).map((tip: Record<string, any>) => (
                   <div key={tip.number} className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow duration-300">
                     <div className="absolute top-0 right-0 w-48 h-48 bg-[#0F7A60]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     
@@ -729,6 +730,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                         )}
                         {!tip.videoUrl && tip.imageUrl && (
                            <div className="w-full h-48 sm:h-64 mb-4 rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
+                             {/* eslint-disable-next-line @next/next/no-img-element */}
                              <img src={tip.imageUrl} alt={tip.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                            </div>
                         )}

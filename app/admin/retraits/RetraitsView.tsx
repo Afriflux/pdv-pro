@@ -163,7 +163,10 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
 
   // EXPORT CSV
   const handleExportCSV = () => {
-    if (filteredWithdrawals.length === 0) return toast.error("Aucune donnée à exporter")
+    if (filteredWithdrawals.length === 0) {
+      toast.error("Aucune donnée à exporter")
+      return
+    }
     
     const headers = ['ID', 'Boutique', 'Montant', 'Méthode', 'Contact/IBAN', 'Date', 'Statut']
     const csvContent = [
@@ -282,7 +285,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
               />
            </div>
 
-           <div className="flex items-center gap-3 overflow-x-auto pb-2 xl:pb-0" style={{ scrollbarWidth: 'none' }}>
+           <div className="flex items-center gap-3 overflow-x-auto pb-2 xl:pb-0 [scrollbar-width:none]">
               <select 
                 value={dateFilter} 
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDateFilter(e.target.value as 'ALL' | 'TODAY' | 'YESTERDAY' | 'LAST_7_DAYS' | 'THIS_MONTH')}

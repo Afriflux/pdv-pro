@@ -12,6 +12,7 @@ interface PaymentMethodSelectorProps {
   amount: number
   orderId: string
   onSuccess: (checkoutUrl: string) => void
+  clientProfile?: any
 }
 
 // ─── Helpers frais ─────────────────────────────────────────────────────────────
@@ -28,9 +29,17 @@ export default function PaymentMethodSelector({
   amount,
   orderId,
   onSuccess,
+  clientProfile,
 }: PaymentMethodSelectorProps) {
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(null)
-  const [customerPhone, setCustomerPhone] = useState('')
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(() => {
+    if (clientProfile?.client_payment_method) {
+      if (['wave', 'orange_money', 'card_cinetpay', 'card_paytech'].includes(clientProfile.client_payment_method)) {
+        return clientProfile.client_payment_method as PaymentMethod
+      }
+    }
+    return null
+  })
+  const [customerPhone, setCustomerPhone] = useState(clientProfile?.client_payment_number || '')
   const [loading, setLoading] = useState(false)
   const [displayFees, setDisplayFees] = useState(0)
 

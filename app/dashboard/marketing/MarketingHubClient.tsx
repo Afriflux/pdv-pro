@@ -58,8 +58,8 @@ export default function MarketingHubClient({ store, products, links, domain }: M
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center justify-between w-full p-4 rounded-2xl text-left transition-all duration-300 ${
                   isActive 
-                  ? 'bg-[#1A1A1A] text-white shadow-md' 
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-[#1A1A1A]'
+                  ? 'bg-[#0F7A60] text-white shadow-md' 
+                  : 'text-gray-500 hover:bg-gray-50 hover:text-[#0F7A60]'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -115,7 +115,7 @@ export default function MarketingHubClient({ store, products, links, domain }: M
                       navigator.clipboard.writeText(storeUrl);
                       alert("Lien copié dans le presse-papier !");
                     }}
-                    className="bg-[#1A1A1A] text-white px-5 py-3 rounded-xl text-sm font-bold hover:bg-black transition-colors shrink-0"
+                    className="bg-[#0F7A60] text-white px-5 py-3 rounded-xl text-sm font-bold hover:bg-[#0D5C4A] transition-colors shrink-0"
                   >
                     Copier
                   </button>

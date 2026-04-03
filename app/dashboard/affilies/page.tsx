@@ -42,7 +42,7 @@ export default async function AffiliesPage() {
   // 1. Récupérer le store du vendeur via Supabase
   const { data: store } = await supabaseAdmin
     .from('Store')
-    .select('id, slug, affiliate_active, affiliate_margin')
+    .select('id, slug, affiliate_active, affiliate_margin, gamification_active, gamification_config')
     .eq('user_id', user.id)
     .single()
 
@@ -60,6 +60,16 @@ export default async function AffiliesPage() {
     `)
     .eq('store_id', store.id)
     .order('created_at', { ascending: false })
+
+  // 2b. Récupérer les demandes de retrait des affiliés de ce store
+  const { data: withdrawals } = await supabaseAdmin
+    .from('AffiliateWithdrawal')
+    .select(`
+      id, amount, status, payment_method, requested_at, phone,
+      Affiliate!inner(code, store_id, user:User(name, email))
+    `)
+    .eq('Affiliate.store_id', store.id)
+    .order('requested_at', { ascending: false })
 
   // 3. Récupérer les Produits et les Pages de vente pour les commissions spécifiques
   const { data: products } = await supabaseAdmin
@@ -111,7 +121,10 @@ export default async function AffiliesPage() {
           storeSlug={store.slug}
           initialActive={store.affiliate_active}
           initialMargin={store.affiliate_margin ?? 0.15}
+          initialGamificationActive={store.gamification_active}
+          initialGamificationConfig={store.gamification_config}
           affiliates={(affiliates ?? []) as unknown as AffiliateRow[]}
+          withdrawals={withdrawals || []}
           products={formattedProducts}
           salePages={formattedPages}
         />

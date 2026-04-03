@@ -24,9 +24,7 @@ interface WalletData {
   monthly_goal: number | null
 }
 
-function formatAmount(n: number): string {
-  return new Intl.NumberFormat('fr-FR').format(n) + ' FCFA'
-}
+
 
 const METHOD_LABELS: Record<string, string> = {
   wave:         'Wave',

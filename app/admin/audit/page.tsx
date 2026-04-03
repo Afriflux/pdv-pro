@@ -1,5 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
-import { redirect } from 'next/navigation'
+
 import { History, AlertTriangle } from 'lucide-react'
 import AdminAuditTable from '@/components/admin/AdminAuditTable'
 

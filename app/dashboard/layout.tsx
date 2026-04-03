@@ -1,3 +1,4 @@
+import { GlobalHomeButton } from '@/components/shared/GlobalHomeButton'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/dashboard/Sidebar'
@@ -35,7 +36,7 @@ export default async function DashboardLayout({
 
   const storeName        = store?.name     ?? 'Mon Espace'
   const vendorName       = userProfile?.name    ?? (user.user_metadata?.name as string) ?? 'Vendeur'
-  const avatarUrl        = userProfile?.avatar_url ?? null
+  const avatarUrl        = userProfile?.avatar_url ?? (user.user_metadata?.avatar_url as string) ?? (user.user_metadata?.picture as string) ?? null
   const contractAccepted = store?.contract_accepted ?? true
   const storeVendorType  = (store?.vendor_type as 'digital' | 'physical' | 'hybrid' | null) ?? 'digital'
   // true par défaut : ne pas bloquer si le store n'existe pas encore
@@ -44,7 +45,8 @@ export default async function DashboardLayout({
     <div className="flex min-h-screen bg-[#FAFAF7]">
       <Sidebar storeName={storeName} userName={vendorName} avatarUrl={avatarUrl} vendorType={storeVendorType} />
 
-      <main className="flex-1 bg-[#FAFAF7] min-w-0 min-h-screen overflow-auto">
+      <main className="relative flex-1 bg-[#FAFAF7] min-w-0 min-h-screen overflow-auto">
+        <GlobalHomeButton />
         {/* Bandeau alerte contrat — affiché uniquement si non signé */}
         {!contractAccepted && store && (
           <ContractBanner

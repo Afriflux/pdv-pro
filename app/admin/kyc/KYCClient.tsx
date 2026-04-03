@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format, addYears } from 'date-fns'
-import { fr } from 'date-fns/locale'
+
 import { toast } from 'sonner'
-import { ExternalLink, AlertTriangle, AlertCircle, RefreshCw, CheckCircle2, ShieldCheck, ShieldAlert, ShieldX, Files, UserCheck, LayoutGrid, List, ChevronRight, XCircle, Search, FileText, Maximize2, ZoomIn, ZoomOut, MessageCircle, Calendar } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, ShieldCheck, ShieldAlert, ShieldX, Files, UserCheck, LayoutGrid, List, ChevronRight, XCircle, FileText, Maximize2, ZoomIn, ZoomOut, MessageCircle, Calendar } from 'lucide-react'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 export interface KYCDocuments {
@@ -78,10 +78,11 @@ export default function KYCClient({
   const handleAction = async (actionType: 'approve' | 'reject' | 'correction') => {
     if (!selectedStore) return
     if (actionType === 'reject' && !rejectionReason.trim()) {
-      return toast.error('Un motif de rejet est obligatoire.')
+      toast.error('Un motif de rejet est obligatoire.')
+      return
     }
 
-    const newStatus = actionType === 'approve' ? 'verified' : actionType === 'reject' ? 'rejected' : 'pending_correction'
+
 
     if (isDemoMode) {
       setLocalStores(prev => prev.filter(s => s.id !== selectedStore.id)) // Remove from current tab
@@ -93,7 +94,7 @@ export default function KYCClient({
       return
     }
 
-    const payload: any = { action: actionType, reason: rejectionReason.trim() }
+    const payload: Record<string, string> = { action: actionType, reason: rejectionReason.trim() }
     if (actionType === 'approve') payload.expiration_date = expirationDate
 
     const promise = fetch(`/api/admin/kyc/${selectedStore.id}`, {
@@ -268,12 +269,14 @@ export default function KYCClient({
 
               <div className="flex items-center bg-gray-100/50 p-1 rounded-xl border border-gray-200/50">
                 <button 
+                  title="Vue en cartes"
                   onClick={() => setViewMode('CARDS')}
                   className={`p-2.5 rounded-lg transition-all ${viewMode === 'CARDS' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-400 hover:text-gray-600'}`}
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>
                 <button 
+                  title="Vue en tableau"
                   onClick={() => setViewMode('TABLE')}
                   className={`p-2.5 rounded-lg transition-all ${viewMode === 'TABLE' ? 'bg-white text-gray-900 shadow-sm font-bold' : 'text-gray-400 hover:text-gray-600'}`}
                 >
@@ -435,7 +438,7 @@ export default function KYCClient({
                   </p>
                 </div>
               </div>
-              <button onClick={() => setSelectedStore(null)} className="p-2.5 bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-gray-100 hover:border-red-200 shadow-sm hover:shadow">
+              <button title="Fermer" onClick={() => setSelectedStore(null)} className="p-2.5 bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-gray-100 hover:border-red-200 shadow-sm hover:shadow">
                 <XCircle size={24} />
               </button>
             </div>
@@ -471,6 +474,7 @@ export default function KYCClient({
                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Recto (Image HD)</p>
                          {selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url ? (
                            <button onClick={() => { setLightboxImage(selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url!); setLightboxScale(1); }} className="block relative aspect-[1.58] bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
+                             {/* eslint-disable-next-line @next/next/no-img-element */}
                              <img src={selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url!} alt="Recto" className="object-cover w-full h-full group-hover/img:scale-105 transition-transform duration-500" />
                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                                <span className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-xl text-white font-bold text-sm flex items-center gap-2 border border-white/30 shadow-xl"><Maximize2 size={16}/> Agrandir (Lightbox)</span>
@@ -483,6 +487,7 @@ export default function KYCClient({
                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Verso (Optionnel)</p>
                          {selectedStore.kyc_documents?.id_card_back_url ? (
                            <button onClick={() => { setLightboxImage(selectedStore.kyc_documents!.id_card_back_url!); setLightboxScale(1); }} className="block relative aspect-[1.58] bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
+                             {/* eslint-disable-next-line @next/next/no-img-element */}
                              <img src={selectedStore.kyc_documents.id_card_back_url} alt="Verso" className="object-cover w-full h-full group-hover/img:scale-105 transition-transform duration-500" />
                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                                <span className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-xl text-white font-bold text-sm flex items-center gap-2 border border-white/30 shadow-xl"><Maximize2 size={16}/> Agrandir (Lightbox)</span>
@@ -495,6 +500,7 @@ export default function KYCClient({
                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Justificatif de domicile (Moins de 3 mois)</p>
                          {selectedStore.kyc_documents?.domicile_url ? (
                            <button onClick={() => { setLightboxImage(selectedStore.kyc_documents!.domicile_url!); setLightboxScale(1); }} className="block relative h-48 bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
+                             {/* eslint-disable-next-line @next/next/no-img-element */}
                              <img src={selectedStore.kyc_documents.domicile_url} alt="Domicile" className="object-cover w-full h-full group-hover/img:scale-105 transition-transform duration-500" />
                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                                <span className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-xl text-white font-bold text-sm flex items-center gap-2 border border-white/30 shadow-xl"><Maximize2 size={16}/> Agrandir (Lightbox)</span>
@@ -518,6 +524,7 @@ export default function KYCClient({
                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5"><Calendar size={14} className="text-[#0F7A60]"/> Date d'expiration KYC</label>
                      <input 
                        type="date"
+                       title="Date d'expiration"
                        className="w-full bg-transparent text-sm font-bold text-gray-900 outline-none cursor-pointer"
                        value={expirationDate}
                        onChange={e => setExpirationDate(e.target.value)}
@@ -570,22 +577,23 @@ export default function KYCClient({
       {lightboxImage && (
         <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/90 backdrop-blur-xl animate-in fade-in duration-200">
           
-          <button onClick={() => setLightboxImage(null)} className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-red-500/80 text-white rounded-full transition-all border border-white/20 hover:scale-110 z-50">
+          <button title="Fermer" onClick={() => setLightboxImage(null)} className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-red-500/80 text-white rounded-full transition-all border border-white/20 hover:scale-110 z-50">
             <XCircle size={32} />
           </button>
 
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 z-50 shadow-2xl">
-            <button onClick={() => setLightboxScale(s => Math.max(0.5, s - 0.25))} className="p-2.5 text-white hover:bg-white/20 rounded-full transition-colors"><ZoomOut size={24}/></button>
+            <button title="Dézoomer" onClick={() => setLightboxScale(s => Math.max(0.5, s - 0.25))} className="p-2.5 text-white hover:bg-white/20 rounded-full transition-colors"><ZoomOut size={24}/></button>
             <span className="text-white font-mono font-bold w-12 text-center text-sm">{Math.round(lightboxScale * 100)}%</span>
-            <button onClick={() => setLightboxScale(s => Math.min(3, s + 0.25))} className="p-2.5 text-white hover:bg-white/20 rounded-full transition-colors"><ZoomIn size={24}/></button>
+            <button title="Zoomer" onClick={() => setLightboxScale(s => Math.min(3, s + 0.25))} className="p-2.5 text-white hover:bg-white/20 rounded-full transition-colors"><ZoomIn size={24}/></button>
           </div>
 
           <div className="w-full h-full p-12 flex items-center justify-center overflow-auto cursor-zoom-out" onClick={() => setLightboxImage(null)}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src={lightboxImage} 
               alt="KYC Document Zoom" 
               className="max-w-full max-h-full object-contain transition-transform duration-300 shadow-2xl"
-              style={{ transform: `scale(${lightboxScale})` }}
+              ref={el => { if (el) el.style.transform = `scale(${lightboxScale})` }}
               onClick={(e) => e.stopPropagation()} // Prevent close on image click
               draggable={false}
             />

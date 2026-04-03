@@ -30,6 +30,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.b-cdn.net',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
     ],
   },
   compress: true,

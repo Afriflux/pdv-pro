@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { X, Lock, CheckCircle2 } from 'lucide-react'
 import { Product, Theme, THEME_MAP } from '@/components/pages/PageRenderers'
 import { createClient } from '@/lib/supabase/client'
+import Image from 'next/image'
 
 interface LiveCheckoutDrawerProps {
   pageId: string
@@ -120,8 +121,9 @@ export function LiveCheckoutDrawer({ pageId, products, theme, storeName }: LiveC
             {/* Résumé Produit */}
             <div className={`flex gap-4 p-4 rounded-2xl ${colors.bgLight} border border-${theme.color}-100`}>
               {product.images?.[0] ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={product.images[0]} alt={product.name} className="w-20 h-20 object-cover rounded-xl shadow-sm" />
+                <div className="relative w-20 h-20 rounded-xl overflow-hidden shadow-sm">
+                  <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                </div>
               ) : (
                 <div className={`w-20 h-20 ${colors.bgPrimary} opacity-50 rounded-xl flex items-center justify-center text-white`}>📦</div>
               )}

@@ -93,6 +93,49 @@ Merci pour votre confiance ! 🙏
 — PDV Pro`
 }
 
+export function msgOrderShipped({ buyerName, productName, vendorName, orderId }: {
+  buyerName: string; productName: string; vendorName: string; orderId: string
+}) {
+  const ref = orderId.split('-')[0].toUpperCase()
+  return `🚚 *Votre commande est en route !*
+
+Bonjour ${buyerName},
+Bonne nouvelle, votre livraison pour *${productName}* est officiellement expédiée par ${vendorName}. 
+
+📦 Réf : #${ref}
+Un livreur vous contactera très bientôt. Tenez-vous prêt !
+Si vous avez un empêchement, n'hésitez pas à nous le signaler.
+
+Suivi : https://pdvpro.com/track?ref=${orderId}
+À très vite ! 🙏`
+}
+
+export function msgOrderDelivered({ buyerName, productName, vendorName }: {
+  buyerName: string; productName: string; vendorName: string
+}) {
+  return `🎉 *Commande Livrée !*
+
+Bonjour ${buyerName},
+Nous vous confirmons la bonne réception de votre commande *${productName}*.
+
+Merci d'avoir fait confiance à ${vendorName} et à PDV Pro !
+Si vous aimez le produit, n'hésitez pas à laisser un retour.
+
+À bientôt pour de nouvelles découvertes ! 🛍️`
+}
+
+export function msgOrderCancelled({ buyerName, productName }: {
+  buyerName: string; productName: string
+}) {
+  return `❌ *Commande Annulée*
+
+Bonjour ${buyerName},
+Votre demande concernant *${productName}* a été annulée.
+Si c'est une erreur ou si vous souhaitez reprogrammer, vous pouvez nous recontacter.
+
+— L'équipe PDV Pro`
+}
+
 export function msgVendorCodReminder(params: {
   productName: string
   buyerName: string

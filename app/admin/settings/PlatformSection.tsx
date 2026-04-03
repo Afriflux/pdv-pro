@@ -76,8 +76,9 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
       
       handleChange(fieldKey, data.result)
       toast.success('Texte optimisé généré ! 🪄')
-    } catch (err: any) {
-      toast.error(err.message)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      toast.error(msg)
     } finally {
       setGeneratingAI(prev => ({ ...prev, [fieldKey]: false }))
     }
@@ -128,7 +129,7 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
 
   const inputCls =
     'w-full bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl py-3 px-4 text-sm font-medium text-[#1A1A1A] ' +
-    'focus:bg-white focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 outline-none transition-all duration-300 ' +
+    'focus:bg-white focus:border-[#0F7A60] focus-visible:ring-4 focus-visible:ring-[#0F7A60]/10 outline-none transition-all duration-300 ' +
     'shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] placeholder:text-gray-400'
 
   type FieldDef = { key: string; label: string; placeholder: string; type?: string; helper?: string; options?: {label: string; value: string}[] }
@@ -138,7 +139,7 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
       {fields.map(field => (
         <div key={field.key} className={`${field.type === 'textarea' ? 'sm:col-span-2' : ''} group`}>
           <div className="flex items-center justify-between mb-1.5 ml-1">
-             <label className="block text-xs font-black text-gray-500 uppercase tracking-wider group-focus-within:text-[#0F7A60] transition-colors">
+             <label htmlFor={field.key} className="block text-xs font-black text-gray-500 uppercase tracking-wider group-focus-within:text-[#0F7A60] transition-colors">
                {field.label}
              </label>
              {(field.key === 'seo_title' || field.key === 'seo_description') && (
@@ -156,10 +157,12 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
           </div>
           {field.type === 'select' ? (
             <select
+              id={field.key}
               value={config[field.key] || ''}
               onChange={(e) => handleChange(field.key, e.target.value)}
               className={inputCls + ' appearance-none cursor-pointer'}
               title={field.label}
+              aria-label={field.label}
             >
               <option value="" disabled>{field.placeholder}</option>
               {field.options?.map(opt => (
@@ -169,7 +172,8 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
           ) : field.type === 'image' ? (
             <div className="flex items-center gap-4 bg-white/40 p-3 rounded-2xl border border-white/60">
                {config[field.key] ? (
-                 <img src={config[field.key]} alt="" className="w-16 h-16 object-cover rounded-xl border border-gray-200 shadow-sm" />
+                 // eslint-disable-next-line @next/next/no-img-element
+                 <img src={config[field.key]} alt={field.label} className="w-16 h-16 object-cover rounded-xl border border-gray-200 shadow-sm" />
                ) : (
                  <div className="w-16 h-16 bg-gray-50 rounded-xl border border-dashed border-gray-300 flex items-center justify-center text-gray-400">
                     <ImageIcon className="w-5 h-5 opacity-50" />
@@ -200,6 +204,7 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
             </div>
           ) : field.type === 'textarea' ? (
             <textarea
+              id={field.key}
               value={config[field.key] ?? ''}
               onChange={e => handleChange(field.key, e.target.value)}
               placeholder={field.placeholder}
@@ -208,6 +213,7 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
             />
           ) : (
             <input
+              id={field.key}
               type={field.type ?? 'text'}
               value={config[field.key] ?? ''}
               onChange={e => handleChange(field.key, e.target.value)}

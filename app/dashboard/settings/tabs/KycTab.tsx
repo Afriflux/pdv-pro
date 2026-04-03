@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import * as Actions from '@/app/actions/settings'
 import { toast } from 'sonner'
-import { CheckCircle2, XCircle, Clock, UploadCloud, FileText, Image as ImageIcon, ShieldCheck, Loader2, FileBadge, UserCircle2 } from 'lucide-react'
+import { CheckCircle2, XCircle, Clock, FileText, Image as ImageIcon, ShieldCheck, Loader2, FileBadge, UserCircle2 } from 'lucide-react'
 
 export function KycTab({ store }: { store: any }) {
   const kycStatus = store?.kyc_status || 'unverified'
@@ -43,12 +43,12 @@ export function KycTab({ store }: { store: any }) {
     
     const isPassport = kycDocType === 'passport'
     if (isPassport) {
-      if (!rectoFile && !rectoPreview) return toast.error('La page avec vos informations est requise')
-      if (!selfieFile && !selfiePreview) return toast.error('Votre selfie est requis')
+      if (!rectoFile && !rectoPreview) { toast.error('La page avec vos informations est requise'); return; }
+      if (!selfieFile && !selfiePreview) { toast.error('Votre selfie est requis'); return; }
     } else {
-      if (!rectoFile && !rectoPreview) return toast.error('La face avant (Recto) est requise')
-      if (!versoFile && !versoPreview) return toast.error('La face arrière (Verso) est requise')
-      if (!selfieFile && !selfiePreview) return toast.error('Votre selfie est requis')
+      if (!rectoFile && !rectoPreview) { toast.error('La face avant (Recto) est requise'); return; }
+      if (!versoFile && !versoPreview) { toast.error('La face arrière (Verso) est requise'); return; }
+      if (!selfieFile && !selfiePreview) { toast.error('Votre selfie est requis'); return; }
     }
 
     setLoading(true)
@@ -148,7 +148,7 @@ export function KycTab({ store }: { store: any }) {
           <div className="absolute inset-0 bg-gradient-to-br from-[#064E3B] via-[#022C22] to-[#0F766E] opacity-90"></div>
           
           {/* Motifs géométriques */}
-          <div className="absolute inset-0 opacity-[0.2]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(16, 185, 129, 0.4) 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
+          <div className="absolute inset-0 opacity-[0.2]" ref={el => { if (el) { el.style.backgroundImage = 'radial-gradient(circle at 2px 2px, rgba(16, 185, 129, 0.4) 1px, transparent 0)'; el.style.backgroundSize = '32px 32px'; } }}></div>
           
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-teal-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 animate-pulse duration-[12000ms] pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-600/20 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>

@@ -224,7 +224,7 @@ export default function ImportCSVPages({ onImportSuccess }: { onImportSuccess?: 
               <button
                 onClick={handleImport}
                 disabled={importing}
-                className="w-full bg-[#1A1A1A] hover:bg-black disabled:opacity-50 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2"
+                className="w-full bg-[#0F7A60] hover:bg-[#0D5C4A] disabled:opacity-50 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2"
               >
                 {importing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Upload className="w-5 h-5" />}
                 {importing ? "Importation en cours..." : "Lancer l'importation"}
@@ -232,7 +232,7 @@ export default function ImportCSVPages({ onImportSuccess }: { onImportSuccess?: 
             )}
             
             {result && (
-              <button onClick={reset} className="w-full bg-[#1A1A1A] hover:bg-black text-white font-black py-4 rounded-xl transition-all">
+              <button onClick={reset} className="w-full bg-[#0F7A60] hover:bg-[#0D5C4A] text-white font-black py-4 rounded-xl transition-all">
                 Importer un autre fichier
               </button>
             )}

@@ -39,22 +39,22 @@ export function ContractTab({ store }: { store: any }) {
       {/* 🌟 Master Container Glassmorphism 🌟 */}
       <div className="bg-white/80 backdrop-blur-xl border border-gray-200/60 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden relative">
         
-        {/* === HEADER / BANNER LÉGAL (Gradients Slate/Or) === */}
-        <div className="h-48 sm:h-72 w-full relative bg-[#0F172A] overflow-hidden">
+        {/* === HEADER / BANNER LÉGAL (Gradients Emerald) === */}
+        <div className="h-48 sm:h-72 w-full relative bg-[#041D14] overflow-hidden">
           {/* Gradients Héroïques */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1E293B] via-[#0F172A] to-[#334155] opacity-90"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0A3D2C] via-[#05261B] to-[#041D14] opacity-90"></div>
           
           {/* Motifs classiques */}
           <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #FFF 0, #FFF 1px, transparent 0, transparent 50%)', backgroundSize: '20px 20px' }}></div>
           
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-slate-400/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 animate-pulse duration-[10000ms] pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-amber-600/10 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 animate-pulse duration-[10000ms] pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-700/10 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
           <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.05] mix-blend-overlay pointer-events-none"></div>
 
           {/* Top Actions flottantes */}
           <div className="absolute top-6 right-6 lg:top-8 lg:right-8 z-20 flex gap-3">
             <div className="px-5 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full font-bold text-[13px] flex items-center gap-2 shadow-sm">
-              <Scale size={16} className="text-amber-400" />
+              <Scale size={16} className="text-emerald-400" />
               Juridique & Conformité
             </div>
           </div>

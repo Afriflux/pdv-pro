@@ -27,7 +27,7 @@ import { createClient } from '@/lib/supabase/server'
 import { CountdownBanner } from '@/components/landing/CountdownBanner'
 import { LiveCounters } from '@/components/landing/LiveCounters'
 import { TestimonialSlider } from '@/components/landing/TestimonialSlider'
-import { Package, Wallet } from 'lucide-react'
+import { Package, Wallet, Share2, TrendingUp, PhoneCall, Phone, ChevronRight } from 'lucide-react'
 
 
   // Types pour les données dynamiques
@@ -51,7 +51,7 @@ import { Package, Wallet } from 'lucide-react'
     },
     {
       q: "Peut-on vendre des produits physiques ?",
-      r: "Oui ! PDV Pro supporte nativement le paiement à la livraison (COD) pour les vendeurs de produits physiques. Le COD est soumis à une commission fixe de 5%. Aucun abonnement requis — vous activez le COD depuis vos paramètres et c'est tout."
+      r: "Oui ! PDV Pro supporte nativement le paiement à la livraison (COD) pour les vendeurs de produits physiques. Le COD suit simplement la même commission dégressive que les paiements digitaux (de 8% à 5%). Aucun abonnement requis — vous activez le paiement à la livraison depuis vos paramètres et c'est tout."
     },
     {
       q: "Quand sont disponibles mes fonds ?",
@@ -86,6 +86,16 @@ export default async function LandingPage() {
 
   // Chargement config dynamique depuis PlatformConfig
   const supabaseAdmin = createAdminClient()
+
+  let dashboardUrl = '/dashboard'
+  if (isLoggedIn && session?.user) {
+    const { data: userRow } = await supabaseAdmin.from('User').select('role').eq('id', session.user.id).single()
+    const role = userRow?.role
+    if (role === 'acheteur' || role === 'client') dashboardUrl = '/client'
+    else if (role === 'affilie') dashboardUrl = '/portal'
+    else if (role === 'super_admin' || role === 'gestionnaire' || role === 'support') dashboardUrl = '/admin'
+  }
+
   const { TIERS: dynamicTiers } = await getCommissionTiers()
   const allowedKeys = [
     'landing_hero_badge',
@@ -211,7 +221,7 @@ export default async function LandingPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <LandingNav isLoggedIn={isLoggedIn} />
+            <LandingNav isLoggedIn={isLoggedIn} dashboardUrl={dashboardUrl} />
           </div>
         </div>
       </header>
@@ -254,7 +264,7 @@ export default async function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-              <Link href={isLoggedIn ? "/dashboard" : "/register"} className="w-full sm:w-auto px-8 py-4 bg-emerald hover:bg-emerald-rich text-white font-semibold rounded-full text-lg transition shadow-xl shadow-emerald/20 flex items-center justify-center gap-2">
+              <Link href={isLoggedIn ? dashboardUrl : "/register"} className="w-full sm:w-auto px-8 py-4 bg-emerald hover:bg-emerald-rich text-white font-semibold rounded-full text-lg transition shadow-xl shadow-emerald/20 flex items-center justify-center gap-2">
                 {isLoggedIn ? "Mon espace" : get('landing_hero_cta_primary', 'Lancer ma boutique')} <ArrowRight size={20} />
               </Link>
               <Link href="/vendeurs" className="w-full sm:w-auto px-8 py-4 bg-white border border-emerald text-emerald hover:bg-emerald/5 rounded-full font-medium text-lg transition flex items-center justify-center shadow-sm">
@@ -278,7 +288,7 @@ export default async function LandingPage() {
             }
           `}</style>
           <div className="animate-marqueeHero flex items-center gap-8 text-sm">
-            {[...get('landing_ticker_text', '🔒 Paiements sécurisés Wave & Orange Money , 💰 Zéro abonnement — ne payez que sur vos ventes , 🚀 Boutique en ligne en 2 minutes , 📦 Gestion des livraisons intégrée , 🤖 IA marketing incluse , 🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l\'Afrique de l\'Ouest').split(',').map(s=>s.trim()).filter(Boolean), ...get('landing_ticker_text', '🔒 Paiements sécurisés Wave & Orange Money , 💰 Zéro abonnement — ne payez que sur vos ventes , 🚀 Boutique en ligne en 2 minutes , 📦 Gestion des livraisons intégrée , 🤖 IA marketing incluse , 🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l\'Afrique de l\'Ouest').split(',').map(s=>s.trim()).filter(Boolean)].map((item, i) => (
+            {[...get('landing_ticker_text', '🔒 Paiements sécurisés Wave & Orange Money , 💰 Zéro abonnement — ne payez que sur vos ventes , 🎯 Upsell 1-Click , 📦 Gestion des livraisons intégrée , 🤖 IA marketing incluse , 📞 Récupération Paniers Abandonnés , 🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l\'Afrique de l\'Ouest').split(',').map(s=>s.trim()).filter(Boolean), ...get('landing_ticker_text', '🔒 Paiements sécurisés Wave & Orange Money , 💰 Zéro abonnement — ne payez que sur vos ventes , 🎯 Upsell 1-Click , 📦 Gestion des livraisons intégrée , 🤖 IA marketing incluse , 📞 Récupération Paniers Abandonnés , 🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l\'Afrique de l\'Ouest').split(',').map(s=>s.trim()).filter(Boolean)].map((item, i) => (
               <React.Fragment key={i}>
                 <span>{item}</span>
                 <span>•</span>
@@ -492,7 +502,7 @@ export default async function LandingPage() {
                   <div key={slide} className="flex gap-6 pr-6 animate-marqueeX w-max" aria-hidden={slide === 2 ? "true" : undefined}>
                     {[
                       { icon: <Smartphone size={28} />, title: 'Boutique Mobile', desc: '98% de vos acheteurs sont sur smartphone. Notre design charge en 1 seconde et convertit mieux.' },
-                      { icon: <Zap size={28} />, title: 'Mobile Money', desc: 'Intégration d\'origine avec Wave et Orange Money (Sénégal/Côte d\'Ivoire) via notre partenaire agréé.' },
+                      { icon: <Zap size={28} />, title: 'Upsell 1-Click', desc: 'Proposez une offre irrésistible juste après l\'achat. Augmentez votre panier moyen de 30% sans effort.' },
                       { icon: <Store size={28} />, title: 'Gestion Livraisons', desc: 'Configurez vos zones tarifaires. Le client paie le produit + la livraison en un seul clic.' },
                       { icon: <Shield size={28} />, title: 'Automatisations WA', desc: 'Vos clients reçoivent des confirmations de commande et de suivi directement sur WhatsApp.' },
                       { icon: <ChartBar size={28} />, title: 'Analytics', desc: 'Suivez vos vues, vos ventes, votre taux de conversion et l\'origine de vos clients en temps réel.' },
@@ -515,9 +525,9 @@ export default async function LandingPage() {
                   <div key={slide} className="flex gap-6 pr-6 animate-marqueeX-reverse w-max" aria-hidden={slide === 2 ? "true" : undefined}>
                     {[
                       { icon: <Globe size={28} />, title: 'Marketing', desc: 'Codes promos, Vente Flash, Cross-selling et Programme d\'affiliation pour vos ambassadeurs.' },
-                      { icon: <Sparkles size={28} />, title: 'IA Check360°', desc: 'Votre assistant IA analyse vos ventes chaque semaine et vous dit exactement quoi améliorer pour vendre plus.' },
+                      { icon: <Users size={28} />, title: 'Call Center & Closers', desc: 'Vos paniers abandonnés sont automatiquement envoyés à nos experts qui relancent vos prospects pour vous.' },
                       { icon: <MessageCircle size={28} />, title: 'Groupes Telegram', desc: 'Vendez l\'accès à des groupes privés. L\'invitation est envoyée automatiquement après chaque paiement.' },
-                      { icon: <Users size={28} />, title: 'Ambassadeurs', desc: 'Recrutez des ambassadeurs qui vendent pour vous. Commissions automatiques, suivi en direct.' },
+                      { icon: <Sparkles size={28} />, title: 'Ambassadeurs / Auto-Retrait', desc: 'Vos affiliés et closers sont payés automatiquement par le système, les mains libres.' },
                       { icon: <Briefcase size={28} />, title: 'Produits Digitaux & Services', desc: 'Vendez des Ebooks, VOD, ou des Coachings avec notre système de réservation natif.' },
                     ].map((feat, i) => (
                       <div key={i} className="group p-8 w-[350px] md:w-[420px] shrink-0 bg-pearl/30 border border-line rounded-[2rem] hover:bg-white hover:border-emerald/40 hover:shadow-2xl hover:shadow-emerald/10 transition-all duration-300">
@@ -686,8 +696,8 @@ export default async function LandingPage() {
                   </div>
 
                 {/* Card 4 (Expert) */}
-                <div className="w-64 md:w-auto bg-pearl rounded-3xl border-2 border-emerald-rich shadow-lg p-6 flex flex-col transform md:scale-105 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald/20 transition-all duration-300 relative group/tooltip overflow-hidden z-20 cursor-help">
-                  <div className="absolute inset-0 bg-emerald-deep/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
+                <div className="w-64 md:w-auto bg-pearl rounded-3xl border-2 border-emerald-rich shadow-lg p-6 flex flex-col transform md:scale-105 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald/20 transition-all duration-300 relative group/tooltip z-20 cursor-help">
+                  <div className="absolute inset-0 rounded-3xl bg-emerald-deep/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
                     <h4 className="font-bold text-emerald-light mb-3 text-lg">Palier Expert</h4>
                     <p className="text-sm text-cream/90 leading-relaxed">Le grade d'élite. En dépassant 1 Million FCFA mensuels, vous obtenez notre meilleur taux de 5%. Frais Wave/Orange Money inclus. Zéro plafond de facturation.</p>
                   </div>
@@ -724,7 +734,7 @@ export default async function LandingPage() {
                   <div className="absolute top-0 right-0 bg-gold text-white text-[10px] font-black uppercase px-3 py-1 rounded-bl-xl">Spécial E-commerce</div>
                   <div className="text-4xl leading-none mb-3 mt-2">📦</div>
                   <h4 className="font-display font-black text-ink text-xl mb-1">Service COD</h4>
-                  <p className="text-gold-dark font-bold text-sm">Paiement à la livraison : 5% fixe</p>
+                  <p className="text-gold-dark font-bold text-sm">Paiement à la livraison : Commission dynamique</p>
                </div>
                <div className="bg-white border-2 border-turquoise/30 rounded-2xl p-6 text-center shadow-lg flex-1 hover:border-turquoise transition-colors flex flex-col items-center justify-center">
                   <div className="text-4xl leading-none mb-3">🏦</div>
@@ -739,6 +749,148 @@ export default async function LandingPage() {
 
             <PricingCalculator tiers={dynamicTiers} />
 
+          </div>
+        </section>
+        {/* 7.5 MACHINE A CASH (Paniers & Upsells & Retraits Auto) */}
+        <section className="py-24 px-6 bg-white overflow-hidden relative border-y border-line/10">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald/5 blur-[100px] rounded-full pointer-events-none"></div>
+          
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="text-center mb-16 max-w-3xl mx-auto">
+              <span className="inline-block bg-emerald/10 text-emerald font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 border border-emerald/20">La Machine à Cash</span>
+              <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-ink">Trois leviers natifs pour <span className="text-emerald">exploser</span> votre C.A.</h2>
+              <p className="text-xl text-slate font-light">
+                Ne laissez plus d'argent sur la table. PDV Pro intègre un arsenal de conversion secret, activable en un clic sans abonnement externe.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Levier 1: Paniers Abandonnés / Call Center */}
+              <div className="bg-pearl rounded-[2rem] p-10 border border-line flex flex-col relative overflow-hidden group hover:shadow-2xl hover:shadow-emerald/10 hover:border-emerald/30 transition-all duration-300 transform hover:-translate-y-2">
+                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Users size={80} />
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-emerald shadow-sm mb-8 border border-line group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-3xl">📞</span>
+                </div>
+                <h3 className="text-2xl font-display font-black text-ink mb-4">Relance & Call Center Intégré</h3>
+                <p className="text-slate leading-relaxed font-light mb-6 flex-1">
+                  Dès qu'un client commence à remplir ses informations sans payer, le système capture son numéro. Nos <span className="font-bold text-ink">Closers partenaires</span> le relancent par téléphone pour clôturer la vente. Vous récupérez 30% de chiffre additionnel.
+                </p>
+                <div className="bg-white border border-line rounded-xl p-4 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald/10 flex items-center justify-center text-emerald shrink-0"><CheckCircle2 size={18} /></div>
+                  <div>
+                    <p className="text-xs text-slate uppercase tracking-wider font-bold">Résultat Moyen</p>
+                    <p className="text-ink font-black text-lg">+30% de ventes sauvées</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Levier 2: Upsell 1-Click */}
+              <div className="bg-emerald rounded-[2rem] p-10 flex flex-col relative overflow-hidden group hover:shadow-2xl hover:shadow-emerald/40 transition-all duration-300 transform hover:-translate-y-2 md:-translate-y-4">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald to-emerald-rich"></div>
+                {/* SVG pattern overlay */}
+                <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                  <pattern id="diagonalHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                    <line x1="0" y1="0" x2="0" y2="10" stroke="#fff" strokeWidth="2" />
+                  </pattern>
+                  <rect width="100%" height="100%" fill="url(#diagonalHatch)" />
+                </svg>
+                
+                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shadow-sm mb-8 border border-white/20 relative z-10 group-hover:scale-110 transition-transform duration-300">
+                  <Zap size={32} />
+                </div>
+                <h3 className="text-2xl font-display font-black text-white mb-4 relative z-10">L'Upsell Magique (O-T-O)</h3>
+                <p className="text-cream leading-relaxed font-light mb-6 flex-1 relative z-10">
+                  Dès que le client valide sa commande (ex: à la livraison), une page <span className="font-bold">One-Time Offer</span> s'affiche avec un compte à rebours de 10 min, lui proposant un article premium à -x%. L'ajout au panier se fait en 1 seul clic.
+                </p>
+                <div className="bg-black/20 backdrop-blur-md rounded-xl p-4 flex items-center gap-3 relative z-10 border border-white/10">
+                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0"><Sparkles size={18} /></div>
+                  <div>
+                    <p className="text-xs text-cream/70 uppercase tracking-wider font-bold">Panier Moyen</p>
+                    <p className="text-white font-black text-lg">Doublé instantanément</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Levier 3: Retraits Automatisés */}
+              <div className="bg-pearl rounded-[2rem] p-10 border border-line flex flex-col relative overflow-hidden group hover:shadow-2xl hover:shadow-emerald/10 hover:border-emerald/30 transition-all duration-300 transform hover:-translate-y-2">
+                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Store size={80} />
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-emerald shadow-sm mb-8 border border-line group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-3xl">🏦</span>
+                </div>
+                <h3 className="text-2xl font-display font-black text-ink mb-4">Retraits 100% Automatisés</h3>
+                <p className="text-slate leading-relaxed font-light mb-6 flex-1">
+                  Vendeurs, Affiliés, Closers... Fixez votre seuil (ex: 50 000 F). Dès qu'il est atteint, notre robot intelligent génère la demande et l'argent atterrit sur votre Wave/Orange Money de façon transparente, que vous soyez réveillé ou non.
+                </p>
+                <div className="bg-white border border-line rounded-xl p-4 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald/10 flex items-center justify-center text-emerald shrink-0"><ArrowRight size={18} /></div>
+                  <div>
+                    <p className="text-xs text-slate uppercase tracking-wider font-bold">Friction Zéro</p>
+                    <p className="text-ink font-black text-lg">Paiement passif garanti</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* 8. ECOSYSTEME RICHESSE PARTAGÉE (Affiliation & Closing) */}
+        <section className="py-24 px-6 bg-[#FAFAF7] overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-emerald/5 blur-[100px] rounded-full pointer-events-none"></div>
+          
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="text-center mb-16 max-w-3xl mx-auto">
+              <span className="inline-block bg-ink/10 text-ink font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 shadow-sm border border-ink/10">Sans Boutiques & Sans Produits</span>
+              <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-ink">L'Écosystème de <span className="text-emerald">Richesse Partagée</span></h2>
+              <p className="text-xl text-slate font-light">
+                Vous n'avez pas de produit à vendre ? Aucun problème. PDV Pro est le terrain de jeu ultime pour générer des revenus passifs ou actifs en devenant partenaire des meilleurs vendeurs.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {/* Affiliation */}
+              <div className="bg-white rounded-[2rem] p-10 border-2 border-emerald/20 flex flex-col relative overflow-hidden group shadow-lg hover:shadow-2xl hover:shadow-emerald/20 transition-all duration-300 transform hover:-translate-y-2">
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
+                  <Share2 size={120} />
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-emerald/10 flex items-center justify-center text-emerald mb-8 border border-emerald/20">
+                  <TrendingUp size={32} />
+                </div>
+                <h3 className="text-2xl font-display font-black text-ink mb-2">Programme Affiliés</h3>
+                <h4 className="text-sm font-bold text-emerald uppercase tracking-wider mb-4">Revenus Passifs Maximisés</h4>
+                <p className="text-slate leading-relaxed font-light mb-8">
+                  Accédez à un catalogue exclusif de produits à fort taux de conversion. Partagez votre lien de tracking intelligent et touchez jusqu'à <span className="font-bold text-ink">50% de commission</span> sur chaque vente. L'argent est transféré automatiquement sur votre Mobile Money à chaque seuil atteint.
+                </p>
+                <Link href="/register?role=affiliate" className="mt-auto inline-flex items-center gap-2 text-emerald font-bold hover:text-emerald-rich transition-colors group/link w-fit">
+                  Devenir Affilié <ChevronRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+
+              {/* Closing */}
+              <div className="bg-ink rounded-[2rem] p-10 flex flex-col relative overflow-hidden group shadow-lg hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:-translate-y-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-ink to-[#0a1a1f]"></div>
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
+                  <PhoneCall size={120} className="text-white" />
+                </div>
+                
+                <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-emerald mb-8 border border-white/10 relative z-10">
+                  <Phone size={32} />
+                </div>
+                <h3 className="text-2xl font-display font-black text-white mb-2 relative z-10">L'Agence de Closing In-App</h3>
+                <h4 className="text-sm font-bold text-emerald-light uppercase tracking-wider mb-4 relative z-10">Revenus Actifs Garantis</h4>
+                <p className="text-cream/80 leading-relaxed font-light mb-8 relative z-10">
+                  Transformez votre téléphone en machine à cash. Connectez-vous sur votre <span className="font-bold text-white">Terminal Closer</span> et rappelez les paniers abandonnés des gros vendeurs. Chaque client convaincu vous rapporte une commission fixe. Zéro prospection, uniquement des leads ultra-qualifiés avec intention d'achat.
+                </p>
+                <Link href="/register?role=closer" className="relative z-10 mt-auto inline-flex items-center gap-2 text-emerald-light font-bold hover:text-white transition-colors group/link w-fit">
+                  Rejoindre les Closers <ChevronRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+
+            </div>
           </div>
         </section>
 
@@ -884,7 +1036,7 @@ export default async function LandingPage() {
             <div className="text-xl text-cream/80 font-light mb-12 max-w-2xl mx-auto space-y-2 whitespace-pre-line">
               <p>{get('landing_cta_subtitle', 'Rejoignez PDV Pro gratuitement.\nAucun abonnement, vous ne payez que quand vous vendez.')}</p>
             </div>
-            <Link href={isLoggedIn ? "/dashboard" : "/register"} className="inline-block px-14 py-6 bg-red-600 text-white rounded-2xl font-black text-xl hover:bg-red-700 hover:scale-105 transition-all shadow-2xl shadow-red-600/20 mb-8 animate-pulse">
+            <Link href={isLoggedIn ? dashboardUrl : "/register"} className="inline-block px-14 py-6 bg-red-600 text-white rounded-2xl font-black text-xl hover:bg-red-700 hover:scale-105 transition-all shadow-2xl shadow-red-600/20 mb-8 animate-pulse">
               {isLoggedIn ? "Mon espace" : get('landing_cta_button', 'Créer ma boutique maintenant')}
             </Link>
             {!isLoggedIn && (

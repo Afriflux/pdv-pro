@@ -4,7 +4,7 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { PhoneInput } from '@/components/ui/PhoneInput'
-import { User, Image as ImageIcon, Camera, CheckCircle2, Mail, Phone, Loader2, ShieldCheck, Trash2 } from 'lucide-react'
+import { User, Camera, CheckCircle2, Mail, Phone, Loader2, ShieldCheck, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import * as Actions from '@/app/actions/settings'
 import { toast } from 'sonner'
