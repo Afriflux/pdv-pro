@@ -7,15 +7,15 @@ import { ArrowLeft, Lock, ChevronRight } from 'lucide-react'
 // Ceci est un template de test/placeholder complet pour voir si l'intégration marche
 export function EleganceTemplate({ 
   product, 
-  accent, 
-  bunnyVideoId, 
-  bunnyLibraryId,
-  groupedVariants,
+  accent: _accent, 
+  bunnyVideoId: _bunnyVideoId, 
+  bunnyLibraryId: _bunnyLibraryId,
+  groupedVariants: _groupedVariants,
   basePrice,
   handleOpenForm,
   showForm,
   checkoutFormNode,
-  imageGalleryNode
+  imageGalleryNode: _imageGalleryNode
 }: any) {
   const coverImage = product.images?.[0]
 

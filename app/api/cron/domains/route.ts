@@ -11,7 +11,6 @@ export async function GET(request: Request) {
   try {
     // Vérifier les DNS record CNAME pointant sur cname.vercel-dns.com 
     // pour tous les marchands Pro+ ayant configuré un Custom Domain.
-    console.log('[CRON] Checking Custom Domains DNS resolution via Vercel Domains API')
 
     return NextResponse.json({ 
       success: true, 

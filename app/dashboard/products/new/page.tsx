@@ -2,8 +2,9 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { ProductForm } from './ProductForm'
+import { prisma } from '@/lib/prisma'
 
-export default async function NewProductPage() {
+export default async function NewProductPage({ searchParams }: { searchParams: { templateId?: string } }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -16,6 +17,12 @@ export default async function NewProductPage() {
     .single()
 
   if (!store) redirect('/dashboard')
+
+  let templateData = null
+  if (searchParams.templateId) {
+    const t = await prisma.themeTemplate.findUnique({ where: { id: searchParams.templateId } })
+    if (t && t.data) templateData = t.data
+  }
 
   return (
     <main className="min-h-screen bg-cream">
@@ -31,7 +38,7 @@ export default async function NewProductPage() {
       </header>
 
       <div className="w-full p-6 space-y-6 bg-[#FAFAF7] min-h-screen">
-        <ProductForm storeId={store.id} vendorType={store.vendor_type} />
+        <ProductForm storeId={store.id} vendorType={store.vendor_type} initialTemplateData={templateData} />
       </div>
     </main>
   )

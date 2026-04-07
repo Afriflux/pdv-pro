@@ -30,7 +30,6 @@ export async function GET(request: Request) {
       data: { active: false }
     })
 
-    console.log(`[CRON] Promos échues: ${disabledPromos} | Codes échus: ${disabledCodes}`)
 
     return NextResponse.json({ 
       success: true, 

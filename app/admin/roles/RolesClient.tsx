@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { ShieldCheck, UserPlus, Table2, Search, XCircle, CheckCircle2, Eye, ShieldAlert, Lock, Save, PlusCircle, UserCog, Copy } from 'lucide-react'
 import Link from 'next/link'
 
@@ -195,7 +195,7 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
             <div>
               <h1 className="text-3xl font-black text-white tracking-tight">Access Control (RBAC)</h1>
               <p className="text-emerald-100 text-sm mt-1 max-w-md font-medium">
-                Gérez l'équipe administrative de PDV Pro, modifiez les droits d'accès dynamiquement et invitez de nouveaux collaborateurs.
+                Gérez l'équipe administrative de Yayyam, modifiez les droits d'accès dynamiquement et invitez de nouveaux collaborateurs.
               </p>
             </div>
           </div>

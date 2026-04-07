@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format, addYears } from 'date-fns'
 
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { AlertTriangle, CheckCircle2, ShieldCheck, ShieldAlert, ShieldX, Files, UserCheck, LayoutGrid, List, ChevronRight, XCircle, FileText, Maximize2, ZoomIn, ZoomOut, MessageCircle, Calendar } from 'lucide-react'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -117,6 +117,8 @@ export default function KYCClient({
       setLocalStores(prev => prev.filter(s => s.id !== selectedStore.id))
       setSelectedStore(null)
     }).catch(() => {})
+
+    return undefined;
   }
 
   return (
@@ -446,20 +448,7 @@ export default function KYCClient({
             {/* Scrollable Body */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/50">
                
-               {/* Analyse Automatique (Mock AI) */}
-               <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl border border-emerald-100/50 p-5 shadow-sm flex items-start gap-4">
-                 <div className="w-10 h-10 bg-white rounded-2xl shadow-sm border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                   <ShieldCheck size={20} />
-                 </div>
-                 <div>
-                   <h3 className="text-sm font-black text-gray-900 mb-1">Analyse OCR & Cohérence</h3>
-                   <p className="text-xs text-emerald-800/80 font-medium leading-relaxed">
-                     L'intelligence artificielle a détecté une correspondance forte entre lenom déclaré <strong className="text-emerald-900">"{selectedStore.kyc_documents?.full_name}"</strong> et les textes lus sur le document Recto. La pièce semble intègre et non trafiquée.
-                   </p>
-                 </div>
-               </div>
-
-               {/* Identity Verification */}
+               {/* OCR Analysis removed for Phase V1 (00 Mockups) */}               {/* Identity Verification */}
                <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
                  <div className="bg-gray-50 border-b border-gray-100 px-6 py-4 flex items-center justify-between">
                    <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest">Documents Fournis</h3>

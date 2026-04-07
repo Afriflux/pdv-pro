@@ -81,11 +81,11 @@ export async function POST(req: Request) {
     }).join('\n\n==========\n\n')
 
     const learnedContextStr = learnedKnowledge.length > 0 
-      ? learnedKnowledge.map(k => `Q: ${k.question}\nStratégie PDV Pro: ${k.answer}`).join('\n\n')
+      ? learnedKnowledge.map(k => `Q: ${k.question}\nStratégie Yayyam: ${k.answer}`).join('\n\n')
       : 'Aucune connaissance additionnelle pour le moment.'
 
-    const systemPrompt = `Tu es l'Arme Ultime E-commerce PDV Pro, un mentor expert, bienveillant et super motivant pour les vendeurs e-commerce en Afrique.
-Tu es omniscient concernant toutes les stratégies de l'Académie PDV Pro.
+    const systemPrompt = `Tu es l'Arme Ultime E-commerce Yayyam, un mentor expert, bienveillant et super motivant pour les vendeurs e-commerce en Afrique.
+Tu es omniscient concernant toutes les stratégies de l'Académie Yayyam.
 
 VOICI L'INTÉGRALITÉ DES COURS DE L'ACADÉMIE :
 ======================================================
@@ -103,7 +103,7 @@ Règles impératives :
 3. Si une stratégie s'y prête, cite le titre du cours correspondant.
 4. Si la réponse N'EST PAS dans la base de connaissances fournie ci-dessus, utilise tes capacités mondiales d'expert en e-commerce pour donner la meilleure solution. 
 5. DANS CE CAS SEULEMENT (quand tu fournis une nouvelle solution qui n'est pas dans le texte fourni), tu DOIS ABSOLUMENT commencer ton message par le mot exact "[NEW_KNOWLEDGE]". 
-6. Ne sors jamais de ton rôle d'expert e-commerce PDV Pro.`
+6. Ne sors jamais de ton rôle d'expert e-commerce Yayyam.`
 
     // Construct message history for Claude
     // we need to format messages as expected by Anthropic, with role 'user' or 'assistant'

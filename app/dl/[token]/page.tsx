@@ -73,74 +73,92 @@ export default async function DigitalDeliveryPage({ params }: PageProps) {
   const otherFiles      = product.digital_files?.filter(f => f.type !== 'video') ?? []
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-emerald-50 to-white flex flex-col items-center px-4 py-8">
-      <div className="w-full max-w-sm space-y-4">
+    <main className="min-h-screen bg-[#F0FDF4] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#D1FAE5]/40 via-transparent to-transparent flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#34D399]/20 rounded-full blur-[100px] -z-10 animate-pulse-slow"></div>
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#10B981]/15 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
 
-        {/* ── Header PDV Pro ─────────────────────────────────────────── */}
+      <div className="w-full max-w-[420px] space-y-5 animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out z-10">
+
+        {/* ── Header Yayyam ─────────────────────────────────────────── */}
         <div className="text-center space-y-0.5">
-          <p className="text-2xl font-black text-[#0F7A60] tracking-tight">PDV Pro</p>
+          <p className="text-2xl font-black text-[#0F7A60] tracking-tight">Yayyam</p>
           {order.store.name && (
             <p className="text-xs text-gray-400 font-medium">{order.store.name}</p>
           )}
         </div>
 
         {/* ── Card produit ──────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+        <div className="bg-white/70 backdrop-blur-xl rounded-[2rem] shadow-2xl shadow-emerald-900/5 overflow-hidden border border-white/60 relative group">
+          <div className="absolute inset-0 bg-gradient-to-tr from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
+          
           {product.images[0] && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              className="w-full h-36 object-cover"
-            />
+            <div className="relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={product.images[0]}
+                alt={product.name}
+                className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-transparent" />
+            </div>
           )}
-          <div className="p-4 space-y-1">
-            <div className="flex items-start gap-2">
-              <span className="text-2xl mt-0.5">📥</span>
-              <div>
-                <h1 className="text-base font-bold text-gray-800 leading-tight">
+          <div className="p-6 relative z-20 -mt-6">
+            <div className="flex items-start gap-3">
+              <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-white shadow-xl shadow-gray-200/50 border border-gray-100/50 shrink-0">
+                <span className="text-2xl">📥</span>
+              </div>
+              <div className="pt-1">
+                <h1 className="text-lg font-black text-[#1A1A1A] leading-tight font-display">
                   {product.name}
                 </h1>
                 {product.description && (
-                  <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">
+                  <p className="text-sm text-gray-500 mt-1.5 line-clamp-2 leading-relaxed">
                     {product.description}
                   </p>
                 )}
               </div>
             </div>
-            <p className="text-xs text-gray-400 pt-1">Pour : <span className="font-medium text-gray-600">{order.buyer_name}</span></p>
+            <div className="mt-4 pt-4 border-t border-gray-100/60">
+              <p className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Acheté par : <span className="text-[#0F7A60]">{order.buyer_name}</span></p>
+            </div>
           </div>
         </div>
 
         {/* ── Quota & expiration ────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 space-y-2">
+        <div className="bg-white/60 backdrop-blur-md rounded-3xl shadow-lg shadow-gray-200/20 border border-white p-5 space-y-3">
           {remaining !== null && (
             <>
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>Téléchargements restants</span>
-                <span className="font-bold text-gray-800">{remaining}/{access.downloads_max}</span>
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] uppercase tracking-wider font-bold text-gray-500 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                  Téléchargements restants
+                </span>
+                <span className="font-black text-gray-800 bg-white px-2 py-0.5 rounded-lg border border-gray-100 shadow-sm">{remaining}/{access.downloads_max}</span>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-1.5">
+              <div className="w-full bg-gray-200/50 rounded-full h-2 overflow-hidden shadow-inner">
                 <div
-                  className="h-1.5 rounded-full bg-[#0F7A60] transition-all"
+                  className="h-full rounded-full bg-gradient-to-r from-[#0F7A60] to-[#34D399] transition-all duration-1000"
                   style={{ width: `${100 - progressPct}%` }}
                 />
               </div>
             </>
           )}
           {remaining === null && (
-            <p className="text-xs text-gray-500">✅ Téléchargements <span className="font-semibold text-gray-700">illimités</span></p>
+            <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-2 rounded-xl border border-emerald-100">
+              <span className="text-emerald-500">✅</span>
+              <p className="text-xs font-bold w-full text-center">Téléchargements illimités depuis ce lien.</p>
+            </div>
           )}
           {expiresDate && (
-            <p className="text-xs text-gray-400">
-              ⏱️ Accès jusqu&apos;au{' '}
-              <span className="font-medium text-gray-600">
-                {expiresDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
-              </span>
-            </p>
+            <div className="flex justify-center mt-2">
+              <p className="inline-flex items-center gap-1.5 text-xs text-rose-500 font-bold bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-100">
+                ⏱️ Lien expire le {expiresDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}
+              </p>
+            </div>
           )}
-          {!expiresDate && (
-            <p className="text-xs text-gray-500">♾️ Accès <span className="font-semibold text-gray-700">à vie</span></p>
+          {!expiresDate && remaining !== null && (
+            <p className="text-xs text-gray-500 text-center font-medium mt-1">Lien valable <span className="font-bold text-gray-700">à vie</span>.</p>
           )}
         </div>
 
@@ -209,17 +227,30 @@ export default async function DigitalDeliveryPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* ── Support vendeur ───────────────────────────────────────── */}
-        <div className="text-center pt-2">
+        {/* ── Support & Accès Client ────────────────────────────────── */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 p-6 flex flex-col items-center justify-center text-center shadow-lg shadow-gray-200/20 mt-4 space-y-4">
+          <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100">
+            <span className="text-2xl">🔐</span>
+          </div>
+          <div>
+            <h3 className="font-black text-gray-900 text-sm">Ne perdez jamais vos accès</h3>
+            <p className="text-xs text-gray-500 mt-1 max-w-[250px] mx-auto leading-relaxed">
+              Consultez tous vos achats à volonté (même si ce lien expire) via votre espace client gratuit.
+            </p>
+          </div>
+          <Link href="/client" className="w-full bg-gray-900 text-white font-bold py-3.5 rounded-xl text-sm hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20 active:scale-95">
+            Ouvrir l'Espace Client
+          </Link>
+          <div className="w-full border-t border-gray-100 my-2"></div>
           <p className="text-xs text-gray-400">
             Un problème ?{' '}
             <a
               href={`https://wa.me/${order.buyer_phone.replace(/\D/g, '')}`}
-              className="text-green-500 font-semibold hover:underline"
+              className="text-[#0F7A60] font-bold hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
-              WhatsApp
+              Contacter le vendeur
             </a>
           </p>
         </div>
@@ -227,7 +258,7 @@ export default async function DigitalDeliveryPage({ params }: PageProps) {
         {/* ── Footer ────────────────────────────────────────────────── */}
         <div className="text-center pb-4">
           <Link href="/" className="text-xs text-gray-300 hover:text-gray-400 transition">
-            Propulsé par PDV Pro 🚀
+            Propulsé par Yayyam 🚀
           </Link>
         </div>
 
@@ -329,7 +360,7 @@ function ErrorPage({ status }: { status: 'expired' | 'exhausted' | 'revoked' | '
     <main className="min-h-screen bg-emerald-50 flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-5">
         <div className="text-center">
-          <p className="text-2xl font-black text-[#0F7A60]">PDV Pro</p>
+          <p className="text-2xl font-black text-[#0F7A60]">Yayyam</p>
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center space-y-3">
           <p className="text-4xl">{cfg.emoji}</p>
@@ -338,7 +369,7 @@ function ErrorPage({ status }: { status: 'expired' | 'exhausted' | 'revoked' | '
         </div>
         <div className="text-center">
           <Link href="/" className="text-xs text-gray-400 hover:text-gray-500 transition">
-            Propulsé par PDV Pro 🚀
+            Propulsé par Yayyam 🚀
           </Link>
         </div>
       </div>

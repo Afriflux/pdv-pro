@@ -1,11 +1,11 @@
 'use client'
 
 // ─── components/affiliate/AffiliateContractModal.tsx ──────────────────────────
-// Modal de signature du contrat d'affiliation PDV Pro
+// Modal de signature du contrat d'affiliation Yayyam
 // Appelle la server action `acceptAffiliateContract`
 
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { acceptAffiliateContract } from '@/app/portal/settings/actions'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -63,7 +63,7 @@ export default function AffiliateContractModal({
         <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
           <div>
             <h2 className="text-lg font-black text-[#1A1A1A]">
-              🤝 Contrat Partenaire Affilié PDV Pro
+              🤝 Contrat Partenaire Affilié Yayyam
             </h2>
             <p className="text-xs text-gray-400 mt-0.5">
               Veuillez lire attentivement nos conditions de promotion avant de signer
@@ -86,12 +86,12 @@ export default function AffiliateContractModal({
           {/* Parties */}
           <div className="bg-[#FAFAF7] rounded-xl p-5 border border-gray-100">
             <p className="font-black text-[#1A1A1A] text-center text-xs uppercase tracking-widest mb-4">
-              CONTRAT PARTENAIRE AFFILIÉ PDV PRO
+              CONTRAT PARTENAIRE AFFILIÉ YAYYAM
             </p>
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div>
                 <p className="text-gray-400 font-bold uppercase tracking-wider mb-1">Entre</p>
-                <p className="font-bold">PDV Pro</p>
+                <p className="font-bold">Yayyam</p>
                 <p className="text-gray-500">(la Plateforme)</p>
               </div>
               <div>
@@ -112,7 +112,7 @@ export default function AffiliateContractModal({
           <article>
             <h3 className="font-black text-[#1A1A1A] mb-2">Article 1 — Objet</h3>
             <p className="text-gray-600">
-              Le présent accord régit la relation d'affiliation entre PDV Pro et l'Affilié. 
+              Le présent accord régit la relation d'affiliation entre Yayyam et l'Affilié. 
               Ce dernier s'engage à faire la promotion des offres et produits hébergés sur la plateforme afin de générer des ventes.
             </p>
           </article>
@@ -136,7 +136,7 @@ export default function AffiliateContractModal({
             <ul className="list-disc list-inside space-y-1.5 text-gray-600">
               <li><strong>Interdiction absolue du SPAM :</strong> L'envoi massif ou non sollicité d'e-mails est proscrit.</li>
               <li>L'Affilié s'interdit de sur-vendre un produit en omettant délibérément la vérité ou en formulant de fausses promesses afin d'obtenir le clic.</li>
-              <li>Il est interdit de soumissionner ou de réaliser des enchères publicitaires trompeuses sur le nom de marque exclusif "PDV Pro" ou celui de ses vendeurs à l'insu de la plateforme.</li>
+              <li>Il est interdit de soumissionner ou de réaliser des enchères publicitaires trompeuses sur le nom de marque exclusif "Yayyam" ou celui de ses vendeurs à l'insu de la plateforme.</li>
             </ul>
           </article>
 
@@ -153,7 +153,7 @@ export default function AffiliateContractModal({
           <article>
             <h3 className="font-black text-[#1A1A1A] mb-2">Article 5 — Clause de Non-Concurrence ou de Débauchage</h3>
             <p className="text-gray-600">
-              Durant sa relation avec PDV Pro, l'Affilié respecte le réseau en ne tentant pas de débaucher de manière déloyale des acheteurs existants du système pour le compte d'une entité tierce sans motif et accord légitimes.
+              Durant sa relation avec Yayyam, l'Affilié respecte le réseau en ne tentant pas de débaucher de manière déloyale des acheteurs existants du système pour le compte d'une entité tierce sans motif et accord légitimes.
             </p>
           </article>
 
@@ -161,7 +161,7 @@ export default function AffiliateContractModal({
           <article>
             <h3 className="font-black text-[#1A1A1A] mb-2">Article 6 — Résiliation et Sanction</h3>
             <p className="text-gray-600">
-              PDV Pro peut acter la clôture ou la suspension provisoire du compte affilié sur-le-champ (incluant les gains générés si la fraude est avérée) s'il est démontré :
+              Yayyam peut acter la clôture ou la suspension provisoire du compte affilié sur-le-champ (incluant les gains générés si la fraude est avérée) s'il est démontré :
             </p>
             <ul className="list-disc list-inside space-y-1.5 text-gray-600 mt-2">
               <li>Génération de fausses commandes.</li>
@@ -186,7 +186,7 @@ export default function AffiliateContractModal({
             </div>
             <p className="text-xs text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors select-none">
               Je confirme avoir lu en totalité et compris les termes du{' '}
-              <strong>Contrat Partenaire Affilié PDV Pro</strong>.
+              <strong>Contrat Partenaire Affilié Yayyam</strong>.
               En cochant cette case, j'accepte de respecter l'ensemble des règles de bonnes pratiques de promotion instaurées par la plateforme.
             </p>
           </label>

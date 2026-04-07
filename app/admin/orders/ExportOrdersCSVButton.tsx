@@ -2,7 +2,7 @@
 
 import { Download } from 'lucide-react'
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { useSearchParams } from 'next/navigation'
 
 export default function ExportOrdersCSVButton() {
@@ -12,7 +12,7 @@ export default function ExportOrdersCSVButton() {
   const handleExport = async () => {
     try {
       setLoading(true)
-      toast.loading('Génération du fichier CSV...', { id: 'csv-export' })
+      toast.loading('Génération du fichier CSV...')
 
       // On reprend exactement les mêmes filtres que la page
       const qs = searchParams.toString()
@@ -26,15 +26,15 @@ export default function ExportOrdersCSVButton() {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `Export_Commandes_PDVPro_${new Date().toISOString().split('T')[0]}.csv`
+      a.download = `Export_Commandes_YayyamPro_${new Date().toISOString().split('T')[0]}.csv`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
       
-      toast.success('Fichier CSV téléchargé avec succès !', { id: 'csv-export' })
+      toast.success('Fichier CSV téléchargé avec succès !')
     } catch (error: any) {
       console.error(error)
-      toast.error(error.message || 'Une erreur est survenue', { id: 'csv-export' })
+      toast.error(error.message || 'Une erreur est survenue')
     } finally {
       setLoading(false)
     }

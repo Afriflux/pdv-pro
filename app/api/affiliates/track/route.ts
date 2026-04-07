@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
     if (/mobile/i.test(userAgent)) deviceType = 'mobile'
     else if (/tablet/i.test(userAgent)) deviceType = 'tablet'
 
-    const ip = req.headers.get('x-forwarded-for') || req.ip || ''
     // Le pays peut être fourni par Cloudflare (CF-IPCountry) ou Vercel (x-vercel-ip-country)
     const country = req.headers.get('cf-ipcountry') || req.headers.get('x-vercel-ip-country') || 'SN'
 

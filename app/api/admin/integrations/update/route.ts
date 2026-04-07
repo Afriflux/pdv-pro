@@ -57,7 +57,6 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error
 
-    console.log(`[Admin Integrations] Bulk update par ${user.id} : ${Object.keys(payload).join(', ')}`)
     return NextResponse.json({ success: true, updatedKeys: rowsToUpsert.map(r => r.key) })
   } catch (error: unknown) {
     console.error('[Admin Integrations Bulk Update] Erreur:', error)

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { processClosingRequest, lockClosingRequest, ClosingAction } from '@/lib/closing/closingActions'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { 
   Phone as PhoneIcon, Calendar as CalendarIcon, CheckCircle2 as CheckCircleIcon, 
   XCircle as XCircleIcon, ShieldAlert, ShieldCheck, 
@@ -486,7 +486,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
                                <ShieldQuestion size={20} className="shrink-0 mt-0.5" />
                                <div>
                                  <p className="text-xs font-black uppercase tracking-wider mb-0.5">Nouveau Profil</p>
-                                 <p className="text-xs font-bold opacity-80">Aucun historique sur le réseau PDV Pro.</p>
+                                 <p className="text-xs font-bold opacity-80">Aucun historique sur le réseau Yayyam.</p>
                                </div>
                             </div>
                          )}

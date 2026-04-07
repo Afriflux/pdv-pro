@@ -1,5 +1,5 @@
 /**
- * GET /api/telegram/community/verify?store_id=xxx&code=PDV-XXXX
+ * GET /api/telegram/community/verify?store_id=xxx&code=Yayyam-XXXX
  * Vérifie si un groupe Telegram a bien été lié via le code /connect.
  * Auth : vendeur connecté via Supabase.
  */

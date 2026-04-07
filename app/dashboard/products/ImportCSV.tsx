@@ -5,7 +5,7 @@
 
 import { useState, useRef, useCallback, DragEvent, ChangeEvent } from 'react'
 import { Upload, Download, Loader2, CheckCircle2, AlertCircle, X } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 // Format CSV attendu (colonnes)
 const CSV_HEADERS = ['Nom du produit', 'Description', 'Prix (FCFA)', 'Type (physical/digital/coaching)', 'Catégorie', 'Stock']
@@ -44,7 +44,7 @@ export default function ImportCSV() {
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
     a.href     = url
-    a.download = 'modele_produits_pdvpro.csv'
+    a.download = 'modele_produits_yayyampro.csv'
     a.click()
     URL.revokeObjectURL(url)
   }

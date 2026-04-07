@@ -26,7 +26,7 @@ function buildWhatsAppMessage(buyerName?: string, orderId?: string): string {
   const greet  = buyerName ? `Bonjour ${buyerName}` : 'Bonjour'
   const ref    = orderId   ? ` concernant votre commande #${orderId.slice(0, 8)}` : ''
   return (
-    `${greet}, je vous contacte${ref} sur PDV Pro. ` +
+    `${greet}, je vous contacte${ref} sur Yayyam. ` +
     `Pouvez-vous confirmer votre disponibilité pour la livraison ?`
   )
 }

@@ -60,7 +60,7 @@ export async function claimLead(leadId: string) {
   }
 }
 
-export async function updateLeadStatus(leadId: string, newStatus: LeadStatus) {
+export async function updateLeadStatus(leadId: string, newStatus: LeadStatusType) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

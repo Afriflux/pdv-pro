@@ -1,11 +1,11 @@
 'use client'
 
 // ─── components/vendor/VendorContractModal.tsx ───────────────────────────────
-// Modal de signature du contrat partenaire vendeur PDV Pro
+// Modal de signature du contrat partenaire vendeur Yayyam
 // POST /api/vendor/contract/accept → { storeId }
 
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -71,7 +71,7 @@ export default function VendorContractModal({
         <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
           <div>
             <h2 className="text-lg font-black text-[#1A1A1A]">
-              📜 Contrat Partenaire Vendeur PDV Pro
+              📜 Contrat Partenaire Vendeur Yayyam
             </h2>
             <p className="text-xs text-gray-400 mt-0.5">
               Veuillez lire attentivement avant de signer
@@ -94,12 +94,12 @@ export default function VendorContractModal({
           {/* Parties */}
           <div className="bg-[#FAFAF7] rounded-xl p-5 border border-gray-100">
             <p className="font-black text-[#1A1A1A] text-center text-xs uppercase tracking-widest mb-4">
-              CONTRAT PARTENAIRE VENDEUR PDV PRO
+              CONTRAT PARTENAIRE VENDEUR YAYYAM
             </p>
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div>
                 <p className="text-gray-400 font-bold uppercase tracking-wider mb-1">Entre</p>
-                <p className="font-bold">PDV Pro</p>
+                <p className="font-bold">Yayyam</p>
                 <p className="text-gray-500">(la Plateforme)</p>
               </div>
               <div>
@@ -120,7 +120,7 @@ export default function VendorContractModal({
           <article>
             <h3 className="font-black text-[#1A1A1A] mb-2">Article 1 — Objet</h3>
             <p className="text-gray-600">
-              Le Vendeur s&#39;engage à utiliser PDV Pro pour commercialiser ses produits et services
+              Le Vendeur s&#39;engage à utiliser Yayyam pour commercialiser ses produits et services
               dans le respect des présentes conditions générales d&#39;utilisation.
             </p>
           </article>
@@ -129,7 +129,7 @@ export default function VendorContractModal({
           <article>
             <h3 className="font-black text-[#1A1A1A] mb-2">Article 2 — Commissions plateforme</h3>
             <p className="text-gray-600 mb-3">
-              Le Vendeur accepte le modèle de commission dégressif PDV Pro, calculé sur le chiffre
+              Le Vendeur accepte le modèle de commission dégressif Yayyam, calculé sur le chiffre
               d&#39;affaires mensuel hors taxes :
             </p>
             <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 space-y-1.5">
@@ -164,7 +164,7 @@ export default function VendorContractModal({
           <article>
             <h3 className="font-black text-[#1A1A1A] mb-2">Article 4 — Retraits et paiements</h3>
             <ul className="list-disc list-inside space-y-1.5 text-gray-600">
-              <li>Les fonds sont crédités sur le portefeuille PDV Pro après confirmation de chaque commande</li>
+              <li>Les fonds sont crédités sur le portefeuille Yayyam après confirmation de chaque commande</li>
               <li>Le montant minimum de retrait est de <strong>5 000 FCFA</strong></li>
               <li>Les retraits sont traités automatiquement via Wave ou Orange Money selon les coordonnées configurées</li>
             </ul>
@@ -176,7 +176,7 @@ export default function VendorContractModal({
             <p className="text-gray-600">
               Le Vendeur certifie détenir tous les droits nécessaires (propriété intellectuelle,
               droits d&#39;auteur, marques, etc.) sur les produits, images et contenus publiés
-              sur sa boutique PDV Pro. PDV Pro ne saurait être tenu responsable
+              sur sa boutique Yayyam. Yayyam ne saurait être tenu responsable
               en cas de violation de ces droits par le Vendeur.
             </p>
           </article>
@@ -185,7 +185,7 @@ export default function VendorContractModal({
           <article>
             <h3 className="font-black text-[#1A1A1A] mb-2">Article 6 — Résiliation</h3>
             <p className="text-gray-600">
-              PDV Pro se réserve le droit de suspendre ou de fermer définitivement un compte vendeur
+              Yayyam se réserve le droit de suspendre ou de fermer définitivement un compte vendeur
               en cas de fraude avérée, de plaintes répétées d&#39;acheteurs, de vente de produits
               illicites ou de non-respect des présentes conditions. Le Vendeur sera notifié
               par email avant toute action définitive, sauf en cas de fraude grave.
@@ -219,7 +219,7 @@ export default function VendorContractModal({
             </div>
             <p className="text-xs text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors select-none">
               J&#39;ai lu attentivement et j&#39;accepte les termes du{' '}
-              <strong>Contrat Partenaire Vendeur PDV Pro</strong>.
+              <strong>Contrat Partenaire Vendeur Yayyam</strong>.
               Je certifie que les informations fournies sont exactes
               et m&#39;engage à respecter toutes les obligations définies ci-dessus.
             </p>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { FileText, Shield, Scale, ScrollText, X, CheckCircle2, Download, Mail, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export function ContractTab({ store }: { store: any }) {
   const [showContract, setShowContract] = useState(false)
@@ -106,7 +106,7 @@ export function ContractTab({ store }: { store: any }) {
               <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-700 font-bold text-[12px] rounded-full border border-slate-200 uppercase tracking-wide">
                 <Shield size={14} /> Accord Mutuel
               </span>
-              <span className="text-[14px] text-gray-500 font-medium">Les termes liant votre boutique à l'infrastructure PDV Pro.</span>
+              <span className="text-[14px] text-gray-500 font-medium">Les termes liant votre boutique à l'infrastructure Yayyam.</span>
             </div>
           </div>
 
@@ -180,9 +180,9 @@ export function ContractTab({ store }: { store: any }) {
                 </h1>
 
                 <h3 className="mb-3 font-bold text-gray-900 text-[16px]">1. Objet du Contrat</h3>
-                <p className="mb-8">Le présent contrat établit les conditions d'utilisation de la plateforme E-commerce PDV Pro par le vendeur pour la création, la gestion et la vente de ses produits/services digitaux et physiques. Il régule les responsabilités des deux parties.</p>
+                <p className="mb-8">Le présent contrat établit les conditions d'utilisation de la plateforme E-commerce Yayyam par le vendeur pour la création, la gestion et la vente de ses produits/services digitaux et physiques. Il régule les responsabilités des deux parties.</p>
                 
-                <h3 className="mb-3 font-bold text-gray-900 text-[16px]">2. Engagements de PDV Pro</h3>
+                <h3 className="mb-3 font-bold text-gray-900 text-[16px]">2. Engagements de Yayyam</h3>
                 <ul className="list-disc pl-5 mb-8 space-y-2">
                   <li>Fournir une infrastructure technique stable, hébergée et sécurisée.</li>
                   <li>Traiter les paiements via ses partenaires agréés et sécurisés.</li>
@@ -194,12 +194,12 @@ export function ContractTab({ store }: { store: any }) {
                 <ul className="list-disc pl-5 mb-8 space-y-2">
                   <li>Vendre des produits légaux, conformes et dont il a la possession intellectuelle ou les droits d'exploitation.</li>
                   <li>Traiter le service client, les remboursements et les réclamations de ses propres acheteurs avec diligence.</li>
-                  <li>Ne pas contourner le système de commission de PDV Pro en réalisant des fausses commandes ou du blanchiment.</li>
+                  <li>Ne pas contourner le système de commission de Yayyam en réalisant des fausses commandes ou du blanchiment.</li>
                   <li>S'acquitter des impôts et taxes en vigueur selon sa juridiction fiscale.</li>
                 </ul>
 
                 <h3 className="mb-3 font-bold text-gray-900 text-[16px]">4. Résiliation</h3>
-                <p className="mb-8">En cas de manquement grave, de fraude ou de multiples litiges clients, PDV Pro se réserve le droit de bloquer les fonds et de suspendre le compte du vendeur sans préavis pour protéger ses intérêts et ceux des acheteurs.</p>
+                <p className="mb-8">En cas de manquement grave, de fraude ou de multiples litiges clients, Yayyam se réserve le droit de bloquer les fonds et de suspendre le compte du vendeur sans préavis pour protéger ses intérêts et ceux des acheteurs.</p>
               </div>
 
             </div>

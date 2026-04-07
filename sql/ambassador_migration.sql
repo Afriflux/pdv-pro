@@ -1,5 +1,5 @@
 -- ============================================================
--- MIGRATION : Système Ambassadeur — PDV Pro
+-- MIGRATION : Système Ambassadeur — Yayyam
 -- Exécuter dans l'éditeur SQL Supabase
 -- ============================================================
 

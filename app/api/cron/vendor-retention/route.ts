@@ -13,7 +13,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
     const now = new Date()
 
     // ─── 1. Scénario : Boutique Vide (J+1) ──────────────────────────────────

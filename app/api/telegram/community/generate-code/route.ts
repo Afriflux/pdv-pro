@@ -10,7 +10,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 function generateCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // sans I/O/0/1 pour éviter confusion
-  let code = 'PDV-'
+  let code = 'Yayyam-'
   for (let i = 0; i < 4; i++) {
     code += chars[Math.floor(Math.random() * chars.length)]
   }
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
         code: existing.connect_code,
         expires_at: existing.code_expires_at,
         steps: [
-          'Ajoutez @PDVProBot comme administrateur dans votre groupe',
+          'Ajoutez @YayyamProBot comme administrateur dans votre groupe',
           `Dans votre groupe, tapez : /connect ${existing.connect_code}`,
           'Cliquez sur Vérifier ci-dessous'
         ]
@@ -106,7 +106,7 @@ export async function POST(request: Request) {
       code,
       expires_at: expiresAt,
       steps: [
-        'Ajoutez @PDVProBot comme administrateur dans votre groupe',
+        'Ajoutez @YayyamProBot comme administrateur dans votre groupe',
         `Dans votre groupe, tapez : /connect ${code}`,
         'Cliquez sur Vérifier ci-dessous'
       ]

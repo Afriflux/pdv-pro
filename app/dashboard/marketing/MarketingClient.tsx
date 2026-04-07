@@ -1,9 +1,8 @@
-// @ts-nocheck
 'use client'
 
 import { useState } from 'react'
 import { generateQrWithLogo } from '@/lib/qrcode/generateQR'
-import { Share2, FileText, QrCode, Clipboard, MessageCircle, BarChart3, ExternalLink, Download, Facebook, Image as ImageIcon } from 'lucide-react'
+import { QrCode, Clipboard, MessageCircle, BarChart3, Download, Image as ImageIcon, Check } from 'lucide-react'
 
 interface MarketingClientProps {
   store: { id: string; name: string; slug: string }
@@ -128,8 +127,8 @@ export default function MarketingClient({ store, links, products, domain }: Mark
                   <td className="px-6 py-4">
                     <p className="font-bold text-[#1A1A1A] text-sm">{link.product?.name ?? 'Espace de vente global'}</p>
                     <p className="text-xs text-blue-500 font-mono mt-0.5 font-medium flex items-center gap-1">
-                      pdvpro.com/s/{link.code} 
-                      <button onClick={() => handleCopy(`https://pdvpro.com/s/${link.code}`, link.code)} className="text-gray-300 hover:text-[#1A1A1A] ml-2">
+                      yayyam.com/s/{link.code} 
+                      <button onClick={() => handleCopy(`https://yayyam.com/s/${link.code}`, link.code)} className="text-gray-300 hover:text-[#1A1A1A] ml-2">
                          {copied === link.code ? <Check size={12}/> : <Clipboard size={12}/>}
                       </button>
                     </p>

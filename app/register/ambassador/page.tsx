@@ -102,7 +102,7 @@ function AmbassadorContent() {
         <div className="w-full max-w-md relative z-10">
           <div className="text-center mb-8">
             <h2 className="font-display font-black text-3xl text-ink mb-2">Une dernière étape 🎯</h2>
-            <p className="text-slate text-sm font-light">Entrez le code de l&apos;ambassadeur PDV Pro qui vous a recommandé</p>
+            <p className="text-slate text-sm font-light">Entrez le code de l&apos;ambassadeur Yayyam qui vous a recommandé</p>
           </div>
 
           <div className="bg-white rounded-3xl shadow-xl shadow-ink/5 p-8 border border-line relative">

@@ -203,7 +203,7 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
             userId: store.user_id,
             type: 'nps',
             title: '⭐ Félicitations pour votre première vente !',
-            message: 'Recommanderiez-vous PDV Pro à un ami vendeur ? Donnez-nous votre avis !',
+            message: 'Recommanderiez-vous Yayyam à un ami vendeur ? Donnez-nous votre avis !',
             link: '/dashboard/settings#nps',
           })
 
@@ -269,7 +269,7 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
         productName: product.name,
         amount:      order.total,
         orderId:     orderId,
-        vendorName:  store?.name ?? 'PDV Pro',
+        vendorName:  store?.name ?? 'Yayyam',
       }),
     }).catch(e => console.error('[WhatsApp acheteur]', e))
   }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Image as ImageIcon, Copy, Link as LinkIcon, Download, Search, Tag, CheckCircle2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 interface ProductResource {
   id: string
@@ -28,7 +28,7 @@ export default function ResourcesClient({ affiliateCode, storeSlug, products, pr
 
   const getAffiliateLink = (productId: string) => {
     // Le vrai domaine en prod serait dynamique, on utilise une base standard ici
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pdvpro-sn.netlify.app'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yayyam-sn.netlify.app'
     let link = `${baseUrl}/p/${storeSlug}/${productId}?ref=${affiliateCode}`
     if (subId.trim() !== '') {
       link += `&source=${encodeURIComponent(subId.trim())}`

@@ -1,5 +1,4 @@
 import { verifyCronSecret, cronResponse } from '@/lib/cron/cron-helpers'
-import { createAdminClient } from '@/lib/supabase/admin'
 import { logCronExecution } from '@/lib/cron/cronLogger'
 import { prisma } from '@/lib/prisma'
 import crypto from 'crypto'
@@ -68,23 +67,29 @@ export async function POST(req: Request) {
     // ---------------------------------------------------------
     // 2. AFFILIATES
     // ---------------------------------------------------------
-    // Need to join User to check affiliate_auto_withdraw
+    // Need to manual join User
     const affiliates = await prisma.affiliate.findMany({
       where: {
         balance: { gt: 0 }
-      },
-      include: {
-        User: { select: { phone: true, affiliate_auto_withdraw: true, affiliate_auto_withdraw_threshold: true, withdrawal_method: true, withdrawal_number: true } }
       }
     })
 
+    const userIds = affiliates.map(a => a.user_id).filter(id => id && id.trim() !== "")
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, phone: true, affiliate_auto_withdraw: true, affiliate_auto_withdraw_threshold: true, withdrawal_method: true, withdrawal_number: true }
+    })
+    const userMap = new Map(users.map(u => [u.id, u]))
+
     for (const aff of affiliates) {
-      if (!aff.User?.affiliate_auto_withdraw) continue
-      const threshold = aff.User.affiliate_auto_withdraw_threshold ?? 50000
-      // @ts-expect-error : Decimal vs Number diff in Prisma
+      const user = userMap.get(aff.user_id)
+      if (!user || !user.affiliate_auto_withdraw) continue
+      
+      const threshold = user.affiliate_auto_withdraw_threshold ?? 50000
+
       const currentBalance = Number(aff.balance || 0)
 
-      if (currentBalance >= threshold && aff.User.withdrawal_number) {
+      if (currentBalance >= threshold && user.withdrawal_number) {
         await prisma.$transaction(async (tx) => {
           const currentAff = await tx.affiliate.findUnique({ where: { id: aff.id } })
           const checkBalance = Number(currentAff?.balance || 0)
@@ -101,8 +106,8 @@ export async function POST(req: Request) {
               affiliate_id: aff.id,
               amount: checkBalance,
               status: 'pending',
-              payment_method: aff.User.withdrawal_method || 'wave',
-              phone: aff.User.withdrawal_number,
+              payment_method: user.withdrawal_method || 'wave',
+              phone: user.withdrawal_number,
               notes: 'Retrait Automatique Affilié',
               requested_at: new Date()
             }

@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { ClosingView } from './ClosingView'
 
 export const metadata = {
-  title: 'Centre Closing COD | PDV Pro',
+  title: 'Centre Closing COD | Yayyam',
 }
 
 export default async function ClosingPage() {

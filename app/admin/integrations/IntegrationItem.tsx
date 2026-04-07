@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { CheckCircle2, XCircle, Pencil, X, Save, ExternalLink, Loader2, Eye, EyeOff, Activity, Copy, Clock } from 'lucide-react'
 
 // ─── PROPS ────────────────────────────────────────────────────────────────

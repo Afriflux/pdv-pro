@@ -34,10 +34,10 @@ export async function updateProductCloserSettings(productId: string, active: boo
 
     const product = await prisma.product.findUnique({
       where: { id: productId },
-      include: { Store: true }
+      include: { store: true }
     })
 
-    if (!product || product.Store.user_id !== user.id) throw new Error("Non autorisé")
+    if (!product || product.store.user_id !== user.id) throw new Error("Non autorisé")
 
     await prisma.product.update({
       where: { id: productId },

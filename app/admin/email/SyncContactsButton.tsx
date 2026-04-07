@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { RefreshCw } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export default function SyncContactsButton() {
   const [syncing, setSyncing] = useState(false)

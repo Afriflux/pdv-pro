@@ -43,7 +43,7 @@ function buildAbandonedCartEmail(
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
         <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#0D5C4A,#0F7A60);padding:40px 48px;">
-          <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;">PDV<span style="color:#C9A84C;">Pro</span></h1>
+          <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;">Yayyam<span style="color:#C9A84C;">Pro</span></h1>
           <p style="margin:8px 0 0;color:rgba(255,255,255,0.75);font-size:14px;">${storeName}</p>
         </td></tr>
         <!-- Corps -->
@@ -77,7 +77,7 @@ function buildAbandonedCartEmail(
             </p>
           </div>
           <div style="text-align:center;margin:28px 0;">
-            <a href="https://pdvpro.com/${storeSlug}" style="display:inline-block;background:#0F7A60;color:#ffffff;font-weight:700;font-size:15px;text-decoration:none;padding:14px 32px;border-radius:12px;">
+            <a href="https://yayyam.com/${storeSlug}" style="display:inline-block;background:#0F7A60;color:#ffffff;font-weight:700;font-size:15px;text-decoration:none;padding:14px 32px;border-radius:12px;">
               Finaliser ma commande →
             </a>
           </div>
@@ -88,8 +88,8 @@ function buildAbandonedCartEmail(
         <!-- Footer -->
         <tr><td style="background:#F9FAFB;padding:24px 48px;border-top:1px solid #E5E7EB;">
           <p style="margin:0;font-size:12px;color:#9CA3AF;text-align:center;">
-            PDV Pro · Marketplace africaine 🌍 ·
-            <a href="https://pdvpro.com/${storeSlug}" style="color:#0F7A60;text-decoration:none;">${storeName}</a>
+            Yayyam · Marketplace africaine 🌍 ·
+            <a href="https://yayyam.com/${storeSlug}" style="color:#0F7A60;text-decoration:none;">${storeName}</a>
           </p>
         </td></tr>
       </table>
@@ -160,13 +160,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       // Anti-doublon : vérifier si déjà relancé
       const meta = (order.metadata ?? {}) as Record<string, unknown>
       if (meta.abandoned_cart_sent === true) {
-        console.log(`[Cron abandoned-cart] Déjà relancé — order ${order.id}`)
         continue
       }
 
       // Pas d'email → impossible de relancer
       if (!order.buyer_email) {
-        console.log(`[Cron abandoned-cart] Pas d'email — order ${order.id}`)
         continue
       }
 
@@ -190,7 +188,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
         if (ok) {
           sent++
-          console.log(`[Cron abandoned-cart] Email envoyé → ${order.buyer_email} (order ${order.id})`)
 
           // Marquer comme relancé dans metadata (anti-doublon)
           await supabaseAdmin
@@ -213,10 +210,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         console.error(`[Cron abandoned-cart] Erreur order ${order.id} :`, err)
       }
     }
-
-    console.log(
-      `[Cron abandoned-cart] Terminé — processées: ${processed}, emails envoyés: ${sent}`
-    )
 
     return NextResponse.json(
       { success: true, processed, sent },

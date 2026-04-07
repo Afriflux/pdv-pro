@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client'
 
 const globalForPrisma = global as unknown as {
-  prisma: PrismaClient | undefined
+  prisma_v2: PrismaClient | undefined
 }
 
 export const prisma =
-  globalForPrisma.prisma ??
+  globalForPrisma.prisma_v2 ??
   new PrismaClient({
     datasources: {
       db: {
@@ -16,5 +16,5 @@ export const prisma =
   })
 
 if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma
+  globalForPrisma.prisma_v2 = prisma
 }

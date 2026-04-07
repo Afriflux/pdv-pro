@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
-import AIProductGenerator from '@/components/dashboard/AIProductGenerator'
+import { UniversalAIGenerator } from '@/components/shared/ai/UniversalAIGenerator'
 import { Sparkles, HelpCircle } from 'lucide-react'
 
 // ----------------------------------------------------------------
@@ -67,6 +67,11 @@ interface Product {
   bump_active?: boolean
   bump_product_id?: string | null
   bump_offer_text?: string | null
+  
+  // ── OTO Upsell Post-Achat ──
+  oto_active?: boolean
+  oto_product_id?: string | null
+  oto_discount?: number | null
   
   // ── Tarification Récurrente ──
   payment_type?: string | null
@@ -267,9 +272,9 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
       for (const file of newFiles) {
         const ext  = file.name.split('.').pop()
         const path = `products/${storeId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-        const { error: upErr } = await supabase.storage.from('pdvpro-products').upload(path, file)
+        const { error: upErr } = await supabase.storage.from('yayyam-products').upload(path, file)
         if (!upErr) {
-          const { data } = supabase.storage.from('pdvpro-products').getPublicUrl(path)
+          const { data } = supabase.storage.from('yayyam-products').getPublicUrl(path)
           uploadedUrls.push(data.publicUrl)
         }
       }
@@ -281,10 +286,10 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
         const ext  = digitalFile.name.split('.').pop()
         const path = `digital/${storeId}/${Date.now()}.${ext}`
         const { error: dfErr } = await supabase.storage
-          .from('pdvpro-digital')
+          .from('yayyam-digital')
           .upload(path, digitalFile)
         if (!dfErr) {
-          const { data } = supabase.storage.from('pdvpro-digital').getPublicUrl(path)
+          const { data } = supabase.storage.from('yayyam-digital').getPublicUrl(path)
           digitalFileUrl = data.publicUrl
         }
       }
@@ -440,10 +445,11 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
         </div>
 
         {showAI && (
-          <AIProductGenerator
+          <UniversalAIGenerator
+            mode="single-product"
             category={category}
             onGenerated={(data: any) => {
-              if (data.name) setName(data.name)
+              if (data.title || data.name) setName(data.title || data.name)
               if (data.description) setDescription(data.description)
               if (data.price) setPrice(String(data.price))
               
@@ -547,7 +553,7 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
                   ))}
                 </div>
                 <p className="text-[11px] text-gray-500 mt-2 font-medium">
-                  💡 Remarque : PDV Pro relancera automatiquement le client à chaque itération. L'accès sera révoqué si le paiement échoue.
+                  💡 Remarque : Yayyam relancera automatiquement le client à chaque itération. L'accès sera révoqué si le paiement échoue.
                 </p>
               </div>
             )}
@@ -848,6 +854,7 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Places maximum</label>
                   <input
+                    title="Nombre de places maximum"
                     type="number" value={maxParticipants} onChange={e => setMaxParticipants(e.target.value)}
                     min="2"
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
@@ -1105,6 +1112,8 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Produit à proposer</label>
                   <select
+                    aria-label="Produit à proposer"
+                    title="Produit à proposer pour l'Order Bump"
                     value={bumpProductId}
                     onChange={e => setBumpProductId(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition bg-white"
@@ -1149,6 +1158,8 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
                 <div>
                   <label className="block text-sm font-medium text-emerald-900 mb-1">Produit à proposer</label>
                   <select
+                    aria-label="Produit O-T-O"
+                    title="Produit à proposer pour l'Offre Unique (O-T-O)"
                     value={otoProductId}
                     onChange={e => setOtoProductId(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition bg-white text-emerald-900"

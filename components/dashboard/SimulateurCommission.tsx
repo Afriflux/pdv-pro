@@ -2,7 +2,7 @@
 'use client'
 
 // ─── components/dashboard/SimulateurCommission.tsx ───────────────────────────
-// Client Component — Simulateur de commission PDV Pro en temps réel
+// Client Component — Simulateur de commission Yayyam en temps réel
 
 import { useState } from 'react'
 
@@ -139,7 +139,7 @@ export default function SimulateurCommission() {
             {/* Commission */}
             <div className="bg-red-50 rounded-2xl p-4 space-y-1 text-center border border-red-100">
               <p className="text-[10px] font-black text-red-400 uppercase tracking-widest">Commission</p>
-              <p className="font-black text-sm text-red-500">PDV Pro</p>
+              <p className="font-black text-sm text-red-500">Yayyam</p>
               <p className="text-xl font-black text-red-600">
                 {fmt(commission)}
                 <span className="text-xs font-bold ml-1">FCFA</span>
@@ -192,7 +192,7 @@ export default function SimulateurCommission() {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500 font-medium">
-                Commission PDV Pro ({tier.rate}% — palier {tier.name})
+                Commission Yayyam ({tier.rate}% — palier {tier.name})
               </span>
               <span className="font-bold text-red-500">− {fmt(commission)} FCFA</span>
             </div>

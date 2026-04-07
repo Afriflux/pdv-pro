@@ -67,7 +67,7 @@ export default function AdminOverviewClient({ stats, logs, role }: Props) {
           color="text-gray-900" 
         />
         <StatCard 
-          title="Revenus PDV Pro (Commissions)" 
+          title="Revenus Yayyam (Commissions)" 
           value={`${stats.totalRevenue.toLocaleString()} F`} 
           icon="💰" 
           link="/admin/analytics" 

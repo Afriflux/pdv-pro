@@ -8,7 +8,7 @@ export default function Footer() {
         {/* Colonne 1 : Brand */}
         <div className="space-y-4">
           <Link href="/" className="inline-block">
-             <span className="text-2xl font-black tracking-tighter text-white">PDV<span className="text-emerald">Pro</span></span>
+             <span className="text-2xl font-black tracking-tighter text-white">Yayyam</span>
           </Link>
           <p className="text-gray-400 text-sm leading-relaxed">
             La plateforme e-commerce #1 en Afrique de l'Ouest. Créez votre boutique gratuitement et vendez sans limite.
@@ -40,19 +40,19 @@ export default function Footer() {
         <div>
           <h4 className="font-bold text-lg mb-4">Contact</h4>
           <ul className="space-y-3 text-sm text-gray-400 mb-6">
-            <li><a href="mailto:support@pdvpro.com" className="hover:text-white transition-colors">support@pdvpro.com</a></li>
+            <li><a href="mailto:support@yayyam.com" className="hover:text-white transition-colors">support@yayyam.com</a></li>
             <li><a href="https://wa.me/221770000000" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-2">WhatsApp Support</a></li>
           </ul>
           <div className="flex items-center gap-4">
-            <a href="https://www.instagram.com/pdvpro" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Instagram size={18} /></a>
-            <a href="https://t.me/pdvpro" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Send size={18} /></a>
-            <a href="https://www.facebook.com/pdvpro" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Facebook size={18} /></a>
+            <a href="https://www.instagram.com/yayyam" target="_blank" rel="noopener noreferrer" title="Instagram" aria-label="Instagram" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Instagram size={18} /></a>
+            <a href="https://t.me/yayyam" target="_blank" rel="noopener noreferrer" title="Telegram" aria-label="Telegram" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Send size={18} /></a>
+            <a href="https://www.facebook.com/yayyam" target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-emerald hover:text-white transition-all"><Facebook size={18} /></a>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
-        <p>© 2026 PDV Pro — Tous droits réservés.</p>
+        <p>© 2026 Yayyam — Tous droits réservés.</p>
         <p className="mt-2 md:mt-0">Fait avec ❤️ au Sénégal</p>
       </div>
     </footer>

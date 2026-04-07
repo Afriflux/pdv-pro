@@ -1,17 +1,14 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
-import TasksClient from './TasksClient'
-
-// ─── Page Tâches — accessible à tous les vendeurs ────────────────────────────
-// Plus de guard PRO ni de dépendance à prisma/subscriptions
+import { UniversalTasks } from '@/components/shared/tasks/UniversalTasks'
+import { createTaskAction, updateTaskStatus, updateTaskTitle, deleteTaskAction, getStoreCustomersAction } from './actions'
 
 export default async function TasksPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Vérification store via Supabase (sans prisma)
   const { data: store } = await supabase
     .from('Store')
     .select('id')
@@ -25,7 +22,6 @@ export default async function TasksPage() {
     orderBy: { createdAt: 'desc' }
   })
 
-  // Conversion simple pour le Client
   const plainTasks = tasks.map(t => ({
     id: t.id,
     title: t.title,
@@ -52,7 +48,18 @@ export default async function TasksPage() {
       </header>
 
       <main className="w-full p-6">
-        <TasksClient initialTasks={plainTasks} />
+        <UniversalTasks 
+          initialTasks={plainTasks} 
+          ownerId={store.id} 
+          ownerType="vendor" 
+          actions={{
+            createTask: (data) => createTaskAction(data, "vendor"),
+            updateStatus: updateTaskStatus,
+            updateTitle: updateTaskTitle,
+            deleteTask: deleteTaskAction,
+            getCustomers: getStoreCustomersAction
+          }}
+        />
       </main>
     </div>
   )

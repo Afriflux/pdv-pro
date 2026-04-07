@@ -1,6 +1,6 @@
 /**
  * /app/api/telegram/webhook/route.ts
- * Gestionnaire de Webhook du Bot Telegram @PDVProBot.
+ * Gestionnaire de Webhook du Bot Telegram @YayyamProBot.
  * Traite les commandes utilisateurs et fournit des informations en temps réel.
  * 
  * Sécurisé par le header X-Telegram-Bot-Api-Secret-Token.
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
             const result = await handleConnectCommand(chatId, chatTitle, chatType, codePart)
             await sendMessage(chatId, result.message)
           } else {
-            await sendMessage(chatId, '❌ Utilisez le format : <code>/connect PDV-XXXX</code>')
+            await sendMessage(chatId, '❌ Utilisez le format : <code>/connect Yayyam-XXXX</code>')
           }
         } else {
           await handleUnknown(chatId)
@@ -196,7 +196,7 @@ async function handleBuyerGateway(chatId: string, orderId: string, from: Telegra
   // 6. Générer un lien d'invitation à usage unique
   try {
     const inviteLink = await createInviteLink(community.chat_id)
-    const storeName = (Array.isArray(order.store) ? order.store[0] : order.store)?.name || 'PDV Pro'
+    const storeName = (Array.isArray(order.store) ? order.store[0] : order.store)?.name || 'Yayyam'
     
     // 7. Envoyer le lien en privé
     const msg = `🎉 <b>Félicitations pour votre achat chez ${storeName} !</b>\n\n` +
@@ -266,7 +266,7 @@ async function handleStart(chatId: string, fullText: string, from: TelegramUser)
       return
     }
 
-    const storeName = (Array.isArray(affiliate.Store) ? affiliate.Store[0] : affiliate.Store)?.name || 'PDV Pro'
+    const storeName = (Array.isArray(affiliate.Store) ? affiliate.Store[0] : affiliate.Store)?.name || 'Yayyam'
     const successMsg = `✅ <b>Félicitations ${from.first_name} !</b>\n\nVotre compte ambassadeur est maintenant lié.\n\nVous recevrez ici une notification instantanée à chaque nouvelle commission générée pour <b>${storeName}</b> ! 💸`
     
     await sendMessage(chatId, successMsg)
@@ -285,7 +285,7 @@ async function handleStart(chatId: string, fullText: string, from: TelegramUser)
       .single()
 
     if (error || !linkToken) {
-      const errorMsg = `❌ <b>Code invalide ou expiré.</b>\n\nVeuillez générer un nouveau code dans vos paramètres PDV Pro.`
+      const errorMsg = `❌ <b>Code invalide ou expiré.</b>\n\nVeuillez générer un nouveau code dans vos paramètres Yayyam.`
       await sendMessage(chatId, errorMsg)
       return
     }
@@ -318,13 +318,13 @@ async function handleStart(chatId: string, fullText: string, from: TelegramUser)
       .eq('id', linkToken.store_id)
       .single()
 
-    const successMsg = `✅ <b>Félicitations !</b>\n\nVotre compte est maintenant lié à la boutique <b>${store?.name || 'PDV Pro'}</b>.\n\nVous recevrez désormais vos notifications ici.`
+    const successMsg = `✅ <b>Félicitations !</b>\n\nVotre compte est maintenant lié à la boutique <b>${store?.name || 'Yayyam'}</b>.\n\nVous recevrez désormais vos notifications ici.`
     await sendMessage(chatId, successMsg)
   } else {
     // Message de bienvenue standard
-    const welcomeMsg = `👋 <b>Bonjour ${from.first_name} !</b>\n\nJe suis le bot officiel de <b>PDV Pro</b>.\n\n` +
+    const welcomeMsg = `👋 <b>Bonjour ${from.first_name} !</b>\n\nJe suis le bot officiel de <b>Yayyam</b>.\n\n` +
       `Pour lier votre compte vendeur :\n` +
-      `1. Allez dans PDV Pro → Paramètres → Telegram\n` +
+      `1. Allez dans Yayyam → Paramètres → Telegram\n` +
       `2. Cliquez sur "Connecter Telegram"\n` +
       `3. Revenez ici et tapez /start suivi du code affiché\n\n` +
       `Exemple : <code>/start ABC123</code>`
@@ -484,7 +484,7 @@ async function handleAide(chatId: string) {
     `📦 /commandes - Vos 5 dernières commandes\n` +
     `💳 /wallet - Votre solde actuel\n` +
     `🆘 /aide - Affiche ce menu\n\n` +
-    `<i>PDV Pro - L'excellence e-commerce en Afrique.</i>`
+    `<i>Yayyam - L'excellence e-commerce en Afrique.</i>`
   await sendMessage(chatId, aideMsg)
 }
 
@@ -508,7 +508,7 @@ async function getStoreByChatId(chatId: string) {
     .single()
 
   if (error || !data) {
-    await sendMessage(chatId, `🔗 <b>Compte non lié.</b>\n\nTapez /start pour voir comment lier votre compte PDV Pro.`)
+    await sendMessage(chatId, `🔗 <b>Compte non lié.</b>\n\nTapez /start pour voir comment lier votre compte Yayyam.`)
     return null
   }
 

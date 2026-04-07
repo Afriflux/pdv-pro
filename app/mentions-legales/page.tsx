@@ -7,7 +7,7 @@ export default function LegalNoticesPage() {
       <header className="bg-[#0F7A60] text-white py-6 px-6 shadow-md">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="text-2xl font-black tracking-tighter">
-            PDV <span className="text-emerald-200">Pro</span>
+            Yayyam <span className="text-emerald-200">Pro</span>
           </Link>
           <Link href="/" className="text-sm font-medium hover:text-emerald-100 transition">
             Retour à l'accueil
@@ -22,13 +22,13 @@ export default function LegalNoticesPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">1. Éditeur du site</h2>
             <p>
-              La plateforme PDV Pro est éditée par la société <span className="font-bold">PDV Pro Senegal SARL</span>, 
+              La plateforme Yayyam est éditée par la société <span className="font-bold">Yayyam Senegal SARL</span>, 
               immatriculée au Registre du Commerce et du Crédit Mobilier (RCCM) de Dakar.
             </p>
             <ul className="mt-4 space-y-1">
               <li><span className="font-semibold">Siège social :</span> Dakar, Sénégal.</li>
-              <li><span className="font-semibold">Contact :</span> support@pdvpro.com</li>
-              <li><span className="font-semibold">Directeur de publication :</span> Équipe Fondatrice PDV Pro.</li>
+              <li><span className="font-semibold">Contact :</span> support@yayyam.com</li>
+              <li><span className="font-semibold">Directeur de publication :</span> Équipe Fondatrice Yayyam.</li>
             </ul>
           </section>
 
@@ -55,7 +55,7 @@ export default function LegalNoticesPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">4. Services de Paiement</h2>
             <p>
-              PDV Pro utilise les services de passerelles de paiement tierces agréées :
+              Yayyam utilise les services de passerelles de paiement tierces agréées :
             </p>
             <ul className="list-disc ml-6 mt-2 space-y-1">
               <li>Wave Mobile Money</li>
@@ -82,7 +82,7 @@ export default function LegalNoticesPage() {
       {/* Footer */}
       <footer className="bg-gray-50 py-10 px-6 border-t border-gray-200">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-gray-600 text-sm">© 2026 PDV Pro — L'excellence digitale pour le e-commerce en Afrique.</p>
+          <p className="text-gray-600 text-sm">© 2026 Yayyam — L'excellence digitale pour le e-commerce en Afrique.</p>
         </div>
       </footer>
     </div>

@@ -1,5 +1,5 @@
 // app/dashboard/tips/page.tsx
-// Server Component statique — Articles & Guides pour vendeurs PDV Pro
+// Server Component statique — Articles & Guides pour vendeurs Yayyam
 
 import AcademyGrid from './AcademyGrid'
 import TipsClient from './TipsClient'
@@ -21,15 +21,20 @@ export default async function TipsPage() {
   const isPro = store?.subscriptions?.[0]?.plan === 'pro'
   
   // Récupération des articles depuis la BDD
-  let dbArticles = await getMasterclassArticles(false)
+  const dbArticles = await getMasterclassArticles(false)
 
   // Simulation de la progression pour la gamification remplacée par les vraies stats
   const completedProgresses = await prisma.masterclassProgress.findMany({
     where: { user_id: user.id },
     select: { article_id: true }
   })
-  
   const completedIds = completedProgresses.map(p => p.article_id)
+
+  const assetPurchases = await prisma.assetPurchase.findMany({
+    where: { store_id: store?.id, asset_type: 'MASTERCLASS' },
+    select: { asset_id: true }
+  })
+  const purchasedAssetIds = assetPurchases.map(a => a.asset_id)
   
   const totalArticles = dbArticles.length
   const completedCount = completedIds.length
@@ -41,7 +46,7 @@ export default async function TipsPage() {
   if (userProgress >= 25) badgeTitle = "Apprenti"
   if (userProgress >= 50) badgeTitle = "Vendeur Sérieux"
   if (userProgress >= 80) badgeTitle = "Général COD"
-  if (userProgress === 100) badgeTitle = "PDV Pro Master"
+  if (userProgress === 100) badgeTitle = "Yayyam Master"
 
   return (
     <div className="w-full bg-[#FAFAF7] min-h-screen">
@@ -55,7 +60,7 @@ export default async function TipsPage() {
         <div className="relative max-w-5xl mx-auto z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-6">
-              <span className="text-gold font-bold text-xs">✨ PDV Pro Academy</span>
+              <span className="text-gold font-bold text-xs">✨ Yayyam Academy</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
               Devenez un maître de la <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">vente en ligne.</span>
@@ -114,7 +119,11 @@ export default async function TipsPage() {
             <div className="w-2 h-6 rounded-full bg-gold"></div>
             <h2 className="text-xl font-black text-ink">La Bibliothèque Masterclass</h2>
           </div>
-          <AcademyGrid articles={dbArticles as any} completedIds={completedIds} />
+          <AcademyGrid 
+            articles={dbArticles as any} 
+            completedIds={completedIds} 
+            purchasedAssetIds={purchasedAssetIds} 
+          />
         </div>
 
         {/* SECTION: ALERTS & NEWS (TipsClient) (Descendue) */}
@@ -131,7 +140,7 @@ export default async function TipsPage() {
           <p className="text-2xl">🚀</p>
           <p className="font-black text-white text-lg">Prêt à passer à l&apos;action ?</p>
           <p className="text-sm text-white/80">
-            Rejoignez la communauté PDV Pro et échangez avec d&apos;autres vendeurs
+            Rejoignez la communauté Yayyam et échangez avec d&apos;autres vendeurs
             qui appliquent ces stratégies chaque jour.
           </p>
           <a

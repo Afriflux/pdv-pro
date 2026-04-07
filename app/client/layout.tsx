@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { ClientSidebar } from '@/components/client/ClientSidebar'
 
 export const metadata = {
-  title: 'Espace Client | PDV Pro',
+  title: 'Espace Client | Yayyam',
 }
 
 export default async function ClientLayout({

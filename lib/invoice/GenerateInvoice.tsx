@@ -18,7 +18,7 @@ Font.register({
   ],
 })
 
-const PRIMARY_COLOR = '#f97316' // orange-500 PDV Pro
+const PRIMARY_COLOR = '#f97316' // orange-500 Yayyam
 
 const styles = StyleSheet.create({
   page: {
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     height: 40,
     objectFit: 'contain',
   },
-  pdvLogoText: {
+  yayyamLogoText: {
     fontSize: 24,
     fontWeight: 900,
     color: PRIMARY_COLOR,
@@ -189,16 +189,16 @@ export function InvoiceDocument({ data }: { data: InvoiceData }) {
         // eslint-disable-next-line jsx-a11y/alt-text
         <Image src={data.store.logo_url} style={styles.logo} />
       ) : (
-        <Text style={[styles.pdvLogoText, { color: '#111827' }]}>{data.store.name}</Text>
+        <Text style={[styles.yayyamLogoText, { color: '#111827' }]}>{data.store.name}</Text>
       )
     }
-    // Plan Starter -> PDV Pro
-    return <Text style={styles.pdvLogoText}>PDV Pro</Text>
+    // Plan Starter -> Yayyam
+    return <Text style={styles.yayyamLogoText}>Yayyam</Text>
   }
 
-  const issuerName = data.store.isWhiteLabel ? data.store.name : 'PDV Pro'
+  const issuerName = data.store.isWhiteLabel ? data.store.name : 'Yayyam'
   const issuerAddress = data.store.isWhiteLabel && data.store.address ? data.store.address : 'Dakar, Sénégal'
-  const issuerEmail = data.store.isWhiteLabel && data.store.email ? data.store.email : 'support@pdvpro.com'
+  const issuerEmail = data.store.isWhiteLabel && data.store.email ? data.store.email : 'support@yayyam.com'
 
   return (
     <Document>
@@ -266,7 +266,7 @@ export function InvoiceDocument({ data }: { data: InvoiceData }) {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Réf commande: {data.orderId.split('-')[0].toUpperCase()}</Text>
-          <Text style={styles.footerText}>Généré automatiquement par PDV Pro</Text>
+          <Text style={styles.footerText}>Généré automatiquement par Yayyam</Text>
         </View>
       </Page>
     </Document>

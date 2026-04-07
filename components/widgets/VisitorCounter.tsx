@@ -15,14 +15,18 @@ export default function VisitorCounter({
   productId: _productId, 
   baseCount 
 }: VisitorCounterProps) {
-  // Initialiser avec baseCount ou un nombre aléatoire entre 3 et 12
-  const [count, setCount] = useState<number>(
-    () => baseCount ?? Math.floor(Math.random() * 10) + 3
-  )
+  // Initialiser avec baseCount ou un nombre fixe pour le SSR afin d'éviter les erreurs d'hydratation.
+  const [count, setCount] = useState<number>(baseCount ?? 5)
+  const [mounted, setMounted] = useState(false)
   // État pour déclencher l'animation fade lors d'un changement
   const [animating, setAnimating] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+    if (!baseCount) {
+      setCount(Math.floor(Math.random() * 10) + 3)
+    }
+
     // Intervalle aléatoire entre 8 000ms et 15 000ms
     const delay = Math.random() * 7000 + 8000
 
@@ -39,7 +43,9 @@ export default function VisitorCounter({
     }, delay)
 
     return () => clearInterval(interval)
-  }, []) // Intervalle fixé au montage
+  }, [baseCount]) // Intervalle fixé au montage
+
+  if (!mounted) return null // Évite l'erreur d'hydratation
 
   return (
     <div

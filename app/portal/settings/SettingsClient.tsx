@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { User, CreditCard, Lock, Save, CheckCircle2, AlertCircle, Phone, Mail, Camera, Trash2, Globe, Target, AlertTriangle, ScrollText } from 'lucide-react'
+import { User, CreditCard, Lock, Save, CheckCircle2, AlertCircle, Phone, Mail, Camera, Trash2, Globe, Target, AlertTriangle, ScrollText, ShieldCheck } from 'lucide-react'
 import { updateAffiliateProfile } from './actions'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 import { PhoneInput } from '@/components/ui/PhoneInput'
 import { AffiliateContractTab } from './tabs/AffiliateContractTab'
+import { KycTab } from './tabs/KycTab'
 
 
 interface SettingsClientProps {
@@ -18,7 +19,7 @@ interface SettingsClientProps {
 }
 
 export default function SettingsClient({ userProfile, authUser, affiliateId, telegramChatId, contractAcceptedAt }: SettingsClientProps) {
-  const [activeTab, setActiveTab] = useState<'profile' | 'social' | 'payments' | 'pixels' | 'notifications' | 'security' | 'danger' | 'contract'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'social' | 'payments' | 'pixels' | 'notifications' | 'security' | 'danger' | 'contract' | 'kyc'>('profile')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
@@ -111,6 +112,7 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
           <MenuBtn active={activeTab === 'notifications'} icon={<AlertCircle className="w-5 h-5" />} label="Notifications" onClick={() => { setActiveTab('notifications'); setError(''); setSuccess('') }} />
           <div className="hidden lg:block h-3" />
           <MenuBtn active={activeTab === 'security'} icon={<Lock className="w-5 h-5" />} label="Sécurité" onClick={() => { setActiveTab('security'); setError(''); setSuccess('') }} />
+          <MenuBtn active={activeTab === 'kyc'} icon={<ShieldCheck className="w-5 h-5" />} label="Conformité (KYC)" onClick={() => { setActiveTab('kyc'); setError(''); setSuccess('') }} />
           <MenuBtn active={activeTab === 'contract'} icon={<ScrollText className="w-5 h-5" />} label="Contrat" onClick={() => { setActiveTab('contract'); setError(''); setSuccess('') }} />
           <MenuBtn active={activeTab === 'danger'} icon={<AlertTriangle className="w-5 h-5 text-red-500" />} label="Zone Danger" onClick={() => { setActiveTab('danger'); setError(''); setSuccess('') }} />
         </nav>
@@ -400,7 +402,7 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
                          <h3 className="font-bold text-[#0F7A60] text-lg tracking-tight">Paiements Rapides Wave / Orange Money</h3>
                        </div>
                        <p className="text-[14px] text-[#0F7A60]/80 font-medium leading-relaxed max-w-3xl">
-                         PDV Pro facilite le versement de vos fonds. Ce numéro sera indiqué aux marchands lorsque vous ferez une demande de retrait depuis votre Portefeuille.
+                         Yayyam facilite le versement de vos fonds. Ce numéro sera indiqué aux marchands lorsque vous ferez une demande de retrait depuis votre Portefeuille.
                        </p>
                     </div>
 
@@ -459,7 +461,7 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
                             </p>
                           </div>
                           <a 
-                            href={`https://t.me/PdvProBot?start=aff_${affiliateId}`}
+                            href={`https://t.me/YayyamProBot?start=aff_${affiliateId}`}
                             target="_blank" 
                             rel="noreferrer"
                             className="px-8 py-4 bg-[#2AABEE] text-white rounded-[1.2rem] font-black shadow-[0_4px_15px_rgba(42,171,238,0.3)] hover:bg-[#229ED9] transform hover:-translate-y-1 transition-all w-full sm:w-auto text-center"
@@ -487,7 +489,7 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
                         </label>
                         <label className="flex items-center justify-between p-4 bg-gray-50/50 border border-gray-200 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors">
                           <div>
-                            <p className="font-bold text-gray-900">Newsletter PDV Pro</p>
+                            <p className="font-bold text-gray-900">Newsletter Yayyam</p>
                             <p className="text-[13px] text-gray-500">Actualités, nouveaux programmes d'affiliation rémunérateurs.</p>
                           </div>
                           <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-300">
@@ -597,6 +599,11 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
                     contractAcceptedAt={contractAcceptedAt} 
                     affiliateName={(userProfile.name as string) || (authUser.user_metadata?.name as string) || 'Affilié'} 
                   />
+                )}
+
+                {/* TAB KYC */}
+                {activeTab === 'kyc' && (
+                  <KycTab userProfile={userProfile} />
                 )}
                 
               </div>

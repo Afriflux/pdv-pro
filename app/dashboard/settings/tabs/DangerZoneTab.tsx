@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { AlertTriangle, Loader2, ShieldAlert, Skull, Flame } from 'lucide-react'
 import * as Actions from '@/app/actions/settings'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { useRouter } from 'next/navigation'
 
 export function DangerZoneTab() {

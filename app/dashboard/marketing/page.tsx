@@ -11,7 +11,7 @@ export default async function MarketingHubPage() {
   // 1. Charger l'espace (avec les IDs de pixels)
   const { data: store } = await supabase
     .from('Store')
-    .select('id, name, slug, meta_pixel_id, tiktok_pixel_id, whatsapp, whatsapp_abandoned_cart')
+    .select('id, name, slug, meta_pixel_id, tiktok_pixel_id, google_tag_id, whatsapp, whatsapp_abandoned_cart')
     .eq('user_id', user.id)
     .single()
 
@@ -27,7 +27,7 @@ export default async function MarketingHubPage() {
     .order('name', { ascending: true }) : { data: [] }
 
   // 3. Forcer la création d'un ShortLink global pour l'espace si inexistant
-  const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'pdvpro.com'
+  const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'yayyam.com'
 
   let links: Awaited<ReturnType<typeof getStoreLinksAnalytics>> = []
   if (storeId && storeSlug) {

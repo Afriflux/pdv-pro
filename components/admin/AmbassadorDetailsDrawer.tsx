@@ -6,7 +6,7 @@ import { fr } from 'date-fns/locale'
 import { X, Loader2, Users, ShieldAlert, ShieldCheck, CreditCard, ChevronRight, CheckCircle2 } from 'lucide-react'
 import { getAmbassadorDetails, payAmbassador } from '@/app/admin/ambassadeurs/actions'
 import Link from 'next/link'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { useRouter } from 'next/navigation'
 
 interface AmbassadorDetailsDrawerProps {
@@ -19,7 +19,7 @@ interface AmbassadorDetailsDrawerProps {
 
 export default function AmbassadorDetailsDrawer({ isOpen, onClose, ambassadorId, ambassadorName, ambassadorCode }: AmbassadorDetailsDrawerProps) {
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<{ referrals: Record<string, unknown>[], transactions: Record<string, unknown>[] } | null>(null)
+  const [data, setData] = useState<any>(null)
   const [activeTab, setActiveTab] = useState<'referrals' | 'transactions'>('referrals')
   const [isPaying, startTransition] = useTransition()
   const router = useRouter()
@@ -83,7 +83,7 @@ export default function AmbassadorDetailsDrawer({ isOpen, onClose, ambassadorId,
                       setData(newData)
                       router.refresh()
                     } catch (err: unknown) {
-                      toast.error("Erreur de paiement", { description: err instanceof Error ? err.message : String(err) })
+                      toast.error(`Erreur de paiement: ${err instanceof Error ? err.message : String(err)}`)
                     }
                   })
                 }}
@@ -135,7 +135,7 @@ export default function AmbassadorDetailsDrawer({ isOpen, onClose, ambassadorId,
                        <p className="text-sm font-bold text-gray-400">Aucun vendeur parrainé pour le moment.</p>
                     </div>
                   ) : (
-                    data.referrals.map((ref) => {
+                    data.referrals.map((ref: any) => {
                       const store = ref.Store as { name: string; slug: string; kyc_status: string } | undefined
                       return (
                         <div key={ref.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
@@ -186,7 +186,7 @@ export default function AmbassadorDetailsDrawer({ isOpen, onClose, ambassadorId,
                        <p className="text-sm font-bold text-gray-400">Aucune transaction (commission / retrait) effectuée.</p>
                     </div>
                   ) : (
-                    data.transactions.map((tx) => (
+                    data.transactions.map((tx: any) => (
                       <div key={tx.id} className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
                          <div className="flex items-center gap-3">
                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${tx.type === 'commission' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>

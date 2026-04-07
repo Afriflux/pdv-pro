@@ -1,11 +1,11 @@
-import { getAgendaSlots, getUpcomingBookings, getBlockedDates, getAgendaSettings } from '@/lib/coaching/agendaActions'
-import { AgendaView } from './AgendaView'
+import { getAgendaSlots, getUpcomingBookings, getBlockedDates, getAgendaSettings, saveAgendaSlots, updateBookingStatus, addBlockedDate, removeBlockedDate, addBlockedDatesRange, updateAgendaSettings } from '@/lib/coaching/agendaActions'
+import { UniversalAgenda } from '@/components/shared/agenda/UniversalAgenda'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { CalendarDays } from 'lucide-react'
 
 export const metadata = {
-  title: 'Mon Agenda | PDV Pro',
+  title: 'Mon Agenda | Yayyam',
 }
 
 export default async function AgendaPage() {
@@ -41,11 +41,20 @@ export default async function AgendaPage() {
             </div>
           </div>
 
-          <AgendaView 
+          <UniversalAgenda 
             initialSlots={slots} 
-            initialBookings={bookings} 
-            initialBlockedDates={blockedDates}
+            initialBookings={bookings as any} 
+            initialBlockedDates={blockedDates as any}
             initialSettings={settings || undefined}
+            role="vendor"
+            actions={{
+              saveSlots: saveAgendaSlots,
+              updateStatus: updateBookingStatus,
+              addBlockedDate: addBlockedDate,
+              removeBlockedDate: removeBlockedDate,
+              addBlockedRange: addBlockedDatesRange,
+              updateSettings: updateAgendaSettings
+            }}
           />
         </div>
       </div>

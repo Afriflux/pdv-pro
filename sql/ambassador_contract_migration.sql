@@ -7,6 +7,6 @@ ALTER TABLE "Ambassador"
 
 -- Documentation
 COMMENT ON COLUMN "Ambassador".contract_accepted
-  IS 'Vrai si l''ambassadeur a signé le contrat PDV Pro';
+  IS 'Vrai si l''ambassadeur a signé le contrat Yayyam';
 COMMENT ON COLUMN "Ambassador".contract_accepted_at
   IS 'Date de signature du contrat ambassadeur (horodatage serveur)';

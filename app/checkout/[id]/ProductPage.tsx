@@ -9,14 +9,16 @@ import React, { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { format, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Minus, Plus, Lock, ShieldCheck, BadgeCheck, MessageCircle, ChevronDown, Facebook, Link2, Check, Timer, Tags } from 'lucide-react'
+import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Minus, Plus, Lock, ShieldCheck, BadgeCheck, MessageCircle, ChevronDown, Facebook, Link2, Check, Timer, Tags, Home, Compass, Store } from 'lucide-react'
 import { CheckoutForm } from './CheckoutForm'
 import { EleganceTemplate } from './templates/EleganceTemplate'
 import { SalesLetterTemplate } from './templates/SalesLetterTemplate'
-import SocialProofBanner from '@/components/widgets/SocialProofBanner'
+import StockCountdown from '@/components/widgets/StockCountdown'
+import VisitorCounter from '@/components/widgets/VisitorCounter'
+import LocalPaymentBadges from '@/components/widgets/LocalPaymentBadges'
+import { PoweredByBadge } from '@/components/branding/PoweredByBadge'
 import { ReviewWidget } from '@/components/reviews/ReviewWidget'
 import { ProductQA } from '@/components/reviews/ProductQA'
-import { PoweredByBadge } from '@/components/branding/PoweredByBadge'
 import { ProductJsonLd } from '@/components/seo/JsonLd'
 import { FortuneWheelPopup } from '@/components/storefront/FortuneWheelPopup'
 import type { PromotionData } from '@/lib/promotions/promotionType'
@@ -48,7 +50,7 @@ interface ProductPageProps {
     recurring_interval?: string | null
     resale_allowed?: boolean
     resale_commission?: number | null
-    digital_files?: unknown[]
+    digital_files?: any[] | null
     coaching_durations?: number[] | null
     coaching_is_pack?: boolean | null
     coaching_pack_count?: number | null
@@ -72,6 +74,7 @@ interface ProductPageProps {
     bump_active?: boolean
     bump_product_id?: string | null
     bump_offer_text?: string | null
+    template?: string | null
   }
   variants: Variant[]
   computedPrice: {
@@ -83,8 +86,8 @@ interface ProductPageProps {
   vendorPlan?: 'gratuit' | 'pro'
   storeId: string
   deliveryZones?: { id: string; name: string; fee: number; delay: string | null; active: boolean }[]
-  coachingSlots?: unknown[]
-  blockedDates?: unknown[]
+  coachingSlots?: any[]
+  blockedDates?: any[]
   bookedSlots?: Record<string, number>
   similarProducts?: {
     id: string
@@ -109,7 +112,8 @@ interface ProductPageProps {
     images: string[]
     type: string
   } | null
-  clientProfile?: unknown
+  clientProfile?: any
+  recentOrderSlot?: React.ReactNode
 }
 
 // ─── Composant Galerie ────────────────────────────────────────────────────────
@@ -254,6 +258,7 @@ export default function ProductPage({
   telegramCommunity,
   bumpProduct,
   clientProfile,
+  recentOrderSlot,
 }: ProductPageProps) {
   const accent = product.store.primary_color || '#0F7A60'
 
@@ -370,6 +375,41 @@ export default function ProductPage({
     return acc
   }, {})
 
+  const floatingNavNode = (
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:top-6 md:bottom-auto md:left-6 md:translate-x-0 z-[100] animate-in fade-in slide-in-from-bottom-4 md:slide-in-from-top-4 duration-500 fill-mode-both" style={{ animationDelay: '0.2s' }}>
+      <div className="bg-white/80 backdrop-blur-3xl border border-white p-1.5 rounded-[100px] shadow-[0_8px_30px_rgb(0,0,0,0.1)] flex items-center gap-1.5">
+        <div className="relative group">
+          <Link href="/" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-emerald-600 transition-all font-bold" aria-label="Accueil">
+            <Home size={20} strokeWidth={2.5} />
+          </Link>
+          <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+            Accueil
+          </span>
+        </div>
+        
+        <div className="relative group">
+          <Link href="/vendeurs" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-emerald-600 transition-all font-bold" aria-label="Marketplace">
+             <Compass size={20} strokeWidth={2.5} />
+          </Link>
+          <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+            Marketplace
+          </span>
+        </div>
+
+        <div className="w-px h-6 bg-gray-200 mx-1.5"></div>
+
+        <div className="relative group">
+          <Link href={`/${product.store.slug}`} className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-gray-900 transition-all font-bold" aria-label="Boutique">
+             <Store size={20} strokeWidth={2.5} />
+          </Link>
+          <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+            Boutique
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+
   const checkoutFormNode = (
     <CheckoutForm
       product={{ ...product, store: product.store }}
@@ -399,6 +439,7 @@ export default function ProductPage({
   if (product.template === 'elegance') {
     return (
       <>
+        {floatingNavNode}
         <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
         <EleganceTemplate 
           product={product} 
@@ -424,6 +465,7 @@ export default function ProductPage({
   if (product.template === 'sales_letter') {
     return (
       <>
+        {floatingNavNode}
         <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
         <SalesLetterTemplate 
           product={product} 
@@ -444,6 +486,7 @@ export default function ProductPage({
 
   return (
     <div className="min-h-screen bg-[#FAFAF7]">
+      {floatingNavNode}
       <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
 
       {/* ── Header boutique ────────────────────────────────────────────────── */}
@@ -528,7 +571,7 @@ export default function ProductPage({
               <div className="flex items-center gap-2 mt-4">
                 <button
                   type="button"
-                  onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Regarde ce produit sur PDV Pro ! ${window.location.href}`)}`, '_blank')}
+                  onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Regarde ce produit sur Yayyam ! ${window.location.href}`)}`, '_blank')}
                   className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-[#25D366] hover:text-white transition-all hover:scale-105"
                   title="Partager sur WhatsApp"
                 >
@@ -702,13 +745,12 @@ export default function ProductPage({
               </div>
             ) : null}
 
-            {/* ── SocialProofBanner ───────────────────────────────────── */}
-            <SocialProofBanner
-              storeId={storeId}
-              productId={product.id}
-              stock={variantStock}
-              stockThreshold={10}
-            />
+            {/* ── SocialProof Elements ───────────────────────────────────── */}
+            <div className="flex flex-col gap-2 w-full">
+              <StockCountdown stock={variantStock} threshold={10} />
+              <VisitorCounter productId={product.id} />
+              {recentOrderSlot}
+            </div>
 
             {/* ── Urgent Stock & Livraison Estimée ────────────────────── */}
             {!showForm && (
@@ -764,14 +806,8 @@ export default function ProductPage({
                 </div>
 
                 {/* Badge Sécurité Mobile Money & Wave (Mode Cash) */}
-                <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col items-center justify-center gap-2 mt-4 shadow-inner">
-                  <div className="flex items-center gap-3">
-                     <span className="text-xl px-2 py-1 bg-white shadow-sm border border-gray-100 rounded font-black text-blue-500">Wave</span>
-                     <span className="text-xl px-2 py-1 bg-white shadow-sm border border-gray-100 rounded font-black text-orange-500">Orange💸</span>
-                  </div>
-                  <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase flex items-center gap-1">
-                    <Lock className="w-3 h-3" /> Paiement 100% sécurisé mobile money
-                  </p>
+                <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col items-center justify-center gap-2 mt-4 shadow-inner">
+                  <LocalPaymentBadges />
                 </div>
               </div>
             )}
@@ -899,19 +935,33 @@ export default function ProductPage({
               </div>
             </details>
 
-            {/* ── Avis clients ────────────────────────────────────── */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-              <ReviewWidget
-                storeId={storeId}
-                productId={product.id}
-                showForm={true}
-              />
-            </div>
+            {/* ── Avis clients (Optionnel) ────────────────────────────── */}
+            <details className="bg-white rounded-2xl border border-gray-100 shadow-sm [&_summary::-webkit-details-marker]:hidden group mt-2">
+              <summary className="flex items-center justify-between p-5 cursor-pointer list-none font-bold text-gray-800 select-none">
+                <span className="flex items-center gap-2">⭐ Avis Clients</span>
+                <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
+              </summary>
+              <div className="px-5 pb-5 pt-0 border-t border-gray-50 mt-1 pt-4">
+                <ReviewWidget
+                  storeId={storeId}
+                  productId={product.id}
+                  showForm={true}
+                />
+              </div>
+            </details>
 
-            {/* ── Questions & Réponses ───────────────────────────── */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5 mt-5 shadow-sm">
-              <ProductQA productId={product.id} />
-            </div>
+            {/* ── Questions & Réponses (Optionnel) ────────────────────── */}
+            <details className="bg-white rounded-2xl border border-gray-100 shadow-sm [&_summary::-webkit-details-marker]:hidden group mt-2 mb-4">
+              <summary className="flex items-center justify-between p-5 cursor-pointer list-none font-bold text-gray-800 select-none">
+                <span className="flex items-center gap-2">❓ Questions Fréquentes</span>
+                <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
+              </summary>
+              <div className="px-5 pb-5 pt-0 border-t border-gray-50 mt-1 pt-4">
+                <ProductQA productId={product.id} />
+              </div>
+            </details>
+
+
 
             {/* ── Formulaire slide-down ───────────────────────────────── */}
             <div
@@ -1004,7 +1054,7 @@ export default function ProductPage({
 
       </div>
 
-      {/* Badge PDV Pro */}
+      {/* Badge Yayyam */}
       <PoweredByBadge />
 
       {/* ── Sticky bar mobile ──────────────────────────────────────────────── */}

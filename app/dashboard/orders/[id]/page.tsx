@@ -217,7 +217,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               </div>
 
               <a
-                href={`https://wa.me/${order.buyer_phone.replace(/\D/g, '')}?text=Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de votre commande sur PDV Pro.`}
+                href={`https://wa.me/${order.buyer_phone.replace(/\D/g, '')}?text=Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de votre commande sur Yayyam.`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex items-center justify-center gap-3 w-full bg-[#25D366] hover:bg-[#1EBE59] text-white font-black py-4 rounded-2xl transition shadow-lg shadow-green-200"
               >
@@ -258,7 +258,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                   <span className="text-ink">{order.total.toLocaleString('fr-FR')} F</span>
                 </div>
                 <div className="flex justify-between text-xs font-bold">
-                  <span className="text-slate">Commission PDV Pro</span>
+                  <span className="text-slate">Commission Yayyam</span>
                   <span className="text-red-500">− {order.platform_fee.toLocaleString('fr-FR')} F</span>
                 </div>
                 <div className="p-4 bg-emerald/5 rounded-2xl border border-emerald/10 mt-2">

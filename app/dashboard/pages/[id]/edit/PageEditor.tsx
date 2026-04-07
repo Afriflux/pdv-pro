@@ -414,7 +414,7 @@ function MobilePreview({ sections, products, theme, ctaText }: { sections: Rende
         
         <footer className="py-6 px-6 bg-gray-900 text-center">
           <p className="text-gray-400 text-xs font-sans">
-            Propulsé par <span className="text-white font-bold tracking-wide">PDV Pro</span>
+            Propulsé par <span className="text-white font-bold tracking-wide">Yayyam</span>
           </p>
         </footer>
       </div>
@@ -585,7 +585,7 @@ export function PageEditor({ page, storeId, products }: PageEditorProps) {
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1.5">URL publique</label>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-400 flex-shrink-0 bg-gray-50 px-3 py-3 rounded-xl border border-gray-100">pdvpro.com/p/</span>
+                  <span className="text-sm font-medium text-gray-400 flex-shrink-0 bg-gray-50 px-3 py-3 rounded-xl border border-gray-100">yayyam.com/p/</span>
                   <input
                     title="URL Publique"
                     placeholder="mon-livre-epatant"

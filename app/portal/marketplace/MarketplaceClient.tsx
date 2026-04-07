@@ -33,8 +33,8 @@ function LinkModal({ item, affiliation, onClose }: { item: MarketplaceItem, affi
   const [qrBase64, setQrBase64] = useState('')
 
   const baseUrl = item.type === 'product' 
-    ? `https://${item.storeSlug}.pdvpro.sn/p/${item.slug}`
-    : `https://${item.storeSlug}.pdvpro.sn/${item.slug}`
+    ? `https://${item.storeSlug}.yayyam.sn/p/${item.slug}`
+    : `https://${item.storeSlug}.yayyam.sn/${item.slug}`
 
   const trackedUrl = `${baseUrl}?ref=${affiliation.token}`
 
@@ -396,7 +396,7 @@ export default function MarketplaceClient({ items, affiliations }: MarketplaceCl
       {selectedItem && (
         <LinkModal 
           item={selectedItem} 
-          affiliation={affiliationMap.get(selectedItem.storeId)} 
+          affiliation={affiliationMap.get(selectedItem.storeId) || {}} 
           onClose={() => setSelectedItem(null)} 
         />
       )}

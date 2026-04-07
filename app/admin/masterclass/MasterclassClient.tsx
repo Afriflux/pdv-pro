@@ -9,7 +9,7 @@ import {
   toggleMasterclassArticle
 } from '@/app/actions/masterclass'
 import GenerateMasterclassModal from './GenerateMasterclassModal'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export default function MasterclassClient({ initialArticles }: { initialArticles: Record<string, any>[] }) {
   const [articles, setArticles] = useState(initialArticles)
@@ -102,7 +102,13 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
 
   const handleOpenEdit = (article: Record<string, any>) => {
     setFormData({
-      ...article,
+      title: article.title || '',
+      emoji: article.emoji || '📖',
+      color: article.color || 'bg-emerald-50',
+      category: article.category || 'Vente',
+      readTime: article.readTime || '5 min',
+      intro: article.intro || '',
+      is_active: article.is_active ?? true,
       tips: typeof article.tips === 'string' ? JSON.parse(article.tips) : article.tips
     })
     setEditingId(article.id)
@@ -142,7 +148,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
           toast.success("Module mis à jour !")
           setIsModalOpen(false)
         } else {
-          toast.error(res.error)
+          toast.error(res.error || "Erreur de mise à jour")
         }
       } else {
         const res = await createMasterclassArticle(formData)
@@ -151,7 +157,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
           toast.success("Nouveau module publié !")
           setIsModalOpen(false)
         } else {
-          toast.error(res.error)
+          toast.error(res.error || "Erreur de création")
         }
       }
     } catch (err) {
@@ -233,7 +239,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
               <GraduationCap className="w-8 h-8" />
             </div>
             <div className="pb-1">
-              <h1 className="text-3xl font-black text-white tracking-tight">PDV Pro Academy</h1>
+              <h1 className="text-3xl font-black text-white tracking-tight">Yayyam Academy</h1>
               <p className="text-emerald-100/90 font-medium text-sm mt-1 max-w-lg leading-relaxed">
                 Le centre de formation exclusif des vendeurs. Partagez votre expertise au travers de modules éducatifs.
               </p>

@@ -71,7 +71,7 @@ export default function PricingCalculator({ tiers }: PricingCalculatorProps) {
         <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100 flex flex-col justify-center items-center text-center shadow-sm relative overflow-hidden">
           <div className="absolute top-0 w-full h-1 bg-amber-400"></div>
           <p className="text-sm font-bold text-amber-600/70 uppercase tracking-wider mb-2 flex items-center justify-center gap-2">
-            Commission PDV Pro
+            Commission Yayyam
             <span className="bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full text-xs">{(currentRate * 100).toFixed(0)}%</span>
           </p>
           <p className="text-3xl font-black text-amber-600">{estimatedCommission.toLocaleString('fr-FR')} F</p>
@@ -102,7 +102,7 @@ export default function PricingCalculator({ tiers }: PricingCalculatorProps) {
         </div>
         <div className="flex justify-between mt-3 text-xs font-bold uppercase tracking-wider">
           <span className="text-emerald">Vous ({monthlySales > 0 ? vendorPercent : 100}%)</span>
-          <span className="text-amber-500">PDV Pro ({(currentRate * 100).toFixed(0)}%)</span>
+          <span className="text-amber-500">Yayyam ({(currentRate * 100).toFixed(0)}%)</span>
         </div>
       </div>
 
@@ -119,7 +119,7 @@ export default function PricingCalculator({ tiers }: PricingCalculatorProps) {
             <span className="font-bold text-charcoal">~ {otherPlatformCost.toLocaleString('fr-FR')} FCFA</span>
           </div>
           <div className="flex justify-between items-center pt-2">
-            <span className="text-emerald font-bold">PDV Pro ({(currentRate * 100).toFixed(0)}% tout inclus)</span>
+            <span className="text-emerald font-bold">Yayyam ({(currentRate * 100).toFixed(0)}% tout inclus)</span>
             <span className="font-bold text-emerald text-lg text-right">{estimatedCommission.toLocaleString('fr-FR')} FCFA</span>
           </div>
         </div>

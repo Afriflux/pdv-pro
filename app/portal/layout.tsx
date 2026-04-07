@@ -48,7 +48,7 @@ export default async function PortalLayout({
     : false; // Ajuster selon le besoin réel, par défaut non accepté s'il n'a aucun lien
 
   // Les affiliés sont désormais multi-vendeurs et globaux
-  const storeName = 'Réseau PDV Pro'
+  const storeName = 'Réseau Yayyam'
   const userName = userProfile.name || user.user_metadata?.name || 'Affilié'
   const avatarUrl = userProfile.avatar_url || user.user_metadata?.avatar_url || user.user_metadata?.picture || null
 

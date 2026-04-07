@@ -42,6 +42,7 @@ export async function applyForAffiliation(storeId: string) {
     await prisma.affiliate.create({
       data: {
         user_id: user.id,
+        store_id: storeId,
         vendor_id: storeId,
         status: 'pending', // Validation requise par le vendeur
         commission_rate: store.affiliate_margin * 100, // stocké en pourcentage pour l'affichage (si store marge = 0.1 => 10)

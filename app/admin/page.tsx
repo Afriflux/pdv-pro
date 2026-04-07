@@ -1,7 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import {
-  Users,
   ShoppingBag,
   Wallet,
   TrendingUp,
@@ -59,7 +58,7 @@ function OrderStatusBadge({ status }: { status: string }) {
 }
 
 // ----------------------------------------------------------------
-// DASHBOARD SUPER ADMIN — Charte PDV Pro
+// DASHBOARD SUPER ADMIN — Charte Yayyam
 // ----------------------------------------------------------------
 export default async function AdminDashboard() {
   const supabaseServer = await createClient()
@@ -140,7 +139,6 @@ export default async function AdminDashboard() {
 
   weekOrders.forEach(o => {
     const isSuccess = ['paid', 'confirmed', 'completed', 'delivered'].includes(o.status) || o.status.includes('confirmed')
-    const isPending = ['processing', 'shipped', 'pending', 'cod_pending'].includes(o.status)
     const isCancelled = ['cancelled', 'no_answer'].includes(o.status)
 
     if (isSuccess) statusCounts.success++

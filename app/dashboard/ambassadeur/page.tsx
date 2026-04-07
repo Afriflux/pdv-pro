@@ -45,7 +45,7 @@ export default async function AmbassadeurPage() {
   if (!stats) redirect('/dashboard')
 
   const { ambassador, referrals, recentTransactions, pendingCommissions } = stats
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
   const referralLink = `${appUrl}/register?ref=${ambassador.code}`
   const canWithdraw = ambassador.balance >= 5000
 

@@ -7,18 +7,14 @@ import { signOut } from '@/app/auth/actions'
 import { 
   LayoutDashboard, 
   Package, 
-  ShoppingBag, 
   ShoppingCart, 
   Wallet, 
   Share2, 
-  Target, 
   Users, 
-  BarChart3, 
-  MessageSquare, 
   Zap, 
-  ListTodo, 
   Gem, 
   Settings,
+  LayoutTemplate,
   LucideIcon,
   ChevronLeft,
   ChevronRight,
@@ -26,13 +22,13 @@ import {
   ChevronUp,
   ArrowLeftRight,
   LogOut,
-
   Truck,
-  MapPin,
-  Calendar,
-  PhoneCall,
-  Send,
   GraduationCap,
+  Blocks,
+  Link as LinkIcon,
+  Palette,
+  Webhook,
+  CreditCard
 } from 'lucide-react'
 import { NotificationBell } from './NotificationBell'
 
@@ -45,6 +41,7 @@ interface NavItem {
   icon: LucideIcon
   for?: ('digital' | 'physical' | 'hybrid')[]
   badge?: string
+  appId?: string
 }
 
 interface NavSection {
@@ -62,56 +59,49 @@ const NAV: NavSection[] = [
     items: [
       { name: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
       { name: 'Mes Produits', href: '/dashboard/products', icon: Package },
-      { name: 'Pages de vente', href: '/dashboard/pages', icon: ShoppingBag },
+      { name: 'Pages de Vente', href: '/dashboard/pages', icon: LayoutTemplate },
       { name: 'Commandes', href: '/dashboard/orders', icon: ShoppingCart },
       { name: 'Clients & CRM', href: '/dashboard/customers', icon: Users, badge: 'LTV' },
-      { name: 'Validation COD', href: '/dashboard/closing', icon: PhoneCall, for: ['physical', 'hybrid'] },
-      { name: 'Livraisons', href: '/dashboard/livraisons', icon: Truck, for: ['physical', 'hybrid'] },
-      { name: 'Zones tarifaires', href: '/dashboard/zones', icon: MapPin, for: ['physical', 'hybrid'] },
-      { name: 'Agenda', href: '/dashboard/agenda', icon: Calendar },
+      { name: 'Livraisons', href: '/dashboard/livraisons', icon: Truck, for: ['physical', 'hybrid'], appId: 'livraisons' },
     ]
   },
   {
     title: 'FORMATION',
     items: [
-      { name: 'PDV Academy', href: '/dashboard/tips', icon: GraduationCap, badge: 'NEW' },
+      { name: 'Yayyam Academy', href: '/dashboard/tips', icon: GraduationCap, badge: 'Freemium', appId: 'academy' },
     ]
   },
   {
     title: 'FINANCES',
     items: [
       { name: 'Portefeuille', href: '/dashboard/wallet', icon: Wallet },
+      { name: 'Commissions', href: '/dashboard/abonnements', icon: Gem },
     ]
   },
   {
-    title: 'CROISSANCE',
+    title: 'APPLICATIONS',
     items: [
-      { name: 'Marketing', href: '/dashboard/marketing', icon: Share2 },
-      { name: 'Offres & Promotions', href: '/dashboard/promotions', icon: Target },
-      { name: 'Affiliés', href: '/dashboard/affilies', icon: Users },
-      { name: 'Closers', href: '/dashboard/closers', icon: PhoneCall, badge: 'NEW' },
-      { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
-    ]
-  },
-  {
-    title: 'COMMUNAUTÉS',
-    items: [
-      { name: 'Telegram', href: '/dashboard/telegram', icon: Send, badge: '🔥 NEW' },
-      { name: 'Communauté', href: '/dashboard/communautes', icon: MessageSquare },
-      { name: 'Questions clients', href: '/dashboard/questions', icon: MessageSquare },
-    ]
-  },
-  {
-    title: 'AUTOMATISATIONS',
-    items: [
-      { name: 'Workflows', href: '/dashboard/workflows', icon: Zap },
-      { name: 'Tâches', href: '/dashboard/tasks', icon: ListTodo },
+      { name: 'App Store', href: '/dashboard/apps', icon: Blocks, badge: 'NEW' },
+      { name: 'API & Webhooks', href: '/dashboard/webhooks', icon: Webhook, appId: 'webhooks' },
+      { name: 'Devis & Factures', href: '/dashboard/apps/quotes', icon: ShoppingCart, appId: 'quotes' },
+      { name: 'Liens de Paiement', href: '/dashboard/apps/payment-links', icon: CreditCard, appId: 'payment-links' },
+      { name: 'Link-in-Bio', href: '/dashboard/links', icon: LinkIcon, appId: 'links' },
+      { name: 'Marketing', href: '/dashboard/marketing', icon: Share2, appId: 'marketing' },
+      { name: 'Workflows', href: '/dashboard/workflows', icon: Zap, appId: 'workflows' },
+      { name: 'Agenda', href: '/dashboard/agenda', icon: Users, appId: 'agenda' },
+      { name: 'Tasks', href: '/dashboard/tasks', icon: ShoppingCart, appId: 'tasks' },
+      { name: 'Membres', href: '/dashboard/communautes', icon: Users, appId: 'communautes' },
+      { name: 'Affiliés', href: '/dashboard/affilies', icon: Gem, appId: 'affilies' },
+      { name: 'Promotions', href: '/dashboard/promotions', icon: Zap, appId: 'promotions' },
+      { name: 'Closers', href: '/dashboard/closers', icon: Users, appId: 'closers' },
+      { name: 'Telegram', href: '/dashboard/telegram', icon: Zap, appId: 'telegram' },
+      { name: 'AI Generator', href: '/dashboard/ai-generator', icon: Palette, appId: 'ai-generator' },
+      { name: 'Ambassadeurs', href: '/dashboard/ambassadeur', icon: Gem, appId: 'ambassadeur' },
     ]
   },
   {
     title: 'COMPTE',
     items: [
-      { name: 'Commissions',      href: '/dashboard/abonnements', icon: Gem },
       { name: 'Paramètres',       href: '/dashboard/settings',    icon: Settings },
       { name: 'Espace Acheteur',  href: '#switch-to-buyer', icon: ArrowLeftRight },
     ]
@@ -198,7 +188,8 @@ function SidebarContent({
   vendorType,
   onClose,
   collapsed,
-  setCollapsed
+  setCollapsed,
+  installedApps = []
 }: {
   storeName: string
   userName: string
@@ -207,6 +198,7 @@ function SidebarContent({
   onClose?: () => void
   collapsed?: boolean
   setCollapsed?: (val: boolean) => void
+  installedApps?: string[]
 }) {
   const pathname = usePathname()
 
@@ -251,7 +243,7 @@ function SidebarContent({
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-1 py-1 rounded-xl group-hover/logo:bg-white/5 transition-colors">
-              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">PDV</span>
+              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">Yayyam</span>
               <span className="text-2xl font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-400 tracking-tight drop-shadow-md">Pro</span>
             </div>
           )}
@@ -297,7 +289,11 @@ function SidebarContent({
               )}
               
               <div className={`space-y-1 transition-all overflow-hidden ${isSectionCollapsed && !collapsed ? 'max-h-0 opacity-0' : 'max-h-[500px] opacity-100 mt-1'}`}>
-                {section.items.filter(item => !item.for || item.for.includes(vendorType)).map(item => {
+                {section.items.filter(item => {
+                  if (item.for && !item.for.includes(vendorType)) return false
+                  if (item.appId && !installedApps.includes(item.appId)) return false
+                  return true
+                }).map(item => {
                   if (item.href === '/api/dashboard/switch-to-buyer') {
                     return (
                       <NavLink
@@ -381,11 +377,13 @@ export function Sidebar({
   userName,
   avatarUrl,
   vendorType,
+  installedApps = [],
 }: {
   storeName: string
   userName: string
   avatarUrl?: string | null
   vendorType: 'digital' | 'physical' | 'hybrid'
+  installedApps?: string[]
 }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   
@@ -446,6 +444,7 @@ export function Sidebar({
             vendorType={vendorType}
             collapsed={collapsed && mounted}
             setCollapsed={setCollapsed}
+            installedApps={installedApps}
           />
         </div>
       </aside>
@@ -465,7 +464,7 @@ export function Sidebar({
               </svg>
             </button>
             <Link href="/" className="flex items-center gap-1.5 ml-1" onClick={() => setMobileOpen(false)}>
-              <span className="text-lg font-display font-black text-white">PDV</span>
+              <span className="text-lg font-display font-black text-white">Yayyam</span>
               <span className="text-lg font-display font-black text-gold">Pro</span>
             </Link>
           </div>
@@ -512,6 +511,7 @@ export function Sidebar({
               vendorType={vendorType}
               onClose={() => setMobileOpen(false)}
               collapsed={false} // Drawer mobile toujours fully expanded
+              installedApps={installedApps}
             />
           </div>
         </div>

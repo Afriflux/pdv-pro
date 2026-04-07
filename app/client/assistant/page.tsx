@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Sparkles, Send, User, Package, BookOpen, Clock, Loader2 } from 'lucide-react'
+import { Sparkles, Send, User, Package, BookOpen, Clock } from 'lucide-react'
 
 type Message = {
   id: string
@@ -13,7 +13,7 @@ const INITIAL_MESSAGES: Message[] = [
   { 
     id: 'msg_1', 
     role: 'assistant', 
-    content: 'Bonjour ! Je suis votre Concierge IA PDV. 🌟\nJe connais tout votre historique d\'achat. Je peux localiser vos colis physiques, vous redonner l\'accès à une formation bloquée ou vous conseiller sur vos futurs achats.\n\nQue puis-je faire pour vous aujourd\'hui ?' 
+    content: 'Bonjour ! Je suis votre Concierge IA Yayyam. 🌟\nJe connais tout votre historique d\'achat. Je peux localiser vos colis physiques, vous redonner l\'accès à une formation bloquée ou vous conseiller sur vos futurs achats.\n\nQue puis-je faire pour vous aujourd\'hui ?' 
   }
 ]
 
@@ -47,7 +47,7 @@ export default function AssistantPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: text,
-          history: currentHistory.map(m => ({ role: m.role, content: m.content }))
+          history: (currentHistory || []).map(m => ({ role: m.role, content: m.content }))
         })
       })
 
@@ -93,7 +93,7 @@ export default function AssistantPage() {
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-black text-white tracking-tight flex items-center gap-2">
-                PDV Concierge <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] uppercase tracking-wider font-bold border border-emerald-500/30">Beta</span>
+                Yayyam Concierge <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] uppercase tracking-wider font-bold border border-emerald-500/30">Beta</span>
               </h1>
               <p className="text-gray-400 text-xs md:text-sm font-medium mt-0.5">Votre assistant shopping personnel intelligent.</p>
             </div>
@@ -105,7 +105,7 @@ export default function AssistantPage() {
           
           {/* Section d'affichage des bulles */}
           <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 custom-scrollbar">
-            {messages.map((msg) => {
+            {(messages || []).map((msg) => {
               const isAI = msg.role === 'assistant'
               return (
                 <div key={msg.id} className={`flex w-full ${isAI ? 'justify-start' : 'justify-end'} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
@@ -130,7 +130,7 @@ export default function AssistantPage() {
                       ? 'bg-white border border-gray-100 text-gray-800 rounded-3xl rounded-tl-sm' 
                       : 'bg-[#1A1A1A] text-white rounded-3xl rounded-tr-sm'
                     }`}>
-                      {msg.content.split('\n').map((line, i) => (
+                      {((msg?.content || '').split('\n') || []).map((line, i) => (
                         <span key={i}>
                           {line.replace(/[*#]/g, '') /* Simple format strip pour le moment */}
                           {i !== msg.content.split('\n').length - 1 && <br />}
@@ -195,6 +195,8 @@ export default function AssistantPage() {
             />
             <button 
               type="submit" 
+              title="Envoyer"
+              aria-label="Envoyer"
               disabled={!input.trim() || isTyping}
               className="w-12 h-12 shrink-0 bg-[#1A1A1A] hover:bg-[#0F7A60] text-white rounded-[1.2rem] flex items-center justify-center transition-all disabled:opacity-50 shadow-md group"
             >
@@ -202,7 +204,7 @@ export default function AssistantPage() {
             </button>
           </form>
           <div className="text-center mt-3">
-             <span className="text-[10px] text-gray-400 font-medium">PDV Concierge IA peut faire des erreurs. Vérifiez toujours dans "Mes Achats".</span>
+             <span className="text-[10px] text-gray-400 font-medium">Yayyam Concierge IA peut faire des erreurs. Vérifiez toujours dans "Mes Achats".</span>
           </div>
         </div>
 

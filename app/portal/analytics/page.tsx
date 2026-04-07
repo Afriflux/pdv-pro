@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import AnalyticsClient from './AnalyticsClient'
 
 export const metadata = {
-  title: 'Analytics | PDV Affilié',
+  title: 'Analytics | Yayyam Affilié',
 }
 
 export const dynamic = 'force-dynamic'

@@ -15,7 +15,7 @@ export function QRCodeModal({ productId, productName, onClose }: QRCodeModalProp
   const [qrDataUrl, setQrDataUrl] = useState<string>('')
   const [loading, setLoading] = useState(true)
 
-  const payUrl = `https://pdvpro.com/pay/${productId}`
+  const payUrl = `https://yayyam.com/pay/${productId}`
 
   useEffect(() => {
     const generateQR = async () => {
@@ -98,7 +98,7 @@ export function QRCodeModal({ productId, productName, onClose }: QRCodeModalProp
 
         {/* Footer info */}
         <div className="p-6 bg-gray-50 border-t border-line text-center">
-          <p className="text-[10px] text-dust font-bold uppercase tracking-widest">Généré par PDV Pro</p>
+          <p className="text-[10px] text-dust font-bold uppercase tracking-widest">Généré par Yayyam</p>
         </div>
       </div>
     </div>

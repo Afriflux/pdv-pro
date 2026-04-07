@@ -43,7 +43,7 @@ export async function generateQrDataUrl(
 }
 
 /**
- * Génère un QR Code (PNG Data URL) avec le texte "PDV" au centre.
+ * Génère un QR Code (PNG Data URL) avec le texte "Yayyam" au centre.
  * Utilise un Canvas pour fusionner le QR et le logo afin qu'il soit présent au téléchargement.
  */
 export async function generateQrWithLogo(
@@ -98,12 +98,12 @@ export async function generateQrWithLogo(
     ctx.closePath()
     ctx.fill()
 
-    // 3. Texte "PDV"
-    ctx.fillStyle = options.color?.dark ?? '#f97316' // Orange PDV par défaut si spécifié
+    // 3. Texte "Yayyam"
+    ctx.fillStyle = options.color?.dark ?? '#f97316' // Orange Yayyam par défaut si spécifié
     ctx.font = `black ${Math.floor(logoSize * 0.45)}px Inter, system-ui, sans-serif`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText('PDV', center, center)
+    ctx.fillText('Yayyam', center, center)
 
     return canvas.toDataURL('image/png')
   } catch (error) {

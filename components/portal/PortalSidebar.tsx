@@ -21,6 +21,9 @@ import {
   Image,
   ArrowLeftRight,
   LucideIcon,
+  CalendarDays,
+  Sparkles,
+  Workflow,
 } from 'lucide-react'
 import { NotificationBell } from '@/components/dashboard/NotificationBell'
 
@@ -56,6 +59,14 @@ const NAV: NavSection[] = [
     items: [
       { name: 'Analytics', href: '/portal/analytics', icon: BarChart3, badge: 'NEW' },
       { name: 'Mes Ventes', href: '/portal/sales', icon: ListOrdered, badge: 'NEW' },
+    ]
+  },
+  {
+    title: 'PRODUCTIVITÉ',
+    items: [
+      { name: 'Mes Réservations', href: '/portal/agenda', icon: CalendarDays },
+      { name: 'Mes Tâches', href: '/portal/tasks', icon: Sparkles },
+      { name: 'Mes Automatisations', href: '/portal/workflows', icon: Workflow },
     ]
   },
   {
@@ -210,7 +221,7 @@ function SidebarContent({
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-1 py-1 rounded-xl group-hover/logo:bg-white/5 transition-colors">
-              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">PDV</span>
+              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">Yayyam</span>
               <span className="text-2xl font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-emerald-400 tracking-tight drop-shadow-md">Affilié</span>
             </div>
           )}
@@ -405,7 +416,7 @@ export function PortalSidebar({
               </svg>
             </button>
             <Link href="/" className="flex items-center gap-1.5 ml-1" onClick={() => setMobileOpen(false)}>
-              <span className="text-lg font-display font-black text-white">PDV</span>
+              <span className="text-lg font-display font-black text-white">Yayyam</span>
               <span className="text-lg font-display font-black text-emerald-400">Affilié</span>
             </Link>
           </div>

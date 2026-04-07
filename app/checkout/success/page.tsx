@@ -74,11 +74,11 @@ BEGIN:VEVENT
 DTSTART:${dStr}T${st}Z
 DTEND:${dStr}T${et}Z
 SUMMARY:Réservation - ${product?.name}
-DESCRIPTION:Lien Visio: ${product?.booking_link || `https://meet.jit.si/PDVPro_${orderId}`}
+DESCRIPTION:Lien Visio: ${product?.booking_link || `https://meet.jit.si/YayyamPro_${orderId}`}
 END:VEVENT
 END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
     icsDataUrl = `data:text/calendar;charset=utf8,${icsString}`
-    visioLink = product?.booking_link || `https://meet.jit.si/PDVPro_${orderId}`
+    visioLink = product?.booking_link || `https://meet.jit.si/YayyamPro_${orderId}`
   }
 
   if (isFailed) {
@@ -186,7 +186,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
               <a href={visioLink} target="_blank" rel="noopener noreferrer" className="flex-1 py-2.5 bg-[#0F7A60] hover:bg-[#0c624d] text-white text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
                 Rejoindre Visio
               </a>
-              <a href={icsDataUrl} download={`PDVPro_Booking_${formattedOrderId}.ics`} className="flex-1 py-2.5 bg-white border border-line hover:bg-cream text-[#0F7A60] text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
+              <a href={icsDataUrl} download={`YayyamPro_Booking_${formattedOrderId}.ics`} className="flex-1 py-2.5 bg-white border border-line hover:bg-cream text-[#0F7A60] text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
                 + Agenda
               </a>
             </div>
@@ -219,7 +219,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             </div>
             
             <a 
-              href={`https://t.me/PDVProBot?start=${orderId}`}
+              href={`https://t.me/YayyamProBot?start=${orderId}`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-2 w-full bg-[#0088cc] hover:bg-[#0077b5] text-white py-3 rounded-xl font-bold text-sm text-center flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/30"
@@ -250,8 +250,8 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             </h3>
             <p className="text-slate mb-4 leading-snug">Partagez ce lien avec vos amis. Pour chaque achat via votre lien, vous gagnez une commission.</p>
             <div className="flex gap-2">
-              <input type="text" readOnly value={`https://pdvpro.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} className="flex-1 text-xs px-3 py-2 bg-white border border-line rounded-lg text-dust outline-none truncate" />
-              <a href={`https://wa.me/?text=Découvre %20${encodeURIComponent(product?.name || '')}%20sur%20PDV%20Pro:%20https://pdvpro.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-[#25D366] text-white rounded-lg flex items-center justify-center hover:bg-[#20b858] transition">
+              <input type="text" readOnly value={`https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} className="flex-1 text-xs px-3 py-2 bg-white border border-line rounded-lg text-dust outline-none truncate" />
+              <a href={`https://wa.me/?text=Découvre %20${encodeURIComponent(product?.name || '')}%20sur%20Yayyam%20Pro:%20https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-[#25D366] text-white rounded-lg flex items-center justify-center hover:bg-[#20b858] transition">
                 <Share2 size={16} />
               </a>
             </div>
@@ -284,8 +284,8 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             <h4 className="font-bold text-ink mb-1 flex items-center justify-center gap-2"><Share2 size={16}/> Partagez votre trouvaille</h4>
             <p className="text-xs text-slate mb-4">Recommandez ce produit à vos amis.</p>
             <div className="flex justify-center gap-3">
-              <a href={`https://wa.me/?text=Je viens d'acheter sur ${(store as any)?.name || 'cette boutique'} via PDV Pro ! Regarde : https://pdvpro.com/${(store as any)?.slug}/${order.product_id}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#25D366]/10 text-[#25D366] flex items-center justify-center hover:bg-[#25D366] hover:text-white transition">WA</a>
-              <a href={`https://www.facebook.com/sharer/sharer.php?u=https://pdvpro.com/${(store as any)?.slug}/${order.product_id}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center hover:bg-[#1877F2] hover:text-white transition">FB</a>
+              <a href={`https://wa.me/?text=Je viens d'acheter sur ${(store as any)?.name || 'cette boutique'} via Yayyam ! Regarde : https://yayyam.com/${(store as any)?.slug}/${order.product_id}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#25D366]/10 text-[#25D366] flex items-center justify-center hover:bg-[#25D366] hover:text-white transition">WA</a>
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=https://yayyam.com/${(store as any)?.slug}/${order.product_id}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center hover:bg-[#1877F2] hover:text-white transition">FB</a>
             </div>
           </div>
 

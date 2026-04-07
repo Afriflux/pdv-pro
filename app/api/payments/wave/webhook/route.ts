@@ -26,7 +26,7 @@ interface WaveWebhookPayload {
   data: {
     id: string
     checkout_status: 'complete' | 'processing' | 'error'
-    client_reference: string // = orderId PDV Pro
+    client_reference: string // = orderId Yayyam
     amount: string
     currency: string
   }

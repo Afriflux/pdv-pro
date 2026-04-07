@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import ResourcesClient from './ResourcesClient'
 
 export const metadata = {
-  title: 'Ressources Marketing | PDV Affilié',
+  title: 'Ressources Marketing | Yayyam Affilié',
 }
 
 export const dynamic = 'force-dynamic'

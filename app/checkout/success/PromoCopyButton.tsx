@@ -1,7 +1,7 @@
 'use client'
 
 import { Copy } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export function PromoCopyButton({ code }: { code: string }) {
   const handleCopy = () => {

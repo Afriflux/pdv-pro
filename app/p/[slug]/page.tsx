@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { PDVAnalytics } from '@/components/tracking/PDVAnalytics'
+import { YayyamAnalytics } from '@/components/tracking/YayyamAnalytics'
 import { AffiliateTracker } from '@/components/tracking/AffiliateTracker'
 import { LiveCheckoutDrawer } from '@/components/pages/LiveCheckoutDrawer'
 import { 
@@ -44,11 +44,11 @@ export async function generateMetadata({ params }: SalePagePublicProps): Promise
     
     if (store) {
       return { 
-        title: `${store.name} | PDV Pro`,
+        title: `${store.name} | Yayyam`,
         description: store.description 
       }
     }
-    return { title: 'Page non trouvée | PDV Pro' }
+    return { title: 'Page non trouvée | Yayyam' }
   }
 
   const sections = (page.sections as Section[]) ?? []
@@ -63,8 +63,8 @@ export async function generateMetadata({ params }: SalePagePublicProps): Promise
     openGraph: {
       title: page.title,
       description: desc,
-      url: `https://pdvpro.com/p/${params.slug}`,
-      siteName: storeName || 'PDV Pro',
+      url: `https://yayyam.com/p/${params.slug}`,
+      siteName: storeName || 'Yayyam',
       images: [
         {
           url: '/og-image.svg',
@@ -153,7 +153,7 @@ export default async function PublicSalePage({ params }: SalePagePublicProps) {
       <main className="min-h-screen antialiased flex flex-col relative overflow-x-hidden">
           <AnnouncementBar theme={theme} />
           
-          <PDVAnalytics pageId={page.id} />
+          <YayyamAnalytics pageId={page.id} />
           
           <Suspense fallback={null}>
             <AffiliateTracker />
@@ -216,7 +216,7 @@ export default async function PublicSalePage({ params }: SalePagePublicProps) {
           {/* Footer minimal */}
           <footer className="py-10 px-6 bg-gray-900 text-center">
             <p className="text-gray-400 text-sm">
-              Propulsé par <span className="text-white font-bold tracking-wide">PDV Pro</span>
+              Propulsé par <span className="text-white font-bold tracking-wide">Yayyam</span>
               {page.store?.name && <span className="opacity-50"> · {page.store.name}</span>}
             </p>
           </footer>

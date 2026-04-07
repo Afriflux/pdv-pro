@@ -13,7 +13,7 @@ export interface IntegrationService {
   icon?:       string
   docsUrl?:    string | null
   webhookUrl?: string
-  pingType?:   'wave' | 'cinetpay' | 'paytech' | 'orange_money' | 'anthropic' | 'brevo' | 'telegram' | 'twilio' | 'generic'
+  pingType?:   'wave' | 'cinetpay' | 'paytech' | 'orange_money' | 'bictorys' | 'anthropic' | 'brevo' | 'telegram' | 'twilio' | 'generic'
   fields:      ServiceField[]
 }
 
@@ -54,6 +54,19 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
           { key: 'WAVE_API_KEY', testKey: 'WAVE_API_KEY_TEST', label: 'API Key', type: 'password' },
           { key: 'WAVE_API_SECRET', testKey: 'WAVE_API_SECRET_TEST', label: 'Webhook Secret', type: 'password' },
           { key: 'FALLBACK_WAVE_PAYTECH', label: 'Bascule d\'urgence vers Paytech (Routage Smart)', type: 'boolean' }
+        ]
+      },
+      {
+        id: 'bictorys',
+        name: 'Configuration Bictorys',
+        description: 'Processeur de paiements modernes et hautement sécurisé.',
+        icon: '🔗',
+        docsUrl: 'https://bictorys.com',
+        webhookUrl: '/api/webhooks/bictorys',
+        pingType: 'bictorys',
+        fields: [
+          { key: 'BICTORYS_SECRET_KEY', testKey: 'BICTORYS_SECRET_KEY_TEST', label: 'Secret Key', type: 'password' },
+          { key: 'BICTORYS_WEBHOOK_SECRET', testKey: 'BICTORYS_WEBHOOK_SECRET', label: 'Webhook Secret', type: 'password' }
         ]
       },
       {
@@ -103,7 +116,7 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
       {
         id: 'telegram',
         name: 'Configuration Telegram Bot',
-        description: 'Notifications automatiques des commandes via @PDVProBot.',
+        description: 'Notifications automatiques des commandes via @YayyamProBot.',
         icon: '✈️',
         docsUrl: 'https://t.me/BotFather',
         webhookUrl: '/api/webhooks/telegram',

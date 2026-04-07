@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingUp, Target, Users, DollarSign, Award, PhoneCall, Calendar, ChevronRight } from 'lucide-react'
+import { TrendingUp, Target, Users, DollarSign, Award, PhoneCall, ChevronRight } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 interface CloserDashboardClientProps {
@@ -33,7 +32,7 @@ export default function CloserDashboardClient({
   pipelineValue
 }: CloserDashboardClientProps) {
 
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -43,7 +42,7 @@ export default function CloserDashboardClient({
     }
   }
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   }
@@ -211,7 +210,7 @@ export default function CloserDashboardClient({
                     contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)', padding: '12px' }}
                     itemStyle={{ color: '#0F7A60', fontWeight: 'bold' }}
                     labelStyle={{ color: '#64748b', fontWeight: 'bold', marginBottom: '4px' }}
-                    formatter={(value: number) => [`${value.toLocaleString('fr-FR')} FCFA`, 'Gains']}
+                    formatter={(value: any) => [`${value.toLocaleString('fr-FR')} FCFA`, 'Gains']}
                   />
                   <Area type="monotone" dataKey="gains" stroke="#0F7A60" strokeWidth={4} fillOpacity={1} fill="url(#colorGains)" activeDot={{ r: 6, strokeWidth: 0, fill: '#0F7A60' }} />
                 </AreaChart>
@@ -228,7 +227,7 @@ export default function CloserDashboardClient({
           >
             <div className="flex justify-between items-center mb-8">
               <h3 className="text-xl font-black text-gray-900">Leads Prioritaires</h3>
-              <button className="text-[#0F7A60] hover:bg-emerald-50 p-2 rounded-xl transition-colors">
+              <button aria-label="Plus d'options" className="text-[#0F7A60] hover:bg-emerald-50 p-2 rounded-xl transition-colors">
                 <ChevronRight size={20} />
               </button>
             </div>

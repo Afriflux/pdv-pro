@@ -1,5 +1,5 @@
-// Service Worker minimal — PDV Pro PWA
-const CACHE_NAME = 'pdv-pro-v1'
+// Service Worker minimal — Yayyam PWA
+const CACHE_NAME = 'yayyam-pro-v1'
 
 self.addEventListener('install', (event) => {
   self.skipWaiting()

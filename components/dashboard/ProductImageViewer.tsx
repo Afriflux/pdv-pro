@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 
 interface Props {
@@ -12,6 +12,10 @@ export default function ProductImageViewer({ images, productName, initialIndex =
   const [isOpen, setIsOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
 
+  // Since I can just add useCallback directly:
+  const next = useCallback(() => setCurrentIndex(i => (i + 1) % images.length), [images.length])
+  const prev = useCallback(() => setCurrentIndex(i => (i - 1 + images.length) % images.length), [images.length])
+
   // Fermer avec Escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -21,10 +25,7 @@ export default function ProductImageViewer({ images, productName, initialIndex =
     }
     if (isOpen) window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [isOpen, currentIndex, images.length]) // Added images.length to dependencies
-
-  const next = () => setCurrentIndex(i => (i + 1) % images.length)
-  const prev = () => setCurrentIndex(i => (i - 1 + images.length) % images.length)
+  }, [isOpen, next, prev])
 
   return (
     <>
@@ -88,14 +89,14 @@ export default function ProductImageViewer({ images, productName, initialIndex =
               />
             </div>
 
-            {/* FILIGRANE PDV PRO CENTRAL */}
+            {/* FILIGRANE YAYYAM CENTRAL */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="rotate-[-30deg] select-none text-center">
                 <p className="text-white/20 font-display font-bold text-5xl md:text-7xl tracking-widest whitespace-nowrap drop-shadow-md">
-                  PDV Pro
+                  Yayyam
                 </p>
                 <p className="text-white/30 font-mono text-xs md:text-sm tracking-[0.5em] mt-2 drop-shadow-md">
-                  pdvpro.com
+                  yayyam.com
                 </p>
               </div>
             </div>
@@ -112,7 +113,7 @@ export default function ProductImageViewer({ images, productName, initialIndex =
                     left: `${Math.max(10, Math.floor(i / 3) * 60)}%`,
                   }}
                 >
-                  PDV Pro
+                  Yayyam
                 </div>
               ))}
             </div>

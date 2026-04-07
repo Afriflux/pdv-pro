@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import {
   Users, Settings, Loader2, Save, ToggleLeft, ToggleRight,
   BookOpen, ShieldCheck, ShieldAlert,

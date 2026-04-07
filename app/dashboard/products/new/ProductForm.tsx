@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
-import AIProductGenerator from '@/components/dashboard/AIProductGenerator'
-import { Sparkles, HelpCircle, ChevronDown, ChevronUp, Smartphone } from 'lucide-react'
+import { UniversalAIGenerator } from '@/components/shared/ai/UniversalAIGenerator'
+import { Sparkles, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { MobilePreviewer } from '@/components/ui/MobilePreviewer'
 
 // ----------------------------------------------------------------
@@ -24,6 +24,7 @@ interface Variant {
 interface ProductFormProps {
   storeId: string
   vendorType: 'digital' | 'physical' | 'hybrid'
+  initialTemplateData?: any
 }
 
 const emptyVariant = (): Variant => ({
@@ -38,7 +39,7 @@ const emptyVariant = (): Variant => ({
 // ----------------------------------------------------------------
 // Composant
 // ----------------------------------------------------------------
-export function ProductForm({ storeId, vendorType }: ProductFormProps) {
+export function ProductForm({ storeId, vendorType, initialTemplateData }: ProductFormProps) {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -74,7 +75,19 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [seoTitle, setSeoTitle] = useState('')
   const [seoDescription, setSeoDescription] = useState('')
-  const [template, setTemplate] = useState('default')
+  const [template, _setTemplate] = useState('default')
+
+  // Apply Template Data if provided
+  useEffect(() => {
+    if (initialTemplateData) {
+      if (initialTemplateData.name) setName(initialTemplateData.name)
+      if (initialTemplateData.description) setDescription(initialTemplateData.description)
+      if (initialTemplateData.price) setPrice(initialTemplateData.price.toString())
+      if (initialTemplateData.type) setType(initialTemplateData.type)
+      if (initialTemplateData.category) setCategory(initialTemplateData.category)
+      // Any other fields that could be templated
+    }
+  }, [initialTemplateData])
 
   // ── Tarification Récurrente ──
   const [paymentType, setPaymentType] = useState<'one_time' | 'recurring'>('one_time')
@@ -234,7 +247,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
         const ext  = file.name.split('.').pop()
         const path = `products/${storeId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
         const { error: uploadError } = await supabase.storage
-          .from('pdvpro-products')
+          .from('yayyam-products')
           .upload(path, file, { upsert: false })
 
         if (uploadError) {
@@ -242,7 +255,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           console.warn('Upload image échoué (bucket manquant?) :', uploadError.message)
         } else {
           const { data: urlData } = supabase.storage
-            .from('pdvpro-products')
+            .from('yayyam-products')
             .getPublicUrl(path)
           imageUrls.push(urlData.publicUrl)
         }
@@ -319,10 +332,10 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
           // --- COMPORTEMENT ACTUEL SUPABASE (Fichiers normaux) ---
           const path = `digital/${storeId}/${Date.now()}.${ext}`
           const { error: dfErr } = await supabase.storage
-            .from('pdvpro-digital')
+            .from('yayyam-digital')
             .upload(path, digitalFile)
           if (!dfErr) {
-            const { data } = supabase.storage.from('pdvpro-products').getPublicUrl(path)
+            const { data } = supabase.storage.from('yayyam-products').getPublicUrl(path)
             digitalFileUrl = data.publicUrl
           }
         }
@@ -527,7 +540,8 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
       </div>
 
       {showAI && (
-        <AIProductGenerator
+        <UniversalAIGenerator
+          mode="single-product"
           category={category}
           onGenerated={(data: any) => {
             if (data.title || data.name) setName(data.title || data.name)
@@ -654,7 +668,7 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                 ))}
               </div>
               <p className="text-[11px] text-gray-500 mt-2 font-medium">
-                💡 Remarque : PDV Pro relancera automatiquement le client à chaque itération. L'accès sera révoqué si le paiement échoue.
+                💡 Remarque : Yayyam relancera automatiquement le client à chaque itération. L'accès sera révoqué si le paiement échoue.
               </p>
             </div>
           )}
@@ -1370,6 +1384,8 @@ export function ProductForm({ storeId, vendorType }: ProductFormProps) {
                     <div>
                       <label className="block text-sm font-medium text-emerald-900 mb-1">Produit à proposer</label>
                       <select
+                        aria-label="Produit O-T-O"
+                        title="Produit à proposer pour l'Offre Unique (O-T-O)"
                         value={otoProductId}
                         onChange={e => setOtoProductId(e.target.value)}
                         className="w-full px-4 py-3 rounded-xl border border-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition bg-white text-emerald-900"

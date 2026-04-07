@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
     // Récupère les commandes 'delivered' datant de +48h mais pas encore libérées
     // Logique simplifiée ici : si on stockait 'funds_cleared' sur la commande...
-    // Pour PDV Pro, le wallet est incrémenté lors de 'delivered' dans PENDING.
+    // Pour Yayyam, le wallet est incrémenté lors de 'delivered' dans PENDING.
     // L'idéal est un Job qui tracke le Order au lieu du Wallet direct. 
     
     // Pour s'aligner sur la roadmap actuelle, on va supposer une table/champ simplifié,
@@ -30,7 +30,6 @@ export async function GET(request: Request) {
     // Dans un système de prod, on ferait un `prisma.wallet.updateMany` complexe 
     // ou une boucle sur les TransactionLogs.
     
-    console.log(`[CRON] Vérification des fonds à libérer (antérieurs au ${fortyEightHoursAgo})`)
 
     return NextResponse.json({ 
       success: true, 

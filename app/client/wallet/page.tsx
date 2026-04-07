@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
-import { ClientWalletContent } from './ClientWalletContent'
+import { UniversalWallet } from '@/components/shared/wallet/UniversalWallet'
 
 export const metadata = {
   title: 'Mon Portefeuille | Espace Client',
@@ -33,19 +33,35 @@ export default async function ClientWalletPage() {
             <span className="text-2xl md:text-3xl">👝</span>
           </div>
           <div>
-            <h1 className="text-3xl md:text-4xl font-black text-[#1A1A1A] tracking-tight">Mon Portefeuille</h1>
+            <h1 className="text-3xl md:text-4xl font-black text-[#1A1A1A] tracking-tight">Mon Portefeuille Acheteur</h1>
             <p className="text-dust text-sm md:text-base font-medium mt-1">
-              Gérez vos moyens de paiement pour des achats en 1 clic.
+              Gérez votre solde de remboursement et de cashback.
             </p>
           </div>
         </div>
       </header>
 
-      <ClientWalletContent 
-        userId={profile.id}
-        clientBalance={Number(profile.client_wallet_balance) || 0}
-        initialMethod={profile.client_payment_method || 'wave'}
-        initialNumber={profile.client_payment_number || ''}
+      <UniversalWallet 
+        ownerType="client"
+        ownerId={profile.id}
+        balance={Number(profile.client_wallet_balance) || 0}
+        pending={0}
+        totalEarned={Number(profile.client_wallet_balance) || 0} // Total cashback earned roughly equates balance for now
+        monthlyGoal={50000} // Gamification goal for clients
+        transactions={[]} // Can fetch real cashback history later
+        hasWithdrawalAccount={!!profile.client_payment_number}
+        withdrawalMethod={profile.client_payment_method || 'wave'}
+        withdrawalNumber={profile.client_payment_number || ''}
+        vocab={{
+          title: 'Actions Rapides',
+          balance: 'Solde Cashback',
+          earned: 'Total Cashback',
+          pending: 'En attente',
+          chartTitle: 'Évolution du Cashback',
+          chartSubtitle: 'Vos remises obtenues',
+          txLabel: 'Historique des bonus'
+        }}
+        kycStatus="verified" // Clients usually don't need KYC to withdraw cashback or use it. We set 'verified' to allow withdrawal to phone number.
       />
     </div>
   )

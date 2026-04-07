@@ -28,7 +28,7 @@ export default async function AdminLogsPage() {
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
       <div>
         <h1 className="text-3xl font-black text-gray-900 tracking-tight">Journaux d&apos;Audit (Logs)</h1>
-        <p className="text-gray-500 mt-2">Traçabilité complète des actions effectuées par l&apos;équipe d&apos;administration PDV Pro.</p>
+        <p className="text-gray-500 mt-2">Traçabilité complète des actions effectuées par l&apos;équipe d&apos;administration Yayyam.</p>
       </div>
 
       <AdminLogsClient initialLogs={logs} />

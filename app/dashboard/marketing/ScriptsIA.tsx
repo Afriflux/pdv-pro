@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Sparkles, Copy, Check, Wand2, Loader2, ChevronDown } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export default function ScriptsIA() {
   const [productName, setProductName] = useState('')

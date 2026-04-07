@@ -40,7 +40,7 @@ export default function MaintenanceScreen({ message }: MaintenanceScreenProps) {
         </div>
 
         <div className="text-center mt-8">
-          <p className="text-xs font-bold text-gray-400">© {new Date().getFullYear()} PDV Pro. Tous droits réservés.</p>
+          <p className="text-xs font-bold text-gray-400">© {new Date().getFullYear()} Yayyam. Tous droits réservés.</p>
         </div>
       </div>
     </div>

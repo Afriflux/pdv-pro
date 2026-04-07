@@ -1,9 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { X, Clock, ChevronRight } from 'lucide-react'
+import Image from 'next/image'
 
 // interface Tip removed as it's not being used and TS complains
+
+import { purchaseAssetAction } from '@/app/dashboard/marketplace/actions'
+import { CheckCircle2, Lock, CreditCard } from 'lucide-react'
 
 interface Article {
   id:    number
@@ -14,15 +19,23 @@ interface Article {
   category: string
   readTime: string
   tips:  any
+  is_premium?: boolean
+  price?: number
 }
 
 import { markMasterclassCompleted } from '@/app/actions/masterclass'
-import { CheckCircle2 } from 'lucide-react'
 
-export default function AcademyGrid({ articles, completedIds: initialCompletedIds = [] }: { articles: Article[], completedIds?: string[] }) {
+export default function AcademyGrid({ articles, completedIds: initialCompletedIds = [], purchasedAssetIds = [] }: { articles: Article[], completedIds?: string[], purchasedAssetIds?: string[] }) {
+  const router = useRouter()
   const [localCompletedIds, setLocalCompletedIds] = useState<string[]>(initialCompletedIds)
   const [filter, setFilter] = useState('Tous')
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
+  
+  // Freemium
+  const [purchaseModalArticle, setPurchaseModalArticle] = useState<Article | null>(null)
+  const [purchaseLoading, setPurchaseLoading] = useState(false)
+  const [purchaseError, setPurchaseError] = useState<string | null>(null)
+  
   const [isMarkingCompleted, setIsMarkingCompleted] = useState(false)
   
   const categories = ['Tous', ...Array.from(new Set(articles.map(a => a.category)))]
@@ -76,54 +89,127 @@ export default function AcademyGrid({ articles, completedIds: initialCompletedId
 
       {/* ── GRID ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map(article => (
-          <div 
-            key={article.id}
-            onClick={() => setSelectedArticle(article)}
-            className="group relative bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full transform hover:-translate-y-1"
-          >
-            {/* Image Placeholder / Banner */}
-            <div className={`h-40 w-full ${article.color} relative overflow-hidden flex items-center justify-center isolate border-b border-gray-50`}>
-              {/* Decorative elements */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/40 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/5 rounded-full blur-xl translate-y-1/2 -translate-x-1/2"></div>
-              
-              <div className="text-6xl transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 z-10 drop-shadow-md">
-                {article.emoji}
-              </div>
-              <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-ink text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
-                👁️ {(article.id.toString().charCodeAt(0) * 7) % 80 + 12}
-              </div>
-              
-              <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md text-ink text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
-                <Clock size={12} className="text-gray-400" /> {article.readTime}
-              </div>
-              <div className="absolute top-3 left-3 bg-[#0F7A60] text-white text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm">
-                {article.category}
-              </div>
-              {localCompletedIds.includes(article.id.toString()) && (
-                <div className="absolute top-3 right-1/2 translate-x-1/2 bg-emerald-500 text-white p-1 rounded-full z-10 shadow-lg shadow-emerald-500/40">
-                  <CheckCircle2 size={16} strokeWidth={3} />
-                </div>
-              )}
-            </div>
+        {filtered.map(article => {
+          const isLocked = article.is_premium && !purchasedAssetIds.includes(article.id.toString())
 
-            {/* Content */}
-            <div className="p-6 flex flex-col flex-1">
-              <h3 className="text-lg font-black text-ink leading-tight mb-3 group-hover:text-[#0F7A60] transition-colors">{article.title}</h3>
-              <p className="text-[13px] text-gray-500 line-clamp-2 mb-6 flex-1 leading-relaxed">{article.intro}</p>
-              
-              <div className="flex items-center text-ink font-black text-sm mt-auto bg-gray-50 hover:bg-gray-100 px-4 py-2.5 rounded-xl w-fit transition-colors">
-                {localCompletedIds.includes(article.id.toString()) ? (
-                   <span className="text-[#0F7A60] flex items-center">Relire <ChevronRight size={16} className="ml-1" /></span>
-                ) : (
-                   <span>Commencer <ChevronRight size={16} className="ml-1 transform group-hover:translate-x-1" /></span>
+          return (
+            <div 
+              key={article.id}
+              onClick={() => {
+                if (isLocked) setPurchaseModalArticle(article)
+                else setSelectedArticle(article)
+              }}
+              className={`group relative rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full transform hover:-translate-y-1 ${isLocked ? 'bg-gray-50/50 grayscale-[0.2]' : 'bg-white'}`}
+            >
+              {/* Image Placeholder / Banner */}
+              <div className={`h-40 w-full ${article.color} relative overflow-hidden flex items-center justify-center isolate border-b border-gray-50`}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/40 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/5 rounded-full blur-xl translate-y-1/2 -translate-x-1/2"></div>
+                
+                <div className="text-6xl transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 z-10 drop-shadow-md">
+                  {article.emoji}
+                </div>
+                
+                {!isLocked && (
+                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-ink text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
+                    👁️ {(article.id.toString().charCodeAt(0) * 7) % 80 + 12}
+                  </div>
+                )}
+                
+                <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md text-ink text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
+                  <Clock size={12} className="text-gray-400" /> {article.readTime}
+                </div>
+                <div className="absolute top-3 left-3 bg-[#0F7A60] text-white text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm">
+                  {article.category}
+                </div>
+                {localCompletedIds.includes(article.id.toString()) && !isLocked && (
+                  <div className="absolute top-3 right-1/2 translate-x-1/2 bg-emerald-500 text-white p-1 rounded-full z-10 shadow-lg shadow-emerald-500/40">
+                    <CheckCircle2 size={16} strokeWidth={3} />
+                  </div>
+                )}
+                {isLocked && (
+                  <div className="absolute top-3 right-3 bg-amber-100 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 z-10 shadow-md border border-amber-200">
+                    <Lock size={12} /> {article.price} FCFA
+                  </div>
                 )}
               </div>
+
+              {/* Content */}
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="text-lg font-black text-ink leading-tight mb-3 group-hover:text-[#0F7A60] transition-colors">{article.title}</h3>
+                <p className="text-[13px] text-gray-500 line-clamp-2 mb-6 flex-1 leading-relaxed">{article.intro}</p>
+                
+                <div className={`flex items-center font-black text-sm mt-auto px-4 py-2.5 rounded-xl w-fit transition-colors ${isLocked ? 'bg-amber-50 text-amber-600 hover:bg-amber-100' : 'bg-gray-50 hover:bg-gray-100 text-ink'}`}>
+                  {isLocked ? (
+                     <span className="flex items-center"><Lock size={16} className="mr-1.5" /> Débloquer le cours</span>
+                  ) : localCompletedIds.includes(article.id.toString()) ? (
+                     <span className="text-[#0F7A60] flex items-center">Relire <ChevronRight size={16} className="ml-1" /></span>
+                  ) : (
+                     <span className="flex items-center">Commencer <ChevronRight size={16} className="ml-1 transform group-hover:translate-x-1" /></span>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
+
+      {/* ── MODAL ACHAT (FREEMIUM) ── */}
+      {purchaseModalArticle && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => setPurchaseModalArticle(null)} 
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+              aria-label="Fermer"
+              title="Fermer"
+            >
+              <X size={16} className="text-gray-500" />
+            </button>
+            
+            <div className="text-center mb-6 mt-4">
+              <div className={`w-16 h-16 ${purchaseModalArticle.color} rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm text-3xl`}>
+                {purchaseModalArticle.emoji}
+              </div>
+              <h3 className="text-2xl font-black text-ink">Cours Premium</h3>
+              <p className="text-gray-500 mt-2 text-sm">Débloquez le cours <strong>{purchaseModalArticle.title}</strong> pour un accès à vie à ces stratégies exclusives.</p>
+            </div>
+
+            <div className="bg-gray-50 rounded-2xl p-4 mb-6 border border-gray-100">
+              <div className="flex items-center justify-between font-bold">
+                <span className="text-gray-500">Prix :</span>
+                <span className="text-ink text-xl">{purchaseModalArticle.price} FCFA</span>
+              </div>
+            </div>
+
+            {purchaseError && (
+              <div className="mb-6 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm font-medium text-center">
+                {purchaseError}
+              </div>
+            )}
+
+            <button
+              disabled={purchaseLoading}
+              onClick={async () => {
+                setPurchaseLoading(true)
+                setPurchaseError(null)
+                const res = await purchaseAssetAction(purchaseModalArticle.id.toString(), 'MASTERCLASS', purchaseModalArticle.price || 0, purchaseModalArticle.title)
+                if (res.success) {
+                  setPurchaseModalArticle(null)
+                  router.refresh()
+                } else {
+                  setPurchaseError(res.error || 'Erreur inconnue')
+                }
+                setPurchaseLoading(false)
+              }}
+              className="w-full bg-ink hover:bg-black text-white font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {purchaseLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><CreditCard size={18} /> Payer avec mon Solde</>}
+            </button>
+            <p className="text-center text-xs mt-4 text-gray-400 font-medium">Le montant sera déduit de votre solde de ventes.</p>
+          </div>
+        </div>
+      )}
 
       {/* ── MODAL LECTURE FOCUS ── */}
       {selectedArticle && (
@@ -203,8 +289,8 @@ export default function AcademyGrid({ articles, completedIds: initialCompletedId
                            </div>
                         )}
                         {!tip.videoUrl && tip.imageUrl && (
-                           <div className="w-full h-48 sm:h-64 mb-4 rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
-                             <img src={tip.imageUrl} alt={tip.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                           <div className="relative w-full h-48 sm:h-64 mb-4 rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
+                             <Image src={tip.imageUrl} alt={tip.title} fill sizes="(max-width: 768px) 100vw, 800px" className="object-cover hover:scale-105 transition-transform duration-700" />
                            </div>
                         )}
                         
@@ -223,7 +309,7 @@ export default function AcademyGrid({ articles, completedIds: initialCompletedId
                       <CheckCircle2 size={16} /> Mission Complète
                     </div>
                     <h3 className="text-3xl font-black text-ink mb-3">Bravo, vous maîtrisez ce sujet !</h3>
-                    <p className="text-gray-500 mb-8 font-medium">Appliquez ces stratégies dès aujourd'hui sur votre boutique PDV Pro.</p>
+                    <p className="text-gray-500 mb-8 font-medium">Appliquez ces stratégies dès aujourd'hui sur votre boutique Yayyam.</p>
                     <button 
                       onClick={() => setSelectedArticle(null)}
                       className="bg-gray-100 hover:bg-gray-200 text-ink font-black px-10 py-4 rounded-2xl transition-all shadow-sm active:scale-95 text-lg"

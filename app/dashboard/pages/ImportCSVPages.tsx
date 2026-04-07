@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, DragEvent, ChangeEvent } from 'react'
 import { Upload, Download, Loader2, CheckCircle2, AlertCircle, X } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 // Format CSV attendu (colonnes)
 const CSV_HEADERS = ['Titre de la page', 'URL (slug)', 'Template', 'Actif (oui/non)']
@@ -38,7 +38,7 @@ export default function ImportCSVPages({ onImportSuccess }: { onImportSuccess?: 
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
     a.href     = url
-    a.download = 'modele_pages_pdvpro.csv'
+    a.download = 'modele_pages_yayyampro.csv'
     a.click()
     URL.revokeObjectURL(url)
   }

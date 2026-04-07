@@ -66,7 +66,7 @@ export async function POST(req: Request) {
       // walletId matches user.id
       if (walletId !== user.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-      // @ts-ignore : waiting for Prisma db push on affiliate_auto_withdraw
+
       const updated = await prisma.user.update({
         where: { id: user.id },
         data: dataToUpdate

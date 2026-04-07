@@ -2,11 +2,11 @@ import { createClient } from '@/lib/supabase/server'
 import { generateInvoicePdfBuffer } from '../pdf/generateInvoice'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-/** Format : PDV-YYYY-00000X */
+/** Format : Yayyam-YYYY-00000X */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function generateInvoiceNumber(supabase: SupabaseClient<any, 'public', any>, date: Date): Promise<string> {
   const year = date.getFullYear()
-  const prefix = `PDV-${year}-`
+  const prefix = `Yayyam-${year}-`
 
   // Trouver la dernière facture de l'année pour incrémenter
   const { data } = await supabase

@@ -6,7 +6,6 @@ import { VendorDisplayRow } from './AdminVendorsTable'
 import { 
   CheckCircle2, 
   Clock, 
-  XCircle, 
   MoreVertical, 
   Store as StoreIcon,
   ShieldAlert,

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { ExternalLink, AlertTriangle, AlertCircle, RefreshCw, CheckCircle2, XCircle, LayoutGrid, List, ChevronRight, MessageSquare, ShieldAlert } from 'lucide-react'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -541,7 +541,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
               <button 
                 onClick={() => {
                   handleStatusChange('investigating')
-                  toast.info("Suspension : Action redirigée vers la page vendeur")
+                  toast.success("Suspension : Action redirigée vers la page vendeur")
                 }}
                 className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-colors shadow-sm shadow-red-600/20 flex justify-center items-center gap-2 group"
               >
@@ -551,7 +551,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
                 <button 
                   onClick={() => {
                     handleStatusChange('resolved')
-                    toast.info("Remboursement Auto : Backend en construction")
+                    toast.success("Remboursement Auto : Backend en construction")
                   }}
                   className="w-full py-3 border border-gray-900 hover:border-black text-gray-900 hover:bg-gray-50 rounded-xl font-bold text-xs transition-colors shadow-sm flex items-center justify-center"
                 >

@@ -7,7 +7,7 @@ import { PhoneInput } from '@/components/ui/PhoneInput'
 import { User, Camera, CheckCircle2, Mail, Phone, Loader2, ShieldCheck, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import * as Actions from '@/app/actions/settings'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export function ProfileTab({ profile, userId }: { profile: any; userId: string }) {
   const [userName, setUserName] = useState(profile?.name || '')

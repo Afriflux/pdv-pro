@@ -3,415 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Sparkles, Globe, LayoutTemplate, ArrowRight, Wand2 } from 'lucide-react'
+import { Sparkles, Globe, LayoutTemplate, ArrowRight, Wand2, Lock, Unlock, CreditCard } from 'lucide-react'
+import { purchaseAssetAction } from '@/app/dashboard/marketplace/actions'
 
 // ----------------------------------------------------------------
 // Données templates
 // ----------------------------------------------------------------
-const TEMPLATES = [
-  {
-    id: 'beauty',
-    icon: '💄',
-    label: 'Parfumerie & Beauté',
-    desc: 'Cosmétiques, parfums, soins',
-    color: 'from-pink-400 to-rose-500',
-    bg: 'bg-rose-50',
-    accent: 'text-rose-600',
-    defaultTitle: 'Mon espace beauté',
-    sections: [
-      { type: 'hero', title: 'Sublimez votre beauté naturelle', subtitle: 'Produits 100% naturels, fabriqués avec soin', cta: 'Découvrir la collection' },
-      { type: 'benefits', items: ['Formules naturelles', 'Testés dermatologiquement', 'Livraison rapide'] },
-      { type: 'testimonials', items: [{ name: 'Aminata D.', text: 'Ma peau n\'a jamais été aussi belle !', rating: 5 }] },
-      { type: 'faq', items: [{ q: 'Les produits sont-ils naturels ?', a: 'Oui, 100% naturels et sans paraben.' }] },
-      { type: 'cta', text: 'Commandez maintenant et recevez en 48h' },
-    ],
-  },
-  {
-    id: 'ebook',
-    icon: '📚',
-    label: 'Ebook & Digital',
-    desc: 'PDF, guides, ressources numériques',
-    color: 'from-blue-400 to-indigo-500',
-    bg: 'bg-blue-50',
-    accent: 'text-blue-600',
-    defaultTitle: 'Mon guide digital',
-    sections: [
-      { type: 'hero', title: 'Le guide qui va changer votre vie', subtitle: 'Téléchargement immédiat après paiement', cta: 'Obtenir le guide' },
-      { type: 'benefits', items: ['Accès immédiat', 'Format PDF & EPUB', 'Mises à jour gratuites'] },
-      { type: 'preview', text: 'Plus de 120 pages de contenu actionnable' },
-      { type: 'testimonials', items: [{ name: 'Moussa K.', text: 'J\'ai appliqué les conseils dès le lendemain !', rating: 5 }] },
-      { type: 'faq', items: [{ q: 'Comment recevoir le guide ?', a: 'Vous recevez un lien de téléchargement immédiatement après paiement.' }] },
-      { type: 'cta', text: 'Télécharger maintenant — accès à vie' },
-    ],
-  },
-  {
-    id: 'formation',
-    icon: '🎓',
-    label: 'Formation & Cours',
-    desc: 'E-learning, vidéos, programmes',
-    color: 'from-violet-400 to-purple-500',
-    bg: 'bg-violet-50',
-    accent: 'text-violet-600',
-    defaultTitle: 'Ma formation en ligne',
-    sections: [
-      { type: 'hero', title: 'Maîtrisez votre domaine en 30 jours', subtitle: 'Formation complète avec support illimité', cta: 'Rejoindre la formation' },
-      { type: 'program', items: ['Module 1 : Les bases', 'Module 2 : Pratique avancée', 'Module 3 : Projets réels', 'Bonus : Ressources exclusives'] },
-      { type: 'benefits', items: ['Accès à vie', 'Certificat de fin', 'Communauté privée'] },
-      { type: 'testimonials', items: [{ name: 'Fatoumata B.', text: 'J\'ai trouvé un emploi 2 mois après la formation !', rating: 5 }] },
-      { type: 'faq', items: [{ q: 'Faut-il des prérequis ?', a: 'Aucun prérequis, la formation est accessible à tous.' }] },
-      { type: 'cta', text: 'Commencer ma formation aujourd\'hui' },
-    ],
-  },
-  {
-    id: 'food',
-    icon: '🍽️',
-    label: 'Restauration & Food',
-    desc: 'Plats, livraison, menus',
-    color: 'from-gold-light to-amber-500',
-    bg: 'bg-amber-50',
-    accent: 'text-amber-600',
-    defaultTitle: 'Notre menu du jour',
-    sections: [
-      { type: 'hero', title: 'La cuisine du terroir livrée chez vous', subtitle: 'Préparé frais chaque jour avec des ingrédients locaux', cta: 'Commander maintenant' },
-      { type: 'menu', items: ['Plat principal', 'Accompagnement', 'Boisson', 'Dessert maison'] },
-      { type: 'benefits', items: ['Ingrédients frais', 'Livraison chaude', 'Prix imbattable'] },
-      { type: 'testimonials', items: [{ name: 'Ibrahima S.', text: 'Meilleur thieboudienne de la ville !', rating: 5 }] },
-      { type: 'cta', text: 'Commander et se régaler 🍛' },
-    ],
-  },
-  {
-    id: 'fashion',
-    icon: '👗',
-    label: 'Mode & Vêtements',
-    desc: 'Prêt-à-porter, accessoires',
-    color: 'from-fuchsia-400 to-pink-500',
-    bg: 'bg-fuchsia-50',
-    accent: 'text-fuchsia-600',
-    defaultTitle: 'Mon espace de mode',
-    sections: [
-      { type: 'hero', title: 'Style africain, élégance moderne', subtitle: 'Collection exclusive — Édition limitée', cta: 'Voir la collection' },
-      { type: 'benefits', items: ['Tissus premium', 'Tailles S à 3XL', 'Retours sous 7 jours'] },
-      { type: 'gallery', text: 'Collection capsule disponible maintenant' },
-      { type: 'testimonials', items: [{ name: 'Mariama C.', text: 'J\'ai reçu tellement de compliments !', rating: 5 }] },
-      { type: 'faq', items: [{ q: 'Quels sont les délais de livraison ?', a: '2 à 5 jours ouvrables selon votre localisation.' }] },
-      { type: 'cta', text: 'Commander avant rupture de stock' },
-    ],
-  },
-  {
-    id: 'services',
-    icon: '💻',
-    label: 'Services Digitaux',
-    desc: 'Design, dev, marketing',
-    color: 'from-cyan-400 to-teal-500',
-    bg: 'bg-cyan-50',
-    accent: 'text-cyan-600',
-    defaultTitle: 'Mes services digitaux',
-    sections: [
-      { type: 'hero', title: 'Des services digitaux qui convertissent', subtitle: 'Design, développement et marketing pour votre croissance', cta: 'Obtenir un devis' },
-      { type: 'services', items: ['Design UI/UX', 'Développement web', 'Community management', 'Publicité Facebook & Google'] },
-      { type: 'benefits', items: ['Livraison rapide', 'Révisions illimitées', 'Support 7j/7'] },
-      { type: 'testimonials', items: [{ name: 'Oumar T.', text: 'Mon chiffre d\'affaires a doublé en 3 mois !', rating: 5 }] },
-      { type: 'cta', text: 'Réserver ma prestation maintenant' },
-    ],
-  },
-  {
-    id: 'coaching',
-    icon: '🏋️',
-    label: 'Coaching & Bien-être',
-    desc: 'Coaching, thérapie, sport',
-    color: 'from-green-400 to-emerald-500',
-    bg: 'bg-green-50',
-    accent: 'text-green-600',
-    defaultTitle: 'Mon programme de coaching',
-    sections: [
-      { type: 'hero', title: 'Transformez votre vie en 90 jours', subtitle: 'Coaching personnalisé — Résultats garantis', cta: 'Réserver ma session' },
-      { type: 'coach', name: 'Votre coach', bio: 'Expert certifié avec 10 ans d\'expérience', credentials: ['Certifié ICF', 'Plus de 500 clients'] },
-      { type: 'benefits', items: ['Sessions 1-1', 'Plan personnalisé', 'Suivi hebdomadaire'] },
-      { type: 'testimonials', items: [{ name: 'Aïssatou N.', text: 'J\'ai perdu 12kg en 3 mois grâce au programme !', rating: 5 }] },
-      { type: 'faq', items: [{ q: 'Comment se déroulent les sessions ?', a: 'En ligne via vidéo ou en présentiel selon vos préférences.' }] },
-      { type: 'cta', text: 'Commencer ma transformation aujourd\'hui' },
-    ],
-  },
-  {
-    id: 'ecommerce',
-    icon: '🛒',
-    label: 'E-commerce Général',
-    desc: 'Produits physiques variés',
-    color: 'from-gold-light to-red-500',
-    bg: 'bg-gold/10',
-    accent: 'text-gold-light',
-    defaultTitle: 'Mon espace en ligne',
-    sections: [
-      { type: 'hero', title: 'Qualité premium, prix local', subtitle: 'Tous vos produits préférés livrés en 24-48h', cta: 'Acheter maintenant' },
-      { type: 'benefits', items: ['Paiement sécurisé', 'Retours faciles', 'Support client réactif'] },
-      { type: 'testimonials', items: [{ name: 'Cheikh A.', text: 'Commande reçue en 2 jours, qualité parfaite !', rating: 5 }] },
-      { type: 'faq', items: [{ q: 'Quels modes de paiement ?', a: 'Wave, Orange Money, carte bancaire et paiement à la livraison.' }] },
-      { type: 'cta', text: 'Commander et profiter de la livraison rapide' },
-    ],
-  },
-  {
-    id: 'music',
-    icon: '🎵',
-    label: 'Musique & Arts',
-    desc: 'Beats, œuvres, billets concerts',
-    color: 'from-gold-light to-gold',
-    bg: 'bg-yellow-50',
-    accent: 'text-yellow-600',
-    defaultTitle: 'Mon univers musical',
-    sections: [
-      { type: 'hero', title: 'Découvrez mon univers musical', subtitle: 'Beats exclusifs, instrumentales & packs sample', cta: 'Écouter & acheter' },
-      { type: 'tracks', text: 'Previews disponibles — achat = téléchargement immédiat' },
-      { type: 'benefits', items: ['Fichiers WAV & MP3', 'Droits d\'utilisation inclus', 'Support artiste'] },
-      { type: 'testimonials', items: [{ name: 'Lamine D.', text: 'Le meilleur beatmaker du Sénégal !', rating: 5 }] },
-      { type: 'cta', text: 'Télécharger mes beats maintenant 🎧' },
-    ],
-  },
-  {
-    id: 'event',
-    icon: '🎟️',
-    label: 'Événement & Billet',
-    desc: 'Conférences, formations présentiel',
-    color: 'from-indigo-400 to-blue-500',
-    bg: 'bg-indigo-50',
-    accent: 'text-indigo-600',
-    defaultTitle: 'Mon événement',
-    sections: [
-      { type: 'hero', title: 'Un événement qui va vous transformer', subtitle: '📍 Dakar · Samedi 15 Mars · 09h–17h', cta: 'Réserver ma place' },
-      { type: 'agenda', items: ['09h : Ouverture & networking', '10h : Conférence principale', '12h : Pause déjeuner', '14h : Ateliers pratiques', '17h : Clôture & networking'] },
-      { type: 'benefits', items: ['Places limitées', 'Certificat de participation', 'Repas inclus'] },
-      { type: 'testimonials', items: [{ name: 'Soda M.', text: 'L\'édition précédente était incroyable !', rating: 5 }] },
-      { type: 'cta', text: 'Réserver ma place avant épuisement' },
-    ],
-  },
-  {
-    id: 'tech',
-    icon: '📱',
-    label: 'Électronique & Tech',
-    desc: 'Smartphones, accessoires, gadgets',
-    color: 'from-slate-400 to-gray-600',
-    bg: 'bg-slate-50',
-    accent: 'text-slate-700',
-    defaultTitle: 'Ma boutique Tech',
-    sections: [
-      { type: 'hero', title: 'La technologie au meilleur prix', subtitle: 'Produits originaux garantis 12 mois', cta: 'Voir les offres exclusives' },
-      { type: 'benefits', items: ['Produits authentiques', 'Livraison express', 'Service après-vente réactif'] },
-      { type: 'gallery', text: 'Découvrez nos derniers arrivages' },
-      { type: 'faq', items: [{ q: 'Les produits sont-ils originaux ?', a: 'Oui, 100% authentiques avec garantie et facture.' }] },
-      { type: 'cta', text: 'Commander et se faire livrer aujourd\'hui' },
-    ],
-  },
-  {
-    id: 'realestate',
-    icon: '🏠',
-    label: 'Immobilier & Location',
-    desc: 'Appartements, terrains, meublés',
-    color: 'from-sky-400 to-blue-600',
-    bg: 'bg-blue-50',
-    accent: 'text-blue-700',
-    defaultTitle: 'Mon bien immobilier',
-    sections: [
-      { type: 'hero', title: 'Trouvez le lieu de vos rêves', subtitle: 'Locations, ventes et terrains de premier choix', cta: 'Visiter maintenant' },
-      { type: 'gallery', text: 'Photos détaillées de nos meilleures propriétés' },
-      { type: 'benefits', items: ['Emplacement idéal', 'Titres fonciers vérifiés', 'Visite accompagnée'] },
-      { type: 'faq', items: [{ q: 'Comment programmer une visite ?', a: 'Contactez-nous directement ou réservez via le bouton de la page.' }] },
-      { type: 'cta', text: 'Contacter notre agent immobilier' },
-    ],
-  },
-  {
-    id: 'health',
-    icon: '🌿',
-    label: 'Agro & Nature',
-    desc: 'Produits bio, compléments, miel',
-    color: 'from-lime-400 to-green-600',
-    bg: 'bg-green-50',
-    accent: 'text-green-700',
-    defaultTitle: 'Santé & Nature',
-    sections: [
-      { type: 'hero', title: 'La vitalité par la nature', subtitle: 'Produits purs, miel bio et compléments naturels de chez nous', cta: 'Découvrir' },
-      { type: 'benefits', items: ['100% Bio & Naturel', 'Récolté localement', 'Qualité supérieure pure'] },
-      { type: 'testimonials', items: [{ name: 'Awa C.', text: 'Ce miel au gingembre m\'a donné une incroyable énergie !', rating: 5 }] },
-      { type: 'cta', text: 'Prendre soin de ma santé' },
-    ],
-  },
-  {
-    id: 'crafts',
-    icon: '🏺',
-    label: 'Artisanat & Déco',
-    desc: 'Bijoux, décoration, œuvres',
-    color: 'from-orange-400 to-amber-600',
-    bg: 'bg-orange-50',
-    accent: 'text-amber-700',
-    defaultTitle: 'Mes créations',
-    sections: [
-      { type: 'hero', title: 'L\'artisanat authentique et moderne', subtitle: 'Des créations uniques faites à la main avec passion', cta: 'Explorer la galerie' },
-      { type: 'gallery', text: 'Savoir-faire, détails et finitions parfaites' },
-      { type: 'benefits', items: ['Savoir-faire local authentique', 'Matériaux durables', 'Pièces uniques limitées'] },
-      { type: 'cta', text: 'Acheter une œuvre authentique' },
-    ],
-  },
-  {
-    id: 'software',
-    icon: '🚀',
-    label: 'Logiciels & SaaS',
-    desc: 'Applications, outils, B2B',
-    color: 'from-cyan-500 to-blue-600',
-    bg: 'bg-cyan-50',
-    accent: 'text-cyan-700',
-    defaultTitle: 'Mon Logiciel SaaS',
-    sections: [
-      { type: 'hero', title: 'Automatisez votre business', subtitle: 'L\'outil tout-en-un pour booster votre productivité', cta: 'Essayer gratuitement' },
-      { type: 'benefits', items: ['Interface intuitive', 'Support 24/7', 'Mises à jour incluses'] },
-      { type: 'testimonials', items: [{ name: 'Marc E.', text: 'J\'ai gagné 10h par semaine grâce à cet outil.', rating: 5 }] },
-      { type: 'cta', text: 'Commencer mon essai gratuit' },
-    ],
-  },
-  {
-    id: 'fitness',
-    icon: '🏃‍♂️',
-    label: 'Sport & Nutrition',
-    desc: 'Programmes, régimes, suivi',
-    color: 'from-red-400 to-orange-500',
-    bg: 'bg-red-50',
-    accent: 'text-red-600',
-    defaultTitle: 'Mon Programme Sportif',
-    sections: [
-      { type: 'hero', title: 'Atteignez vos objectifs physiques', subtitle: 'Programmes d\'entraînement et plans sur-mesure', cta: 'Rejoindre le programme' },
-      { type: 'program', items: ['Semaine 1-4 : Fondations', 'Semaine 5-8 : Intensité', 'Semaine 9-12 : Transformation totale'] },
-      { type: 'benefits', items: ['Vidéos HD', 'Plan nutritionnel', 'Communauté privée'] },
-      { type: 'cta', text: 'Démarrer ma transformation physique' },
-    ],
-  },
-  {
-    id: 'photography',
-    icon: '📸',
-    label: 'Photographie & Vidéo',
-    desc: 'Shootings, presets, formations',
-    color: 'from-gray-500 to-zinc-700',
-    bg: 'bg-gray-50',
-    accent: 'text-gray-800',
-    defaultTitle: 'Mon Studio Photo',
-    sections: [
-      { type: 'hero', title: 'Capturez vos meilleurs moments', subtitle: 'Services de photographie professionnelle et presets exclusifs', cta: 'Réserver un shooting' },
-      { type: 'gallery', text: 'Mon portfolio de créations' },
-      { type: 'benefits', items: ['Matériel Pro', 'Retouches incluses', 'Disponibilité rapide'] },
-      { type: 'cta', text: 'Travaillons ensemble' },
-    ],
-  },
-  {
-    id: 'b2b',
-    icon: '👔',
-    label: 'Consulting B2B',
-    desc: 'Services pros, conseil, audit',
-    color: 'from-slate-500 to-blue-800',
-    bg: 'bg-slate-50',
-    accent: 'text-slate-700',
-    defaultTitle: 'Mon Cabinet de Conseil',
-    sections: [
-      { type: 'hero', title: 'Propulsez votre entreprise', subtitle: 'Conseil stratégique et accompagnement pour dirigeants', cta: 'Réserver un appel' },
-      { type: 'services', items: ['Audit stratégique', 'Optimisation des process', 'Formation des équipes'] },
-      { type: 'benefits', items: ['Expertise prouvée', 'Résultats mesurables', 'Discrétion assurée'] },
-      { type: 'cta', text: 'Prendre rendez-vous avec un expert' },
-    ],
-  },
-  {
-    id: 'pets',
-    icon: '🐾',
-    label: 'Animaux & Compagnie',
-    desc: 'Croquettes, soins, accessoires',
-    color: 'from-amber-400 to-orange-600',
-    bg: 'bg-amber-50',
-    accent: 'text-amber-700',
-    defaultTitle: 'Boutique pour Animaux',
-    sections: [
-      { type: 'hero', title: 'Le meilleur pour vos compagnons', subtitle: 'Alimentation premium et accessoires confortables', cta: 'Voir les produits' },
-      { type: 'benefits', items: ['Qualité vétérinaire', 'Livraison à domicile', 'Paiement sécurisé'] },
-      { type: 'gallery', text: 'Nos clients satisfaits (et mignons)' },
-      { type: 'cta', text: 'Gâter mon animal' },
-    ],
-  },
-  {
-    id: 'gaming',
-    icon: '🎮',
-    label: 'Jeux & E-sport',
-    desc: 'Clés CD, matériel gamer',
-    color: 'from-violet-500 to-fuchsia-600',
-    bg: 'bg-violet-50',
-    accent: 'text-violet-700',
-    defaultTitle: 'Gaming Store',
-    sections: [
-      { type: 'hero', title: 'Passez au niveau supérieur', subtitle: 'Le meilleur équipement et les derniers jeux en stock', cta: 'S\'équiper maintenant' },
-      { type: 'benefits', items: ['Livraison instantanée', 'Garantie constructeur', 'Support technique'] },
-      { type: 'gallery', text: 'Top des ventes' },
-      { type: 'cta', text: 'Acheter mon setup' },
-    ],
-  },
-  {
-    id: 'travel',
-    icon: '✈️',
-    label: 'Tourisme & Voyage',
-    desc: 'Guides, circuits, séjours',
-    color: 'from-sky-300 to-blue-500',
-    bg: 'bg-sky-50',
-    accent: 'text-sky-600',
-    defaultTitle: 'Mon Agence de Voyage',
-    sections: [
-      { type: 'hero', title: 'L\'aventure vous attend', subtitle: 'Découvrez des destinations inoubliables au meilleur prix', cta: 'Voir les offres' },
-      { type: 'gallery', text: 'Destinations de rêve' },
-      { type: 'benefits', items: ['Paiement échelonné', 'Assurance complète', 'Guides francophones'] },
-      { type: 'cta', text: 'Réserver mon prochain voyage' },
-    ],
-  },
-  {
-    id: 'finance',
-    icon: '📈',
-    label: 'Finance & Trading',
-    desc: 'Signaux, formations crypto',
-    color: 'from-emerald-400 to-teal-600',
-    bg: 'bg-emerald-50',
-    accent: 'text-emerald-700',
-    defaultTitle: 'Académie de Trading',
-    sections: [
-      { type: 'hero', title: 'Générez des revenus passifs', subtitle: 'Formation en investissement et stratégies financières', cta: 'Rejoindre l\'académie' },
-      { type: 'program', items: ['Analyse technique', 'Psychologie des marchés', 'Gestion optimisée des risques'] },
-      { type: 'benefits', items: ['Signaux VIP en direct', 'Live hebdomadaire', 'Communauté active'] },
-      { type: 'cta', text: 'Commencer à investir aujourd\'hui' },
-    ],
-  },
-  {
-    id: 'kids',
-    icon: '👶',
-    label: 'Enfants & Maternité',
-    desc: 'Vêtements, puériculture',
-    color: 'from-pink-300 to-rose-400',
-    bg: 'bg-pink-50',
-    accent: 'text-pink-600',
-    defaultTitle: 'Boutique Maternité',
-    sections: [
-      { type: 'hero', title: 'La douceur pour vos bébés', subtitle: 'Vêtements en coton bio et jeux éducatifs de qualité', cta: 'Découvrir la collection' },
-      { type: 'gallery', text: 'Cadeaux et coups de cœur des mamans' },
-      { type: 'benefits', items: ['Matières hypoallergéniques', 'Livraison offerte', 'Retours faciles'] },
-      { type: 'cta', text: 'Habiller mon enfant' },
-    ],
-  },
-  {
-    id: 'automotive',
-    icon: '🚗',
-    label: 'Auto & Moto',
-    desc: 'Accessoires, pièces, location',
-    color: 'from-zinc-400 to-gray-700',
-    bg: 'bg-zinc-50',
-    accent: 'text-zinc-700',
-    defaultTitle: 'Auto Moto Shop',
-    sections: [
-      { type: 'hero', title: 'Prenez soin de votre véhicule', subtitle: 'Pièces détachées d\'origine et accessoires premiums', cta: 'Voir le catalogue' },
-      { type: 'benefits', items: ['Pièces certifiées', 'Livraison sous 48h', 'Satisfait ou remboursé'] },
-      { type: 'faq', items: [{ q: 'Faites-vous le montage ?', a: 'Oui, nous avons des garages partenaires professionnels.' }] },
-      { type: 'cta', text: 'Acheter mes équipements auto' },
-    ],
-  },
-] as const
-
-type TemplateId = typeof TEMPLATES[number]['id']
+type TemplateId = string
 
 interface Product {
   id: string
@@ -424,6 +22,9 @@ interface Product {
 interface NewPageFlowProps {
   storeId: string
   products: Product[]
+  initialTemplateData?: any
+  globalTemplates?: any[]
+  purchasedAssetIds?: string[]
 }
 
 const PLACEHOLDERS = [
@@ -443,13 +44,13 @@ const SUGGESTIONS = [
 // ----------------------------------------------------------------
 // Composant
 // ----------------------------------------------------------------
-export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
+export function NewPageFlow({ storeId, products, initialTemplateData, globalTemplates = [] }: NewPageFlowProps) {
   const router = useRouter()
 
   // Étape 1 : choisir le template
   // Étape 2 : configurer la page
-  const [step, setStep] = useState<1 | 2>(1)
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId | null>(null)
+  const [step, setStep] = useState<1 | 2>(initialTemplateData ? 2 : 1)
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId | string | null>(initialTemplateData ? 'import' : null)
 
   // Autre méthode : Import par URL
   const [importUrl, setImportUrl] = useState('')
@@ -460,6 +61,16 @@ export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
   const [aiPrompt, setAiPrompt] = useState('')
   const [promptLoading, setPromptLoading] = useState(false)
   const [promptError, setPromptError] = useState<string | null>(null)
+
+  // Filtres Niche/Category
+  const [selectedGroup, setSelectedGroup] = useState('all')
+  const [templateSearch, setTemplateSearch] = useState('')
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null)
+  
+  // Freemium
+  const [purchaseModalId, setPurchaseModalId] = useState<string | null>(null)
+  const [purchaseLoading, setPurchaseLoading] = useState(false)
+  const [purchaseError, setPurchaseError] = useState<string | null>(null)
 
   // Champs formulaire
   const [title, setTitle]           = useState('')
@@ -485,11 +96,39 @@ export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
     return () => clearInterval(interval)
   }, [])
 
-  const template = TEMPLATES.find(t => t.id === selectedTemplate)
+  const template = globalTemplates.find(t => t.id === selectedTemplate)
+
+  const CATEGORY_GROUPS = [
+    { id: 'all', label: 'Tous les modèles' },
+    { id: 'physical', label: '📦 Produits Physiques' },
+    { id: 'digital', label: '💻 Produits Digitaux' },
+    { id: 'services', label: '🤝 Services & Coaching' },
+    { id: 'events', label: '📅 Événements & Formations' },
+    { id: 'food', label: '🍽️ Food & Restauration' },
+  ]
+
+  const getTemplateGroup = (category: string = '') => {
+    const cat = category.toLowerCase()
+    if (['mode', 'e-commerce', 'électronique', 'agro', 'artisanat', 'animaux', 'enfants', 'auto', 'parfumerie', 'beauté'].some(k => cat.includes(k))) return 'physical'
+    if (['ebook', 'logiciels', 'musique', 'photographie', 'jeux'].some(k => cat.includes(k))) return 'digital'
+    if (['services', 'coaching', 'sport', 'b2b', 'finance', 'immobilier', 'consulting'].some(k => cat.includes(k))) return 'services'
+    if (['formation', 'événement', 'tourisme'].some(k => cat.includes(k))) return 'events'
+    if (['restauration', 'food'].some(k => cat.includes(k))) return 'food'
+    return 'physical'
+  }
+
+  const processedTemplates = globalTemplates.filter(t => {
+    const matchesSearch = (t.label || '').toLowerCase().includes(templateSearch.toLowerCase()) || (t.desc || '').toLowerCase().includes(templateSearch.toLowerCase()) || (t.category || '').toLowerCase().includes(templateSearch.toLowerCase())
+    if (!matchesSearch) return false
+    if (selectedGroup === 'all') return true
+    return getTemplateGroup(t.category) === selectedGroup
+  })
+
+  const previewTemplate = previewTemplateId ? processedTemplates.find(t => t.id === previewTemplateId) : null
 
   const handleSelectTemplate = (id: TemplateId) => {
     setSelectedTemplate(id)
-    const tpl = TEMPLATES.find(t => t.id === id)
+    const tpl = globalTemplates.find(t => t.id === id)
     if (tpl) {
       setTitle(tpl.defaultTitle)
       setSlug(tpl.defaultTitle
@@ -572,9 +211,16 @@ export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
     setError(null)
 
     const supabase = createClient()
-    const tpl = TEMPLATES.find(t => t.id === selectedTemplate)
+    const tpl = globalTemplates.find(t => t.id === selectedTemplate)
 
     const pageId = crypto.randomUUID()
+    
+    // Determine sections: either from imported template or builtin
+    const sectionsToSave = initialTemplateData?.sections 
+      || initialTemplateData 
+      || tpl?.sections 
+      || []
+
     const { error: insertError } = await supabase
       .from('SalePage')
       .insert({
@@ -582,8 +228,8 @@ export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
         store_id:    storeId,
         title:       title.trim(),
         slug:        slug.trim(),
-        template:    selectedTemplate,
-        sections:    tpl?.sections ?? [],
+        template:    selectedTemplate || 'default',
+        sections:    sectionsToSave,
         product_ids: selectedProducts,
         active,
         created_at:  new Date().toISOString(),
@@ -605,7 +251,7 @@ export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
   // ── ÉTAPE 1 : Sélection du template ──────────────────────────────
   if (step === 1) {
     return (
-      <div className="pb-20 max-w-5xl mx-auto px-4 sm:px-6">
+      <div className="pb-20 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10">
         <header className="py-8 sm:py-12 text-center">
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-ink mb-3 tracking-tight">
             Comment voulez-vous créer votre page ?
@@ -721,7 +367,7 @@ export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
                 <h2 className="text-xl sm:text-2xl font-bold font-display">Cloner une page existante</h2>
               </div>
               <p className="text-emerald-50 text-sm md:text-base leading-relaxed mb-6 md:mb-0 max-w-xl">
-                L'IA va aspirer le texte, la structure et les arguments de votre ancienne boutique pour la recréer en version ultra-optimisée sur PDV Pro. Magique et immédiat.
+                L'IA va aspirer le texte, la structure et les arguments de votre ancienne boutique pour la recréer en version ultra-optimisée sur Yayyam. Magique et immédiat.
               </p>
               
               <div className="flex items-center gap-3 mt-4 opacity-80">
@@ -766,38 +412,315 @@ export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
                 <LayoutTemplate className="w-4 h-4" /> Ou choisir un modèle
               </span>
               <span className="text-[10px] font-bold text-[#0F7A60] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 flex items-center gap-1.5 shadow-sm">
-                 <span className="bg-[#0F7A60] text-white w-4 h-4 rounded-full flex items-center justify-center text-[9px]">{TEMPLATES.length}</span> Modèles design • <span className="text-lg leading-none">∞</span> Pages IA possibles
+                 <span className="bg-[#0F7A60] text-white w-4 h-4 rounded-full flex items-center justify-center text-[9px]">{globalTemplates.length}</span> Modèles design • <span className="text-lg leading-none">∞</span> Pages IA possibles
               </span>
             </div>
             <div className="h-px bg-gray-200 flex-1"></div>
           </div>
 
-          {/* NIVEAU 3 : Grille des modèles */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {TEMPLATES.map(t => (
-              <button
-                key={t.id}
-                onClick={() => handleSelectTemplate(t.id)}
-                className={`relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-2xl p-6 text-left border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 group`}
-              >
-                {/* Effet Mesh Gradient au fond au survol */}
-                <div className={`absolute -right-8 -top-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-15 transition-opacity duration-700 bg-gradient-to-br ${t.color}`} />
-                <div className={`absolute -left-8 -bottom-8 w-32 h-32 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-700 delay-100 bg-gradient-to-tr ${t.color}`} />
-                
-                <div className="relative z-10 flex flex-col gap-4">
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl bg-gradient-to-br ${t.color} text-white shadow-inner group-hover:scale-110 transition-transform origin-left duration-300`}>
-                    {t.icon}
-                  </div>
-                  <div>
-                    <p className={`text-base font-bold text-gray-900 group-hover:${t.accent} transition-colors`}>{t.label}</p>
-                    <p className="text-sm text-gray-500 mt-1 leading-snug">{t.desc}</p>
-                  </div>
+          {/* NIVEAU 3 : Barre latérale filtres + Grille */}
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start">
+            {/* Sidebar Filtres */}
+            <div className="w-full lg:w-72 flex-shrink-0 flex flex-col gap-6 lg:sticky lg:top-24">
+               <div className="relative w-full">
+                 <input 
+                   type="text" 
+                   placeholder="Rechercher (ex: beauté...)" 
+                   value={templateSearch}
+                   onChange={e => setTemplateSearch(e.target.value)}
+                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all bg-white shadow-sm"
+                 />
+                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+               </div>
+               
+               <div className="flex flex-col gap-1 mx-[-0.5rem] lg:mx-0 lg:bg-white lg:p-2 lg:rounded-2xl lg:border border-gray-100 lg:shadow-sm">
+                  {CATEGORY_GROUPS.map(g => {
+                    const count = g.id === 'all' 
+                      ? globalTemplates.length 
+                      : globalTemplates.filter(t => getTemplateGroup(t.category) === g.id).length;
+                    
+                    return (
+                      <button
+                        key={g.id}
+                        onClick={() => setSelectedGroup(g.id)}
+                        className={`px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between text-left ${
+                          selectedGroup === g.id
+                            ? 'bg-ink text-white shadow-md'
+                            : 'bg-transparent text-gray-500 hover:bg-gray-50 hover:text-ink'
+                        }`}
+                      >
+                        <span className="truncate pr-2">{g.label}</span>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${
+                          selectedGroup === g.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
+                        }`}>
+                          {count}
+                        </span>
+                      </button>
+                    )
+                  })}
+               </div>
+            </div>
+
+            {/* Grille */}
+            <div className="flex-1 w-full min-w-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                {processedTemplates.map(t => {
+                  const isLocked = t.is_premium && !(purchasedAssetIds || []).includes(t.id)
+
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        if (isLocked) {
+                          setPurchaseModalId(t.id)
+                        } else {
+                          setPreviewTemplateId(t.id)
+                        }
+                      }}
+                      className={`relative overflow-hidden ${isLocked ? 'bg-gray-50/50 grayscale-[0.3]' : 'bg-white/70'} backdrop-blur-xl rounded-2xl p-6 text-left border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 group flex flex-col h-full`}
+                    >
+                      <div className={`absolute -right-8 -top-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-15 transition-opacity duration-700 bg-gradient-to-br ${t.color}`} />
+                      <div className={`absolute -left-8 -bottom-8 w-32 h-32 rounded-full blur-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-700 delay-100 bg-gradient-to-tr ${t.color}`} />
+                      
+                      {isLocked && (
+                        <div className="absolute top-4 right-4 bg-amber-100 text-amber-700 font-bold px-2.5 py-1 rounded-full text-xs flex items-center gap-1.5 shadow-sm z-20 border border-amber-200">
+                          <Lock size={12} /> {t.price} FCFA
+                        </div>
+                      )}
+
+                      <div className="relative z-10 flex flex-col gap-4 flex-1 mt-2">
+                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl bg-gradient-to-br ${t.color} text-white shadow-inner group-hover:scale-110 transition-transform origin-left duration-300`}>
+                          {t.icon}
+                        </div>
+                        <div className="flex-1">
+                          <p className={`text-base font-bold text-gray-900 group-hover:${t.accent} transition-colors`}>{t.label}</p>
+                          <p className="text-sm text-gray-500 mt-1 leading-snug">{t.desc}</p>
+                        </div>
+                        <div className="mt-auto pt-4 flex items-center gap-2 text-[13px] font-bold text-gray-400 group-hover:text-ink transition-colors">
+                          {isLocked ? (
+                            <>
+                              <span className="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors border border-amber-100 shadow-sm text-amber-600"><Lock size={12} /></span> 
+                              Débloquer
+                            </>
+                          ) : (
+                            <>
+                              <span className="w-6 h-6 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-ink group-hover:text-white transition-colors border border-gray-100 shadow-sm">👁️</span> 
+                              Visualiser
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+              
+              {processedTemplates.length === 0 && (
+                <div className="w-full py-12 text-center bg-white/50 rounded-2xl border border-dashed border-gray-200 mt-0">
+                  <p className="text-gray-500 font-medium">Aucun modèle trouvé pour votre recherche.</p>
+                  <button onClick={() => { setTemplateSearch(''); setSelectedGroup('all'); }} className="mt-4 text-emerald-600 font-bold hover:underline">
+                    Réinitialiser les filtres
+                  </button>
                 </div>
-              </button>
-            ))}
+              )}
+            </div>
           </div>
 
         </div>
+
+        {/* MODAL ACHAT FREEMIUM */}
+        {purchaseModalId && (() => {
+          const t = globalTemplates.find(x => x.id === purchaseModalId)
+          if (!t) return null
+          
+          return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+              <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
+                <button 
+                  onClick={() => setPurchaseModalId(null)} 
+                  className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                >
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                
+                <div className="text-center mb-6 mt-4">
+                  <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm text-amber-500">
+                    <Lock size={28} />
+                  </div>
+                  <h3 className="text-2xl font-black text-ink">Template Premium</h3>
+                  <p className="text-gray-500 mt-2 text-sm">Débloquez le modèle <strong>{t.label}</strong> pour l'utiliser à vie dans votre boutique.</p>
+                </div>
+
+                <div className="bg-gray-50 rounded-2xl p-4 mb-6 border border-gray-100">
+                  <div className="flex items-center justify-between font-bold">
+                    <span className="text-gray-500">Prix :</span>
+                    <span className="text-ink text-xl">{t.price} FCFA</span>
+                  </div>
+                </div>
+
+                {purchaseError && (
+                  <div className="mb-6 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm font-medium text-center">
+                    {purchaseError}
+                  </div>
+                )}
+
+                <button
+                  disabled={purchaseLoading}
+                  onClick={async () => {
+                    setPurchaseLoading(true)
+                    setPurchaseError(null)
+                    const res = await purchaseAssetAction(t.id, 'TEMPLATE', t.price, t.label || 'Template')
+                    if (res.success) {
+                      setPurchaseModalId(null)
+                      // Si on veut forcer le rafraîchissement des achats (ou laisser le composant parent le re-fetcher)
+                      router.refresh()
+                    } else {
+                      setPurchaseError(res.error || 'Erreur inconnue')
+                    }
+                    setPurchaseLoading(false)
+                  }}
+                  className="w-full bg-ink hover:bg-black text-white font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {purchaseLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><CreditCard size={18} /> Payer avec mon Solde</>}
+                </button>
+                <p className="text-center text-xs mt-4 text-gray-400 font-medium">Le montant sera déduit de votre solde disponible.</p>
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* MODAL DE PREVIEW */}
+        {previewTemplate && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-md">
+            <div className="bg-white rounded-[2rem] w-full max-w-5xl h-full max-h-[90vh] overflow-hidden flex flex-col md:flex-row shadow-2xl relative animate-in zoom-in-95 duration-200">
+               {/* Close button */}
+               <button 
+                 onClick={() => setPreviewTemplateId(null)} 
+                 className="absolute top-4 right-4 z-20 w-10 h-10 bg-black/5 hover:bg-black/10 rounded-full flex items-center justify-center transition-colors shadow-sm"
+                 aria-label="Fermer"
+               >
+                 <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+               </button>
+               
+               {/* Aperçu Visuel (Mockup) */}
+               <div className={`hidden md:flex w-full md:w-[55%] bg-gradient-to-br ${previewTemplate.color} p-8 overflow-y-auto custom-scrollbar flex-col items-center justify-start`}>
+                 <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden mt-6 mb-12 border border-white/20 transform hover:scale-[1.02] transition-transform duration-500">
+                   {/* Fake Browser Header */}
+                   <div className="h-8 bg-gray-50 flex items-center px-4 gap-2 border-b border-gray-100">
+                     <span className="w-3 h-3 rounded-full bg-red-400"></span>
+                     <span className="w-3 h-3 rounded-full bg-amber-400"></span>
+                     <span className="w-3 h-3 rounded-full bg-green-400"></span>
+                     <div className="ml-4 h-4 w-32 bg-white rounded-full border border-gray-200"></div>
+                   </div>
+                   {/* Page Content Wireframe */}
+                   <div className="p-6 flex flex-col gap-8 min-h-[500px]">
+                     {previewTemplate.sections?.map((s: any, i: number) => {
+                       if (s.type === 'hero') return (
+                         <div key={i} className="text-center space-y-4 pb-6 border-b border-gray-100">
+                           <div className="h-8 w-4/5 bg-gray-200 rounded mx-auto"></div>
+                           <div className="space-y-2">
+                             <div className="h-3 w-3/4 bg-gray-100 rounded mx-auto"></div>
+                             <div className="h-3 w-5/6 bg-gray-100 rounded mx-auto"></div>
+                           </div>
+                           <div className="h-10 w-1/2 bg-ink rounded-xl mx-auto mt-4"></div>
+                         </div>
+                       )
+                       if (s.type === 'benefits' || s.type === 'services' || s.type === 'gallery') return (
+                         <div key={i} className="grid grid-cols-2 gap-4">
+                           <div className="h-20 bg-gray-50 rounded-xl border border-gray-100"></div>
+                           <div className="h-20 bg-gray-50 rounded-xl border border-gray-100"></div>
+                           <div className="h-20 bg-gray-50 rounded-xl border border-gray-100"></div>
+                           <div className="h-20 bg-gray-50 rounded-xl border border-gray-100"></div>
+                         </div>
+                       )
+                       if (s.type === 'testimonials') return (
+                         <div key={i} className="flex gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                           <div className="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0"></div>
+                           <div className="flex-1 space-y-2 py-1">
+                             <div className="h-3 w-full bg-gray-200 rounded"></div>
+                             <div className="h-3 w-5/6 bg-gray-200 rounded"></div>
+                           </div>
+                         </div>
+                       )
+                       if (s.type === 'cta') return (
+                         <div key={i} className="bg-emerald-50 border border-emerald-100 p-6 rounded-xl text-center space-y-3 mt-4">
+                           <div className="h-5 w-2/3 bg-emerald-200 rounded mx-auto mb-4"></div>
+                           <div className="h-12 w-full bg-emerald-500 rounded-xl shadow-sm"></div>
+                         </div>
+                       )
+                       return (
+                         <div key={i} className="h-20 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center">
+                           <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">{s.type}</span>
+                         </div>
+                       )
+                     })}
+                   </div>
+                 </div>
+               </div>
+
+               {/* Infos et Actions */}
+               <div className="w-full md:w-[45%] h-full overflow-y-auto bg-white p-8 sm:p-12 flex flex-col custom-scrollbar relative z-10">
+                 <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl bg-gradient-to-br ${previewTemplate.color} text-white shadow-inner mb-6 flex-shrink-0`}>
+                   {previewTemplate.icon}
+                 </div>
+                 <h2 className="text-3xl font-black text-ink mb-3 tracking-tight">{previewTemplate.label}</h2>
+                 <p className="text-gray-500 text-lg mb-8 leading-relaxed">{previewTemplate.desc}</p>
+                 
+                 <div className="space-y-5 mb-8">
+                   <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                     <div className="h-px bg-gray-200 flex-1"></div>
+                     Inclus dans ce modèle
+                     <div className="h-px bg-gray-200 flex-1"></div>
+                   </h3>
+                   <ul className="space-y-4">
+                     {previewTemplate.sections?.map((s: any, i: number) => {
+                       const labels: Record<string, string> = {
+                         hero: '🎯 Hero & Accroche marketing',
+                         benefits: '✨ Mise en avant des bénéfices clés',
+                         testimonials: '💬 Preuve sociale (Témoignages)',
+                         faq: '❓ Foire aux questions (FAQ)',
+                         cta: '🛒 Bloc Appel à l\'action fort',
+                         program: '📚 Affichage de Programme détaillé',
+                         coach: '👤 Biographie & Profil',
+                         agenda: '📅 Grille de l\'Agenda',
+                         menu: '🍽️ Menu interactif',
+                         gallery: '🖼️ Galerie Photos premium',
+                         countdown: '⏳ Compte à rebours (Urgence)',
+                         comparison: '⚖️ Table de comparaison',
+                         video: '▶️ Intégration Vidéo optimisée'
+                       }
+                       const label = labels[s.type] || s.type
+                       return (
+                         <li key={i} className="flex items-center gap-3 text-sm font-semibold text-gray-700 bg-gray-50/50 px-4 py-3 rounded-xl border border-gray-100">
+                           <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs flex-shrink-0 font-black">✓</div> 
+                           {label}
+                         </li>
+                       )
+                     })}
+                   </ul>
+                 </div>
+
+                 <div className="mt-auto pt-8 space-y-3">
+                   <button 
+                     onClick={() => {
+                       setPreviewTemplateId(null)
+                       handleSelectTemplate(previewTemplate.id)
+                     }}
+                     className="w-full py-4 rounded-xl bg-gradient-to-r from-ink to-slate text-white font-bold text-lg hover:from-black hover:to-ink transition-all shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.2)] flex items-center justify-center gap-2 active:scale-[0.98]"
+                   >
+                     🚀 Utiliser ce modèle
+                   </button>
+                   <button 
+                     onClick={() => setPreviewTemplateId(null)}
+                     className="w-full py-3.5 rounded-xl text-gray-500 font-bold text-[15px] hover:bg-gray-100 hover:text-ink transition-colors"
+                   >
+                     Retour à la galerie
+                   </button>
+                 </div>
+               </div>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
@@ -870,7 +793,7 @@ export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">URL publique de la page</label>
                   <div className="flex items-stretch gap-0 overflow-hidden rounded-xl border border-gray-200 focus-within:ring-2 focus-within:ring-gold focus-within:border-gold/50 transition-all shadow-inner">
-                    <span className="text-sm font-medium text-gray-500 bg-gray-50 px-4 flex items-center border-r border-gray-200 pointer-events-none">pdvpro.com/p/</span>
+                    <span className="text-sm font-medium text-gray-500 bg-gray-50 px-4 flex items-center border-r border-gray-200 pointer-events-none">yayyam.com/p/</span>
                     <input
                       type="text" value={slug}
                       onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
@@ -1052,7 +975,7 @@ export function NewPageFlow({ storeId, products }: NewPageFlowProps) {
               <p className="text-xs text-gray-500 mb-6">Voici les blocs visuels qui seront construits pour vous :</p>
               
               <div className="flex flex-wrap gap-2.5">
-                {template?.sections.map((s, i) => {
+                {(template?.sections as string[] || []).map((s: string, i: number) => {
                    const labels: Record<string, string> = {
                      hero: '🎯 Hero & Accroche',
                      benefits: '✨ Points forts',

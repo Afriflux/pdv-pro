@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -176,26 +175,7 @@ export default function TelegramDashboard({
     }, 5000)
   }
 
-  // Action : Vérification manuelle
-  const verifyConnection = async () => {
-    if (!code) return
-    try {
-      const res = await fetch(
-        `/api/telegram/community/verify?store_id=${store.id}&code=${code}`
-      )
-      const data = await res.json()
-      if (data.linked) {
-        if (pollingRef.current) clearInterval(pollingRef.current)
-        setStep('success')
-        router.refresh()
-      } else if (data.expired) {
-        setError('Code expiré. Générez un nouveau code.')
-        setStep('error')
-      }
-    } catch {
-      setError('Erreur de vérification côté serveur.')
-    }
-  }
+
 
   // Action : Supprimer
   const deleteCommunity = async (communityId: string) => {
@@ -376,7 +356,7 @@ export default function TelegramDashboard({
                       
                       <p className="text-slate-500 font-medium text-[15px] leading-relaxed">
                         {wizardStep === 1 
-                          ? "@PDVProBot agit comme le gardien exclusif de votre groupe Telegram. Il gérera de façon autonome les entrées de vos clients (génération de liens uniques) et les expulsions à la fin de leurs abonnements ou au remboursement."
+                          ? "@YayyamProBot agit comme le gardien exclusif de votre groupe Telegram. Il gérera de façon autonome les entrées de vos clients (génération de liens uniques) et les expulsions à la fin de leurs abonnements ou au remboursement."
                           : "Afin de s'assurer que vous êtes bien le propriétaire légitime du groupe, le bot doit recevoir une 'commande secrète'. Notre système est actuellement branché et scrute vos messages pour valider l'appairage en direct."}
                       </p>
                     </div>
@@ -394,7 +374,7 @@ export default function TelegramDashboard({
                           <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600 flex-shrink-0 mt-0.5">
                             <ShieldCheck size={24} />
                           </div>
-                          <p className="font-bold text-[15px] leading-snug">Ajoutez le compte <span className="font-mono bg-white px-2 py-0.5 rounded shadow-sm text-[#1A1A1A]">@PDVProBot</span> à votre groupe et nommez-le <b>Administrateur</b>.</p>
+                          <p className="font-bold text-[15px] leading-snug">Ajoutez le compte <span className="font-mono bg-white px-2 py-0.5 rounded shadow-sm text-[#1A1A1A]">@YayyamProBot</span> à votre groupe et nommez-le <b>Administrateur</b>.</p>
                         </div>
                         
                         <div className="space-y-4">
@@ -408,12 +388,12 @@ export default function TelegramDashboard({
                               <span className="w-8 h-8 rounded-full bg-blue-100 border border-blue-200 text-blue-600 flex items-center justify-center font-black text-sm shrink-0 shadow-inner">2</span>
                               <div className="font-bold text-blue-900">
                                 Le plus important : Ajoutez le bot <br className="sm:hidden" />
-                                <span className="font-black text-2xl text-blue-600 tracking-tight mt-1 inline-block selection:bg-blue-200">@PDVProBot</span>
+                                <span className="font-black text-2xl text-blue-600 tracking-tight mt-1 inline-block selection:bg-blue-200">@YayyamProBot</span>
                               </div>
                             </div>
                             <button
                               onClick={() => {
-                                navigator.clipboard.writeText('@PDVProBot')
+                                navigator.clipboard.writeText('@YayyamProBot')
                                 setCopiedBot(true)
                                 setTimeout(() => setCopiedBot(false), 2000)
                               }}
@@ -682,7 +662,7 @@ export default function TelegramDashboard({
                   </h2>
                   
                   <p className="text-slate-600 font-medium text-base leading-relaxed">
-                    Transformez vos groupes et canaux Telegram en espaces privés payants. PDV Pro gère automatiquement <b>l'ajout des membres via des liens uniques</b> et <b>leur expulsion</b> lorsque leur abonnement expire.
+                    Transformez vos groupes et canaux Telegram en espaces privés payants. Yayyam gère automatiquement <b>l'ajout des membres via des liens uniques</b> et <b>leur expulsion</b> lorsque leur abonnement expire.
                   </p>
                   
                   <ul className="space-y-4 pt-2">
@@ -862,7 +842,7 @@ export default function TelegramDashboard({
             </div>
             
             <p className="text-sm text-slate-500 font-medium mb-6">
-              Ce message sera envoyé immédiatement dans le groupe Telegram en tant que @PDVProBot.
+              Ce message sera envoyé immédiatement dans le groupe Telegram en tant que @YayyamProBot.
             </p>
 
             <textarea

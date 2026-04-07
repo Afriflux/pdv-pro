@@ -5,7 +5,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
-import { Puzzle } from 'lucide-react'
 
 import { INTEGRATION_CATEGORIES } from './config'
 import IntegrationsClient from './IntegrationsClient'

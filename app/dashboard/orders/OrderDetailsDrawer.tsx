@@ -54,7 +54,7 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
   }
   const availableTransitions = nextStatuses[order.status] ?? []
   const waLink = `https://wa.me/${order.buyer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-    `Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de votre commande sur PDV Pro.`
+    `Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de votre commande sur Yayyam.`
    )}`
 
   return (
@@ -212,7 +212,7 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
                 <span className="text-ink font-bold">{order.total.toLocaleString('fr-FR')} F</span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-slate font-bold">Commission PDV Pro</span>
+                <span className="text-slate font-bold">Commission Yayyam</span>
                 <span className="text-red-500">− {(order.platform_fee || 0).toLocaleString('fr-FR')} F</span>
               </div>
               <div className="mt-3 p-3 bg-emerald/5 rounded-xl border border-emerald/10">

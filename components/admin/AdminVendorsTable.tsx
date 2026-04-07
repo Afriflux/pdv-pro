@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { format, differenceInHours } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import {
   Eye, CheckCircle2, XCircle, Clock, Users,
   MoreVertical, Box, MonitorSmartphone, GraduationCap, Download,
@@ -111,7 +111,7 @@ export default function AdminVendorsTable({ vendors }: Props) {
       return
     }
     const listToExport = selectedIds.size > 0 ? vendors.filter(v => selectedIds.has(v.id)) : vendors
-    toast.info(`Export de ${listToExport.length} vendeurs en cours...`)
+    toast.success(`Export de ${listToExport.length} vendeurs en cours...`)
     setTimeout(() => {
       toast.success('Fichier CSV généré !')
     }, 1500)

@@ -122,7 +122,6 @@ export async function POST(req: NextRequest) {
     const registrationMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
     try {
       await linkVendorToAmbassador(code, storeId, registrationMonth)
-      console.log(`[OAUTH GOOGLE] Vendeur ${storeId} lié à l'ambassadeur ${code}`)
     } catch (ambassadorError: unknown) {
       console.error('[OAUTH GOOGLE] Erreur linkVendorToAmbassador:', ambassadorError)
       // Ne pas throw l'erreur, la boutique est créée

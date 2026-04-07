@@ -1,5 +1,5 @@
 // ─── app/api/vendor/contract/accept/route.ts ─────────────────────────────────
-// Route POST — Accepter le contrat partenaire vendeur PDV Pro
+// Route POST — Accepter le contrat partenaire vendeur Yayyam
 // Body : { storeId: string }
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -17,14 +17,14 @@ function buildContractConfirmationEmail(params: {
   const { vendorName, storeName, signedAt } = params
   const dashboardUrl = process.env.NEXT_PUBLIC_APP_URL
     ? `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
-    : 'https://pdvpro.com/dashboard'
+    : 'https://yayyam.com/dashboard'
 
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contrat PDV Pro signé</title>
+  <title>Contrat Yayyam signé</title>
 </head>
 <body style="margin:0;padding:0;background:#FAFAF7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAFAF7;padding:32px 16px;">
@@ -36,7 +36,7 @@ function buildContractConfirmationEmail(params: {
           <tr>
             <td style="background:linear-gradient(135deg,#0D5C4A,#0F7A60);padding:32px 40px;text-align:center;">
               <p style="margin:0;font-size:28px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">
-                PDV Pro
+                Yayyam
               </p>
               <p style="margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.7);font-weight:500;">
                 Votre plateforme de vente en ligne
@@ -58,7 +58,7 @@ function buildContractConfirmationEmail(params: {
                 Félicitations ${vendorName.split(' ')[0]} !
               </h1>
               <p style="margin:0 0 28px;font-size:14px;color:#6B7280;text-align:center;line-height:1.6;">
-                Votre contrat partenaire PDV Pro a été signé avec succès.
+                Votre contrat partenaire Yayyam a été signé avec succès.
               </p>
 
               <!-- Résumé signature -->
@@ -112,7 +112,7 @@ function buildContractConfirmationEmail(params: {
                 <ul style="margin:0;padding:0 0 0 18px;font-size:13px;color:#047857;line-height:1.8;">
                   <li>Vos clients peuvent finaliser leurs achats</li>
                   <li>Vos retraits sont disponibles (min. 5 000 FCFA)</li>
-                  <li>Commissions dégressives PDV Pro appliquées automatiquement</li>
+                  <li>Commissions dégressives Yayyam appliquées automatiquement</li>
                 </ul>
               </div>
 
@@ -128,9 +128,9 @@ function buildContractConfirmationEmail(params: {
 
               <!-- Note légale -->
               <p style="margin:0;font-size:11px;color:#9CA3AF;text-align:center;line-height:1.6;">
-                Ce contrat est archivé dans vos paramètres PDV Pro.<br/>
+                Ce contrat est archivé dans vos paramètres Yayyam.<br/>
                 En cas de question, contactez-nous à
-                <a href="mailto:support@pdvpro.com" style="color:#0F7A60;">support@pdvpro.com</a>
+                <a href="mailto:support@yayyam.com" style="color:#0F7A60;">support@yayyam.com</a>
               </p>
 
             </td>
@@ -140,7 +140,7 @@ function buildContractConfirmationEmail(params: {
           <tr>
             <td style="background:#F9FAFB;border-top:1px solid #F3F4F6;padding:20px 40px;text-align:center;">
               <p style="margin:0;font-size:11px;color:#9CA3AF;">
-                © ${new Date().getFullYear()} PDV Pro — Plateforme SaaS e-commerce pour vendeurs africains<br/>
+                © ${new Date().getFullYear()} Yayyam — Plateforme SaaS e-commerce pour vendeurs africains<br/>
                 Dakar, Sénégal
               </p>
             </td>
@@ -253,7 +253,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
       void sendTransactionalEmail({
         to:          [{ email: vendor.email, name: vendor.name ?? s.name }],
-        subject:     '✅ Votre contrat PDV Pro est signé !',
+        subject:     '✅ Votre contrat Yayyam est signé !',
         htmlContent: buildContractConfirmationEmail({
           vendorName: vendor.name ?? 'Vendeur',
           storeName:  s.name,
@@ -262,7 +262,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       })
     }
 
-    console.log(`[vendor/contract/accept] ✅ Contrat signé — store ${storeId}`)
 
     return NextResponse.json(
       { success: true, already_signed: false },

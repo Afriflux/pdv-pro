@@ -127,7 +127,7 @@ export default async function MarketplacePage() {
             La Marketplace Partenaires 🤝
           </h1>
           <p className="text-slate max-w-2xl text-lg">
-            Découvrez les meilleurs programmes d'affiliation sur PDV Pro. Postulez en un clic, obtenez vos liens et touchez vos commissions.
+            Découvrez les meilleurs programmes d'affiliation sur Yayyam. Postulez en un clic, obtenez vos liens et touchez vos commissions.
           </p>
         </div>
       </div>

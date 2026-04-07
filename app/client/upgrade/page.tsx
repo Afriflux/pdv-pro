@@ -105,7 +105,7 @@ export default async function UpgradePage() {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#0F7A60]/20 blur-3xl rounded-full -translate-x-1/2 translate-y-1/2 opacity-50"></div>
           
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white relative z-10 mb-4 tracking-tight leading-tight">
-            Générez des revenus avec <span className="text-[#C9A84C]">PDV Pro</span>
+            Générez des revenus avec <span className="text-[#C9A84C]">Yayyam</span>
           </h1>
           <p className="text-gray-400 font-medium relative z-10 max-w-2xl text-[15px]">
             Vous êtes sur le point de transformer votre compte client. Choisissez votre voie : développez votre propre empire, recommandez les meilleurs produits, ou concluez des ventes par téléphone.
@@ -147,7 +147,7 @@ export default async function UpgradePage() {
                    action={confirmUpgradeVendor} 
                    className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-600/20"
                    confirmationTitle="Créer ma Boutique"
-                   confirmationText="Êtes-vous sûr de vouloir créer votre boutique et devenir vendeur sur PDV Pro ?"
+                   confirmationText="Êtes-vous sûr de vouloir créer votre boutique et devenir vendeur sur Yayyam ?"
                    theme="emerald"
                  >
                    Passer Vendeur <ArrowRight size={18} />
@@ -185,7 +185,7 @@ export default async function UpgradePage() {
                    action={confirmUpgradeAffiliate} 
                    className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-amber-500/20"
                    confirmationTitle="Devenir Partenaire"
-                   confirmationText="Êtes-vous sûr de vouloir devenir partenaire affilié sur PDV Pro ?"
+                   confirmationText="Êtes-vous sûr de vouloir devenir partenaire affilié sur Yayyam ?"
                    theme="amber"
                  >
                    Devenir Partenaire <ArrowRight size={18} />
@@ -223,7 +223,7 @@ export default async function UpgradePage() {
                    action={confirmUpgradeCloser} 
                    className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-600/20"
                    confirmationTitle="Devenir Closer"
-                   confirmationText="Êtes-vous sûr de vouloir devenir Closer (Expert en vente) sur PDV Pro ?"
+                   confirmationText="Êtes-vous sûr de vouloir devenir Closer (Expert en vente) sur Yayyam ?"
                    theme="blue"
                  >
                    Devenir Closer <ArrowRight size={18} />

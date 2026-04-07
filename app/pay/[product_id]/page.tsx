@@ -171,7 +171,7 @@ export default async function PayPage({
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6">
           <span className="text-[11px] text-dust flex items-center gap-1 font-medium">🔒 Paiement sécurisé</span>
           <span className="text-[11px] text-dust flex items-center gap-1 font-medium">⚡ Wave & Mobile Money</span>
-          <span className="text-[11px] text-dust flex items-center gap-1 font-bold">✓ PDV Pro</span>
+          <span className="text-[11px] text-dust flex items-center gap-1 font-bold">✓ Yayyam</span>
         </div>
       </div>
     </div>

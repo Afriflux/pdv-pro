@@ -368,7 +368,7 @@ export async function POST(req: NextRequest) {
       // On n'attend pas la fin de l'envoi pour ne pas ralentir le checkout
       sendTransactionalEmail({
         to: [{ email: buyer_email.trim(), name: buyer_name }],
-        subject: `Votre commande #${orderRecord.id.split('-')[0].toUpperCase()} sur ${storeRecordData?.name || 'PDV Pro'} est enregistrée !`,
+        subject: `Votre commande #${orderRecord.id.split('-')[0].toUpperCase()} sur ${storeRecordData?.name || 'Yayyam'} est enregistrée !`,
         htmlContent: orderConfirmationEmail({
           id: orderRecord.id,
           productName: product.name,
@@ -454,7 +454,7 @@ export async function POST(req: NextRequest) {
         order_id: orderRecord.id,
         order_total: total,
         customer_city: city || 'Inconnue',
-        store_name: storeRecordData?.name || 'PDV Pro',
+        store_name: storeRecordData?.name || 'Yayyam',
       }).catch(e => console.error('[Workflow Engine Error]', e));
 
       if (product.oto_active && product.oto_product_id) {

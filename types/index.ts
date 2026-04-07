@@ -1,4 +1,4 @@
-// Types globaux PDV Pro
+// Types globaux Yayyam Pro
 // Jamais de `any` — TypeScript strict
 
 export type Role = 'super_admin' | 'gestionnaire' | 'vendeur' | 'affilie' | 'acheteur'

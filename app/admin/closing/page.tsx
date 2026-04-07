@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { ClosingView } from './ClosingView'
 
 export const metadata = {
-  title: 'Centre Closing COD | PDV Pro',
+  title: 'Centre Closing COD | Yayyam',
 }
 
 export default async function ClosingPage() {
@@ -104,7 +104,7 @@ export default async function ClosingPage() {
                 )}
               </div>
               <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-                PDV Pro <span className="text-emerald-400">Closing</span>
+                Yayyam <span className="text-emerald-400">Closing</span>
               </h1>
               <p className="mt-4 text-emerald-100/70 text-sm max-w-xl font-medium leading-relaxed">
                 Traitement des appels téléphoniques et validation des expéditions par paiement à la livraison.

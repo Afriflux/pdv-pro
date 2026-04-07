@@ -1,6 +1,6 @@
 {
-  "name": "PDV Pro",
-  "short_name": "PDV Pro",
+  "name": "Yayyam",
+  "short_name": "Yayyam",
   "description": "Plateforme e-commerce pour l'Afrique de l'Ouest",
   "start_url": "/dashboard",
   "display": "standalone",

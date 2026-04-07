@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════════
--- Telegram Communities — Groupes d'apprenants liés aux boutiques PDV Pro
+-- Telegram Communities — Groupes d'apprenants liés aux boutiques Yayyam
 -- ═══════════════════════════════════════════════════════════════════════════════
 
 -- 1. Table principale

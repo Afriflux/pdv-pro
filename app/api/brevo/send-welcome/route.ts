@@ -84,8 +84,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       : welcomeBuyerEmail(name)
 
     const subject = isVendor
-      ? `Bienvenue sur PDV Pro, ${name} ! Votre boutique est prête 🎉`
-      : `Bienvenue sur PDV Pro, ${name} ! 👋`
+      ? `Bienvenue sur Yayyam, ${name} ! Votre boutique est prête 🎉`
+      : `Bienvenue sur Yayyam, ${name} ! 👋`
 
     // 5. Créer / mettre à jour le contact dans Brevo (fire-and-forget interne)
     //    On ne bloque pas l'inscription si Brevo échoue
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         to: [{ email, name }],
         subject,
         htmlContent,
-        sender: { name: 'PDV Pro', email: 'noreply@pdvpro.com' },
+        sender: { name: 'Yayyam', email: 'noreply@yayyam.com' },
       }),
     ])
 
@@ -111,10 +111,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // pour ne pas bloquer le flux d'inscription de l'utilisateur
     const contactOk = contactCreated.status === 'fulfilled' && contactCreated.value === true
     const emailOk   = emailSent.status === 'fulfilled' && emailSent.value === true
-
-    console.log(
-      `[Brevo /send-welcome] type=${type} email=${email} → contact=${contactOk} email=${emailOk}`
-    )
 
     return NextResponse.json(
       {

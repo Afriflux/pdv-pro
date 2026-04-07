@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { 
   Loader2, Save, X, Plus, ArrowUp, ArrowDown, 
   MonitorPlay, AlignLeft, MessageSquareQuote, 
@@ -236,7 +236,7 @@ export default function LandingAdminClient(props: Props) {
                 </div>
                 <div>
                   <label htmlFor="landing_hero_subtitle" className={labelClass}>La Proposition de Valeur (Sous-titre)</label>
-                  <textarea id="landing_hero_subtitle" rows={2} value={general.landing_hero_subtitle || ''} onChange={e => updateGeneral('landing_hero_subtitle', e.target.value)} className={`${inputClass} resize-none`} placeholder="PDV Pro est la seule plateforme..." title="Sous titre descriptif" />
+                  <textarea id="landing_hero_subtitle" rows={2} value={general.landing_hero_subtitle || ''} onChange={e => updateGeneral('landing_hero_subtitle', e.target.value)} className={`${inputClass} resize-none`} placeholder="Yayyam est la seule plateforme..." title="Sous titre descriptif" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
                   <div>
@@ -606,11 +606,11 @@ export default function LandingAdminClient(props: Props) {
              <div className="space-y-6">
                 <div>
                   <label htmlFor="landing_instagram_url" className={labelClass}>URL de la page Instagram</label>
-                  <input id="landing_instagram_url" type="url" value={general.landing_instagram_url || ''} onChange={e => updateGeneral('landing_instagram_url', e.target.value)} className={inputClass} placeholder="https://instagram.com/pdvpro..." title="Lien complet Instagram" />
+                  <input id="landing_instagram_url" type="url" value={general.landing_instagram_url || ''} onChange={e => updateGeneral('landing_instagram_url', e.target.value)} className={inputClass} placeholder="https://instagram.com/yayyam..." title="Lien complet Instagram" />
                 </div>
                 <div>
                   <label htmlFor="landing_facebook_url" className={labelClass}>URL de la page Facebook</label>
-                  <input id="landing_facebook_url" type="url" value={general.landing_facebook_url || ''} onChange={e => updateGeneral('landing_facebook_url', e.target.value)} className={inputClass} placeholder="https://facebook.com/pdvpro..." title="Lien complet Facebook" />
+                  <input id="landing_facebook_url" type="url" value={general.landing_facebook_url || ''} onChange={e => updateGeneral('landing_facebook_url', e.target.value)} className={inputClass} placeholder="https://facebook.com/yayyam..." title="Lien complet Facebook" />
                 </div>
                 <div>
                   <label htmlFor="landing_whatsapp_support" className={labelClass}>Téléphone Support WhatsApp</label>

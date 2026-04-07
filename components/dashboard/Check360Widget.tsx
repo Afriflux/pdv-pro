@@ -204,7 +204,7 @@ export function Check360Widget({
 
       {/* ── ACTIONS (3 CARTES) ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {data.actions.map((action, idx) => (
+        {(data.actions || []).map((action, idx) => (
           <div 
             key={idx} 
             className={`bg-white border border-gray-100 rounded-2xl p-4 flex flex-col gap-2 min-h-[130px] shadow-sm hover:shadow-md transition-shadow border-l-4 ${getBorderColor(action.priority)}`}

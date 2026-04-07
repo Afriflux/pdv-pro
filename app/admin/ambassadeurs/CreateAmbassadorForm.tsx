@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { Loader2, RefreshCw } from 'lucide-react'
 
 interface CreateAmbassadorResponse {
@@ -124,7 +124,7 @@ export default function CreateAmbassadorForm() {
             className={inputClass}
           />
           <p className="mt-1.5 text-[10px] text-[#484F58]">
-            L&apos;utilisateur doit déjà avoir un compte PDV Pro.
+            L&apos;utilisateur doit déjà avoir un compte Yayyam.
           </p>
         </div>
 

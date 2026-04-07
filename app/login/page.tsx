@@ -26,7 +26,7 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
   const errorMsg = errorKey ? (errorMessages[errorKey] ?? 'Une erreur est survenue.') : null
 
   // ── Animations ──
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -34,7 +34,7 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
     }
   }
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { opacity: 0, y: 20, filter: 'blur(5px)' },
     show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
   }
@@ -86,7 +86,7 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
         {/* Entête */}
         <motion.div variants={itemVariants} className="text-center mb-10">
            <Link href="/" className="inline-block text-4xl font-display font-black text-white hover:opacity-80 transition drop-shadow-sm tracking-tight mb-5 group">
-             PDV<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-emerald-500 drop-shadow-md">Pro</span>
+             Yayyam<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-emerald-500 drop-shadow-md">Pro</span>
              <div className="h-[2px] w-0 group-hover:w-full bg-emerald-400 transition-all duration-500 mx-auto mt-1 rounded-full"></div>
            </Link>
            <h1 className="text-3xl font-black text-white mb-2 tracking-tight">Espace d'élite</h1>

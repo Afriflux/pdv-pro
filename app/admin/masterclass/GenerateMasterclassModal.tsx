@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Sparkles, X, Loader2, BookOpen } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 interface Props {
   isOpen: boolean

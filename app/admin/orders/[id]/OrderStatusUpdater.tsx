@@ -5,7 +5,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { X, ShieldAlert } from 'lucide-react'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -135,7 +135,7 @@ export default function OrderStatusUpdater({ orderId, currentStatus }: Props) {
             
             <h3 className="text-xl font-black text-gray-900 mb-2">Motif obligatoire</h3>
             <p className="text-sm text-gray-500 mb-6">
-              Veuillez expliquer pourquoi cette commande passe en statut <strong>{ALL_STATUSES.find(s => s.value === selected)?.label}</strong>. Ce motif sera consigné dans le registre d'Audit de PDV Pro.
+              Veuillez expliquer pourquoi cette commande passe en statut <strong>{ALL_STATUSES.find(s => s.value === selected)?.label}</strong>. Ce motif sera consigné dans le registre d'Audit de Yayyam.
             </p>
 
             <div className="space-y-4">

@@ -26,7 +26,7 @@ export default async function CloserDashboardPage() {
   const totalCommissions = wonLeads.reduce((sum, l) => {
     // Si la colonne commission_amount existe, on l'utilise
     if ((l as any).commission_amount) return sum + (l as any).commission_amount
-    // Sinon calcul théorique (10% par défaut pour le mock)
+    // Sinon calcul théorique en attendant la signature ou par défaut (10%)
     return sum + ((l.Product?.price || 0) * 0.1) 
   }, 0)
 

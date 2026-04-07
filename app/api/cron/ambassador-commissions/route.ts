@@ -30,15 +30,10 @@ export async function POST(req: Request) {
     month = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}`
   }
 
-  console.log(`[CRON ambassador-commissions] Traitement du mois : ${month}`)
 
   // 4. Traiter les commissions ambassadeurs du mois
   try {
     const { processed, paid, totalAmount } = await processMonthlyAmbassadorCommissions(month)
-
-    console.log(
-      `[CRON ambassador-commissions] ✅ processed: ${processed}, paid: ${paid}, totalAmount: ${totalAmount} FCFA`
-    )
 
     return cronResponse({ processed, paid, totalAmount, month })
   } catch (error: unknown) {

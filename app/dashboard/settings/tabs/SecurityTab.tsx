@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { AlertTriangle, ShieldCheck, Lock, KeyRound, Loader2, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import * as Actions from '@/app/actions/settings'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export function SecurityTab({ profile }: { profile: any }) {
   const [currentPassword, setCurrentPassword] = useState('')
@@ -109,7 +109,7 @@ export function SecurityTab({ profile }: { profile: any }) {
               <div>
                 <p className="font-black text-amber-950 text-[15px] mb-1">Ne partagez jamais vos accès</p>
                 <p className="text-amber-800/80 font-medium leading-relaxed">
-                  L'équipe de support PDV Pro ne vous demandera jamais votre mot de passe. Utilisez une combinaison complexe et unique.
+                  L'équipe de support Yayyam ne vous demandera jamais votre mot de passe. Utilisez une combinaison complexe et unique.
                 </p>
               </div>
             </div>

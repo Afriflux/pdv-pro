@@ -39,7 +39,7 @@ function ExportPdfButtonClient({ data, storeName, days }: Props) {
   return (
     <PDFDownloadLink
       document={<PdfReport data={data} storeName={storeName} days={days} />}
-      fileName={`Rapport_PDVPro_${storeName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`}
+      fileName={`Rapport_YayyamPro_${storeName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`}
       className="px-4 py-2 text-sm font-semibold rounded-xl bg-[#0F7A60] text-white
         hover:bg-[#0D5C4A] flex items-center gap-2 shadow-sm transition-all"
     >

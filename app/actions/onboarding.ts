@@ -5,29 +5,20 @@ import { prisma } from '@/lib/prisma'
 import { randomUUID } from 'crypto'
 
 export async function completeOnboarding(data: { slug: string, sector: string, whatsapp: string }) {
-  console.log('=== completeOnboarding START ===')
-  console.log('data reçue:', data)
   
   const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
   
-  console.log('user:', user?.id)
-  console.log('error auth:', error)
   
   if (!user) {
-    console.log('PAS DE USER — abandon')
     throw new Error('Non authentifié')
   }
 
   try {
-    // Vérifier slug existant
-    const existing = await prisma.store.findUnique({
-      where: { slug: data.slug }
-    })
-    console.log('Store existant avec ce slug:', existing)
+
 
     // Attention, le client envoie `sector`, pas `secteur`.
-    const store = await prisma.store.upsert({
+    await prisma.store.upsert({
       where: { user_id: user.id },
       create: {
         id: randomUUID(),
@@ -48,7 +39,6 @@ export async function completeOnboarding(data: { slug: string, sector: string, w
         updated_at: new Date(),
       },
     })
-    console.log('Store créé/mis à jour:', store)
 
     // Récupérer le store créé
     const storeCreated = await prisma.store.findUnique({
@@ -71,14 +61,12 @@ export async function completeOnboarding(data: { slug: string, sector: string, w
       },
       update: {},
     })
-    console.log('Wallet créé')
 
   } catch (err) {
     console.error('ERREUR completeOnboarding:', err)
     throw err
   }
 
-  console.log('=== completeOnboarding END ===')
   // On retourne { success: true } car sur le client page.tsx, 
   // catch(e) intercepterait un vrai redirect() comme une erreur.
   return { success: true }

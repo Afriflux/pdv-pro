@@ -5,7 +5,7 @@ import RolesClient, { AdminUser } from './RolesClient'
 import CreateAdminForm from './CreateAdminForm'
 
 // ----------------------------------------------------------------
-// PAGE : GESTION DES RÔLES & ADMINS — Charte PDV Pro
+// PAGE : GESTION DES RÔLES & ADMINS — Charte Yayyam
 // ----------------------------------------------------------------
 export default async function AdminRolesPage() {
   // Vérification de l'authentification

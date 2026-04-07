@@ -5,7 +5,7 @@
 // POST /api/complaints/create
 
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { AlertTriangle, X, Loader2 } from 'lucide-react'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────

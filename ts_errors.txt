@@ -1,0 +1,94 @@
+app/dashboard/apps/AppStoreClient.tsx(6,3): error TS6133: 'MessageSquare' is declared but its value is never read.
+app/dashboard/promotions/PromotionsClient.tsx(7,49): error TS6133: 'MonitorSmartphone' is declared but its value is never read.
+app/dashboard/settings/tabs/KycTab.tsx(9,59): error TS6133: 'ImageIcon' is declared but its value is never read.
+app/dashboard/settings/tabs/KycTab.tsx(223,46): error TS2322: Type '{ hidden: { opacity: number; x: number; }; visible: { opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }; exit: { opacity: number; x: number; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'Variant'.
+      Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'type' are incompatible.
+                    Type 'string' is not assignable to type 'AnimationGeneratorType | undefined'.
+app/dashboard/settings/tabs/KycTab.tsx(262,46): error TS2322: Type '{ hidden: { opacity: number; x: number; }; visible: { opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }; exit: { opacity: number; x: number; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'Variant'.
+      Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'type' are incompatible.
+                    Type 'string' is not assignable to type 'AnimationGeneratorType | undefined'.
+app/dashboard/settings/tabs/KycTab.tsx(280,46): error TS2322: Type '{ hidden: { opacity: number; x: number; }; visible: { opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }; exit: { opacity: number; x: number; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'Variant'.
+      Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'type' are incompatible.
+                    Type 'string' is not assignable to type 'AnimationGeneratorType | undefined'.
+app/dashboard/settings/tabs/KycTab.tsx(317,46): error TS2322: Type '{ hidden: { opacity: number; x: number; }; visible: { opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }; exit: { opacity: number; x: number; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'Variant'.
+      Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ opacity: number; x: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'type' are incompatible.
+                    Type 'string' is not assignable to type 'AnimationGeneratorType | undefined'.
+app/dashboard/tasks/TasksClient.tsx(35,10): error TS6133: 'isPending' is declared but its value is never read.
+app/dashboard/tasks/TasksClient.tsx(35,40): error TS2552: Cannot find name 'useTransition'. Did you mean 'CSSTransition'?
+components/admin/AdminVendorsTable.tsx(114,11): error TS2339: Property 'info' does not exist on type '{ (message: string): Promise<SweetAlertResult<any>>; success(message: string, duration?: number | undefined): Promise<SweetAlertResult<any>>; ... 4 more ...; promise<T>(promise: Promise<...>, msgs: { ...; }): Promise<...>; }'.
+components/admin/AmbassadorDetailsDrawer.tsx(86,57): error TS2345: Argument of type '{ description: string; }' is not assignable to parameter of type 'number'.
+components/admin/ExportButton.tsx(12,11): error TS2339: Property 'info' does not exist on type '{ (message: string): Promise<SweetAlertResult<any>>; success(message: string, duration?: number | undefined): Promise<SweetAlertResult<any>>; ... 4 more ...; promise<T>(promise: Promise<...>, msgs: { ...; }): Promise<...>; }'.
+components/dashboard/Sidebar.tsx(10,3): error TS6133: 'ShoppingBag' is declared but its value is never read.
+components/dashboard/Sidebar.tsx(14,3): error TS6133: 'Target' is declared but its value is never read.
+components/dashboard/Sidebar.tsx(16,3): error TS6133: 'BarChart3' is declared but its value is never read.
+components/dashboard/Sidebar.tsx(17,3): error TS6133: 'MessageSquare' is declared but its value is never read.
+components/dashboard/Sidebar.tsx(19,3): error TS6133: 'ListTodo' is declared but its value is never read.
+components/dashboard/Sidebar.tsx(32,3): error TS6133: 'MapPin' is declared but its value is never read.
+components/dashboard/Sidebar.tsx(33,3): error TS6133: 'Calendar' is declared but its value is never read.
+components/dashboard/Sidebar.tsx(34,3): error TS6133: 'PhoneCall' is declared but its value is never read.
+components/dashboard/Sidebar.tsx(35,3): error TS6133: 'Send' is declared but its value is never read.
+components/shared/agenda/UniversalAgenda.tsx(137,19): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+components/shared/agenda/UniversalAgenda.tsx(220,19): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+components/shared/agenda/UniversalAgenda.tsx(231,68): error TS2345: Argument of type '{ id: string; }' is not assignable to parameter of type 'number'.
+components/shared/agenda/UniversalAgenda.tsx(244,42): error TS2345: Argument of type '{ id: string; }' is not assignable to parameter of type 'number'.
+components/shared/agenda/UniversalAgenda.tsx(250,21): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+components/shared/agenda/UniversalAgenda.tsx(258,39): error TS2345: Argument of type '{ id: string; }' is not assignable to parameter of type 'number'.
+components/shared/agenda/UniversalAgenda.tsx(267,21): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+components/shared/agenda/UniversalAgenda.tsx(276,39): error TS2345: Argument of type '{ id: string; }' is not assignable to parameter of type 'number'.
+components/shared/agenda/UniversalAgenda.tsx(279,19): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+components/shared/links/BioLinkEditor.tsx(140,49): error TS18048: 'res.data' is possibly 'undefined'.
+components/shared/links/LinkAutoGenerator.tsx(5,70): error TS6133: 'LayoutTemplate' is declared but its value is never read.
+components/shared/links/LinkAutoGenerator.tsx(5,86): error TS6133: 'Package' is declared but its value is never read.
+components/shared/links/UniversalLinkHub.tsx(4,29): error TS6133: 'LayoutTemplate' is declared but its value is never read.
+components/shared/wallet/UniversalWallet.tsx(101,26): error TS6133: 'setWithdrawMethod' is declared but its value is never read.
+components/shared/wallet/UniversalWallet.tsx(102,25): error TS6133: 'setWithdrawPhone' is declared but its value is never read.
+lib/ai/ai-billing.ts(35,18): error TS2551: Property 'transaction' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'. Did you mean '$transaction'?
+lib/payments/cinetpay.ts(25,50): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(callbackfn: (previousValue: { id: string; updated_at: Date; commission_rate: number; value: string | null; updated_by: string | null; key: string | null; }, currentValue: { id: string; updated_at: Date; commission_rate: number; value: string | null; updated_by: string | null; key: string | null; }, currentIndex: number, array: { ...; }[]) => { ...; }, initialValue: { ...; }): { ...; }', gave the following error.
+    Type '{ [x: string]: string | null; }' is missing the following properties from type '{ id: string; updated_at: Date; commission_rate: number; value: string | null; updated_by: string | null; key: string | null; }': id, updated_at, commission_rate, value, and 2 more.
+  Overload 2 of 3, '(callbackfn: (previousValue: Record<string, string>, currentValue: { id: string; updated_at: Date; commission_rate: number; value: string | null; updated_by: string | null; key: string | null; }, currentIndex: number, array: { ...; }[]) => Record<...>, initialValue: Record<...>): Record<...>', gave the following error.
+    Type '{ [x: string]: string | null; }' is not assignable to type 'Record<string, string>'.
+      'string' index signatures are incompatible.
+        Type 'string | null' is not assignable to type 'string'.
+          Type 'null' is not assignable to type 'string'.
+lib/payments/cinetpay.ts(28,16): error TS7053: Element implicitly has an 'any' type because expression of type '"CINETPAY_API_KEY"' can't be used to index type '{ id: string; updated_at: Date; commission_rate: number; value: string | null; updated_by: string | null; key: string | null; }'.
+  Property 'CINETPAY_API_KEY' does not exist on type '{ id: string; updated_at: Date; commission_rate: number; value: string | null; updated_by: string | null; key: string | null; }'.
+lib/payments/cinetpay.ts(29,16): error TS7053: Element implicitly has an 'any' type because expression of type '"CINETPAY_SITE_ID"' can't be used to index type '{ id: string; updated_at: Date; commission_rate: number; value: string | null; updated_by: string | null; key: string | null; }'.
+  Property 'CINETPAY_SITE_ID' does not exist on type '{ id: string; updated_at: Date; commission_rate: number; value: string | null; updated_by: string | null; key: string | null; }'.

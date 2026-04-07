@@ -58,33 +58,31 @@ export function LiveCheckoutDrawer({ pageId, products, theme, storeName }: LiveC
     setLoading(true)
 
     try {
-      // 1. Enregistrer la commande (Mock ou appel réel selon le système existant)
-      // On va juste simuler pour l'instant et envoyer sur WhatsApp
-
-      // 2. Incrémenter les stats de la page de vente via Supabase Client
       const supabase = createClient()
       
-      // Récupérer le compteur actuel
-      const { data: pageData } = await supabase.from('SalePage').select('sales_count').eq('id', pageId).single()
+      // 1. Incrémenter les stats de la page de vente
+      const { data: pageData } = await supabase.from('SalePage').select('sales_count, store_id').eq('id', pageId).single()
       if (pageData) {
          await supabase.from('SalePage').update({ sales_count: (pageData.sales_count || 0) + 1 }).eq('id', pageId)
+
+         // 2. Enregistrement en tant que Lead direct (Intégration base de données)
+         await supabase.from('Lead').insert([{
+           store_id: pageData.store_id,
+           product_id: product.id,
+           first_name: formData.name.split(' ')[0] || '',
+           last_name: formData.name.split(' ').slice(1).join(' ') || '',
+           phone: formData.phone,
+           source: 'live_checkout',
+           status: 'new'
+         }])
       }
 
-      // 3. Redirection WhatsApp
-      const message = `Bonjour ${storeName || ''},\n\nJe souhaite commander le produit :\n*${product.name}*\n💰 Prix: ${product.price.toLocaleString('fr-FR')} FCFA\n\n👤 Mon nom: ${formData.name}\n📞 Mon numéro: ${formData.phone}\n📍 Mon adresse: ${formData.address}\n\nMerci !`
-      
-      // Idéalement on récupère le numéro WhatsApp de la boutique, 
-      // ici fallback si store_phone non dispo.
-      // const whatsappUrl = `https://wa.me/${storePhone}?text=${encodeURIComponent(message)}`
-      console.log('Commande enregistrée, message généré:', message)
-      
       setSuccess(true)
       
-      // Simulation: dans un cas réel on fait un router.push ou un form action
+      // Fermeture automatique après succès
       setTimeout(() => {
-         // Si c'est une démo, on ferme 
          closeDrawer()
-      }, 3000)
+      }, 4000)
 
     } catch (err) {
       console.error(err)

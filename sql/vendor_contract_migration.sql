@@ -7,6 +7,6 @@ ALTER TABLE "Store"
 
 -- Documentation
 COMMENT ON COLUMN "Store".contract_accepted
-  IS 'Vrai si le vendeur a signé le contrat partenaire PDV Pro';
+  IS 'Vrai si le vendeur a signé le contrat partenaire Yayyam';
 COMMENT ON COLUMN "Store".contract_accepted_at
   IS 'Date de signature du contrat vendeur (horodatage serveur)';

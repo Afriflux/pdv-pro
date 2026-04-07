@@ -127,7 +127,7 @@ export default function PdfReport({ data, storeName, days }: Props) {
           ))}
         </View>
 
-        <Text style={styles.footer}>Document généré automatiquement par PDV Pro - www.pdvpro.com</Text>
+        <Text style={styles.footer}>Document généré automatiquement par Yayyam - www.yayyam.com</Text>
       </Page>
     </Document>
   )

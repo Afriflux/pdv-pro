@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { User, Lock, Mail, Phone, ShieldCheck, Camera, Trash2, Save, CheckCircle2, AlertCircle, Loader2, MapPin, Plus, Edit3, X } from 'lucide-react'
+import { User, Lock, ShieldCheck, Camera, Trash2, Save, CheckCircle2, AlertCircle, Loader2, MapPin, Plus, Edit3, X } from 'lucide-react'
 import Image from 'next/image'
 import { updateClientProfile, addDeliveryAddress, deleteDeliveryAddress, deleteClientAccount } from './actions'
 import { createClient } from '@/lib/supabase/client'
@@ -220,7 +220,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
                           <label htmlFor="avatar-upload" className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center transition-all duration-300 backdrop-blur-sm cursor-pointer scale-110 group-hover/avatar:scale-100">
                             <Camera size={28} className="text-white mb-2" strokeWidth={2} />
                             <span className="text-white text-[11px] font-bold tracking-widest uppercase">Modifier</span>
-                            <input id="avatar-upload" type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={handleFileChange} />
+                            <input title="Avatar" id="avatar-upload" type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={handleFileChange} />
                           </label>
                         </div>
                       </div>
@@ -254,9 +254,9 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
                     <div className="space-y-2">
                       <label className="text-[13px] font-black uppercase tracking-wider text-gray-500 ml-1">Nom Complet</label>
                       <input
+                        title="Nom complet"
                         name="name"
                         type="text"
-                        title="Nom Complet"
                         defaultValue={profile?.name || ''}
                         className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-5 py-4 text-[15px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 transition-all shadow-inner"
                         required
@@ -343,9 +343,9 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
                      <div>
                         <h4 className="text-sm font-black text-amber-900 mb-1">Protection d'identité active</h4>
                         <p className="text-[13px] text-amber-800/80 font-medium leading-relaxed">
-                          Afin de protéger l'historique de vos commandes, votre e-mail de liaison est figé. Il permet d'associer automatiquement tous vos achats sur PDV Pro à votre compte. Si vous devez le modifier pour des raisons techniques,
+                          Afin de protéger l'historique de vos commandes, votre e-mail de liaison est figé. Il permet d'associer automatiquement tous vos achats sur Yayyam à votre compte. Si vous devez le modifier pour des raisons techniques,
                         </p>
-                        <a href="mailto:support@pdvpro.com" className="inline-flex items-center gap-1.5 mt-3 text-xs font-bold text-amber-700 hover:text-amber-900 transition-colors bg-white/60 px-3 py-1.5 rounded-lg border border-amber-200/50 hover:bg-white shadow-sm">
+                        <a href="mailto:support@yayyam.com" className="inline-flex items-center gap-1.5 mt-3 text-xs font-bold text-amber-700 hover:text-amber-900 transition-colors bg-white/60 px-3 py-1.5 rounded-lg border border-amber-200/50 hover:bg-white shadow-sm">
                           Contacter le support →
                         </a>
                      </div>
@@ -391,7 +391,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {addresses.map((address) => (
+                      {(addresses || []).map((address) => (
                         <div key={address.id} className="relative p-5 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
                           {address.is_default && (
                             <span className="absolute top-4 right-4 text-[10px] uppercase font-black tracking-wider px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md">
@@ -466,7 +466,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
           <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
               <h3 className="text-xl font-black text-gray-900">Nouvelle adresse</h3>
-              <button onClick={() => setIsAddressModalOpen(false)} className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors">
+              <button aria-label="Fermer" title="Fermer" onClick={() => setIsAddressModalOpen(false)} className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors">
                 <X size={16} className="text-gray-600" />
               </button>
             </div>
@@ -474,7 +474,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[13px] font-black uppercase text-gray-500">Label</label>
-                  <select name="label" required className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-4 py-3 text-[14px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10">
+                  <select title="Label de l'adresse" name="label" required className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-4 py-3 text-[14px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10">
                     <option value="Domicile">Domicile</option>
                     <option value="Bureau">Bureau</option>
                     <option value="Autre">Autre</option>
@@ -482,18 +482,18 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
                 </div>
                 <div className="space-y-2">
                   <label className="text-[13px] font-black uppercase text-gray-500">Ville</label>
-                  <input name="city" type="text" placeholder="Dakar..." required className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-4 py-3 text-[14px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10" />
+                  <input title="Ville" name="city" type="text" placeholder="Dakar..." required className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-4 py-3 text-[14px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10" />
                 </div>
               </div>
               
               <div className="space-y-2">
                 <label className="text-[13px] font-black uppercase text-gray-500">Nom du destinataire</label>
-                <input name="name" type="text" defaultValue={profile?.name || ''} required className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-4 py-3 text-[14px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10" />
+                <input title="Nom de livraison" name="name" type="text" defaultValue={profile?.name || ''} required className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-4 py-3 text-[14px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10" />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[13px] font-black uppercase text-gray-500">Téléphone de livraison</label>
-                <input name="phone" type="tel" defaultValue={profile?.phone || ''} required className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-4 py-3 text-[14px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10" />
+                <input title="Téléphone de livraison" name="phone" type="tel" defaultValue={profile?.phone || ''} required className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-4 py-3 text-[14px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10" />
               </div>
 
               <div className="space-y-2">

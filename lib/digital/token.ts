@@ -71,7 +71,7 @@ export async function createDigitalAccess(
 
   if (error) throw new Error('Erreur création DigitalAccess: ' + error.message)
 
-  const baseUrl     = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const baseUrl     = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
   const downloadUrl = `${baseUrl}/dl/${token}`
 
   return {

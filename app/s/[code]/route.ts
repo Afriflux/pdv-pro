@@ -6,7 +6,7 @@ import { logShortLinkClick }       from '@/lib/marketing/shortlink'
  * Endpoint de redirection pour les liens courts.
  * 
  * Flow:
- * 1. Reçoit une requête GET (ex: pdvpro.com/s/ABCDEF)
+ * 1. Reçoit une requête GET (ex: yayyam.com/s/ABCDEF)
  * 2. Log le clic (incrémente SQL + extrait la ville/source)
  * 3. Redirige vers la cible (302)
  * 4. Si inexistant, retourne à l'accueil

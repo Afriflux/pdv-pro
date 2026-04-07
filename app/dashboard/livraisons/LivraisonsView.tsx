@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Search, Download, CheckSquare, Square, ChevronDown, Loader2, MapPin, Phone as PhoneIcon, Clock as ClockIcon, Package, Target, ClipboardList, LayoutGrid, List as ListIcon, ArrowRightCircle, CheckCircle2, Users } from 'lucide-react'
+import { Search, Download, CheckSquare, Square, ChevronDown, Loader2, MapPin, Phone as PhoneIcon, Clock as ClockIcon, Package, Target, ClipboardList, LayoutGrid, List as ListIcon, ArrowRightCircle, CheckCircle2, Users, Rocket, X, Link as LinkIcon, Trash2, UserPlus } from 'lucide-react'
 import Image from 'next/image'
 import { bulkUpdateOrdersStatus } from '@/app/actions/orders'
-import { assignDelivererToOrderAction } from './actions'
+import { assignDelivererToOrderAction, createDelivererAction, deleteDelivererAction } from './actions'
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; badgeBg: string }> = {
   confirmed: { label: 'Confirmée', color: 'text-amber-600', badgeBg: 'bg-amber-100 border-amber-200' },
@@ -46,10 +46,16 @@ interface DeliveryOrder {
 
 export default function LivraisonsView({ storeId, storeName, initialOrders, deliverers: initialDeliverers }: { storeId: string, storeName?: string, initialOrders: DeliveryOrder[], deliverers: Array<{id: string, name: string, phone: string}> }) {
   const [orders, setOrders] = useState<DeliveryOrder[]>(initialOrders)
-  const [deliverers] = useState<Array<{id: string, name: string, phone: string}>>(initialDeliverers)
+  const [deliverers, setDeliverers] = useState<Array<{id: string, name: string, phone: string}>>(initialDeliverers)
 
-  // Mods Flotte
+  // Mods Flotte & Livraison
   const [showDeliverersModal, setShowDeliverersModal] = useState(false)
+  const [isDeliveryMode, setIsDeliveryMode] = useState(false)
+  const [deliveryModeTab, setDeliveryModeTab] = useState<'pending' | 'delivered'>('pending')
+  const [newDelivererName, setNewDelivererName] = useState('')
+  const [newDelivererPhone, setNewDelivererPhone] = useState('')
+  const [newDelivererExpiration, setNewDelivererExpiration] = useState<string>('definitif')
+  const [isCreatingDeliverer, setIsCreatingDeliverer] = useState(false)
 
   // Filtres
   const [search, setSearch] = useState('')
@@ -161,6 +167,35 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
     } catch (_e) {
       alert('Erreur assignation livreur')
     }
+  }
+
+  const handleCreateDeliverer = async () => {
+    if (!newDelivererName || !newDelivererPhone) return
+    setIsCreatingDeliverer(true)
+    const res = await createDelivererAction(newDelivererName, newDelivererPhone, newDelivererExpiration)
+    if (res.success && res.deliverer) {
+      setDeliverers(prev => [res.deliverer, ...prev])
+      setNewDelivererName('')
+      setNewDelivererPhone('')
+      setNewDelivererExpiration('definitif')
+    } else {
+      alert(`Erreur: ${res.error}`)
+    }
+    setIsCreatingDeliverer(false)
+  }
+
+  const handleDeleteDeliverer = async (id: string) => {
+    if (!confirm("Supprimer ce livreur ? Il n'aura plus accès aux commandes assignées.")) return
+    const res = await deleteDelivererAction(id)
+    if (res.success) {
+      setDeliverers(prev => prev.filter(d => d.id !== id))
+    }
+  }
+
+  const copyMagicLink = (delivererId: string) => {
+    const link = `${window.location.origin}/delivery/${delivererId}`
+    navigator.clipboard.writeText(link)
+    alert("Lien copié ! Vous pouvez l'envoyer au livreur sur WhatsApp.")
   }
 
   const executeBulkUpdate = async (newStatus: string) => {
@@ -312,7 +347,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
               </div>
               
               <div class="footer">
-                Bordereau généré électroniquement via PDV Pro
+                Bordereau généré électroniquement via Yayyam
               </div>
             </div>
           `}).join('')}
@@ -449,9 +484,16 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
 
           <button 
             onClick={() => setShowDeliverersModal(true)}
-            className="bg-[#FAFAF7] border border-line text-[#0F7A60] hover:bg-emerald/5 hover:border-[#0F7A60]/30 font-bold px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
+            className="bg-[#FAFAF7] border border-line text-ink hover:bg-white hover:border-line font-bold px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
           >
             <Users size={16} /> Gérer Flotte
+          </button>
+
+          <button 
+             onClick={() => setIsDeliveryMode(true)}
+             className="bg-[#0F7A60] border border-[#0F7A60]/30 text-white hover:bg-[#0D6B53] font-bold px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap group animate-pulse hover:animate-none"
+          >
+             🚀 Mode Livraison
           </button>
 
           <button 
@@ -507,7 +549,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
               const isSelected = selectedIds.has(order.id)
               
               const waLink = `https://wa.me/${order.buyer_phone?.replace(/\D/g, '') || ''}?text=${encodeURIComponent(
-               `Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de la livraison de votre commande de PDV Pro.`
+               `Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de la livraison de votre commande de Yayyam.`
               )}`
 
               return (
@@ -574,7 +616,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                         className="bg-cream border border-line text-ink text-[10px] font-bold rounded-md px-2 py-1 outline-none focus:border-[#0F7A60]/50"
                       >
                         <option value="none">Assigner un Livreur...</option>
-                        {deliverers.map(d => (
+                        {(deliverers || []).map(d => (
                           <option key={d.id} value={d.id}>{d.name}</option>
                         ))}
                       </select>
@@ -631,7 +673,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                        const isSelected = selectedIds.has(order.id)
                        
                        const waLink = `https://wa.me/${order.buyer_phone?.replace(/\D/g, '') || ''}?text=${encodeURIComponent(
-                        `Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de la livraison de votre commande de PDV Pro.`
+                        `Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de la livraison de votre commande de Yayyam.`
                        )}`
 
                        return (
@@ -678,7 +720,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                                   className="w-full bg-[#f4f4f5] border border-line/50 text-slate text-[10.5px] font-bold rounded-lg px-2 py-1.5 outline-none focus:border-[#0F7A60]/50"
                                 >
                                   <option value="none">Livreur : Aucun</option>
-                                  {deliverers.map(d => (
+                                  {(deliverers || []).map(d => (
                                     <option key={d.id} value={d.id}>Livré par : {d.name}</option>
                                   ))}
                                 </select>
@@ -709,8 +751,8 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
         </div>
       )}
 
-      {/* 5. ACTIONS BULK (Panel Fixe en bas) */}
-      {selectedIds.size > 0 && (
+    {/* 5. ACTIONS BULK (Panel Fixe en bas) */}
+      {selectedIds.size > 0 && !isDeliveryMode && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-ink rounded-2xl p-4 shadow-2xl flex items-center gap-6 text-white border border-white/10 animate-in slide-in-from-bottom-5">
            <div className="flex items-center gap-3 border-r border-white/20 pr-6">
              <div className="w-6 h-6 rounded-md bg-[#0F7A60] flex items-center justify-center text-xs font-black">
@@ -757,6 +799,230 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                      {st.label}
                    </button>
                  ))}
+               </div>
+             )}
+           </div>
+        </div>
+      )}
+
+      {/* 6. MODAL GESTION FLOTTE (DeliverersModal) */}
+      {showDeliverersModal && (
+        <div className="fixed inset-0 z-[100] bg-ink/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col relative animate-in zoom-in-95">
+             <div className="p-6 border-b border-line flex justify-between items-center bg-[#FAFAF7] sticky top-0 z-10">
+               <div>
+                  <h2 className="text-xl font-black text-ink">Flotte de Livreurs</h2>
+                  <p className="text-sm text-slate font-medium">Gérez vos coursiers externes et internes.</p>
+               </div>
+               <button onClick={() => setShowDeliverersModal(false)} className="w-10 h-10 bg-white border border-line rounded-xl flex justify-center items-center text-slate hover:text-ink transition active:scale-95 shadow-sm">
+                 <X size={20} />
+               </button>
+             </div>
+
+             <div className="p-6 overflow-y-auto max-h-[60vh] space-y-6">
+                <div className="p-5 bg-[#0F7A60]/5 border border-[#0F7A60]/20 rounded-2xl flex flex-col gap-3">
+                   <h3 className="font-black text-[#0F7A60] text-sm flex items-center gap-2">
+                     <UserPlus size={16} /> Ajouter un Livreur
+                   </h3>
+                   <div className="grid grid-cols-2 gap-3">
+                     <input 
+                        type="text" 
+                        placeholder="Nom du livreur" 
+                        value={newDelivererName}
+                        onChange={e => setNewDelivererName(e.target.value)}
+                        className="w-full bg-white border border-[#0F7A60]/20 rounded-xl px-3 py-2 text-sm outline-none focus:border-[#0F7A60] font-medium"
+                     />
+                     <input 
+                        type="tel" 
+                        placeholder="Tél (ex: 77...)" 
+                        value={newDelivererPhone}
+                        onChange={e => setNewDelivererPhone(e.target.value)}
+                        className="w-full bg-white border border-[#0F7A60]/20 rounded-xl px-3 py-2 text-sm outline-none focus:border-[#0F7A60] font-medium"
+                     />
+                   </div>
+                   <div className="w-full">
+                      <select
+                         value={newDelivererExpiration === 'definitif' || newDelivererExpiration === '24' || newDelivererExpiration === '48' ? newDelivererExpiration : 'custom'}
+                         onChange={e => setNewDelivererExpiration(e.target.value)}
+                         className="w-full bg-white border border-[#0F7A60]/20 rounded-xl px-3 py-2 text-sm outline-none focus:border-[#0F7A60] font-medium mb-3"
+                      >
+                         <option value="definitif">Accès Définitif (Employé Interne)</option>
+                         <option value="24">Accès Temporaire (24 Heures)</option>
+                         <option value="48">Accès Temporaire (48 Heures)</option>
+                         <option value="custom">Délai personnalisé...</option>
+                      </select>
+                      {newDelivererExpiration !== 'definitif' && newDelivererExpiration !== '24' && newDelivererExpiration !== '48' && (
+                        <input
+                           type="number"
+                           min="1"
+                           placeholder="Nombre d'heures (ex: 5)"
+                           value={newDelivererExpiration !== 'custom' ? newDelivererExpiration : ''}
+                           onChange={e => setNewDelivererExpiration(e.target.value)}
+                           className="w-full bg-white border border-[#0F7A60]/20 rounded-xl px-3 py-2 text-sm outline-none focus:border-[#0F7A60] font-medium"
+                        />
+                      )}
+                   </div>
+                   <button 
+                     onClick={handleCreateDeliverer}
+                     disabled={isCreatingDeliverer || !newDelivererName || !newDelivererPhone}
+                     className="bg-[#0F7A60] text-white font-bold text-sm px-4 py-2.5 rounded-xl w-full flex justify-center items-center gap-2 hover:bg-[#0D6B53] disabled:opacity-50 transition"
+                   >
+                     {isCreatingDeliverer ? <Loader2 size={16} className="animate-spin" /> : "Ajouter à la flotte"}
+                   </button>
+                </div>
+
+                <div className="space-y-3">
+                   <h3 className="font-black text-ink text-sm">Livreurs Actifs ({deliverers.length})</h3>
+                   {deliverers.length === 0 ? (
+                     <p className="text-sm font-medium text-slate text-center py-4">Aucun livreur pour le moment.</p>
+                   ) : (
+                     deliverers.map(d => (
+                       <div key={d.id} className="bg-white border border-line rounded-xl p-4 flex items-center justify-between shadow-sm">
+                         <div>
+                            <p className="font-black text-ink text-sm">{d.name}</p>
+                            <p className="text-xs text-slate font-bold">{d.phone}</p>
+                         </div>
+                         <div className="flex gap-2">
+                           <button 
+                             onClick={() => copyMagicLink(d.id)}
+                             className="bg-[#FAFAF7] hover:bg-[#0F7A60]/10 border border-line hover:border-[#0F7A60]/30 text-[#0F7A60] px-3 py-1.5 rounded-lg text-[11px] font-black transition flex items-center gap-1 shadow-sm"
+                           >
+                             <LinkIcon size={12} /> Copier Portail
+                           </button>
+                           <button 
+                             onClick={() => handleDeleteDeliverer(d.id)}
+                             className="bg-red-50 hover:bg-red-100 text-red-600 w-8 h-8 rounded-lg flex items-center justify-center transition"
+                           >
+                             <Trash2 size={14} />
+                           </button>
+                         </div>
+                       </div>
+                     ))
+                   )}
+                </div>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. FULLSCREEN: MODE LIVRAISON (Mobile-First Interface) */}
+      {isDeliveryMode && (
+        <div className="fixed inset-0 z-[200] bg-[#f4f4f5] flex flex-col animate-in slide-in-from-bottom-full overflow-hidden">
+           {/* Header Livraison */}
+           <div className="bg-[#0F7A60] text-white p-4 pt-safe-top flex items-center justify-between shrink-0 shadow-md z-10 sticky top-0">
+             <div className="flex items-center gap-3">
+               <div className="w-10 h-10 bg-white/20 rounded-xl flex flex-col items-center justify-center">
+                 <Rocket size={20} className="text-white" />
+               </div>
+               <div>
+                 <h1 className="font-black text-lg uppercase tracking-wider leading-none">Acheminement</h1>
+                 <p className="text-white/70 text-[10px] font-bold tracking-widest mt-0.5">MODE LIVRAISON YAYYAM</p>
+               </div>
+             </div>
+             <button onClick={() => setIsDeliveryMode(false)} className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center active:scale-95 transition">
+               <X size={20} />
+             </button>
+           </div>
+
+           {/* Tabs */}
+           <div className="flex border-b border-line bg-white shrink-0 shadow-sm sticky top-[72px] z-10">
+              <button 
+                onClick={() => setDeliveryModeTab('pending')}
+                className={`flex-1 py-4 text-sm tracking-widest uppercase font-black transition border-b-2 ${deliveryModeTab === 'pending' ? 'text-[#0F7A60] border-[#0F7A60]' : 'text-slate border-transparent'}`}
+              >
+                 En Route <span className="ml-1 bg-ink text-white px-2 py-0.5 rounded-full text-[10px]">{orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}</span>
+              </button>
+              <button 
+                onClick={() => setDeliveryModeTab('delivered')}
+                className={`flex-1 py-4 text-sm tracking-widest uppercase font-black transition border-b-2 ${deliveryModeTab === 'delivered' ? 'text-ink border-ink' : 'text-slate border-transparent'}`}
+              >
+                 Livrées <span className="ml-1 bg-cream text-ink px-2 py-0.5 rounded-full text-[10px] shadow-sm">{orders.filter(o => o.status === 'delivered').length}</span>
+              </button>
+           </div>
+
+           {/* Liste Colis */}
+           <div className="flex-1 overflow-y-auto p-4 space-y-4 max-w-lg mx-auto w-full pb-24">
+             {orders
+               .filter(o => deliveryModeTab === 'pending' ? (o.status !== 'delivered' && o.status !== 'cancelled') : o.status === 'delivered')
+               .map(order => {
+                  const waLink = `https://wa.me/${order.buyer_phone?.replace(/\D/g, '') || ''}?text=${encodeURIComponent(
+                    `Bonjour ${order.buyer_name.split(' ')[0]}, c'est le livreur Yayyam. Je suis en route avec votre commande !`
+                  )}`
+                  const addressNavUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.delivery_address || '')}`
+
+                  return (
+                    <div key={order.id} className="bg-white rounded-3xl p-5 shadow-sm border border-line flex flex-col gap-4 relative overflow-hidden">
+                       <div className="flex justify-between items-start">
+                         <div>
+                           <div className="flex items-center gap-2 mb-1">
+                             <span className="font-mono text-xs font-black text-ink bg-cream px-2.5 py-1 rounded-lg">#{order.id.split('-')[0].toUpperCase()}</span>
+                             <span className="text-[10px] font-black uppercase text-dust">{getTimeAgo(order.created_at)}</span>
+                           </div>
+                           <h3 className="font-black tracking-tight text-xl text-ink leading-none mt-2">{order.buyer_name}</h3>
+                         </div>
+                         <div className="text-right">
+                           <p className="font-black text-2xl tracking-tighter text-[#0F7A60]">{order.total.toLocaleString('fr-FR')}</p>
+                           <p className="text-[10px] font-black text-slate uppercase">FCFA À PERCEVOIR</p>
+                         </div>
+                       </div>
+
+                       <div className="bg-[#fcfcfc] border border-line rounded-2xl p-3 flex gap-3 items-center">
+                          <div className="w-12 h-12 rounded-xl bg-white shadow-sm border border-line overflow-hidden shrink-0 flex items-center justify-center">
+                             {order.product?.images?.[0] ? (
+                               <Image src={order.product.images[0]} alt="img" width={48} height={48} className="object-cover" />
+                             ) : <Package size={20} className="text-slate" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-black text-ink truncate shrink-0 px-2">{order.product?.name || 'Produit non spécifié'}</p>
+                          </div>
+                       </div>
+
+                       <div className="flex gap-2 border-y border-line py-3">
+                         <div className="flex-1">
+                           <p className="text-[10px] uppercase font-black text-slate mb-0.5">📍 Zone & Adresse</p>
+                           <p className="text-xs font-bold text-ink line-clamp-2 leading-tight">
+                             {order.deliveryZone?.name ? <span className="text-[#0F7A60]">{order.deliveryZone.name} — </span> : ''}
+                             {order.delivery_address || 'Adresse introuvable'}
+                           </p>
+                         </div>
+                         <a href={addressNavUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-cream text-ink rounded-xl flex items-center justify-center border border-line shrink-0 active:scale-95 transition">
+                           <MapPin size={18} />
+                         </a>
+                       </div>
+
+                       {deliveryModeTab === 'pending' ? (
+                         <div className="flex gap-2">
+                            <a href={`tel:${order.buyer_phone}`} className="flex-1 bg-ink text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-sm active:scale-95 transition shadow-lg shadow-ink/20">
+                              <PhoneIcon size={18} /> Appeler
+                            </a>
+                            <a href={waLink} target="_blank" rel="noopener noreferrer" className="w-14 shrink-0 bg-[#25D366] text-white py-4 rounded-2xl flex items-center justify-center font-black active:scale-95 transition shadow-lg shadow-[#25D366]/20">
+                              <WhatsAppIcon className="w-6 h-6" />
+                            </a>
+                            <button 
+                              onClick={() => {
+                                handleSingleUpdate(order.id, 'shipped') // shipped -> delivered via nextState
+                              }}
+                              disabled={isUpdating}
+                              className="flex-[1.5] bg-[#0F7A60] text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-sm active:scale-95 transition shadow-lg shadow-[#0F7A60]/20"
+                            >
+                              {isUpdating ? <Loader2 size={18} className="animate-spin" /> : <><CheckCircle2 size={18} /> Livré</>}
+                            </button>
+                         </div>
+                       ) : (
+                         <div className="bg-emerald/10 text-[#0F7A60] border border-emerald/20 py-3 rounded-2xl flex items-center justify-center gap-2 font-black text-sm">
+                           <CheckCircle2 size={18} /> Colis livré au client
+                         </div>
+                       )}
+                    </div>
+                  )
+               })}
+             {orders.filter(o => deliveryModeTab === 'pending' ? (o.status !== 'delivered' && o.status !== 'cancelled') : o.status === 'delivered').length === 0 && (
+               <div className="flex flex-col items-center justify-center text-center py-24 px-6 relative top-1/2 -translate-y-1/2">
+                 <div className="w-20 h-20 bg-cream rounded-full flex items-center justify-center mb-6">
+                   <Target size={32} className="text-dust" />
+                 </div>
+                 <h2 className="font-black text-ink text-2xl uppercase tracking-tighter">Votre Course est vide</h2>
+                 <p className="text-sm font-medium text-slate mt-2 max-w-[250px]">Aucun colis {deliveryModeTab === 'pending' ? 'en attente de livraison' : 'livré'} ne se trouve dans cette liste.</p>
                </div>
              )}
            </div>

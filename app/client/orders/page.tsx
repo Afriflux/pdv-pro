@@ -92,7 +92,7 @@ export default async function ClientOrdersPage() {
           
           {orders && orders.length > 0 ? (
             <div className="divide-y divide-gray-100/60 p-2 sm:p-4">
-              {orders.map((o: any) => {
+              {(orders || []).map((o: any) => {
                 const isDigital = o.order_type === 'digital' || o.order_type === 'telegram'
                 return (
                   <div key={o.id} className="p-4 sm:p-6 hover:bg-[#0F7A60]/[0.02] rounded-[2rem] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-5 group">
@@ -143,7 +143,7 @@ export default async function ClientOrdersPage() {
                            orderId={o.id} 
                            storeId={o.Store?.slug || o.store_id} 
                            productId={o.product_id} 
-                           buyerName={profile?.name || user.user_metadata?.name || 'Client PDV'} 
+                           buyerName={profile?.name || user.user_metadata?.name || 'Client Yayyam'} 
                            existingReview={o.Review && o.Review.length > 0 ? o.Review[0] : undefined}
                          />
                        )}
@@ -169,7 +169,7 @@ export default async function ClientOrdersPage() {
                  <Package className="text-[#0F7A60] relative z-10 drop-shadow-md w-10 h-10" />
                </div>
                <h3 className="font-display font-black text-[#1A1A1A] text-2xl uppercase tracking-tight mb-3">Aucun achat</h3>
-               <p className="max-w-md text-sm font-medium leading-relaxed">Il semblerait que vous n'ayez encore rien commandé via PDV Pro.<br/>Vos futurs achats physiques et digitaux apparaîtront ici.</p>
+               <p className="max-w-md text-sm font-medium leading-relaxed">Il semblerait que vous n'ayez encore rien commandé via Yayyam.<br/>Vos futurs achats physiques et digitaux apparaîtront ici.</p>
                <Link href="/vendeurs" className="mt-8 px-8 py-3.5 bg-[#1A1A1A] text-white font-bold rounded-2xl shadow-xl shadow-black/10 hover:-translate-y-1 hover:shadow-black/20 transition-all flex items-center gap-2">
                   <Compass size={18} /> Explorer le catalogue
                </Link>

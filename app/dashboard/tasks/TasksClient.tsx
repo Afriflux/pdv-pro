@@ -1,8 +1,7 @@
-// @ts-nocheck
 'use client'
 
-import { useState, useMemo, useTransition, useEffect, useRef } from 'react'
-import { ListChecks, CheckCircle2, Clock, Target, Search, Calendar, MessageSquare, Plus, X, Trash2, Edit2, Loader2, Phone, Mail, Users, AlertTriangle, FileText, ExternalLink, UserCircle2 } from 'lucide-react'
+import { useState, useMemo, useEffect, useRef, useTransition } from 'react'
+import { ListChecks, CheckCircle2, Clock, Target, Search, Calendar, MessageSquare, Plus, X, Trash2, Edit2, Loader2, Phone, Mail, Users, AlertTriangle, FileText, UserCircle2, Megaphone, PenTool, Briefcase, Truck, Package, Sparkles } from 'lucide-react'
 import { createTaskAction, updateTaskStatus, updateTaskTitle, deleteTaskAction, getStoreCustomersAction } from './actions'
 
 interface Task {
@@ -12,7 +11,7 @@ interface Task {
   status:    'todo' | 'in_progress' | 'done'
   dueDate?:  string
   description?: string
-  taskType: 'call' | 'email' | 'meeting' | 'issue' | 'general' | string
+  taskType: 'call' | 'email' | 'meeting' | 'issue' | 'general' | 'marketing' | 'content' | 'admin' | 'logistics' | 'product' | string
   client_name?: string
   client_phone?: string
   order_id?: string
@@ -33,7 +32,7 @@ const STATUS_COLORS = {
 
 export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task[] }) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
   
   // États filtres & recherche
   const [search, setSearch]             = useState('')
@@ -48,13 +47,77 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
   // Formulaire nouvelle tâche
   const [newTask, setNewTask] = useState<{ 
     title: string; priority: 'low' | 'medium' | 'high'; dueDate: string;
-    description: string; taskType: 'call' | 'email' | 'meeting' | 'issue' | 'general';
+    description: string; taskType: 'call' | 'email' | 'meeting' | 'issue' | 'general' | 'marketing' | 'content' | 'admin' | 'logistics' | 'product' | string;
     client_name: string; client_phone: string; order_id: string;
   }>({
     title: '', priority: 'medium', dueDate: '',
     description: '', taskType: 'general',
     client_name: '', client_phone: '', order_id: ''
   })
+
+  // Magic Input AI
+  const [magicInput, setMagicInput] = useState('')
+  const [isParsingAI, setIsParsingAI] = useState(false)
+
+  const handleMagicParse = async () => {
+    if (!magicInput.trim() || isParsingAI) return
+    setIsParsingAI(true)
+    try {
+      const res = await fetch('/api/ai/tasks/parse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: magicInput })
+      })
+      const data = await res.json()
+      if (data.parsed) {
+        setNewTask(prev => ({
+          ...prev,
+          title: data.parsed.title || prev.title,
+          description: data.parsed.description || prev.description,
+          taskType: data.parsed.taskType || prev.taskType,
+          priority: data.parsed.priority || prev.priority,
+          dueDate: data.parsed.dueDate || prev.dueDate,
+          client_name: data.parsed.client_name || prev.client_name,
+          client_phone: data.parsed.client_phone || prev.client_phone,
+        }))
+        setMagicInput('')
+      }
+    } catch(err) {
+      console.error(err)
+    } finally {
+      setIsParsingAI(false)
+    }
+  }
+
+  // Action IA Modal
+  const [actionAiTask, setActionAiTask] = useState<Task | null>(null)
+  const [generatedAction, setGeneratedAction] = useState('')
+  const [isGeneratingAction, setIsGeneratingAction] = useState(false)
+
+  const handleGenerateAction = async (task: Task) => {
+    setActionAiTask(task)
+    setGeneratedAction('')
+    setIsGeneratingAction(true)
+    
+    try {
+      const res = await fetch('/api/ai/tasks/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskTitle: task.title, taskDescription: task.description, taskType: task.taskType })
+      })
+      const data = await res.json()
+      if (data.generated) {
+        setGeneratedAction(data.generated)
+      } else {
+        setGeneratedAction("Impossible de générer une action pour le moment.")
+      }
+    } catch(err) {
+      console.error(err)
+      setGeneratedAction("Erreur de connexion à l'IA.")
+    } finally {
+      setIsGeneratingAction(false)
+    }
+  }
 
   // ── AUTOCOMPLÉTION CLIENT (PHASE 28C) ──
   const [storeCustomers, setStoreCustomers] = useState<{name:string, phone:string}[]>([])
@@ -214,6 +277,11 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
       case 'email': return <Mail size={14} className="text-purple-500" />
       case 'meeting': return <Users size={14} className="text-gold-dark" />
       case 'issue': return <AlertTriangle size={14} className="text-red-500" />
+      case 'marketing': return <Megaphone size={14} className="text-pink-500" />
+      case 'content': return <PenTool size={14} className="text-orange-500" />
+      case 'admin': return <Briefcase size={14} className="text-slate-600" />
+      case 'logistics': return <Truck size={14} className="text-emerald-500" />
+      case 'product': return <Package size={14} className="text-indigo-500" />
       default: return <FileText size={14} className="text-slate-400" />
     }
   }
@@ -242,6 +310,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
                   
                   {/* Bouton Check */}
                   <button 
+                    title={task.status === 'done' ? 'Marquer comme à faire' : 'Marquer comme terminé'}
                     onClick={() => handleToggleDone(task.id, task.status)}
                     className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${task.status === 'done' ? 'bg-emerald border-emerald text-white' : 'border-dust/40 hover:border-emerald'}`}
                   >
@@ -252,6 +321,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
                   <div className="flex-1 min-w-0 flex flex-col gap-2">
                     {editingId === task.id ? (
                       <input 
+                        title="Titre de la tâche"
                         className="w-full text-sm font-bold bg-gray-50 border border-line rounded px-2 py-1 outline-none"
                         value={editTitle}
                         onChange={(e) => setEditTitle(e.target.value)}
@@ -313,8 +383,9 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
 
                   {/* Actions Rapides */}
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => startEdit(task)} className="p-1.5 text-dust hover:text-ink hover:bg-cream rounded-md transition"><Edit2 size={14}/></button>
-                    <button onClick={() => handleDelete(task.id)} className="p-1.5 text-dust hover:text-red-500 hover:bg-red-50 rounded-md transition"><Trash2 size={14}/></button>
+                    <button onClick={() => handleGenerateAction(task)} className="p-1.5 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition" title="Générer Réponse/Draft IA"><Sparkles size={14}/></button>
+                    <button onClick={() => startEdit(task)} className="p-1.5 text-dust hover:text-ink hover:bg-cream rounded-md transition" title="Modifier la tâche"><Edit2 size={14}/></button>
+                    <button onClick={() => handleDelete(task.id)} className="p-1.5 text-dust hover:text-red-500 hover:bg-red-50 rounded-md transition" title="Supprimer la tâche"><Trash2 size={14}/></button>
                   </div>
                 </div>
               </div>
@@ -350,6 +421,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
         <div className="relative flex-1 w-full max-w-md text-ink">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-dust" size={18} />
           <input
+            title="Rechercher une tâche"
             type="text"
             placeholder="Rechercher une tâche..."
             value={search}
@@ -420,16 +492,42 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-line p-5">
-              <h3 className="font-display font-black text-ink text-lg">Nouvelle tâche</h3>
-              <button onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center bg-cream rounded-full text-slate hover:text-ink transition"><X size={16}/></button>
+            <div className="flex items-center justify-between border-b border-line p-5 bg-[#FAFAF7]">
+              <h3 className="font-display font-black text-ink text-lg flex items-center gap-2">
+                Nouvelle tâche
+              </h3>
+              <button title="Fermer" onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center bg-cream rounded-full text-slate hover:text-ink transition"><X size={16}/></button>
             </div>
             
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-5 border-b border-line/50">
+              <label className="text-[10px] font-black uppercase tracking-widest text-indigo-800 mb-2 flex items-center gap-1.5"><Sparkles size={12}/> Magic Input IA</label>
+              <div className="relative">
+                <input 
+                  title="Magic Input IA"
+                  type="text" 
+                  value={magicInput} 
+                  onChange={e => setMagicInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleMagicParse())}
+                  placeholder="Ex: Rappeler M. Diallo demain pour sa commande bloquée..."
+                  disabled={isParsingAI}
+                  className="w-full border border-indigo-200/60 bg-white/60 backdrop-blur-sm pl-4 pr-12 py-3.5 rounded-xl text-sm font-bold text-indigo-900 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition disabled:opacity-60"
+                />
+                <button 
+                  onClick={handleMagicParse}
+                  disabled={isParsingAI || !magicInput.trim()}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-md disabled:bg-indigo-300"
+                >
+                  {isParsingAI ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                </button>
+              </div>
+            </div>
+
             <form onSubmit={handleCreateTask} className="p-6 space-y-5">
               
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-dust">Titre de la tâche</label>
                 <input 
+                  title="Titre de la tâche"
                   type="text" required autoFocus
                   value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})}
                   placeholder="Ex: Rappeler le client M. Diallo..."
@@ -451,20 +549,29 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-dust">Type de tâche</label>
                   <select 
+                    title="Type de tâche"
                     value={newTask.taskType} onChange={e => setNewTask({...newTask, taskType: e.target.value as any})}
                     className="w-full border border-line bg-[#FAFAF7] px-4 py-3 rounded-xl text-sm font-bold text-ink outline-none"
                   >
-                    <option value="general">📋 Général</option>
-                    <option value="call">📞 Appel</option>
-                    <option value="email">✉️ Email</option>
-                    <option value="meeting">🤝 Rendez-vous</option>
-                    <option value="issue">⚠️ Problème / SAV</option>
+                    <option value="general" className="font-bold text-gray-700">📋 Général</option>
+                    <hr className="my-1 border-line" />
+                    <option value="call" className="font-medium">📞 Appel Client</option>
+                    <option value="email" className="font-medium">✉️ Email Client</option>
+                    <option value="meeting" className="font-medium">🤝 Rendez-vous</option>
+                    <option value="issue" className="font-medium">⚠️ Problème / SAV</option>
+                    <hr className="my-1 border-line" />
+                    <option value="marketing" className="font-medium">📢 Marketing / Pub</option>
+                    <option value="content" className="font-medium">🎨 Création Contenu</option>
+                    <option value="product" className="font-medium">📦 Gestion Produit</option>
+                    <option value="logistics" className="font-medium">🚚 Livraison / Logistique</option>
+                    <option value="admin" className="font-medium">💼 Administratif / Finance</option>
                   </select>
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-dust">Priorité</label>
                   <select 
+                    title="Priorité"
                     value={newTask.priority} onChange={e => setNewTask({...newTask, priority: e.target.value as any})}
                     className="w-full border border-line bg-[#FAFAF7] px-4 py-3 rounded-xl text-sm font-bold text-ink outline-none"
                   >
@@ -475,62 +582,67 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5 relative" ref={dropdownRef}>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-dust">Client @ (Opt.)</label>
-                  <div className="relative">
-                    <UserCircle2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dust" />
-                    <input 
-                      type="text"
-                      value={newTask.client_name} 
-                      onChange={e => {
-                        setNewTask({...newTask, client_name: e.target.value})
-                        setShowCustomerDropdown(true)
-                      }}
-                      onFocus={() => setShowCustomerDropdown(true)}
-                      placeholder="Tapez un nom..."
-                      className="w-full border border-line bg-[#FAFAF7] pl-10 pr-4 py-3 rounded-xl text-sm font-bold text-ink focus:ring-2 focus:ring-gold/20 focus:border-gold outline-none"
-                    />
+              {['call', 'email', 'meeting', 'issue'].includes(newTask.taskType) && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5 relative" ref={dropdownRef}>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-dust">Client @ (Opt.)</label>
+                    <div className="relative">
+                      <UserCircle2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dust" />
+                      <input 
+                        title="Nom du client"
+                        type="text"
+                        value={newTask.client_name} 
+                        onChange={e => {
+                          setNewTask({...newTask, client_name: e.target.value})
+                          setShowCustomerDropdown(true)
+                        }}
+                        onFocus={() => setShowCustomerDropdown(true)}
+                        placeholder="Tapez un nom..."
+                        className="w-full border border-line bg-[#FAFAF7] pl-10 pr-4 py-3 rounded-xl text-sm font-bold text-ink focus:ring-2 focus:ring-gold/20 focus:border-gold outline-none"
+                      />
+                    </div>
+                    
+                    {/* Dropdown d'autocomplétion */}
+                    {showCustomerDropdown && filteredCustomers.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-line rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto w-full">
+                        {filteredCustomers.map((c, i) => (
+                          <div 
+                            key={i}
+                            onClick={() => {
+                              setNewTask({
+                                ...newTask, 
+                                client_name: c.name, 
+                                client_phone: c.phone
+                              })
+                              setShowCustomerDropdown(false)
+                            }}
+                            className="px-4 py-3 hover:bg-cream cursor-pointer border-b border-line/50 last:border-0 transition-colors"
+                          >
+                            <p className="text-sm font-bold text-ink">{c.name}</p>
+                            <p className="text-xs text-dust font-medium">{c.phone}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   
-                  {/* Dropdown d'autocomplétion */}
-                  {showCustomerDropdown && filteredCustomers.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-line rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
-                      {filteredCustomers.map((c, i) => (
-                        <div 
-                          key={i}
-                          onClick={() => {
-                            setNewTask({
-                              ...newTask, 
-                              client_name: c.name, 
-                              client_phone: c.phone
-                            })
-                            setShowCustomerDropdown(false)
-                          }}
-                          className="px-4 py-2 hover:bg-cream cursor-pointer border-b border-line/50 last:border-0"
-                        >
-                          <p className="text-sm font-bold text-ink">{c.name}</p>
-                          <p className="text-xs text-dust">{c.phone}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-dust">Téléphone (Opt.)</label>
+                    <input 
+                      title="Téléphone du client"
+                      type="text"
+                      value={newTask.client_phone} onChange={e => setNewTask({...newTask, client_phone: e.target.value})}
+                      placeholder="+221..."
+                      className="w-full border border-line bg-[#FAFAF7] px-4 py-3 rounded-xl text-sm font-bold text-ink outline-none"
+                    />
+                  </div>
                 </div>
-                
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-dust">Téléphone (Opt.)</label>
-                  <input 
-                    type="text"
-                    value={newTask.client_phone} onChange={e => setNewTask({...newTask, client_phone: e.target.value})}
-                    placeholder="+221..."
-                    className="w-full border border-line bg-[#FAFAF7] px-4 py-3 rounded-xl text-sm font-bold text-ink outline-none"
-                  />
-                </div>
-              </div>
+              )}
 
               <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-dust">Date d'échéance (Opt.)</label>
                   <input 
+                    title="Date d'échéance"
                     type="date"
                     value={newTask.dueDate} onChange={e => setNewTask({...newTask, dueDate: e.target.value})}
                     className="w-full border border-line bg-[#FAFAF7] px-4 py-3 rounded-xl text-sm font-bold text-ink outline-none"
@@ -543,6 +655,55 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
               </div>
 
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL ACTION IA ── */}
+      {actionAiTask && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 border border-indigo-100">
+            <div className="flex items-center justify-between border-b border-indigo-50 bg-indigo-50/50 p-5">
+              <h3 className="font-display font-black text-indigo-900 text-lg flex items-center gap-2">
+                <Sparkles size={18} className="text-indigo-600" /> Action IA suggérée
+              </h3>
+              <button title="Fermer" onClick={() => setActionAiTask(null)} className="w-8 h-8 flex items-center justify-center bg-white rounded-full text-indigo-400 hover:text-indigo-800 transition shadow-sm"><X size={16}/></button>
+            </div>
+            
+            <div className="p-6">
+              <p className="text-sm font-bold text-ink mb-1 truncate">{actionAiTask.title}</p>
+              <p className="text-xs text-dust mb-4 line-clamp-2">{actionAiTask.description || "Aucune description supplémentaire."}</p>
+
+              {isGeneratingAction ? (
+                <div className="flex flex-col items-center justify-center py-10 space-y-3 bg-indigo-50/30 rounded-2xl border border-indigo-100/50">
+                  <Loader2 size={30} className="animate-spin text-indigo-500" />
+                  <p className="text-sm font-bold text-indigo-900 animate-pulse">L'IA rédige votre livrable...</p>
+                </div>
+              ) : (
+                <div className="relative">
+                  <textarea 
+                    title="Brouillon de la réponse de l'IA"
+                    value={generatedAction}
+                    onChange={e => setGeneratedAction(e.target.value)}
+                    className="w-full h-64 border border-line bg-[#FAFAF7] font-medium p-4 rounded-2xl text-sm text-ink focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none resize-none custom-scrollbar"
+                  />
+                  <div className="pt-4 flex justify-between items-center">
+                    <span className="text-[10px] uppercase font-bold text-dust">
+                      Ce brouillon peut être copié et utilisé directement.
+                    </span>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(generatedAction);
+                        // toast UI could go here
+                      }}
+                      className="px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-lg shadow-indigo-600/30"
+                    >
+                      Copier le texte
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

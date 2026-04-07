@@ -160,7 +160,6 @@ export async function signUp(formData: FormData): Promise<void> {
         const registrationMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
         try {
           await linkVendorToAmbassador(ambassadorCode.trim(), storeId, registrationMonth)
-          console.log(`[SIGNUP] Vendeur ${storeId} lié à l'ambassadeur ${ambassadorCode}`)
         } catch (ambassadorError: unknown) {
           // Non bloquant : l'inscription réussit même si le lien ambassadeur échoue
           const msg = ambassadorError instanceof Error ? ambassadorError.message : 'Erreur lien ambassadeur'
@@ -217,21 +216,25 @@ export async function signUp(formData: FormData): Promise<void> {
 export async function signIn(formData: FormData): Promise<void> {
   const supabase = await createClient()
 
-  const emailOrPhone = formData.get('emailOrPhone') as string
+  let emailOrPhone = formData.get('emailOrPhone') as string
   const password     = formData.get('password') as string
 
   if (!emailOrPhone || !password) {
     redirect('/login?error=champs_requis')
   }
 
+  emailOrPhone = emailOrPhone.trim()
+
   const isEmail = emailOrPhone.includes('@')
   const email   = isEmail
-    ? emailOrPhone
-    : `${emailOrPhone.replace(/\D/g, '')}@pdvpro.phone`
+    ? emailOrPhone.toLowerCase()
+    : `${emailOrPhone.replace(/\D/g, '')}@yayyam.phone`
+
 
   const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error || !authData.user) {
+    console.error('[AUTH ERROR] signInWithPassword failed:', error?.message)
     redirect('/login?error=identifiants_invalides')
   }
 

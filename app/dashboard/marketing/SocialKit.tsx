@@ -1,9 +1,8 @@
-// @ts-nocheck
 'use client'
 
 import { useState } from 'react'
-import { Copy, MessageCircle, Instagram, Code, Share2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { Copy, MessageCircle, Share2 } from 'lucide-react'
+import { toast } from '@/lib/toast'
 
 export default function SocialKit({ storeName, storeUrl }: { storeName: string, storeUrl: string }) {
   const templates = [

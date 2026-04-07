@@ -86,13 +86,13 @@ export async function POST(req: NextRequest) {
 
     if (botConfig?.value && chatConfig?.value) {
       const message = [
-        `🚨 *Nouveau signalement PDV Pro*`,
+        `🚨 *Nouveau signalement Yayyam*`,
         `Type : \`${type}\``,
         `${store_id   ? `Boutique : \`${store_id}\`` : ''}`,
         `${product_id ? `Produit : \`${product_id}\`` : ''}`,
         `Description : ${description.trim().slice(0, 200)}${description.trim().length > 200 ? '...' : ''}`,
         ``,
-        `→ Voir : https://pdvpro.com/admin/complaints/${complaint?.id ?? ''}`,
+        `→ Voir : https://yayyam.com/admin/complaints/${complaint?.id ?? ''}`,
       ].filter(Boolean).join('\n')
 
       // Fire and forget — ne pas bloquer la réponse si Telegram échoue

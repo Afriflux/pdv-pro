@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   User, Globe, Palette, Store as StoreIcon, Share2, 
-  Target, ShieldCheck, Bell, Wallet, CheckCircle2, 
+  ShieldCheck, Bell, Wallet, CheckCircle2, 
   FileText, AlertTriangle
 } from 'lucide-react'
 
@@ -14,7 +14,6 @@ import { StoreLinkTab } from './tabs/StoreLinkTab'
 import { AppearanceTab } from './tabs/AppearanceTab'
 import { VendorTypeTab } from './tabs/VendorTypeTab'
 import { SocialLinksTab } from './tabs/SocialLinksTab'
-import { PixelsTab } from './tabs/PixelsTab'
 import { SecurityTab } from './tabs/SecurityTab'
 import { NotificationsTab } from './tabs/NotificationsTab'
 import { FinanceTab } from './tabs/FinanceTab'
@@ -44,7 +43,6 @@ export function SettingsLayout({ store, profile, userId }: any) {
       case 'apparence': return <AppearanceTab store={store} />
       case 'vendor': return <VendorTypeTab store={store} />
       case 'reseaux': return <SocialLinksTab store={store} />
-      case 'pixels': return <PixelsTab store={store} />
       case 'securite': return <SecurityTab profile={profile} />
       case 'notifications': return <NotificationsTab store={store} />
       case 'retrait': return <FinanceTab store={store} />
@@ -67,7 +65,6 @@ export function SettingsLayout({ store, profile, userId }: any) {
           <MenuBtn active={activeSection === 'vendor'} icon={<StoreIcon className="w-5 h-5" />} label="Type de Vendeur" onClick={() => setActiveSection('vendor')} />
           <div className="hidden lg:block h-6" />
           <MenuBtn active={activeSection === 'reseaux'} icon={<Share2 className="w-5 h-5" />} label="Réseaux Sociaux" onClick={() => setActiveSection('reseaux')} />
-          <MenuBtn active={activeSection === 'pixels'} icon={<Target className="w-5 h-5" />} label="Tracking & Pixels" onClick={() => setActiveSection('pixels')} />
           <MenuBtn active={activeSection === 'securite'} icon={<ShieldCheck className="w-5 h-5" />} label="Sécurité" onClick={() => setActiveSection('securite')} />
           <MenuBtn active={activeSection === 'notifications'} icon={<Bell className="w-5 h-5" />} label="Notifications" onClick={() => setActiveSection('notifications')} />
           <div className="hidden lg:block h-6" />
@@ -82,7 +79,7 @@ export function SettingsLayout({ store, profile, userId }: any) {
               activeSection === 'danger' ? 'bg-red-50 text-red-600 ring-1 ring-red-200 shadow-sm' : 'text-red-400 hover:bg-white/80 hover:text-red-600 hover:translate-x-1 hover:shadow-sm'
             }`}
           >
-            <AlertTriangle className="w-5 h-5 flex-shrink-0" /> <span className="hidden lg:inline">Danger Zone</span>
+            <AlertTriangle className="w-5 h-5 flex-shrink-0" /> <span className={activeSection !== 'danger' ? 'hidden lg:inline' : 'inline'}>Zone de Danger</span>
           </button>
           
           <div className="hidden lg:block mt-10 p-6 bg-white/80 backdrop-blur-xl rounded-3xl border border-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] group-hover:shadow-[0_4px_30px_rgb(0,0,0,0.06)] transition-all">

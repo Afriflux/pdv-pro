@@ -56,7 +56,7 @@ export async function generateInvoicePdfBuffer(data: InvoiceData): Promise<Buffe
   } else if (!data.store.isWhiteLabel) {
     doc.setFontSize(24)
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-    doc.text('PDV Pro', 20, 30)
+    doc.text('Yayyam', 20, 30)
   } else {
     doc.setFontSize(24)
     doc.setTextColor(darkColor[0], darkColor[1], darkColor[2])
@@ -83,12 +83,12 @@ export async function generateInvoicePdfBuffer(data: InvoiceData): Promise<Buffe
   
   doc.setFontSize(12)
   doc.setTextColor(darkColor[0], darkColor[1], darkColor[2])
-  doc.text(data.store.isWhiteLabel ? data.store.name : 'PDV Pro', 20, startY + 10)
+  doc.text(data.store.isWhiteLabel ? data.store.name : 'Yayyam', 20, startY + 10)
   
   doc.setFontSize(10)
   doc.setTextColor(grayColor[0], grayColor[1], grayColor[2])
   doc.text(data.store.address || 'Dakar, Sénégal', 20, startY + 18)
-  doc.text(data.store.email || 'support@pdvpro.com', 20, startY + 24)
+  doc.text(data.store.email || 'support@yayyam.com', 20, startY + 24)
 
   // Destinataire
   doc.setFontSize(10)
@@ -164,7 +164,7 @@ export async function generateInvoicePdfBuffer(data: InvoiceData): Promise<Buffe
   doc.setTextColor(156, 163, 175) // #9ca3af
   doc.line(20, pageHeight - 25, 190, pageHeight - 25)
   doc.text(`Réf commande: ${data.orderId.split('-')[0].toUpperCase()}`, 20, pageHeight - 15)
-  doc.text(`Généré automatiquement par PDV Pro`, 190, pageHeight - 15, { align: 'right' })
+  doc.text(`Généré automatiquement par Yayyam`, 190, pageHeight - 15, { align: 'right' })
 
   return Buffer.from(doc.output('arraybuffer'))
 }

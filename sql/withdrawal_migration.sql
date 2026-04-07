@@ -1,7 +1,7 @@
 -- ─── sql/withdrawal_migration.sql ───────────────────────────────────────────
 -- Migration : ajout des colonnes de retrait sur la table Store
 -- À exécuter dans l'éditeur SQL Supabase ou via CLI
--- Auteur : PDV Pro · Date : 2026-03-17
+-- Auteur : Yayyam · Date : 2026-03-17
 
 -- ─── 1. Ajout des colonnes ────────────────────────────────────────────────────
 

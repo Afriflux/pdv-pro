@@ -61,7 +61,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // 4. Récupérer le Store et vérifier l'appartenance au vendeur connecté
     const { data: store, error: storeErr } = await supabaseAdmin
       .from('Store')
-      .select('id, name, user_id, withdrawal_method, withdrawal_number, withdrawal_name, telegram_notifications')
+      .select('id, name, user_id, kyc_status, withdrawal_method, withdrawal_number, withdrawal_name, telegram_notifications')
       .eq('id', storeId)
       .single()
 
@@ -72,6 +72,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // Vérifier que le store appartient bien au vendeur connecté (sécurité)
     if ((store.user_id as string) !== user.id) {
       return NextResponse.json({ success: false, error: 'Accès refusé.' }, { status: 403 })
+    }
+
+    // Vérifier KYC statut
+    if (store.kyc_status !== 'verified') {
+      return NextResponse.json({ success: false, error: 'Votre identité (KYC) doit être vérifiée avant de pouvoir retirer des fonds.' }, { status: 403 })
     }
 
     // 5. Vérifier que le compte de retrait est configuré
@@ -125,12 +130,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     const methodLabel = METHOD_LABELS[store.withdrawal_method as string] ?? 'Wave'
-
-    console.log(
-      `[Withdraw] Retrait de ${amount.toLocaleString('fr-FR')} FCFA` +
-      ` via ${methodLabel} → ${store.withdrawal_number}` +
-      ` (store="${store.name}")`
-    )
 
     // Payout automatique via Wave/CinetPay — intégré dans /api/admin/retraits/[id]
     // 9. Notification Telegram au vendeur (fire-and-forget)

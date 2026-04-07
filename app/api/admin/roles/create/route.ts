@@ -122,7 +122,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
-    console.log(`[Admin Roles] Nouveau ${role} créé : ${email} (${newUserId}) par ${user.id}`)
 
     return NextResponse.json({
       success: true,

@@ -17,7 +17,7 @@ export default function CloserTargetsClient({ stores: initialStores }: CloserTar
     store.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const containerVars = {
+  const containerVars: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -25,7 +25,7 @@ export default function CloserTargetsClient({ stores: initialStores }: CloserTar
     }
   }
 
-  const itemVars = {
+  const itemVars: any = {
     hidden: { opacity: 0, scale: 0.95, y: 30 },
     show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   }
@@ -145,7 +145,7 @@ export default function CloserTargetsClient({ stores: initialStores }: CloserTar
                        </div>
                        
                        <h2 className="text-2xl font-black text-gray-900 mb-2 group-hover:text-[#0F7A60] transition-colors relative z-10 leading-tight">{store.name}</h2>
-                       <p className="text-sm text-gray-500 mb-8 line-clamp-2 relative z-10 font-medium">Boutique e-commerce proposant {store._count.products} produits certifiés sur le réseau PDV Pro.</p>
+                       <p className="text-sm text-gray-500 mb-8 line-clamp-2 relative z-10 font-medium">Boutique e-commerce proposant {store._count.products} produits certifiés sur le réseau Yayyam.</p>
                        
                        {/* STATS */}
                        <div className="grid grid-cols-2 gap-3 mb-8 relative z-10">

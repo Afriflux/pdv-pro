@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
-import { CheckCircle2, ShieldCheck, Truck, Lock, ArrowRight, X } from 'lucide-react'
+import { ShieldCheck, Truck, Lock, ArrowRight } from 'lucide-react'
 
 interface UpsellClientProps {
   baseOrderId: string

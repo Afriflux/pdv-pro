@@ -7,13 +7,13 @@ import MarketplaceClient from './MarketplaceClient'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Marketplace PDV Pro | Découvrez les meilleurs espaces',
+  title: 'Marketplace Yayyam | Découvrez les meilleurs espaces',
   description: 'Explorez des centaines d&apos;espaces de vente certifiés. Mode, Cosmétiques, Électronique, Alimentation. Achetez en toute sécurité avec Wave & Orange Money.',
   openGraph: {
-    title: 'Marketplace PDV Pro',
+    title: 'Marketplace Yayyam',
     description: 'Découvrez les meilleurs espaces de vente d&apos;Afrique de l&apos;Ouest.',
-    url: 'https://pdvpro.com/vendeurs',
-    siteName: 'PDV Pro',
+    url: 'https://yayyam.com/vendeurs',
+    siteName: 'Yayyam',
     images: [{ url: '/og-marketplace.png', width: 1200, height: 630 }],
     locale: 'fr_FR',
     type: 'website',

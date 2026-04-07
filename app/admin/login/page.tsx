@@ -1,6 +1,6 @@
 'use client'
 
-// ─── Page de connexion admin PDV Pro ─────────────────────────────────────────
+// ─── Page de connexion admin Yayyam ─────────────────────────────────────────
 // Espace d'administration sécurisé — thème sombre #0D1117
 // Accessible uniquement aux rôles : super_admin, gestionnaire, support
 
@@ -52,7 +52,7 @@ export default function AdminLoginPage() {
             <div className="w-14 h-14 bg-[#0F7A60]/10 border border-[#0F7A60]/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <ShieldCheck className="w-7 h-7 text-[#0F7A60]" />
             </div>
-            <h1 className="text-xl font-black text-[#E6EDF3] tracking-tight">PDV Pro Admin</h1>
+            <h1 className="text-xl font-black text-[#E6EDF3] tracking-tight">Yayyam Admin</h1>
             <p className="text-xs text-[#7D8590] font-medium mt-1 uppercase tracking-widest">
               Espace d&apos;administration sécurisé
             </p>
@@ -79,7 +79,7 @@ export default function AdminLoginPage() {
                 name="email"
                 autoComplete="email"
                 required
-                placeholder="admin@pdvpro.app"
+                placeholder="admin@yayyam.app"
                 className="w-full bg-[#0D1117] border border-[#30363D] rounded-xl px-4 py-3 text-sm text-[#E6EDF3] placeholder-[#7D8590] focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all"
               />
             </div>
@@ -143,7 +143,7 @@ export default function AdminLoginPage() {
 
         {/* Badge sécurité */}
         <p className="text-center text-[10px] text-[#7D8590] mt-4 font-mono uppercase tracking-widest">
-          🔒 Connexion chiffrée · PDV Pro © 2025
+          🔒 Connexion chiffrée · Yayyam © 2025
         </p>
       </div>
     </div>

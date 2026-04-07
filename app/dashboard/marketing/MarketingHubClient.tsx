@@ -19,6 +19,7 @@ interface MarketingHubClientProps {
     slug: string; 
     meta_pixel_id: string | null; 
     tiktok_pixel_id: string | null;
+    google_tag_id: string | null;
     whatsapp: string | null;
     whatsapp_abandoned_cart: boolean;
   }
@@ -162,7 +163,7 @@ export default function MarketingHubClient({ store, products, links, domain }: M
               storeId={store.id} 
               initialMetaId={store.meta_pixel_id} 
               initialTiktokId={store.tiktok_pixel_id} 
-              initialGoogleTagId={null} // TODO pass from page
+              initialGoogleTagId={store.google_tag_id}
             />
           </div>
         )}

@@ -11,25 +11,7 @@ import OrderAuditLogs from '@/components/admin/OrderAuditLogs'
 import OrderBuyerEditableCard from '@/components/admin/OrderBuyerEditableCard'
 import { ArrowLeft, Package, CreditCard, Activity, Receipt, Truck, Store as StoreIcon } from 'lucide-react'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
 
-interface OrderRow {
-  id:                string
-  created_at:        string
-  status:            string
-  total:             number
-  vendor_amount:     number
-  platform_fee:      number
-  payment_method:    string | null
-  buyer_name:        string
-  buyer_email:       string | null
-  buyer_phone:       string | null
-  store_id:          string
-  product_id:        string
-  quantity:          number
-  delivery_address:  string | null
-  delivery_fee:      number
-}
 
 // ─── Constantes statuts ───────────────────────────────────────────────────────
 
@@ -350,7 +332,7 @@ export default async function AdminOrderDetailPage({
                   <span className="text-base font-black text-emerald-600">{formatAmount(Number(orderData.vendor_amount ?? 0))}</span>
                 </div>
                 
-                {/* Commission PDV */}
+                {/* Commission Yayyam */}
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-red-500/80">Frais Plateforme</span>
                   <span className="text-sm font-black text-red-500">{formatAmount(Number(orderData.platform_fee ?? 0))}</span>

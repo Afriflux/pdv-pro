@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Mail } from 'lucide-react'
 import { PromotionData } from '@/lib/promotions/promotionType'
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector'
+import LocalPaymentBadges from '@/components/widgets/LocalPaymentBadges'
 
 // ----------------------------------------------------------------
 // Types
@@ -181,14 +182,16 @@ export function CheckoutForm({
   const promoDiscountAmount = appliedPromo?.discount ?? 0
   const subtotal           = Math.max(0, grossSubtotal - promoDiscountAmount)
 
-  const commissionRate = vendorPlan === 'pro' ? 0.06 : 0.08
-  const platformFee    = Math.round(subtotal * commissionRate)
-  
   const selectedZone   = deliveryZones?.find(z => z.id === selectedZoneId)
   const deliveryFee    = selectedZone?.fee ?? 0
 
-  const vendorAmount   = (subtotal - platformFee) + deliveryFee
   const total          = subtotal + deliveryFee
+
+  // 🔴 YAYYAM BUSINESS LOGIC : The commission is taken on the full total (Product + Delivery) 
+  const commissionRate = vendorPlan === 'pro' ? 0.06 : 0.08
+  const platformFee    = Math.round(total * commissionRate)
+  
+  const vendorAmount   = total - platformFee
 
   // ── Géolocalisation ───────────────────────────────────────────
   const detectLocation = () => {
@@ -323,10 +326,10 @@ export function CheckoutForm({
 
     try {
       // ── Lecture du Token d'Affiliation & Sub-ID ──
-      const refMatch = document.cookie.match(/(?:^|; )pdv_affiliate_ref=([^;]*)/)
+      const refMatch = document.cookie.match(/(?:^|; )yayyam_affiliate_ref=([^;]*)/)
       const affiliateToken = refMatch ? decodeURIComponent(refMatch[1]) : null
 
-      const subidMatch = document.cookie.match(/(?:^|; )pdv_affiliate_subid=([^;]*)/)
+      const subidMatch = document.cookie.match(/(?:^|; )yayyam_affiliate_subid=([^;]*)/)
       const affiliateSubid = subidMatch ? decodeURIComponent(subidMatch[1]) : null
 
       const body = {
@@ -476,7 +479,7 @@ export function CheckoutForm({
         </button>
 
         <p className="text-center text-[10px] text-gray-400 pb-2 uppercase tracking-widest font-bold">
-          🔒 Sécurisé par PDV PRO
+          🔒 Sécurisé par YAYYAM
         </p>
       </div>
     )
@@ -615,8 +618,10 @@ export function CheckoutForm({
             )}
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Sélectionnez une date <span className="text-red-500">*</span></label>
+              <label htmlFor="selectedDate" className="block text-xs font-medium text-gray-500 mb-1">Sélectionnez une date <span className="text-red-500">*</span></label>
               <input
+                id="selectedDate"
+                title="Sélectionnez une date"
                 type="date"
                 min={new Date(Date.now() + (product.store.coaching_min_notice || 0) * 3600000).toISOString().split('T')[0]}
                 value={selectedDate}
@@ -810,10 +815,12 @@ export function CheckoutForm({
             <div className="space-y-4">
               {deliveryZones && deliveryZones.length > 0 && (
                 <div>
-                  <label className="text-xs text-gray-500 font-medium mb-1 block">
+                  <label htmlFor="selectedZone" className="text-xs text-gray-500 font-medium mb-1 block">
                     Zone de livraison <span className="text-red-500">*</span>
                   </label>
                   <select
+                    id="selectedZone"
+                    title="Sélectionnez votre zone de livraison"
                     value={selectedZoneId}
                     onChange={(e) => setSelectedZoneId(e.target.value)}
                     className="w-full border border-gray-200 bg-white rounded-xl px-4 py-3 text-gray-800 focus:ring-2 outline-none text-sm transition appearance-none"
@@ -1058,17 +1065,12 @@ export function CheckoutForm({
 
         {/* Badges de Paiement Sécurisé Ouest-Africains */}
         <div className="mt-8 pt-6 border-t border-gray-100">
-          <p className="text-center text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
-            Garantie Acheteur PDV Pro
+          <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+            GARANTIE ACHETEUR YAYYAM
           </p>
-          <div className="flex flex-wrap justify-center gap-2 mb-3">
-            <span className="px-3 py-1 bg-[#15BEF0]/10 text-[#15BEF0] text-[10px] font-black rounded-md border border-[#15BEF0]/20">WAVE</span>
-            <span className="px-3 py-1 bg-[#FF7900]/10 text-[#FF7900] text-[10px] font-black rounded-md border border-[#FF7900]/20">ORANGE MONEY</span>
-            <span className="px-3 py-1 bg-green-500/10 text-green-600 text-[10px] font-black rounded-md border border-green-500/20">CINETPAY</span>
-            <span className="px-3 py-1 bg-gray-100 text-gray-600 text-[10px] font-black rounded-md border border-gray-200">MASTERCARD</span>
-          </div>
-          <p className="text-center text-[10px] text-gray-400 font-medium">
-            Vos fonds sont sécurisés par nos partenaires jusqu'à la livraison complète.
+          <LocalPaymentBadges />
+          <p className="text-center text-[10px] text-gray-400 font-medium mt-4">
+            Vos fonds sont sécurisés par nos partenaires jusqu'à la livraison.
           </p>
         </div>
       </form>

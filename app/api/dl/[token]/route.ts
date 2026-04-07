@@ -78,7 +78,7 @@ export async function GET(
   // Fichier Supabase Storage (chemin relatif) → signed URL 60 secondes
   const supabase = await createClient()
   const { data: signed, error } = await supabase.storage
-    .from('pdvpro-digital')
+    .from('yayyam-digital')
     .createSignedUrl(targetUrl, 60)
 
   if (error || !signed?.signedUrl) {

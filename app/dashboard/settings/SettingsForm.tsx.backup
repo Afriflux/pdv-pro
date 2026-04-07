@@ -80,7 +80,7 @@ interface SettingsFormProps {
 }
 
 const ACCENT_COLORS = [
-  '#0F7A60', // Emeraude PDV Pro
+  '#0F7A60', // Emeraude Yayyam
   '#f97316', '#ef4444', '#8b5cf6', '#3b82f6',
   '#10b981', '#f59e0b', '#ec4899', '#14b8a6',
 ]
@@ -576,7 +576,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
               rel="noopener noreferrer"
               className="text-sm font-bold text-[#0F7A60] hover:underline flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-emerald-100 shadow-sm"
             >
-              pdvpro.com/{store.slug} <ExternalLink size={14} />
+              yayyam.com/{store.slug} <ExternalLink size={14} />
             </a>
           </div>
         )}
@@ -644,7 +644,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
             <div className="bg-[#FAFAF7] rounded-3xl p-6 border border-line">
               <p className="text-xs font-black text-dust uppercase tracking-widest mb-4">Aperçu de votre adresse</p>
               <div className="flex items-center text-lg md:text-xl font-display font-medium text-ink overflow-hidden border-b border-emerald/20 pb-2">
-                <span className="text-dust opacity-50">pdvpro.com/</span>
+                <span className="text-dust opacity-50">yayyam.com/</span>
                 <span className="text-emerald font-black truncate">{slug}</span>
               </div>
               <p className="text-xs text-dust mt-4 leading-relaxed">
@@ -835,7 +835,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
                       </div>
                       <div>
                         <h3 className="text-2xl font-display font-black text-ink">{store?.name || 'Ma Boutique'}</h3>
-                        <p className="text-sm text-dust">Paiement sécurisé via PDV Pro</p>
+                        <p className="text-sm text-dust">Paiement sécurisé via Yayyam</p>
                       </div>
                     </div>
 
@@ -1040,7 +1040,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
               </p>
               <p className="text-xs text-emerald-800 leading-relaxed">
                 Conformément aux régulations financières, la vérification KYC est obligatoire pour retirer vos fonds. 
-                Elle garantit la sécurité des transactions sur PDV Pro.
+                Elle garantit la sécurité des transactions sur Yayyam.
               </p>
             </div>
 
@@ -1439,7 +1439,7 @@ export function SettingsForm({ store: initialStore, profile, userId }: SettingsF
             </div>
 
             <div className="bg-red-50 p-6 rounded-2xl border border-red-100 space-y-4">
-              <p className="text-sm font-bold text-red-800">Supprimer mon compte PDV Pro</p>
+              <p className="text-sm font-bold text-red-800">Supprimer mon compte Yayyam</p>
               <p className="text-xs text-red-700 leading-relaxed">
                 Cette action supprimera votre espace, tous vos produits, vos pages de vente et vos accès.
                 L&apos;argent restant dans votre portefeuille doit être retiré au préalable.

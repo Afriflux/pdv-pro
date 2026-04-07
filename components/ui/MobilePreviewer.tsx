@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { CheckCircle2 } from 'lucide-react'
+import Image from 'next/image'
 
 interface MobilePreviewerProps {
   name: string
@@ -12,7 +13,7 @@ interface MobilePreviewerProps {
   type: string
 }
 
-export function MobilePreviewer({ name, price, description, images, template, type }: MobilePreviewerProps) {
+export function MobilePreviewer({ name, price, description, images, template, type: _type }: MobilePreviewerProps) {
   // Rendu selon le template
   const renderTemplate = () => {
     switch (template) {
@@ -90,7 +91,9 @@ export function MobilePreviewer({ name, price, description, images, template, ty
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
                  {images.length > 0 && (
-                   <img src={images[0]} alt="Product" className="w-full h-32 object-cover rounded-xl mb-3" />
+                   <div className="relative w-full h-32 mb-3">
+                     <Image src={images[0]} alt="Product" fill className="object-cover rounded-xl" unoptimized />
+                   </div>
                  )}
                  <h2 className="font-bold text-gray-900 leading-tight">{name || 'Nom du produit'}</h2>
                  <p className="text-gold font-bold text-lg mt-1">{price ? `${price} FCFA` : '0 FCFA'}</p>
@@ -104,7 +107,7 @@ export function MobilePreviewer({ name, price, description, images, template, ty
                  </button>
               </div>
 
-              <div className="text-center text-[10px] text-gray-400 font-medium">Propulsé par PDV Pro</div>
+              <div className="text-center text-[10px] text-gray-400 font-medium">Propulsé par Yayyam</div>
             </div>
           </div>
         )

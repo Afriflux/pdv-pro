@@ -31,7 +31,7 @@ export async function sendWavePayout(params: {
         receive_amount: params.amount,
         mobile: params.phone,
         client_reference: params.reference,
-        name: 'PDV Pro - Retrait vendeur',
+        name: 'Yayyam - Retrait vendeur',
       }),
     })
 

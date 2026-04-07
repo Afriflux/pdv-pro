@@ -84,7 +84,7 @@ export default async function AuditCenterPage({
         target_id: 'VEND-089',
         details: { reason: "Suspension temporaire immédiate pour fraude répétée et litiges non-résolus." },
         created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-        admin: { email: 'support@pdvpro.sn', role: 'gestionnaire' }
+        admin: { email: 'support@yayyam.sn', role: 'gestionnaire' }
       },
       {
         id: 'demo-3',
@@ -104,7 +104,7 @@ export default async function AuditCenterPage({
         target_id: 'VEND-002',
         details: { reason: "La pièce d'identité est illisible et floue (photo abîmée)." },
         created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-        admin: { email: 'kyc@pdvpro.sn', role: 'support' }
+        admin: { email: 'kyc@yayyam.sn', role: 'support' }
       },
       {
         id: 'demo-5',
@@ -130,7 +130,7 @@ export default async function AuditCenterPage({
 
       if (periodFilter !== 'ALL') {
         const now = new Date()
-        let fromDate = new Date()
+        const fromDate = new Date()
         if (periodFilter === 'TODAY') fromDate.setHours(0, 0, 0, 0)
         else if (periodFilter === '7DAYS') fromDate.setDate(now.getDate() - 7)
         else if (periodFilter === '30DAYS') fromDate.setDate(now.getDate() - 30)

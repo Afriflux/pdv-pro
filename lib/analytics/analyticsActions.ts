@@ -1,7 +1,7 @@
 'use server'
 
 // ─── lib/analytics/analyticsActions.ts ───────────────────────────────────────
-// Service centralisé d'analytics PDV Pro
+// Service centralisé d'analytics Yayyam
 // Tous les vendeurs ont accès jusqu'à 90 jours (aucune restriction de plan)
 
 import { createClient } from '@/lib/supabase/server'

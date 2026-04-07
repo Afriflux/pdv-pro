@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Upload, X, Sparkles } from 'lucide-react'
 import ImportCSVPages from './ImportCSVPages'
-import AIBulkPagesGenerator from '@/components/dashboard/AIBulkPagesGenerator'
+import { UniversalAIGenerator } from '@/components/shared/ai/UniversalAIGenerator'
 
 type ActiveView = 'none' | 'csv' | 'ia'
 
@@ -81,7 +81,7 @@ export default function PagesHeaderImport() {
       {/* ── Section Générateur IA (conditionnelle) ── */}
       {activeView === 'ia' && (
         <div className="px-6 py-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          <AIBulkPagesGenerator onImportSuccess={refreshPage} />
+          <UniversalAIGenerator mode="bulk-pages" onImportSuccess={refreshPage} />
         </div>
       )}
     </>

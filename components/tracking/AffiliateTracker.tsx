@@ -20,9 +20,9 @@ export function AffiliateTracker() {
       expirationDate.setDate(expirationDate.getDate() + 30)
       const expires = `expires=${expirationDate.toUTCString()}`
 
-      document.cookie = `pdv_affiliate_ref=${encodeURIComponent(ref)}; ${expires}; path=/; SameSite=Lax`
+      document.cookie = `yayyam_affiliate_ref=${encodeURIComponent(ref)}; ${expires}; path=/; SameSite=Lax`
       if (source) {
-        document.cookie = `pdv_affiliate_subid=${encodeURIComponent(source)}; ${expires}; path=/; SameSite=Lax`
+        document.cookie = `yayyam_affiliate_subid=${encodeURIComponent(source)}; ${expires}; path=/; SameSite=Lax`
       }
 
       // 2. Ping API pour loguer le clic silencieusement

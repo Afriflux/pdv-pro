@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { AlertTriangle, Save } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 interface Props {
   initialActive: string

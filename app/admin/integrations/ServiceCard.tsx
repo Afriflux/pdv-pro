@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
-import { CheckCircle2, XCircle, Save, ExternalLink, Loader2, Eye, EyeOff, Activity, Copy, Clock, Beaker, AlertTriangle, TrendingUp, History } from 'lucide-react'
+import { toast } from '@/lib/toast'
+import { CheckCircle2, XCircle, Save, ExternalLink, Loader2, Eye, EyeOff, Activity, Clock, Beaker, AlertTriangle, TrendingUp, History } from 'lucide-react'
 import type { IntegrationService } from './config'
 import type { ConfigItem, ServiceStats } from './page'
 import WebhookSetupModal from './WebhookSetupModal'
@@ -67,7 +67,7 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
     }
 
     if (!hasChanges) {
-      toast.info('Veuillez remplir au moins un champ pour sauvegarder.')
+      toast('Veuillez remplir au moins un champ pour sauvegarder.')
       return
     }
 

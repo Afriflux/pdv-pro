@@ -1,9 +1,17 @@
-// @ts-nocheck
 'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { MessageSquare, CheckCircle2, Clock, Loader2, Send, Search, Filter, AlertCircle, Zap, BarChart3, Inbox } from 'lucide-react'
+import { MessageSquare, CheckCircle2, Clock, Loader2, Send, Search, AlertCircle, Zap, BarChart3, Inbox } from 'lucide-react'
+
+interface ProductQuestion {
+  id: string
+  product_id: string
+  question: string
+  answer: string | null
+  created_at: string
+  product_name: string
+}
 
 const QUICK_REPLIES = [
   "✅ Oui, cet article est bien en stock.",
@@ -12,7 +20,7 @@ const QUICK_REPLIES = [
 ]
 
 export default function QuestionsDashboard() {
-  const [questions, setQuestions] = useState<any[]>([])
+  const [questions, setQuestions] = useState<ProductQuestion[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, string>>({})
@@ -25,6 +33,7 @@ export default function QuestionsDashboard() {
 
   useEffect(() => {
     fetchQuestions()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchQuestions = async () => {
@@ -97,7 +106,7 @@ export default function QuestionsDashboard() {
     }
   }
 
-  const handleGenerateAI = async (q: any) => {
+  const handleGenerateAI = async (q: ProductQuestion) => {
     setGeneratingAi(q.id)
     try {
       const res = await fetch('/api/ai/generate-answer', {

@@ -37,7 +37,6 @@ export async function POST(req: NextRequest) {
 
     // Seulement confirmer si c'est un succès
     if (typeEvent !== 'sale_complete') {
-      console.log('[IPN PayTech] Événement ignoré:', typeEvent)
       return NextResponse.json({ ignored: true })
     }
 

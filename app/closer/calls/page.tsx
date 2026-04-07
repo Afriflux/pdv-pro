@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
-import { PhoneCall, Calendar, Search, Filter, MessageCircle, Target, Inbox, Clock } from 'lucide-react'
+
 import CloserCallsClient from './CloserCallsClient'
 
 export const dynamic = 'force-dynamic'

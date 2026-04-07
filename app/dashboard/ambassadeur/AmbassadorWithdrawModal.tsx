@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { X, Banknote, Phone, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 interface AmbassadorWithdrawModalProps {
   ambassadorId: string
@@ -191,7 +191,7 @@ export default function AmbassadorWithdrawModal({ ambassadorId, balance }: Ambas
               </button>
 
               <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest font-bold">
-                🔒 Sécurisé par PDV PRO
+                🔒 Sécurisé par YAYYAM
               </p>
             </form>
           </div>

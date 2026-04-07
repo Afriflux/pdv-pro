@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { MapPin, Plus, Edit2, Trash2, Power, PowerOff, Loader2, Activity, DollarSign, Settings2, ClockIcon, LayoutGrid, List, Search } from 'lucide-react'
 import { createDeliveryZone, updateDeliveryZone, toggleDeliveryZone, deleteDeliveryZone } from '@/lib/delivery/zoneActions'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 type DeliveryZone = {
   id: string

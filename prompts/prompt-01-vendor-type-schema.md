@@ -1,5 +1,5 @@
-=== CONTEXTE PDV Pro ===
-Projet : PDV Pro — SaaS e-commerce Afrique de l'Ouest
+=== CONTEXTE Yayyam ===
+Projet : Yayyam — SaaS e-commerce Afrique de l'Ouest
 Stack : Next.js 14 App Router · TypeScript strict · Supabase · Prisma · Tailwind
 Lancement : 01/04/2026 (J-5)
 Build actuel : 114 pages propres, 0 erreurs TS
@@ -31,7 +31,7 @@ enum VendorType {
 
 vendor_type VendorType @default(digital)
 
-IMPORTANT : Le default est digital (cashless first = politique PDV Pro).
+IMPORTANT : Le default est digital (cashless first = politique Yayyam).
 
 1.3. L'enum ProductType existe déjà (digital | physical | coaching). 
 Ne pas la toucher. Le champ type dans Product est déjà là et suffisant.

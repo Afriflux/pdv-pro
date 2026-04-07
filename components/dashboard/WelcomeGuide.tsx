@@ -47,12 +47,12 @@ export default function WelcomeGuide() {
   const [currentStep, setCurrentStep] = useState(0)
 
   useEffect(() => {
-    const hasSeen = localStorage.getItem('pdvpro_welcome_seen')
+    const hasSeen = localStorage.getItem('yayyampro_welcome_seen')
     if (!hasSeen) setIsOpen(true)
   }, [])
 
   const handleClose = () => {
-    localStorage.setItem('pdvpro_welcome_seen', 'true')
+    localStorage.setItem('yayyampro_welcome_seen', 'true')
     setIsOpen(false)
   }
 
@@ -69,7 +69,7 @@ export default function WelcomeGuide() {
           <div className="flex justify-between items-start mb-6">
             <div>
               <h2 className="text-2xl font-black text-[#1A1A1A]">
-                {currentStep === 0 ? 'Bienvenue sur PDV Pro !' : step.title}
+                {currentStep === 0 ? 'Bienvenue sur Yayyam !' : step.title}
               </h2>
               <p className="text-xs text-gray-400 mt-1">
                 Étape {currentStep + 1} sur {STEPS.length}

@@ -68,7 +68,7 @@ export async function GET(request: Request) {
     // Convertir en CSV
     const headers = [
       'ID Commande', 'Date', 'Acheteur', 'Telephone', 'Total (FCFA)', 
-      'Commission PDV', 'Revenu Vendeur', 'Moyen Paiement', 'Statut', 
+      'Commission Yayyam', 'Revenu Vendeur', 'Moyen Paiement', 'Statut', 
       'ID Boutique', 'Risque COD (Fraude)'
     ]
 
@@ -98,7 +98,7 @@ export async function GET(request: Request) {
       status: 200,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="PDVPro_Orders_${Date.now()}.csv"`,
+        'Content-Disposition': `attachment; filename="YayyamPro_Orders_${Date.now()}.csv"`,
       },
     })
   } catch (err: any) {

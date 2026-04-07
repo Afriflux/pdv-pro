@@ -93,7 +93,7 @@ export async function initiateWavePayment(
   const apiKey = process.env.WAVE_API_KEY
   if (!apiKey) throw new Error('[Wave] WAVE_API_KEY non configurée')
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
 
   const response = await fetch('https://api.wave.com/v1/checkout/sessions', {
     method: 'POST',
@@ -173,7 +173,7 @@ export async function initiateOrangeMoneyPayment(
   if (!apiKey) throw new Error('[Orange Money] ORANGE_MONEY_API_KEY non configurée')
   if (!merchantKey) throw new Error('[Orange Money] ORANGE_MONEY_MERCHANT_KEY non configuré')
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
 
   const response = await fetch(
     'https://api.orange.com/orange-money-webpay/dev/v1/webpayment',
@@ -287,7 +287,7 @@ export async function initiateCardPayment(
       transaction_id: intent.orderId,
       amount: intent.amount,
       currency: intent.currency,
-      description: `Commande PDV Pro #${intent.orderId}`,
+      description: `Commande Yayyam #${intent.orderId}`,
       return_url: intent.redirectUrl,
       notify_url: intent.webhookUrl,
       customer_phone_number: intent.customerPhone ?? '',

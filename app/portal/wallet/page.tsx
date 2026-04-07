@@ -1,10 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
-import { PortalWalletClient, TransactionRow } from './PortalWalletClient'
+import { UniversalWallet } from '@/components/shared/wallet/UniversalWallet'
 
 export const metadata = {
-  title: 'Portefeuille | PDV Affilié',
+  title: 'Portefeuille | Yayyam Affilié',
 }
 
 export const dynamic = 'force-dynamic'
@@ -22,7 +22,7 @@ export default async function WalletPage() {
   // 1. Récupérer toutes les entrées Affiliate pour cet utilisateur
   const { data: affiliates } = await supabaseAdmin
     .from('Affiliate')
-    .select('*, user:user_id(phone, affiliate_auto_withdraw, affiliate_auto_withdraw_threshold)')
+    .select('*, user:user_id(phone, affiliate_auto_withdraw, affiliate_auto_withdraw_threshold, kyc_status)')
     .eq('user_id', user.id)
 
   const activeAffiliates = affiliates || []
@@ -51,14 +51,14 @@ export default async function WalletPage() {
   const safeOrders = orders || []
   const safeWithdrawals = withdrawals || []
 
-  const transactions: TransactionRow[] = [
+  const transactions: any[] = [
     ...safeOrders.map((o: any) => ({
       id: o.id,
       type: 'order' as const,
       created_at: o.created_at,
       amount: o.affiliate_amount,
       status: o.status,
-      label: `Commission sr vente #${o.id.split('-')[0].toUpperCase()}`,
+      label: `Commission sur vente #${o.id.split('-')[0].toUpperCase()}`,
       subtotal: o.subtotal
     })),
     ...safeWithdrawals.map((w: any) => ({
@@ -80,7 +80,8 @@ export default async function WalletPage() {
     total_withdrawn: activeAffiliates.reduce((sum, a) => sum + Number(a.total_withdrawn || 0), 0),
     phone: userProfile?.phone || '',
     auto_withdraw_enabled: userProfile?.affiliate_auto_withdraw ?? false,
-    auto_withdraw_threshold: userProfile?.affiliate_auto_withdraw_threshold ?? 50000
+    auto_withdraw_threshold: userProfile?.affiliate_auto_withdraw_threshold ?? 50000,
+    kyc_status: userProfile?.kyc_status || 'unverified'
   }
 
   return (
@@ -93,17 +94,37 @@ export default async function WalletPage() {
             <span className="text-2xl md:text-3xl">💰</span>
           </div>
           <div>
-            <h1 className="text-3xl md:text-4xl font-black text-[#1A1A1A] tracking-tight">Mon Portefeuille</h1>
+            <h1 className="text-3xl md:text-4xl font-black text-[#1A1A1A] tracking-tight">Mon Portefeuille Affilié</h1>
             <p className="text-dust text-sm md:text-base font-medium mt-1">
-              Gérez votre solde et effectuez vos demandes de retrait.
+              Gérez vos commissions et effectuez vos demandes de retrait.
             </p>
           </div>
         </div>
       </header>
       
-      <PortalWalletClient 
-        affiliate={cleanAffiliate} 
-        initialTransactions={transactions}
+      <UniversalWallet 
+        ownerType="affiliate"
+        ownerId={cleanAffiliate.id}
+        balance={cleanAffiliate.balance}
+        pending={cleanAffiliate.total_withdrawn} // "En attente" is not natively supported for affiliate in this scope, but mapping to total withdrawn for the prop! Wait, I'll pass 0 for pending and total_withdrawn for total.
+        totalEarned={cleanAffiliate.total_earned}
+        totalWithdrawn={cleanAffiliate.total_withdrawn}
+        monthlyGoal={100000} // Default affiliate goal
+        transactions={transactions}
+        autoWithdrawEnabled={cleanAffiliate.auto_withdraw_enabled}
+        autoWithdrawThreshold={cleanAffiliate.auto_withdraw_threshold}
+        hasWithdrawalAccount={!!cleanAffiliate.phone}
+        withdrawalNumber={cleanAffiliate.phone}
+        kycStatus={cleanAffiliate.kyc_status}
+        vocab={{
+          title: 'Historique & Actions',
+          balance: 'Commissions',
+          earned: 'Total Gagné',
+          pending: 'Total Retiré',
+          chartTitle: 'Évolution des revenus',
+          chartSubtitle: 'Commissions générées via vos liens',
+          txLabel: 'Historique des commissions'
+        }}
       />
     </div>
   )

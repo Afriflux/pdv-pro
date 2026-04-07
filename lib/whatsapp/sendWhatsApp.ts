@@ -56,11 +56,11 @@ Bonjour ${buyerName},
 Votre commande *${productName}* de *${amount.toLocaleString('fr-FR')} FCFA* a bien été reçue par ${vendorName}.
 
 📦 Réf : #${ref}
-📍 Suivez votre commande : https://pdvpro.com/track?ref=${orderId}
+📍 Suivez votre commande : https://yayyam.com/track?ref=${orderId}
 
 Le vendeur vous contactera pour la livraison.
 
-Merci d'avoir choisi PDV Pro ! 🙏`
+Merci d'avoir choisi Yayyam ! 🙏`
 }
 
 export function msgVendorNewOrder({ productName, buyerName, buyerPhone, amount, vendorAmount, address }: {
@@ -73,7 +73,7 @@ Produit : *${productName}*
 Montant : *${amount.toLocaleString('fr-FR')} FCFA*
 Votre part : *${vendorAmount.toLocaleString('fr-FR')} FCFA*
 ${address ? `📍 Livraison : ${address}\n` : ''}
-👉 Gérez vos commandes : https://pdvpro.com/dashboard/orders`
+👉 Gérez vos commandes : https://yayyam.com/dashboard/orders`
 }
 
 export function msgDigitalDelivery({ buyerName, productName, downloadUrl, expiresInDays }: {
@@ -90,7 +90,7 @@ Votre achat *${productName}* est disponible au téléchargement :
 ⏰ Ce lien est valable ${expiresInDays} jours.
 
 Merci pour votre confiance ! 🙏
-— PDV Pro`
+— Yayyam`
 }
 
 export function msgOrderShipped({ buyerName, productName, vendorName, orderId }: {
@@ -106,7 +106,7 @@ Bonne nouvelle, votre livraison pour *${productName}* est officiellement expédi
 Un livreur vous contactera très bientôt. Tenez-vous prêt !
 Si vous avez un empêchement, n'hésitez pas à nous le signaler.
 
-Suivi : https://pdvpro.com/track?ref=${orderId}
+Suivi : https://yayyam.com/track?ref=${orderId}
 À très vite ! 🙏`
 }
 
@@ -118,7 +118,7 @@ export function msgOrderDelivered({ buyerName, productName, vendorName }: {
 Bonjour ${buyerName},
 Nous vous confirmons la bonne réception de votre commande *${productName}*.
 
-Merci d'avoir fait confiance à ${vendorName} et à PDV Pro !
+Merci d'avoir fait confiance à ${vendorName} et à Yayyam !
 Si vous aimez le produit, n'hésitez pas à laisser un retour.
 
 À bientôt pour de nouvelles découvertes ! 🛍️`
@@ -133,7 +133,7 @@ Bonjour ${buyerName},
 Votre demande concernant *${productName}* a été annulée.
 Si c'est une erreur ou si vous souhaitez reprogrammer, vous pouvez nous recontacter.
 
-— L'équipe PDV Pro`
+— L'équipe Yayyam`
 }
 
 export function msgVendorCodReminder(params: {
@@ -159,7 +159,7 @@ export function msgWithdrawalApproved(params: {
 Votre demande de retrait de *${params.amount.toLocaleString('fr-FR')} FCFA* vers ${params.method} a été traitée avec succès !
 Les fonds seront disponibles sur votre compte d'ici peu.
 
-_L'équipe PDV Pro_ 💰`
+_L'équipe Yayyam Pro_ 💰`
 }
 
 export function msgWithdrawalFailed(params: {
@@ -168,9 +168,9 @@ export function msgWithdrawalFailed(params: {
   return `❌ *Échec du Retrait*
 
 Le transfert de *${params.amount.toLocaleString('fr-FR')} FCFA* a échoué (problème opérateur).
-Le montant a été recrédité sur votre solde PDV Pro.
+Le montant a été recrédité sur votre solde Yayyam.
 
-_Support PDV Pro_`
+_Support Yayyam Pro_`
 }
 
 export function msgWithdrawalRejected(params: {
@@ -183,16 +183,16 @@ Votre demande de retrait de *${params.amount.toLocaleString('fr-FR')} FCFA* a é
 Raison : ${params.reason}
 
 Le montant est de nouveau disponible sur votre solde.
-_Support PDV Pro_`
+_Support Yayyam Pro_`
 }
 
 export function msgMasterclassReminder(params: {
   vendorName: string
   academyLink: string
 }) {
-  return `🚀 *Salut ${params.vendorName}, bienvenue sur PDV Pro !*
+  return `🚀 *Salut ${params.vendorName}, bienvenue sur Yayyam !*
 
-Nous avons remarqué que tu n'as pas encore jeté un œil à l'Académie PDV Pro. 
+Nous avons remarqué que tu n'as pas encore jeté un œil à l'Académie Yayyam. 
 Des stratégies inédites t'y attendent (gratuitement) pour lancer ta boutique et exploser tes ventes en Afrique.
 
 👉 Découvre les secrets du Top 1% ici : 
@@ -207,7 +207,7 @@ export function msgVendorEmptyStore(params: {
 }) {
   return `🛑 *C'est dommage de t'arrêter en si bon chemin...*
 
-Salut ${params.vendorName}, l'équipe PDV Pro au rapport ! 🫡
+Salut ${params.vendorName}, l'équipe Yayyam au rapport ! 🫡
 
 Il ne te manque qu'une seule étape pour encaisser ta première vente sur Wave ou Orange Money : **Publier ton premier produit.**
 Que ce soit un Ebook, un vêtement, ou une session de coaching, ça prend littéralement 30 secondes.

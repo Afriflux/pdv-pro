@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { createClient } from '@/lib/supabase/server'
+import { chargeForAI, AI_PRICING } from '@/lib/ai/ai-billing'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || '',
@@ -7,10 +9,24 @@ const anthropic = new Anthropic({
 
 export async function POST(req: Request) {
   try {
-    const { description, category, market } = await req.json()
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+    
+    // Pour simplifier, on suppose que l'ID user = ID wallet ou qu'on recupère le storeId depuis le body (ou user.id)
+    const { description, category, market, walletId } = await req.json()
+    // Si vous utilisez WalletId === UserId, on peut utiliser user.id. Modifiez selon votre structure.
+    const targetWallet = walletId || user.id
 
     if (!description) {
       return NextResponse.json({ error: 'Description manquante' }, { status: 400 })
+    }
+
+    // 💰 Facturation Pay-as-you-go. (Ex: 25 FCFA pour cette génération)
+    try {
+      await chargeForAI('vendor', targetWallet, AI_PRICING.COPYWRITING_LONG, 'Génération Fiche Produit IA')
+    } catch (billingError: any) {
+      return NextResponse.json({ error: billingError.message }, { status: 402 }) // 402 Payment Required
     }
 
     if (!process.env.ANTHROPIC_API_KEY) {

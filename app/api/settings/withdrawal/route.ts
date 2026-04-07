@@ -92,11 +92,6 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
-    console.log(
-      `[settings/withdrawal] Mis à jour → méthode=${withdrawalMethod}` +
-      ` numéro=${withdrawalNumber.trim()} (store=${store.id})`
-    )
-
     return NextResponse.json({ success: true }, { status: 200 })
 
   } catch (error: unknown) {

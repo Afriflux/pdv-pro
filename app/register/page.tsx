@@ -26,7 +26,7 @@ export default function RegisterPage({ searchParams }: RegisterPageProps) {
   const errorMsg = baseMsg ? (fullMsg ? `${baseMsg} Détail : ${fullMsg}` : baseMsg) : null
 
   // ── Animations ──
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -34,7 +34,7 @@ export default function RegisterPage({ searchParams }: RegisterPageProps) {
     }
   }
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { opacity: 0, y: 20, filter: 'blur(5px)' },
     show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
   }
@@ -86,7 +86,7 @@ export default function RegisterPage({ searchParams }: RegisterPageProps) {
         {/* Entête Carte */}
         <motion.div variants={itemVariants} className="text-center mb-8">
           <Link href="/" className="inline-block text-4xl font-display font-black text-white hover:opacity-80 transition drop-shadow-sm tracking-tight mb-4 group">
-            PDV<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-emerald-500 drop-shadow-md">Pro</span>
+            Yayyam<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-emerald-500 drop-shadow-md">Pro</span>
             <div className="h-[2px] w-0 group-hover:w-full bg-emerald-400 transition-all duration-500 mx-auto mt-1 rounded-full"></div>
           </Link>
           <h1 className="font-display font-black text-3xl text-white mb-2 tracking-tight">Le Futur du Commerce</h1>

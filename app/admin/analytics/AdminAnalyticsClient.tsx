@@ -24,10 +24,10 @@ export default function AdminAnalyticsClient({ data }: Props) {
       icon: TrendingUp,
       color: 'text-indigo-600',
       bg: 'bg-indigo-50',
-      description: 'Total des ventes validées sur PDV Pro'
+      description: 'Total des ventes validées sur Yayyam'
     },
     {
-      label: 'Commissions PDV Pro',
+      label: 'Commissions Yayyam',
       value: `${data.totalPlatformFees.toLocaleString('fr-FR')} FCFA`,
       icon: DollarSign,
       color: 'text-orange-600',

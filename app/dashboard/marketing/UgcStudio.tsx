@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
@@ -27,10 +26,10 @@ export default function UgcStudio({ storeName }: { storeName: string }) {
     gradient.addColorStop(0, themeColor)
     
     // Create a lighter/darker version of the theme color for the gradient
-    let hex = themeColor.replace('#', '')
-    let r = parseInt(hex.substring(0,2), 16)
-    let g = parseInt(hex.substring(2,4), 16)
-    let b = parseInt(hex.substring(4,6), 16)
+    const hex = themeColor.replace('#', '')
+    const r = parseInt(hex.substring(0,2), 16)
+    const g = parseInt(hex.substring(2,4), 16)
+    const b = parseInt(hex.substring(4,6), 16)
     gradient.addColorStop(1, `rgba(${Math.max(0, r-40)}, ${Math.max(0, g-40)}, ${Math.max(0, b-40)}, 1)`)
 
     ctx.fillStyle = gradient
@@ -73,7 +72,7 @@ export default function UgcStudio({ storeName }: { storeName: string }) {
       let rot = Math.PI / 2 * 3
       let x = cx
       let y = cy
-      let step = Math.PI / spikes
+      const step = Math.PI / spikes
 
       ctx.beginPath()
       ctx.moveTo(cx, cy - outerRadius)
@@ -166,6 +165,7 @@ export default function UgcStudio({ storeName }: { storeName: string }) {
   useEffect(() => {
     // Small delay to ensure fonts load (if using custom web fonts)
     setTimeout(drawCanvas, 100)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customerName, review, rating, themeColor, storeName])
 
   const handleDownload = () => {

@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
-import { WalletDashboardClient, TransactionRow } from '@/app/dashboard/wallet/WalletDashboardClient'
+import { UniversalWallet } from '@/components/shared/wallet/UniversalWallet'
+
 export const dynamic = 'force-dynamic'
 
 export default async function CloserWalletPage() {
@@ -34,7 +35,8 @@ export default async function CloserWalletPage() {
       withdrawal_name: true,
       name: true,
       closer_auto_withdraw: true,
-      closer_auto_withdraw_threshold: true
+      closer_auto_withdraw_threshold: true,
+      kyc_status: true
     }
   })
 
@@ -74,9 +76,21 @@ export default async function CloserWalletPage() {
   const startOfMonth = new Date()
   startOfMonth.setDate(1)
   startOfMonth.setHours(0, 0, 0, 0)
+  
+  const transactions = [
+    ...closedLeads.map(lead => ({
+      id: lead.id,
+      type: 'order' as const,
+      created_at: lead.closed_at ? lead.closed_at.toISOString() : (lead.updated_at?.toISOString() || new Date().toISOString()),
+      amount: lead.commission_amount || ((lead.Product?.price || 0) * 0.1),
+      status: 'paid',
+      label: `Closing: ${lead.Store?.name || lead.name}`,
+    })),
+    ...withdrawalTransactions
+  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
   return (
-    <div className="w-full space-y-6 lg:space-y-8 animate-in fade-in duration-500 pb-12 w-full max-w-[1400px] mx-auto py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="w-full space-y-6 lg:space-y-8 animate-in fade-in duration-500 pb-12 max-w-[1400px] mx-auto py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
       {/* ── En-tête (Style Harmonisé) ── */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/80 backdrop-blur-2xl p-6 md:p-8 rounded-[32px] border border-white shadow-2xl shadow-[#0F7A60]/5 sticky top-2 z-20 overflow-hidden group mb-4">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#0F7A60]/10 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none transition-transform group-hover:scale-110 duration-700"></div>
@@ -85,7 +99,7 @@ export default async function CloserWalletPage() {
             <span className="text-2xl md:text-3xl">💰</span>
           </div>
           <div>
-            <h1 className="text-3xl md:text-4xl font-black text-[#1A1A1A] tracking-tight">Mon Portefeuille</h1>
+            <h1 className="text-3xl md:text-4xl font-black text-[#1A1A1A] tracking-tight">Mon Portefeuille Closer</h1>
             <p className="text-dust text-sm md:text-base font-medium mt-1">
               Gérez vos commissions de closing et vos retraits.
             </p>
@@ -93,38 +107,29 @@ export default async function CloserWalletPage() {
         </div>
       </header>
 
-      <WalletDashboardClient 
+      <UniversalWallet 
+        ownerType="closer"
+        ownerId={user.id}
         balance={balance}
         pending={pending}
         totalEarned={totalEarned}
-        initialTransactions={[
-          ...closedLeads.map(lead => ({
-            id: lead.id,
-            type: 'order' as const,
-            created_at: lead.closed_at ? lead.closed_at.toISOString() : lead.updated_at.toISOString(),
-            amount: lead.commission_amount || ((lead.Product?.price || 0) * 0.1),
-            status: 'paid',
-            label: lead.Store?.name || lead.name,
-            subtotal: lead.Product?.price || 0,
-            platform_fee: 0,
-          })),
-          ...withdrawalTransactions
-        ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) as TransactionRow[]}
+        transactions={transactions}
         autoWithdrawEnabled={profile?.closer_auto_withdraw ?? false}
         autoWithdrawThreshold={profile?.closer_auto_withdraw_threshold ?? 50000}
         monthlyGoal={1000000}
-        walletId={user.id}
         hasWithdrawalAccount={!!profile?.withdrawal_number}
-        canWithdraw={balance > 0}
-        methodLabel={
-          profile?.withdrawal_method === 'wave' ? 'Wave Mobile Money' :
-          profile?.withdrawal_method === 'orange_money' ? 'Orange Money' : 'Compte Mobile'
-        }
-        withdrawalMethod={profile?.withdrawal_method || ''}
+        withdrawalMethod={profile?.withdrawal_method || 'wave'}
         withdrawalNumber={profile?.withdrawal_number || ''}
-        withdrawalName={profile?.withdrawal_name || profile?.name || ''}
-        storeId={user.id}
-        targetContext="closer"
+        kycStatus={profile?.kyc_status || 'unverified'}
+        vocab={{
+          title: 'Actions & Configuration',
+          balance: 'Commissions Dispo.',
+          earned: 'Total Gagné',
+          pending: 'En attente',
+          chartTitle: 'Vos Performances de Closing',
+          chartSubtitle: 'Commissions validées',
+          txLabel: 'Historique de commissionnement'
+        }}
       />
     </div>
   )

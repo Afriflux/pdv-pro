@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import {
   Area, AreaChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, CartesianGrid,
-  PieChart, Pie, Cell, Legend
+  PieChart, Pie, Cell
 } from 'recharts'
 
 // ─── Double Chart (Volume vs Revenus) ───────────────────────────────────────────────────────────

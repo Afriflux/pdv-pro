@@ -174,8 +174,8 @@ export async function sendTransactionalEmail(params: BrevoEmailParams): Promise<
       to: params.to,
       subject: params.subject,
       sender: params.sender ?? {
-        name: 'PDV Pro',
-        email: 'noreply@pdvpro.com',
+        name: 'Yayyam',
+        email: 'noreply@yayyam.com',
       },
     }
 
@@ -478,7 +478,7 @@ export async function getListStats(listId: number): Promise<BrevoListStats | nul
   }
 }
 
-// ─── 10. Emails Spécifiques PDV Pro ──────────────────────────────────────────
+// ─── 10. Emails Spécifiques Yayyam ──────────────────────────────────────────
 
 export async function sendWelcomeEmail(email: string, storeName: string): Promise<boolean> {
   const apiKey = await getBrevoApiKey()
@@ -488,10 +488,10 @@ export async function sendWelcomeEmail(email: string, storeName: string): Promis
   }
   return sendTransactionalEmail({
     to: [{ email }],
-    subject: `Bienvenue sur PDV Pro, ${storeName} !`,
+    subject: `Bienvenue sur Yayyam, ${storeName} !`,
     htmlContent: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2>Bienvenue sur PDV Pro ! 🎉</h2>
+        <h2>Bienvenue sur Yayyam ! 🎉</h2>
         <p>Félicitations pour la création de votre boutique <strong>${storeName}</strong> !</p>
         <p>Voici 3 étapes rapides pour bien démarrer :</p>
         <ul style="list-style: none; padding-left: 0;">
@@ -500,7 +500,7 @@ export async function sendWelcomeEmail(email: string, storeName: string): Promis
           <li style="margin-bottom: 10px;">💰 <strong>Attendez vos premières ventes !</strong> : Encaissez vos revenus directement.</li>
         </ul>
         <p style="margin-top: 30px;">
-          <a href="https://pdvpro-sn.netlify.app/dashboard" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">Accéder à mon tableau de bord</a>
+          <a href="https://yayyam-sn.netlify.app/dashboard" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">Accéder à mon tableau de bord</a>
         </p>
       </div>
     `
@@ -515,7 +515,7 @@ export async function sendFirstSaleEmail(email: string, productName: string, amo
   }
   return sendTransactionalEmail({
     to: [{ email }],
-    subject: "Félicitations ! Votre première vente sur PDV Pro",
+    subject: "Félicitations ! Votre première vente sur Yayyam",
     htmlContent: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h2>Vous avez réalisé votre première vente ! 🎉</h2>
@@ -525,7 +525,7 @@ export async function sendFirstSaleEmail(email: string, productName: string, amo
           <li><strong>Montant :</strong> ${amount.toLocaleString('fr-FR')} F</li>
         </ul>
         <p style="margin-top: 30px;">
-          <a href="https://pdvpro-sn.netlify.app/dashboard/orders" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">Gérer mes commandes</a>
+          <a href="https://yayyam-sn.netlify.app/dashboard/orders" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">Gérer mes commandes</a>
         </p>
       </div>
     `

@@ -1,5 +1,5 @@
 // ─── lib/brevo/email-templates.ts ───────────────────────────────────────────
-// 7 templates HTML pour les emails transactionnels PDV Pro
+// 7 templates HTML pour les emails transactionnels Yayyam
 // Charte : fond #FAFAF7, header émeraude #0F7A60, boutons CTA #0F7A60, texte #1A1A1A
 // Tous les styles sont inline (email-safe)
 
@@ -24,7 +24,7 @@ export interface VendorStats {
 // ─── Helper : structure HTML commune ─────────────────────────────────────────
 
 /**
- * Enveloppe commune à tous les emails PDV Pro.
+ * Enveloppe commune à tous les emails Yayyam.
  * Applique la charte graphique de manière cohérente.
  */
 function emailWrapper(bodyContent: string, preheaderText = ''): string {
@@ -33,7 +33,7 @@ function emailWrapper(bodyContent: string, preheaderText = ''): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PDV Pro</title>
+  <title>Yayyam</title>
 </head>
 <body style="margin:0;padding:0;background-color:#FAFAF7;font-family:Arial,sans-serif;color:#1A1A1A;">
   ${preheaderText ? `<div style="display:none;font-size:1px;color:#FAFAF7;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${preheaderText}</div>` : ''}
@@ -42,10 +42,10 @@ function emailWrapper(bodyContent: string, preheaderText = ''): string {
       <td align="center" style="padding:32px 16px;">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;background-color:#FFFFFF;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
 
-          <!-- HEADER PDV Pro -->
+          <!-- HEADER Yayyam -->
           <tr>
             <td style="background-color:#0F7A60;padding:28px 32px;text-align:center;">
-              <h1 style="margin:0;font-size:26px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;">PDV Pro</h1>
+              <h1 style="margin:0;font-size:26px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;">Yayyam</h1>
               <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,0.75);letter-spacing:1px;text-transform:uppercase;">Plateforme de vente africaine</p>
             </td>
           </tr>
@@ -61,12 +61,12 @@ function emailWrapper(bodyContent: string, preheaderText = ''): string {
           <tr>
             <td style="background-color:#F4F4F0;padding:20px 32px;text-align:center;border-top:1px solid #E8E8E4;">
               <p style="margin:0;font-size:12px;color:#888888;">
-                © PDV Pro · Tous droits réservés
+                © Yayyam · Tous droits réservés
               </p>
               <p style="margin:6px 0 0;font-size:11px;color:#AAAAAA;">
-                Vous recevez cet email car vous avez un compte PDV Pro.
+                Vous recevez cet email car vous avez un compte Yayyam.
                 <br/>
-                <a href="https://pdvpro.com/unsubscribe" style="color:#0F7A60;text-decoration:underline;">Se désabonner</a>
+                <a href="https://yayyam.com/unsubscribe" style="color:#0F7A60;text-decoration:underline;">Se désabonner</a>
               </p>
             </td>
           </tr>
@@ -80,7 +80,7 @@ function emailWrapper(bodyContent: string, preheaderText = ''): string {
 }
 
 /**
- * Génère un bouton CTA email-safe aux couleurs PDV Pro.
+ * Génère un bouton CTA email-safe aux couleurs Yayyam.
  */
 function ctaButton(label: string, url: string): string {
   return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0;">
@@ -135,10 +135,10 @@ function divider(): string {
  * @param vendorName - Prénom/nom du vendeur
  */
 export function welcomeVendorEmail(storeName: string, vendorName: string): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
 
   const body = `
-    <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F7A60;">Bienvenue sur PDV Pro ! 🎉</h2>
+    <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F7A60;">Bienvenue sur Yayyam ! 🎉</h2>
     <p style="margin:0 0 20px;font-size:15px;color:#444444;line-height:1.6;">
       Bonjour <strong>${vendorName}</strong>,
     </p>
@@ -177,20 +177,20 @@ export function welcomeVendorEmail(storeName: string, vendorName: string): strin
  * @param buyerName - Prénom/nom de l'acheteur
  */
 export function welcomeBuyerEmail(buyerName: string): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
 
   const body = `
-    <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F7A60;">Bienvenue sur PDV Pro ! 👋</h2>
+    <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F7A60;">Bienvenue sur Yayyam ! 👋</h2>
     <p style="margin:0 0 20px;font-size:15px;color:#444444;line-height:1.6;">
       Bonjour <strong>${buyerName}</strong>,
     </p>
     <p style="margin:0 0 20px;font-size:15px;color:#444444;line-height:1.6;">
-      Votre compte PDV Pro est actif. Découvrez des centaines de boutiques africaines
+      Votre compte Yayyam est actif. Découvrez des centaines de boutiques africaines
       proposant des produits physiques, formations, et bien plus encore.
     </p>
 
     <div style="background-color:#FDF9F0;border-left:4px solid #C9A84C;border-radius:4px;padding:16px 20px;margin:0 0 24px;">
-      <p style="margin:0;font-size:14px;color:#C9A84C;font-weight:700;">🛍️ Pourquoi choisir PDV Pro ?</p>
+      <p style="margin:0;font-size:14px;color:#C9A84C;font-weight:700;">🛍️ Pourquoi choisir Yayyam ?</p>
       <ul style="margin:10px 0 0;padding-left:20px;font-size:14px;color:#444444;line-height:1.8;">
         <li>Paiement sécurisé — Wave, Orange Money, carte bancaire</li>
         <li>Livraison digitale instantanée</li>
@@ -208,7 +208,7 @@ export function welcomeBuyerEmail(buyerName: string): string {
     </p>
   `
 
-  return emailWrapper(body, 'Votre compte PDV Pro est prêt — Découvrez les boutiques africaines !')
+  return emailWrapper(body, 'Votre compte Yayyam est prêt — Découvrez les boutiques africaines !')
 }
 
 // ─── 3. Email de confirmation de commande — Acheteur ─────────────────────────
@@ -218,7 +218,7 @@ export function welcomeBuyerEmail(buyerName: string): string {
  * @param order - Détails de la commande
  */
 export function orderConfirmationEmail(order: OrderInfo, telegramGroupName?: string): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
 
   // Formatage du montant en FCFA
   const formattedTotal = new Intl.NumberFormat('fr-FR').format(order.total)
@@ -332,7 +332,7 @@ export function orderShippedEmail(order: OrderInfo): string {
     </p>
 
     <div style="background-color:#FFFBF0;border-radius:8px;padding:16px 20px;margin:0 0 24px;border:1px solid #F0E8D0;">
-      <p style="margin:0;font-size:13px;color:#C9A84C;font-weight:700;">💡 Conseil PDV Pro</p>
+      <p style="margin:0;font-size:13px;color:#C9A84C;font-weight:700;">💡 Conseil Yayyam</p>
       <p style="margin:6px 0 0;font-size:13px;color:#666666;line-height:1.6;">
         Inspectez votre colis avant de confirmer la livraison. En cas de problème, signalez-le immédiatement.
       </p>
@@ -356,7 +356,7 @@ export function orderShippedEmail(order: OrderInfo): string {
  * @param vendorName - Prénom/nom du vendeur
  */
 export function newOrderVendorEmail(order: OrderInfo, vendorName: string): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
   const formattedTotal = new Intl.NumberFormat('fr-FR').format(order.total)
 
   const body = `
@@ -407,7 +407,7 @@ export function newOrderVendorEmail(order: OrderInfo, vendorName: string): strin
     ${divider()}
 
     <p style="margin:0;font-size:13px;color:#888888;line-height:1.6;">
-      Gérez toutes vos commandes depuis votre tableau de bord PDV Pro.
+      Gérez toutes vos commandes depuis votre tableau de bord Yayyam.
     </p>
   `
 
@@ -469,7 +469,7 @@ export function abandonedCartEmail(
  * @param stats      - Statistiques de la semaine écoulée
  */
 export function weeklyReportEmail(vendorName: string, stats: VendorStats): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
   const formattedRevenue = new Intl.NumberFormat('fr-FR').format(stats.totalRevenue)
 
   // Calcul du taux de croissance — fictif pour affichage (sera calculé côté serveur)
@@ -525,7 +525,7 @@ export function weeklyReportEmail(vendorName: string, stats: VendorStats): strin
     ${divider()}
 
     <p style="margin:0;font-size:13px;color:#888888;line-height:1.6;">
-      Ce rapport est envoyé chaque semaine automatiquement par PDV Pro.
+      Ce rapport est envoyé chaque semaine automatiquement par Yayyam.
     </p>
   `
 
@@ -535,7 +535,7 @@ export function weeklyReportEmail(vendorName: string, stats: VendorStats): strin
 // ─── 8. Emails Automations ──────────────────────────────────────────────
 
 export function vendorEmptyStoreEmail(vendorName: string): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
   const body = `
     <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F7A60;">C'est dommage de s'arrêter là... 🚀</h2>
     <p style="margin:0 0 20px;font-size:15px;color:#444444;line-height:1.6;">
@@ -544,11 +544,11 @@ export function vendorEmptyStoreEmail(vendorName: string): string {
     </p>
     ${ctaButton('Ajouter un produit', `${appUrl}/dashboard/products/new`)}
   `
-  return emailWrapper(body, "Votre boutique PDV Pro attend son premier produit !")
+  return emailWrapper(body, "Votre boutique Yayyam attend son premier produit !")
 }
 
 export function vendorMasterclassReminderEmail(vendorName: string): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
   const body = `
     <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F7A60;">Arrêtez de perdre des ventes 🛑</h2>
     <p style="margin:0 0 20px;font-size:15px;color:#444444;line-height:1.6;">
@@ -557,5 +557,5 @@ export function vendorMasterclassReminderEmail(vendorName: string): string {
     </p>
     ${ctaButton('Voir la formation', `${appUrl}/dashboard/academy`)}
   `
-  return emailWrapper(body, "Découvrez les méthodes pour vendre plus sur PDV Pro.")
+  return emailWrapper(body, "Découvrez les méthodes pour vendre plus sur Yayyam.")
 }

@@ -7,7 +7,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Upload, X, Sparkles } from 'lucide-react'
 import ImportCSV from './ImportCSV'
-import AIBulkGenerator from '@/components/dashboard/AIBulkGenerator'
+import { UniversalAIGenerator } from '@/components/shared/ai/UniversalAIGenerator'
 
 type ActiveView = 'none' | 'csv' | 'ia'
 
@@ -17,7 +17,7 @@ export default function ProductsHeaderImport() {
   return (
     <>
       {/* ── Header ── */}
-      <header className="bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 shadow-sm px-6 py-5 sticky top-0 z-20">
+      <header className="bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 shadow-sm px-6 py-5 sticky top-14 lg:top-0 z-20">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-0.5">
@@ -77,7 +77,9 @@ export default function ProductsHeaderImport() {
       {/* ── Section Générateur IA (conditionnelle) ── */}
       {activeView === 'ia' && (
         <div className="px-6 py-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          <AIBulkGenerator onImportSuccess={() => {
+          <UniversalAIGenerator 
+            mode="bulk-products" 
+            onImportSuccess={() => {
             // Optionnel : on peut fermer la vue après un import réussi
             // setActiveView('none')
             // Rechargement manuel de la liste dans le parent via router.refresh 

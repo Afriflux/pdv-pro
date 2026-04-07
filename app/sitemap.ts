@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: products } = await supabase.from('Product').select('id, updated_at, store:Store(slug)')
 
   const storeUrls = (stores || []).map(store => ({
-    url: `https://pdvpro.com/${store.slug}`,
+    url: `https://yayyam.com/${store.slug}`,
     lastModified: store.updated_at ? new Date(store.updated_at) : new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.8,
@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }).map(product => {
     const s = Array.isArray(product.store) ? product.store[0] : product.store
     return {
-      url: `https://pdvpro.com/p/${s.slug}/${product.id}`,
+      url: `https://yayyam.com/p/${s.slug}/${product.id}`,
       lastModified: product.updated_at ? new Date(product.updated_at) : new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.6,
@@ -31,43 +31,43 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: 'https://pdvpro.com',
+      url: 'https://yayyam.com',
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
-      url: 'https://pdvpro.com/register',
+      url: 'https://yayyam.com/register',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
-      url: 'https://pdvpro.com/login',
+      url: 'https://yayyam.com/login',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: 'https://pdvpro.com/vendeurs',
+      url: 'https://yayyam.com/vendeurs',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: 'https://pdvpro.com/conditions-utilisation',
+      url: 'https://yayyam.com/conditions-utilisation',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
-      url: 'https://pdvpro.com/politique-confidentialite',
+      url: 'https://yayyam.com/politique-confidentialite',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
-      url: 'https://pdvpro.com/mentions-legales',
+      url: 'https://yayyam.com/mentions-legales',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,

@@ -26,6 +26,16 @@ export async function requestWithdrawal(affiliateId: string, amount: number, pay
       return { error: "Compte affilié introuvable ou non autorisé." }
     }
 
+    // Vérifier le KYC
+    const userProfile = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { kyc_status: true }
+    })
+
+    if (!userProfile || userProfile.kyc_status !== 'verified') {
+      return { error: "Action non autorisée. Votre identité doit être vérifiée (KYC) pour effectuer un retrait." }
+    }
+
     if (amount > Number(affiliate.balance || 0)) {
       return { error: "Solde insuffisant pour ce retrait." }
     }

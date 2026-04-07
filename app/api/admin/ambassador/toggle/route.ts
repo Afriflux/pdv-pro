@@ -81,10 +81,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       }
     })
 
-    console.log(
-      `[ambassador/toggle] ✅ Ambassador ${ambassadorId} → is_active = ${isActive}`
-    )
-
     return NextResponse.json({
       success:   true,
       is_active: (updated as { id: string; is_active: boolean } | null)?.is_active ?? isActive,

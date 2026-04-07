@@ -12,7 +12,7 @@ export function CopyLinkQuickAction({ slug }: { slug: string }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`https://pdvpro.com/${slug}`)
+    navigator.clipboard.writeText(`https://yayyam.com/${slug}`)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -35,7 +35,7 @@ export function CopyLinkQuickAction({ slug }: { slug: string }) {
 
 export function WhatsAppQuickAction({ slug }: { slug: string }) {
   const handleShare = () => {
-    const text = encodeURIComponent(`Découvrez mon catalogue en ligne : https://pdvpro.com/${slug}`)
+    const text = encodeURIComponent(`Découvrez mon catalogue en ligne : https://yayyam.com/${slug}`)
     window.open(`https://wa.me/?text=${text}`, '_blank')
   }
 

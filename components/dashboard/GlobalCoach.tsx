@@ -11,7 +11,7 @@ interface Message {
 export default function GlobalCoach() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: `Salut ! Je suis ton Coach E-commerce Global. Je connais par coeur toutes les stratégies et tutoriels de l'Académie PDV Pro. Que veux-tu apprendre aujourd'hui ?` }
+    { role: 'assistant', content: `Salut ! Je suis ton Coach E-commerce Global. Je connais par coeur toutes les stratégies et tutoriels de l'Académie Yayyam. Que veux-tu apprendre aujourd'hui ?` }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -54,7 +54,7 @@ export default function GlobalCoach() {
         // If the AI learned something new, tell the user!
         if (data.learned) {
            setTimeout(() => {
-             setMessages(prev => [...prev, { role: 'assistant', content: `✨ *(J'ai mémorisé cette nouvelle stratégie dans la base de données PDV Pro pour aider les prochains vendeurs ! Merci pour ta question.)*` }])
+             setMessages(prev => [...prev, { role: 'assistant', content: `✨ *(J'ai mémorisé cette nouvelle stratégie dans la base de données Yayyam pour aider les prochains vendeurs ! Merci pour ta question.)*` }])
            }, 800)
         }
       }
@@ -93,7 +93,7 @@ export default function GlobalCoach() {
                   <Bot size={20} className="text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="font-black text-sm">Le Coach PDV Pro</h3>
+                  <h3 className="font-black text-sm">Le Coach Yayyam</h3>
                   <p className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Arme Ultime en ligne
                   </p>

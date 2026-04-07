@@ -1,4 +1,4 @@
--- ─── Migration : Système de plaintes PDV Pro ─────────────────────────────────
+-- ─── Migration : Système de plaintes Yayyam ─────────────────────────────────
 -- Crée la table Complaint pour le signalement de contenu illégal/frauduleux.
 -- À exécuter depuis le SQL Editor Supabase ou via CLI.
 
@@ -28,4 +28,4 @@ CREATE INDEX IF NOT EXISTS idx_complaint_created ON "Complaint"(created_at DESC)
 
 -- COMMENT sur la table
 COMMENT ON TABLE "Complaint" IS
-  'Signalements de contenu illégal, fraudes ou copies non autorisées sur PDV Pro.';
+  'Signalements de contenu illégal, fraudes ou copies non autorisées sur Yayyam.';

@@ -4,13 +4,14 @@
 import { useState } from 'react'
 import { 
   Ticket, Search, Trash2, Power, Calendar, Target, ShoppingBag, Plus, Zap, 
-  TrendingUp, Activity, Tag, Clock, ArrowRight, MonitorSmartphone, Megaphone,
+  TrendingUp, Activity, Tag, Clock, ArrowRight, Megaphone,
   Truck, Gift, Users
 } from 'lucide-react'
 import { PromotionData, PromotionType, DiscountType, BundleConfig } from '@/lib/promotions/promotionType'
 import { createPromotion, togglePromotionActive, updateStoreAnnouncement, updateStoreBoosters } from '@/lib/promotions/promotionActions'
 import { PromoCodeData, createPromoCode, togglePromoCodeActive, deletePromoCode } from '@/lib/promotions/promoCodeActions'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
+import { MobileSimulator } from '@/components/shared/simulator/MobileSimulator'
 
 export type AffiliateBase = {
   id: string;
@@ -710,53 +711,69 @@ export default function PromotionsClient({
 
                  </div>
 
-                 <div className="bg-[#FAFAF7] rounded-[32px] p-6 border border-gray-200 flex flex-col">
-                    <div className="flex items-center gap-2 mb-4 text-sm font-black uppercase text-gray-400 tracking-widest">
-                       <MonitorSmartphone size={16} /> Aperçu en direct
-                    </div>
-                    
-                    <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
-                       {/* Navigateur Mock */}
-                       <div className="h-8 bg-gray-50 border-b border-gray-100 flex items-center px-4 gap-1.5">
-                          <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
-                          <div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                          <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
-                       </div>
-                       
-                       {/* Le Bandeau Preview */}
-                       {bandeauActive ? (
-                         <div 
-                           className="w-full py-2.5 px-4 text-center text-white text-xs font-black tracking-wider shadow-sm transition-colors duration-300"
-                           ref={el => { if (el) el.style.backgroundColor = bandeauColor; }}
-                         >
-                            {bandeauText || "Votre message d'annonce sera ici"}
-                         </div>
-                       ) : (
-                         <div className="w-full py-2.5 px-4 text-center bg-gray-100 border-b text-gray-400 text-xs font-bold border-dashed border-gray-300">
-                            Bandeau inactif
-                         </div>
-                       )}
+                 <div className="hidden lg:block w-[360px] shrink-0 sticky top-24">
+                    <MobileSimulator title="Aperçu (Boutique)">
+                      <div className="w-full flex flex-col items-center min-h-[600px] bg-white relative overflow-hidden">
+                        
+                         {/* Le Bandeau Preview */}
+                         {bandeauActive ? (
+                           <div 
+                             className="w-full py-2.5 px-4 text-center text-white text-[10px] font-black tracking-wider shadow-sm transition-colors duration-300"
+                             ref={el => { if (el) el.style.backgroundColor = bandeauColor; }}
+                           >
+                              {bandeauText || "Votre message d'annonce sera ici"}
+                           </div>
+                         ) : (
+                           <div className="w-full py-2.5 px-4 text-center bg-gray-100 border-b text-gray-400 text-xs font-bold border-dashed border-gray-300">
+                              Bandeau inactif
+                           </div>
+                         )}
+                         
+                         {/* Faux contenu store */}
+                         <div className="w-full p-6 space-y-4">
+                            <div className="w-24 h-4 bg-gray-200 rounded-full"></div>
+                            
+                            {/* Free Shipping Progress bar mock */}
+                            {bFreeShipping > 0 && (
+                               <div className="w-full mb-6 mt-2 p-3 bg-orange-50 rounded-xl border border-orange-100">
+                                  <div className="flex justify-between items-center mb-2">
+                                     <span className="text-[10px] font-bold text-orange-600">Plus que {(bFreeShipping / 2).toLocaleString()} F pour la livraison gratuite</span>
+                                     <Truck size={12} className="text-orange-500" />
+                                  </div>
+                                  <div className="w-full h-2 bg-orange-200 rounded-full overflow-hidden">
+                                     <div className="h-full bg-orange-500 w-1/2"></div>
+                                  </div>
+                               </div>
+                            )}
 
-                       {/* Faux contenu store */}
-                       <div className="p-6 space-y-4">
-                          <div className="w-24 h-4 bg-gray-200 rounded-full"></div>
-                          <div className="flex gap-4 pt-4">
-                             <div className="w-20 h-24 bg-gray-100 rounded-xl"></div>
-                             <div className="flex-1 space-y-2">
-                                <div className="w-3/4 h-3 bg-gray-200 rounded-full"></div>
-                                <div className="w-1/2 h-3 bg-gray-100 rounded-full"></div>
-                             </div>
-                          </div>
-                          <div className="flex gap-4">
-                             <div className="w-20 h-24 bg-gray-100 rounded-xl"></div>
-                             <div className="flex-1 space-y-2">
-                                <div className="w-3/4 h-3 bg-gray-200 rounded-full"></div>
-                                <div className="w-1/2 h-3 bg-gray-100 rounded-full"></div>
-                             </div>
-                          </div>
-                          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
-                       </div>
-                    </div>
+                            <div className="flex gap-4 pt-4">
+                               <div className="w-20 h-24 bg-gray-100 rounded-xl"></div>
+                               <div className="flex-1 space-y-2">
+                                  <div className="w-3/4 h-3 bg-gray-200 rounded-full"></div>
+                                  <div className="w-1/2 h-3 bg-gray-100 rounded-full"></div>
+                               </div>
+                            </div>
+                            <div className="flex gap-4">
+                               <div className="w-20 h-24 bg-gray-100 rounded-xl"></div>
+                               <div className="flex-1 space-y-2">
+                                  <div className="w-3/4 h-3 bg-gray-200 rounded-full"></div>
+                                  <div className="w-1/2 h-3 bg-gray-100 rounded-full"></div>
+                               </div>
+                            </div>
+
+                            {/* Gamification popup mock */}
+                            {bGamificationActive && (
+                               <div className="mt-8 p-4 border border-pink-200 bg-pink-50 rounded-2xl flex flex-col items-center text-center">
+                                  <Gift size={24} className="text-pink-500 mb-2" />
+                                  <p className="text-[10px] font-black text-pink-700 uppercase mb-1">Faites tourner la roue</p>
+                                  <p className="text-xs text-pink-600/80 mb-3 font-medium">Gagnez potentiellement le code {bGamificationPrize || 'SURPRISE'}.</p>
+                                  <div className="bg-pink-500 text-white w-full py-2 rounded-lg text-xs font-bold">Tourner (WhatsApp requis)</div>
+                               </div>
+                            )}
+
+                         </div>
+                      </div>
+                    </MobileSimulator>
                  </div>
 
               </div>

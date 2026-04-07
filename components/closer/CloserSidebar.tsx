@@ -7,17 +7,9 @@ import { signOut } from '@/app/auth/actions'
 import { 
   LayoutDashboard, 
   Package, 
-  ShoppingBag, 
-  ShoppingCart, 
   Wallet, 
-  Share2, 
   Target, 
   Users, 
-  BarChart3, 
-  MessageSquare, 
-  Zap, 
-  ListTodo, 
-  Gem, 
   Settings,
   LucideIcon,
   ChevronLeft,
@@ -26,15 +18,10 @@ import {
   ChevronUp,
   ArrowLeftRight,
   LogOut,
-
-  Truck,
-  MapPin,
-  Calendar,
   PhoneCall,
-  Send,
   GraduationCap,
-  DollarSign,
   Inbox,
+  Calendar,
 } from 'lucide-react'
 import { NotificationBell } from '@/components/dashboard/NotificationBell'
 
@@ -65,6 +52,7 @@ const NAV: NavSection[] = [
       { name: 'Tableau de bord', href: '/closer', icon: LayoutDashboard },
       { name: 'Terminal de Vente', href: '/closer/terminal', icon: Inbox },
       { name: 'Appels programmés', href: '/closer/calls', icon: PhoneCall },
+      { name: 'Mon Agenda', href: '/closer/agenda', icon: Calendar },
       { name: 'Mes Cibles', href: '/closer/targets', icon: Target },
     ]
   },
@@ -225,7 +213,7 @@ function SidebarContent({
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-1 py-1 rounded-xl group-hover/logo:bg-white/5 transition-colors">
-              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">PDV <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-emerald-400">Closer</span></span>
+              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">Yayyam <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-emerald-400">Closer</span></span>
             </div>
           )}
         </Link>
@@ -441,7 +429,7 @@ export function CloserSidebar({
               </svg>
             </button>
             <Link href="/" className="flex items-center gap-1.5 ml-1" onClick={() => setMobileOpen(false)}>
-              <span className="text-lg font-display font-black text-white">PDV</span>
+              <span className="text-lg font-display font-black text-white">Yayyam</span>
               <span className="text-lg font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-emerald-400">Closer</span>
             </Link>
           </div>

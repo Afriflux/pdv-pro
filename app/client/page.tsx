@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import { 
-  Package, Smartphone, ArrowRight, Download, Store, PlayCircle, 
+  Package, Smartphone, ArrowRight, Download, PlayCircle, 
   MapPin, Clock, CheckCircle2, FileText, Truck, Compass, BookOpen
 } from 'lucide-react'
 
@@ -38,32 +38,7 @@ export default async function ClientDashboardOverview() {
     .order('created_at', { ascending: false })
     .limit(10)
 
-  // 🛠️ MOCK DATA COMMANDES
-  const mockOrders = [
-    {
-      id: "mock_order_1",
-      created_at: new Date().toISOString(),
-      total: 25000,
-      subtotal: 22000,
-      delivery_fee: 3000,
-      order_type: "physical",
-      status: "shipped", // En transit pour la carte widget
-      delivery_address: "Quartier Mermoz, Dakar",
-      Store: { name: "Boutique Mode Express", slug: "mode-express", logo_url: null },
-      product_id: "prod_1"
-    },
-    {
-      id: "mock_order_2",
-      created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-      total: 10000,
-      order_type: "digital",
-      status: "confirmed",
-      download_token: "mock_token_123",
-      Store: { name: "Tech Academy", slug: "tech-academy", logo_url: null },
-      product_id: "prod_2"
-    }
-  ]
-  const allOrders = [...mockOrders, ...(dbOrders || [])]
+  const allOrders = dbOrders || []
   
   // Stats Calculs
   const { data: dbAllOrdersStats } = await supabaseAdmin
@@ -71,10 +46,10 @@ export default async function ClientDashboardOverview() {
     .select('total, order_type')
     .or(orCondition)
     
-  const combinedStatsOrders = [...mockOrders, ...(dbAllOrdersStats || [])]
-  const totalSpent = combinedStatsOrders.reduce((acc, o) => acc + (o.total || 0), 0)
-  const totalDigital = combinedStatsOrders.filter(o => o.order_type === 'digital' || o.order_type === 'telegram').length
-  const totalPhysical = combinedStatsOrders.filter(o => o.order_type === 'physical').length
+  const combinedStatsOrders = dbAllOrdersStats || []
+  const totalSpent = combinedStatsOrders.reduce((acc: any, o: any) => acc + (o.total || 0), 0)
+  const totalDigital = combinedStatsOrders.filter((o: any) => o.order_type === 'digital' || o.order_type === 'telegram').length
+  const totalPhysical = combinedStatsOrders.filter((o: any) => o.order_type === 'physical').length
 
   // Recherche commande en transit (shipped)
   const orderInTransit = allOrders.find(o => o.status === 'shipped' || o.status === 'processing')
@@ -91,30 +66,7 @@ export default async function ClientDashboardOverview() {
     take: 3
   })
 
-  // 🛠️ MOCK DATA DIGITAL
-  const mockAccesses = [
-    {
-      id: "mock_access_1",
-      created_at: new Date().toISOString(),
-      expires_at: null,
-      product: {
-        name: "Formation Complète E-commerce 2026",
-        images: ["https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop"],
-        digital_link: "https://youtu.be/dQw4w9WgXcQ"
-      }
-    },
-    {
-      id: "mock_access_2",
-      created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-      expires_at: null,
-      product: {
-        name: "Guide Ultime du Copywriting (PDF)",
-        images: ["https://images.unsplash.com/photo-1455390582262-044cdead2708?q=80&w=2073&auto=format&fit=crop"],
-        digital_file_url: "#"
-      }
-    }
-  ]
-  const digitalLibrary = [...mockAccesses, ...(dbDigitalAccesses || [])].slice(0, 3)
+  const digitalLibrary = (dbDigitalAccesses || []).slice(0, 3)
 
   return (
     <div className="w-full relative min-h-[calc(100vh-80px)] pb-12">
@@ -142,6 +94,23 @@ export default async function ClientDashboardOverview() {
           </div>
         </header>
 
+        {/* === CASHBACK BANNER (GAMIFICATION ACHETEUR) === */}
+        <div className="mb-8 w-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-xl shadow-orange-500/20 text-white overflow-hidden relative">
+           <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+           <div className="relative z-10 flex items-center gap-5">
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 text-3xl shrink-0">
+                💸
+              </div>
+              <div>
+                <h3 className="text-2xl font-black tracking-tight mb-1">Votre Cashback Client : 1,500 FCFA</h3>
+                <p className="font-medium text-white/90">Vous récupérez 1% sur chaque achat ! Utilisez ce solde pour votre prochaine formation Yayyam.</p>
+              </div>
+           </div>
+           <button className="relative z-10 mt-6 md:mt-0 bg-white text-orange-600 px-8 py-3.5 rounded-2xl font-bold hover:bg-orange-50 hover:scale-105 transition-all shadow-lg shrink-0">
+             Utiliser mon solde
+           </button>
+        </div>
+
         {/* === BENTO GRID PRINCIPAL === */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
 
@@ -157,7 +126,7 @@ export default async function ClientDashboardOverview() {
                <h3 className="text-4xl lg:text-5xl font-black text-white tracking-tighter flex items-end gap-1.5 mt-2">
                  {formatCFA(totalSpent).replace('FCFA','')} <span className="text-xl text-white/50 mb-1 font-bold">F</span>
                </h3>
-               <p className="text-gray-400 mt-3 text-sm font-medium">Investis dans des boutiques partenaires PDV Pro.</p>
+               <p className="text-gray-400 mt-3 text-sm font-medium">Investis dans des boutiques partenaires Yayyam.</p>
             </div>
 
             <div className="relative z-10 flex gap-4 mt-auto">
@@ -234,7 +203,7 @@ export default async function ClientDashboardOverview() {
 
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {digitalLibrary.length > 0 ? (
-                  digitalLibrary.map((access: any) => {
+                  (digitalLibrary || []).map((access: any) => {
                     const product = access.product
                     const isVideo = product.digital_link !== null
                     return (
@@ -277,7 +246,7 @@ export default async function ClientDashboardOverview() {
           <div className="bg-white/80 backdrop-blur-2xl border border-gray-200/60 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             {allOrders && allOrders.length > 0 ? (
               <div className="divide-y divide-gray-100/60">
-                {allOrders.map((o: any) => {
+                {(allOrders || []).map((o: any) => {
                   const isDigital = o.order_type === 'digital' || o.order_type === 'telegram'
                   return (
                     <div key={o.id} className="p-5 sm:p-6 hover:bg-[#0F7A60]/[0.02] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">

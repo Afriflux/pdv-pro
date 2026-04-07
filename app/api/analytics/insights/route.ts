@@ -1,5 +1,5 @@
 // ─── app/api/analytics/insights/route.ts ─────────────────────────────────────
-// Route POST — IA heuristique PDV Pro
+// Route POST — IA heuristique Yayyam
 // 12 règles métier + score santé boutique 0-100
 // 0 appel externe, 0 latence supplémentaire
 
@@ -178,7 +178,7 @@ function analyzeData(body: InsightsBody): InsightsResponse {
       type:    'success',
       icon:    '✅',
       title:   'Excellent taux de conversion !',
-      message: `${kpis.conversion.toFixed(1)} % de conversions — vous êtes dans le top des boutiques PDV Pro.`,
+      message: `${kpis.conversion.toFixed(1)} % de conversions — vous êtes dans le top des boutiques Yayyam.`,
       action:  'Partagez vos techniques et inspirez votre communauté',
     })
   }

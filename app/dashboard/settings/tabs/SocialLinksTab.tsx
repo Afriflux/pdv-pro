@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { Instagram, Facebook, Youtube, Linkedin, Globe, MessageCircle, Share2, Loader2, CheckCircle2, Link as LinkIcon } from 'lucide-react'
 import * as Actions from '@/app/actions/settings'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export function SocialLinksTab({ store }: { store: any }) {
   const socialConfig = (store?.social_links as Record<string, string>) || {}

@@ -6,14 +6,14 @@ export function OrganizationJsonLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "PDV Pro",
-    "url": "https://pdvpro.com",
-    "logo": "https://pdvpro.com/icon-512x512.png",
+    "name": "Yayyam",
+    "url": "https://yayyam.com",
+    "logo": "https://yayyam.com/icon-512x512.png",
     "description": "Plateforme e-commerce pour les entrepreneurs d'Afrique de l'Ouest",
     "sameAs": [
-      "https://www.facebook.com/pdvpro",
-      "https://www.instagram.com/pdvpro",
-      "https://www.tiktok.com/@pdvpro"
+      "https://www.facebook.com/yayyam",
+      "https://www.instagram.com/yayyam",
+      "https://www.tiktok.com/@yayyam"
     ],
     "contactPoint": {
       "@type": "ContactPoint",
@@ -41,7 +41,7 @@ export function ProductJsonLd({ product, storeName, storeSlug }: {
     "brand": { "@type": "Brand", "name": storeName },
     "offers": {
       "@type": "Offer",
-      "url": `https://pdvpro.com/p/${storeSlug}/${product.id}`,
+      "url": `https://yayyam.com/p/${storeSlug}/${product.id}`,
       "priceCurrency": "XOF",
       "price": product.price,
       "availability": "https://schema.org/InStock",
@@ -63,11 +63,11 @@ export function WebSiteJsonLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "PDV Pro",
-    "url": "https://pdvpro.com",
+    "name": "Yayyam",
+    "url": "https://yayyam.com",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://pdvpro.com/vendeurs?q={search_term_string}",
+      "target": "https://yayyam.com/vendeurs?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   }

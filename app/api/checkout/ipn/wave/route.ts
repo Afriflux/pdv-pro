@@ -43,7 +43,6 @@ export async function POST(req: NextRequest) {
 
     // Wave : checkout_status === 'succeeded'
     if (status !== 'succeeded') {
-      console.log('[IPN Wave] Statut ignoré:', status, orderId)
       return NextResponse.json({ ignored: true })
     }
 

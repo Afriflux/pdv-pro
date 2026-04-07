@@ -7,7 +7,7 @@ import MultiProductGrid from '@/components/products/MultiProductGrid'
 // Metadata
 // ----------------------------------------------------------------
 export const metadata: Metadata = {
-  title: 'Ajout Multiple — PDV Pro',
+  title: 'Ajout Multiple — Yayyam',
   description: 'Gérez et créez plusieurs produits simultanément sur votre boutique.',
 }
 

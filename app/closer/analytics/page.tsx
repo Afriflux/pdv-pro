@@ -27,7 +27,7 @@ export default async function CloserAnalyticsPage() {
     if (lead.status === 'won') {
       wonLeads++
       totalCommission += (lead.commission_amount || 0)
-    } else if (lead.status === 'dead') {
+    } else if (lead.status === 'lost') {
       lostLeads++
     }
   })

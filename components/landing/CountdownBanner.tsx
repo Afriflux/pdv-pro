@@ -49,7 +49,7 @@ export function CountdownBanner({ config }: { config?: BannerProps }) {
     updateTimer()
     const interval = setInterval(updateTimer, 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, [targetDateStr])
 
   if (!mounted || !isActive) return null
   if (new Date() >= LAUNCH_DATE) return null

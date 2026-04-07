@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Disc, ShoppingBag, Layers, CheckCircle2, Box, PackageOpen, AlertTriangle, X } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { useRouter } from 'next/navigation'
 
 export function VendorTypeTab({ store }: { store: any }) {

@@ -31,14 +31,14 @@ function buildApprovalEmail(vendorName: string, storeName: string): string {
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KYC Validé — PDV Pro</title></head>
+<title>KYC Validé — Yayyam</title></head>
 <body style="margin:0;padding:0;background:#FAFAF7;font-family:Inter,Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAFAF7;padding:40px 20px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
         <!-- Header émeraude -->
         <tr><td style="background:linear-gradient(135deg,#0D5C4A,#0F7A60);padding:40px 48px;">
-          <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">PDV<span style="color:#C9A84C;">Pro</span></h1>
+          <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">Yayyam<span style="color:#C9A84C;">Pro</span></h1>
           <p style="margin:8px 0 0;color:rgba(255,255,255,0.75);font-size:14px;">Plateforme de vente africaine</p>
         </td></tr>
         <!-- Corps -->
@@ -58,7 +58,7 @@ function buildApprovalEmail(vendorName: string, storeName: string): string {
             <div style="display:flex;align-items:center;gap:12px;">
               <span style="font-size:24px;">🛡️</span>
               <div>
-                <p style="margin:0;font-size:14px;font-weight:700;color:#0F7A60;">Vendeur vérifié PDV Pro</p>
+                <p style="margin:0;font-size:14px;font-weight:700;color:#0F7A60;">Vendeur vérifié Yayyam</p>
                 <p style="margin:4px 0 0;font-size:13px;color:#6B7280;">Votre badge de vérification est maintenant actif sur votre boutique</p>
               </div>
             </div>
@@ -68,7 +68,7 @@ function buildApprovalEmail(vendorName: string, storeName: string): string {
             <strong>Vendeur Vérifié</strong> sur votre boutique, renforçant leur confiance.
           </p>
           <div style="text-align:center;margin:32px 0;">
-            <a href="https://pdvpro.com/dashboard" style="display:inline-block;background:#0F7A60;color:#ffffff;font-weight:700;font-size:15px;text-decoration:none;padding:14px 32px;border-radius:12px;">
+            <a href="https://yayyam.com/dashboard" style="display:inline-block;background:#0F7A60;color:#ffffff;font-weight:700;font-size:15px;text-decoration:none;padding:14px 32px;border-radius:12px;">
               Accéder à mon dashboard →
             </a>
           </div>
@@ -76,8 +76,8 @@ function buildApprovalEmail(vendorName: string, storeName: string): string {
         <!-- Footer -->
         <tr><td style="background:#F9FAFB;padding:24px 48px;border-top:1px solid #E5E7EB;">
           <p style="margin:0;font-size:12px;color:#9CA3AF;text-align:center;">
-            PDV Pro · Plateforme de vente africaine 🌍<br>
-            <a href="https://pdvpro.com" style="color:#0F7A60;text-decoration:none;">pdvpro.com</a>
+            Yayyam · Plateforme de vente africaine 🌍<br>
+            <a href="https://yayyam.com" style="color:#0F7A60;text-decoration:none;">yayyam.com</a>
           </p>
         </td></tr>
       </table>
@@ -92,14 +92,14 @@ function buildRejectionEmail(vendorName: string, storeName: string, reason: stri
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KYC Refusé — PDV Pro</title></head>
+<title>KYC Refusé — Yayyam</title></head>
 <body style="margin:0;padding:0;background:#FAFAF7;font-family:Inter,Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAFAF7;padding:40px 20px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
         <!-- Header émeraude -->
         <tr><td style="background:linear-gradient(135deg,#0D5C4A,#0F7A60);padding:40px 48px;">
-          <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">PDV<span style="color:#C9A84C;">Pro</span></h1>
+          <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">Yayyam<span style="color:#C9A84C;">Pro</span></h1>
           <p style="margin:8px 0 0;color:rgba(255,255,255,0.75);font-size:14px;">Plateforme de vente africaine</p>
         </td></tr>
         <!-- Corps -->
@@ -126,7 +126,7 @@ function buildRejectionEmail(vendorName: string, storeName: string, reason: stri
             Notre équipe le retraitera dans les meilleurs délais.
           </p>
           <div style="text-align:center;margin:32px 0;">
-            <a href="https://pdvpro.com/dashboard/kyc" style="display:inline-block;background:#0F7A60;color:#ffffff;font-weight:700;font-size:15px;text-decoration:none;padding:14px 32px;border-radius:12px;">
+            <a href="https://yayyam.com/dashboard/kyc" style="display:inline-block;background:#0F7A60;color:#ffffff;font-weight:700;font-size:15px;text-decoration:none;padding:14px 32px;border-radius:12px;">
               Soumettre un nouveau dossier →
             </a>
           </div>
@@ -134,8 +134,8 @@ function buildRejectionEmail(vendorName: string, storeName: string, reason: stri
         <!-- Footer -->
         <tr><td style="background:#F9FAFB;padding:24px 48px;border-top:1px solid #E5E7EB;">
           <p style="margin:0;font-size:12px;color:#9CA3AF;text-align:center;">
-            PDV Pro · Plateforme de vente africaine 🌍<br>
-            <a href="https://pdvpro.com" style="color:#0F7A60;text-decoration:none;">pdvpro.com</a>
+            Yayyam · Plateforme de vente africaine 🌍<br>
+            <a href="https://yayyam.com" style="color:#0F7A60;text-decoration:none;">yayyam.com</a>
           </p>
         </td></tr>
       </table>
@@ -201,26 +201,49 @@ export async function PATCH(
       )
     }
 
-    // 3. Récupérer le Store + données KYC
-    const { data: storeData, error: storeError } = await supabaseAdmin
+    // 3. Récupérer le Store ou User + données KYC
+    let storeData: any = null
+    let isUserKyc = false
+    
+    const { data: storeRes } = await supabaseAdmin
       .from('Store')
       .select('id, name, user_id, kyc_documents')
       .eq('id', storeId)
       .single()
 
-    if (storeError || !storeData) {
-      return NextResponse.json({ success: false, error: 'Boutique introuvable' }, { status: 404 })
+    if (storeRes) {
+      storeData = storeRes
+    } else {
+      const { data: userRes } = await supabaseAdmin
+        .from('User')
+        .select('id, name, kyc_documents, email')
+        .eq('id', storeId)
+        .single()
+      
+      if (userRes) {
+        storeData = { id: userRes.id, name: userRes.name || 'Utilisateur', user_id: userRes.id, kyc_documents: userRes.kyc_documents, email: userRes.email }
+        isUserKyc = true
+      }
     }
 
-    // 4. Récupérer l'email du vendeur depuis la table User
-    const { data: userData } = await supabaseAdmin
-      .from('User')
-      .select('email, name')
-      .eq('id', storeData.user_id)
-      .single()
+    if (!storeData) {
+      return NextResponse.json({ success: false, error: 'Dossier introuvable' }, { status: 404 })
+    }
 
-    const vendorEmail = userData?.email ?? null
-    const vendorName  = (userData?.name as string | null) ?? storeData.name
+    // 4. Récupérer l'email de l'entité (Vendeur ou Utilisateur)
+    let vendorEmail = storeData.email ?? null
+    let vendorName = storeData.name
+    
+    if (!isUserKyc) {
+      const { data: userData } = await supabaseAdmin
+        .from('User')
+        .select('email, name')
+        .eq('id', storeData.user_id)
+        .single()
+
+      vendorEmail = userData?.email ?? null
+      vendorName  = (userData?.name as string | null) ?? storeData.name
+    }
 
     // 5. Appliquer l'action
 
@@ -228,10 +251,10 @@ export async function PATCH(
       // ── Approbation ─────────────────────────────────────────────────────────
 
       const { error: updateError } = await supabaseAdmin
-        .from('Store')
+        .from(isUserKyc ? 'User' : 'Store')
         .update({
           kyc_status: 'verified',
-          updated_at: new Date().toISOString(),
+          ...(isUserKyc ? {} : { updated_at: new Date().toISOString() }) // User n'a pas updated_at dans certains schemas
         })
         .eq('id', storeId)
 
@@ -240,13 +263,12 @@ export async function PATCH(
         return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
       }
 
-      console.log(`[KYC approve] Boutique "${storeData.name}" (${storeId}) → verified ✅`)
 
       // Email de validation (fire-and-forget)
       if (vendorEmail) {
         sendTransactionalEmail({
           to:          [{ email: vendorEmail, name: vendorName }],
-          subject:     '✅ Votre identité a été vérifiée sur PDV Pro !',
+          subject:     '✅ Votre identité a été vérifiée sur Yayyam !',
           htmlContent: buildApprovalEmail(vendorName, storeData.name as string),
         }).catch(() => {})
       }
@@ -255,9 +277,9 @@ export async function PATCH(
       await supabaseAdmin.from('AdminLog').insert({
         admin_id: user.id,
         action: 'APPROVE_KYC',
-        target_type: 'store',
+        target_type: isUserKyc ? 'user' : 'store',
         target_id: storeId,
-        details: { store_name: storeData.name }
+        details: { name: storeData.name }
       })
 
     } else {
@@ -271,11 +293,11 @@ export async function PATCH(
       }
 
       const { error: updateError } = await supabaseAdmin
-        .from('Store')
+        .from(isUserKyc ? 'User' : 'Store')
         .update({
           kyc_status:    'rejected',
           kyc_documents: updatedDocs,
-          updated_at:    new Date().toISOString(),
+          ...(isUserKyc ? {} : { updated_at: new Date().toISOString() })
         })
         .eq('id', storeId)
 
@@ -284,15 +306,11 @@ export async function PATCH(
         return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
       }
 
-      console.log(
-        `[KYC reject] Boutique "${storeData.name}" (${storeId}) → rejected ❌ · raison: ${reason}`
-      )
-
       // Email de rejet (fire-and-forget)
       if (vendorEmail) {
         sendTransactionalEmail({
           to:          [{ email: vendorEmail, name: vendorName }],
-          subject:     '❌ Votre dossier KYC a été refusé — PDV Pro',
+          subject:     '❌ Votre dossier KYC a été refusé — Yayyam',
           htmlContent: buildRejectionEmail(vendorName, storeData.name as string, reason!.trim()),
         }).catch(() => {})
       }
@@ -301,9 +319,9 @@ export async function PATCH(
       await supabaseAdmin.from('AdminLog').insert({
         admin_id: user.id,
         action: 'REJECT_KYC',
-        target_type: 'store',
+        target_type: isUserKyc ? 'user' : 'store',
         target_id: storeId,
-        details: { store_name: storeData.name, reason: reason!.trim() }
+        details: { name: storeData.name, reason: reason!.trim() }
       })
     }
 

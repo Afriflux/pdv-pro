@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { Loader2, Save, Upload, ImageIcon, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -16,10 +16,10 @@ interface PlatformSectionProps {
 // CHAMPS DE CONFIGURATION
 // ----------------------------------------------------------------
 const GENERAL_FIELDS = [
-  { key: 'platform_name',      label: 'Nom de la plateforme', placeholder: 'PDV Pro' },
-  { key: 'support_email',      label: 'Email support',         placeholder: 'support@pdvpro.com', type: 'email' },
+  { key: 'platform_name',      label: 'Nom de la plateforme', placeholder: 'Yayyam' },
+  { key: 'support_email',      label: 'Email support',         placeholder: 'support@yayyam.com', type: 'email' },
   { key: 'support_whatsapp',   label: 'WhatsApp support',      placeholder: '+221 00 000 00 00',  type: 'tel' },
-  { key: 'app_url',            label: 'URL publique',          placeholder: 'https://pdvpro.com', type: 'url' },
+  { key: 'app_url',            label: 'URL publique',          placeholder: 'https://yayyam.com', type: 'url' },
   { key: 'landing_hero_badge', label: 'Badge Héro Promotionnel (Accueil)', placeholder: '🚀 Launch Week...', type: 'text', helper: 'Le petit badge textuel sous le titre principal de l\'accueil' },
 ]
 
@@ -36,14 +36,14 @@ const SEO_FIELDS = [
 ]
 
 const COMMUNICATIONS_FIELDS = [
-  { key: 'email_sender_address', label: 'E-mail système par défaut',     placeholder: 'no-reply@pdvpro.com', type: 'text', helper: 'L\'email utilisé par la plateforme pour envoyer les alertes' },
-  { key: 'email_sender_name',    label: 'Nom affiché de l\'expéditeur',  placeholder: 'L\'Équipe PDV Pro', type: 'text' },
+  { key: 'email_sender_address', label: 'E-mail système par défaut',     placeholder: 'no-reply@yayyam.com', type: 'text', helper: 'L\'email utilisé par la plateforme pour envoyer les alertes' },
+  { key: 'email_sender_name',    label: 'Nom affiché de l\'expéditeur',  placeholder: 'L\'Équipe Yayyam', type: 'text' },
 ]
 
 const LEGAL_FIELDS = [
-  { key: 'legal_cgu_url',     label: 'URL des Conditions Générales (CGU/CGV)', placeholder: 'https://pdvpro.com/mentions-legales', type: 'text', helper: 'Lien affiché dans les pages de Checkout' },
-  { key: 'legal_privacy_url', label: 'URL Politique de confidentialité',       placeholder: 'https://pdvpro.com/politique-confidentialite', type: 'text' },
-  { key: 'legal_refund_url',  label: 'URL Politique de Remboursement',         placeholder: 'https://pdvpro.com/refunds', type: 'text' },
+  { key: 'legal_cgu_url',     label: 'URL des Conditions Générales (CGU/CGV)', placeholder: 'https://yayyam.com/mentions-legales', type: 'text', helper: 'Lien affiché dans les pages de Checkout' },
+  { key: 'legal_privacy_url', label: 'URL Politique de confidentialité',       placeholder: 'https://yayyam.com/politique-confidentialite', type: 'text' },
+  { key: 'legal_refund_url',  label: 'URL Politique de Remboursement',         placeholder: 'https://yayyam.com/refunds', type: 'text' },
 ]
 
 
@@ -65,7 +65,7 @@ export default function PlatformSection({ initialConfig }: PlatformSectionProps)
   const handleAIGenerate = async (fieldKey: string, type: 'title' | 'description') => {
     setGeneratingAI(prev => ({ ...prev, [fieldKey]: true }))
     try {
-      const context = config['platform_name'] || 'Plateforme e-commerce PDV Pro'
+      const context = config['platform_name'] || 'Plateforme e-commerce Yayyam'
       const res = await fetch('/api/ai/seo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

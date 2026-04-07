@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'PDV Pro',
-    short_name: 'PDV Pro',
+    name: 'Yayyam',
+    short_name: 'Yayyam',
     description: 'Créez votre boutique en ligne en 10 minutes. Vendez sur WhatsApp et encaissez par Mobile Money.',
     start_url: '/',
     display: 'standalone',

@@ -29,7 +29,7 @@ export default function LinkGeneratorClient({ storeSlug, affiliateCode }: { stor
       const urlObj = new URL(cleanUrl)
       
       // Ensure it points to the correct store (Optional but good practice)
-      if (!urlObj.hostname.includes(storeSlug) && !urlObj.hostname.includes('pdvpro.sn')) {
+      if (!urlObj.hostname.includes(storeSlug) && !urlObj.hostname.includes('yayyam.sn')) {
         // Just a warning, not a hard block if they have custom domain
       }
 
@@ -92,7 +92,7 @@ export default function LinkGeneratorClient({ storeSlug, affiliateCode }: { stor
               id="url-input"
               type="url"
               className="block w-full pl-12 pr-4 py-4 bg-[#FAFAF7] border border-gray-100 rounded-2xl text-[#1A1A1A] font-bold focus:ring-4 focus:ring-[#0F7A60]/10 focus:border-[#0F7A60]/30 transition-all outline-none shadow-sm"
-              placeholder={`ex: https://${storeSlug || 'boutique'}.pdvpro.sn/p/mon-produit`}
+              placeholder={`ex: https://${storeSlug || 'boutique'}.yayyam.sn/p/mon-produit`}
               value={targetUrl}
               onChange={(e) => setTargetUrl(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}

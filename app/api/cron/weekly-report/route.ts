@@ -52,7 +52,7 @@ function buildWeeklyReportEmail(
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
         <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#0D5C4A,#0F7A60);padding:40px 48px;">
-          <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;">PDV<span style="color:#C9A84C;">Pro</span></h1>
+          <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;">Yayyam<span style="color:#C9A84C;">Pro</span></h1>
           <p style="margin:8px 0 0;color:rgba(255,255,255,0.75);font-size:14px;">Rapport hebdomadaire · ${weekLabel}</p>
         </td></tr>
         <!-- Corps -->
@@ -95,19 +95,19 @@ function buildWeeklyReportEmail(
             </p>
           </div>` : ''}
           <div style="text-align:center;margin:32px 0;">
-            <a href="https://pdvpro.com/dashboard/analytics" style="display:inline-block;background:#0F7A60;color:#ffffff;font-weight:700;font-size:15px;text-decoration:none;padding:14px 32px;border-radius:12px;">
+            <a href="https://yayyam.com/dashboard/analytics" style="display:inline-block;background:#0F7A60;color:#ffffff;font-weight:700;font-size:15px;text-decoration:none;padding:14px 32px;border-radius:12px;">
               Voir mes statistiques →
             </a>
           </div>
           <p style="font-size:12px;color:#9CA3AF;text-align:center;margin-top:24px;">
-            Votre boutique : <a href="https://pdvpro.com/${storeSlug}" style="color:#0F7A60;text-decoration:none;">pdvpro.com/${storeSlug}</a>
+            Votre boutique : <a href="https://yayyam.com/${storeSlug}" style="color:#0F7A60;text-decoration:none;">yayyam.com/${storeSlug}</a>
           </p>
         </td></tr>
         <!-- Footer -->
         <tr><td style="background:#F9FAFB;padding:24px 48px;border-top:1px solid #E5E7EB;">
           <p style="margin:0;font-size:12px;color:#9CA3AF;text-align:center;">
-            PDV Pro · Rapport automatique hebdomadaire<br>
-            <a href="https://pdvpro.com/dashboard/settings" style="color:#0F7A60;text-decoration:none;">Se désabonner</a>
+            Yayyam · Rapport automatique hebdomadaire<br>
+            <a href="https://yayyam.com/dashboard/settings" style="color:#0F7A60;text-decoration:none;">Se désabonner</a>
           </p>
         </td></tr>
       </table>
@@ -232,7 +232,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
         if (ok) {
           sentCount++
-          console.log(`[Cron weekly-report] Email envoyé → ${userData.email} (${store.name})`)
         } else {
           errors.push(`Store ${store.id} : échec envoi Brevo`)
         }
@@ -243,7 +242,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       }
     }
 
-    console.log(`[Cron weekly-report] Terminé — envoyés: ${sentCount}, erreurs: ${errors.length}`)
 
     await logCronExecution('weekly-report', 'success', `Envoyés: ${sentCount}, Erreurs: ${errors.length}`)
 

@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Trophy, TrendingUp, PhoneCall, Target, Star, Filter, ArrowUpRight, BarChart3, Clock, Flame, Percent } from 'lucide-react'
-import { ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip, BarChart, Bar, Legend } from 'recharts'
+import { Trophy, PhoneCall, Target, Star, BarChart3, Flame, Percent } from 'lucide-react'
+import { ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts'
 
 interface CloserAnalyticsClientProps {
   stats: {
@@ -17,10 +17,10 @@ interface CloserAnalyticsClientProps {
   recentActivity: any[];
 }
 
-export default function CloserAnalyticsClient({ stats, chartData, recentActivity }: CloserAnalyticsClientProps) {
+export default function CloserAnalyticsClient({ stats, chartData, recentActivity: _recentActivity }: CloserAnalyticsClientProps) {
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d')
 
-  const containerVars = {
+  const containerVars: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -28,7 +28,7 @@ export default function CloserAnalyticsClient({ stats, chartData, recentActivity
     }
   }
 
-  const itemVars = {
+  const itemVars: any = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   }

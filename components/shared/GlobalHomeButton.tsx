@@ -8,10 +8,10 @@ export function GlobalHomeButton() {
     <Link 
       href="/" 
       target="_blank"
-      className="absolute top-4 right-4 z-50 flex items-center gap-2 px-3 py-2 bg-emerald/10 hover:bg-emerald/20 text-emerald-rich font-bold rounded-xl border border-emerald/20 shadow-sm backdrop-blur-md transition-all group lg:top-6 lg:right-6"
+      className="fixed bottom-[90px] right-6 z-[90] flex items-center gap-2 px-4 py-3 bg-[#0F7A60]/90 hover:bg-[#0F7A60] text-white font-bold rounded-2xl shadow-lg shadow-[#0F7A60]/20 backdrop-blur-md transition-all group lg:bottom-[100px] lg:right-8 lg:scale-95 origin-bottom-right hover:scale-100"
     >
-      <Globe className="w-4 h-4 group-hover:animate-pulse" />
-      <span className="text-xs uppercase tracking-wider hidden sm:inline">Vitrine</span>
+      <Globe className="w-5 h-5 group-hover:animate-pulse" />
+      <span className="text-[13px] uppercase tracking-widest hidden sm:inline">Afficher ma Vitrine</span>
     </Link>
   )
 }

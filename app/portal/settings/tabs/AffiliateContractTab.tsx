@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { ScrollText, Shield, Scale, X, CheckCircle2, AlertTriangle, Download, Mail, Loader2, Clock, FileText } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 interface AffiliateContractTabProps {
   contractAcceptedAt?: string | null
   affiliateName: string
 }
 
-export function AffiliateContractTab({ contractAcceptedAt, affiliateName }: AffiliateContractTabProps) {
+export function AffiliateContractTab({ contractAcceptedAt, affiliateName: _affiliateName }: AffiliateContractTabProps) {
   const [showContract, setShowContract] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [emailing, setEmailing] = useState(false)
@@ -161,7 +161,7 @@ export function AffiliateContractTab({ contractAcceptedAt, affiliateName }: Affi
             </div>
             
             {/* Contenu Scrollable (Style papier légal) */}
-            <div className="p-6 sm:p-10 overflow-y-auto text-[14px] sm:text-[15px] text-gray-600 leading-relaxed bg-[#FAFAFA] flex-1 relative" style={{ backgroundImage: 'linear-gradient(#f0f0f0 1px, transparent 1px)', backgroundSize: '100% 2em', backgroundPosition: '0 1em' }}>
+            <div className="p-6 sm:p-10 overflow-y-auto text-[14px] sm:text-[15px] text-gray-600 leading-relaxed bg-[#FAFAFA] flex-1 relative bg-legal-paper">
               
               <div className="max-w-prose mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-200/60 relative">
                 
@@ -170,7 +170,7 @@ export function AffiliateContractTab({ contractAcceptedAt, affiliateName }: Affi
                 </h1>
 
                 <h3 className="mb-3 font-bold text-gray-900 text-[16px]">1. Objet de la Charte</h3>
-                <p className="mb-8">Le présent accord régit la relation d'affiliation entre PDV Pro et l'Affilié. Ce dernier s'engage à faire la promotion des offres et produits hébergés sur la plateforme afin de générer des ventes.</p>
+                <p className="mb-8">Le présent accord régit la relation d'affiliation entre Yayyam et l'Affilié. Ce dernier s'engage à faire la promotion des offres et produits hébergés sur la plateforme afin de générer des ventes.</p>
                 
                 <h3 className="mb-3 font-bold text-gray-900 text-[16px]">2. Rémunération et Commissions</h3>
                 <p className="mb-3">L'Affilié percevra une commission pour chaque vente finale et validée (notamment dans le cadre d'un modèle COD) acquise via son lien ou code de parrainage exclusif.</p>
@@ -183,7 +183,7 @@ export function AffiliateContractTab({ contractAcceptedAt, affiliateName }: Affi
                 <ul className="list-disc pl-5 mb-8 space-y-2">
                   <li><strong>Interdiction absolue du SPAM :</strong> L'envoi massif ou non sollicité d'e-mails est proscrit.</li>
                   <li>L'Affilié s'interdit de sur-vendre un produit en omettant délibérément la vérité.</li>
-                  <li>Il est interdit de soumissionner sur les enchères publicitaires trompeuses du nom de marque "PDV Pro".</li>
+                  <li>Il est interdit de soumissionner sur les enchères publicitaires trompeuses du nom de marque "Yayyam".</li>
                 </ul>
 
                 <h3 className="mb-3 font-bold text-gray-900 text-[16px]">4. Paiements et Fraudes</h3>

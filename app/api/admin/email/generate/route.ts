@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
 import Anthropic from '@anthropic-ai/sdk'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
@@ -90,7 +91,7 @@ Règles strictes de sortie :
       name: campaignName,
       subject: aiResult.subject,
       htmlContent: aiResult.htmlContent,
-      sender: { name: 'PDV Pro', email: 'noreply@pdvpro.com' }
+      sender: { name: 'Yayyam', email: 'noreply@yayyam.com' }
     }
 
     // Ajout des destinataires seulement si demandé

@@ -26,7 +26,7 @@ export async function POST(req: Request) {
 Contexte de la page : "${context}"
 Règles strictes :
 1. Moins de 60 caractères.
-2. Direct, accrocheur, optimisé pour la vente en Afrique/Sénégal (PDV Pro).
+2. Direct, accrocheur, optimisé pour la vente en Afrique/Sénégal (Yayyam).
 3. Ne fournis AUCUNE introduction, justification ou texte supplémentaire. Uniquement la balise texte brute. Pas de guillemets autour de la réponse.`
     } else if (type === 'description') {
       prompt = `Tu es un expert mondial en SEO et e-commerce. Ta mission est de générer une 'Meta Description' parfaite pour Google.

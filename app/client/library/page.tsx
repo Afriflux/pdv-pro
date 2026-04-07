@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Download, PlayCircle, ArrowRight, BookOpen, Lock } from 'lucide-react'
 
 export const metadata = {
-  title: 'Ma Bibliothèque | PDV Client',
+  title: 'Ma Bibliothèque | Yayyam Client',
 }
 
 export const dynamic = 'force-dynamic'
@@ -35,40 +35,7 @@ export default async function LibraryPage() {
     }
   })
 
-  const mockAccesses = [
-    {
-      id: "mock_access_1",
-      created_at: new Date().toISOString(),
-      expires_at: null,
-      product: {
-        name: "Formation Complète E-commerce 2026",
-        images: ["https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop"],
-        digital_link: "https://youtu.be/dQw4w9WgXcQ"
-      }
-    },
-    {
-      id: "mock_access_2",
-      created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-      expires_at: null,
-      product: {
-        name: "Guide Ultime du Copywriting (PDF)",
-        images: ["https://images.unsplash.com/photo-1455390582262-044cdead2708?q=80&w=2073&auto=format&fit=crop"],
-        digital_file_url: "#"
-      }
-    },
-    {
-      id: "mock_access_3",
-      created_at: new Date(Date.now() - 86400000 * 40).toISOString(),
-      expires_at: new Date(Date.now() - 86400000).toISOString(), // Expired
-      product: {
-        name: "Masterclass Facebook Ads",
-        images: ["https://images.unsplash.com/photo-1563986768494-4dee2763ff0f?q=80&w=2070&auto=format&fit=crop"],
-        digital_link: "https://youtu.be/dQw4w9WgXcQ"
-      }
-    }
-  ]
-
-  const digitalAccesses = [...mockAccesses, ...(dbDigitalAccesses || [])]
+  const digitalAccesses = dbDigitalAccesses || []
 
   return (
     <div className="w-full relative min-h-[calc(100vh-80px)] pb-12">
@@ -107,7 +74,7 @@ export default async function LibraryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
-            {digitalAccesses.map((access) => {
+            {(digitalAccesses || []).map((access) => {
               const product = access.product
               const image = product.images?.[0] || '/images/placeholder.webp'
               const isVideo = product.digital_link !== null

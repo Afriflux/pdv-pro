@@ -1,4 +1,4 @@
--- Insertion de quelques astuces et nouveautés pour PDV Pro
+-- Insertion de quelques astuces et nouveautés pour Yayyam
 INSERT INTO "Tip" (id, type, title, content, cta_label, cta_url, target_plan, pinned, active, created_at)
 VALUES 
   (

@@ -7,7 +7,7 @@ export default function TermsPage() {
       <header className="bg-[#0F7A60] text-white py-6 px-6 shadow-md">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="text-2xl font-black tracking-tighter">
-            PDV <span className="text-emerald-200">Pro</span>
+            Yayyam <span className="text-emerald-200">Pro</span>
           </Link>
           <Link href="/" className="text-sm font-medium hover:text-emerald-100 transition">
             Retour à l'accueil
@@ -22,7 +22,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">1. Objet</h2>
             <p>
-              Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de la plateforme PDV Pro, 
+              Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de la plateforme Yayyam, 
               qui permet aux commerçants de créer des pages de vente et d'accepter des paiements mobiles.
             </p>
           </section>
@@ -34,7 +34,7 @@ export default function TermsPage() {
               <ul className="list-disc ml-6 space-y-1">
                 <li>Commission dégressive automatique de 8% à 5% selon le volume de ventes mensuel.</li>
                 <li>0 - 100K FCFA : 8% | 100K - 500K : 7% | 500K - 1M : 6% | +1M : 5%.</li>
-                <li>PDV Pro absorbe tous les frais de transaction et de retrait.</li>
+                <li>Yayyam absorbe tous les frais de transaction et de retrait.</li>
                 <li>Fonds disponibles immédiatement après paiement.</li>
               </ul>
               <p className="font-bold text-[#0F7A60]">Ventes en COD (Paiement à la livraison) :</p>
@@ -49,7 +49,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold mb-4">3. Paiements et Retraits</h2>
             <p>
               Les paiements sont effectués via Wave, CinetPay ou PayTech. 
-              Le vendeur reçoit le montant net (H.T. commission) sur son solde PDV Pro. 
+              Le vendeur reçoit le montant net (H.T. commission) sur son solde Yayyam. 
               Les retraits vers un compte Wave Mobile Money sont gratuits dans le plan gratuit.
             </p>
           </section>
@@ -67,7 +67,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">5. Responsabilité</h2>
             <p>
-              PDV Pro agit en tant qu'intermédiaire technique. Nous ne sommes pas responsables de la qualité 
+              Yayyam agit en tant qu'intermédiaire technique. Nous ne sommes pas responsables de la qualité 
               des produits vendus ou des litiges de livraison entre le vendeur et l'acheteur.
             </p>
           </section>
@@ -75,7 +75,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">6. Contact</h2>
             <p>
-              Pour toute question relative aux présentes conditions, contactez-nous à <span className="font-bold">support@pdvpro.com</span>.
+              Pour toute question relative aux présentes conditions, contactez-nous à <span className="font-bold">support@yayyam.com</span>.
             </p>
           </section>
 
@@ -88,7 +88,7 @@ export default function TermsPage() {
       {/* Footer */}
       <footer className="bg-gray-50 py-10 px-6 border-t border-gray-200">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-gray-600 text-sm">© 2026 PDV Pro — La solution de vente de référence au Sénégal.</p>
+          <p className="text-gray-600 text-sm">© 2026 Yayyam — La solution de vente de référence au Sénégal.</p>
         </div>
       </footer>
     </div>

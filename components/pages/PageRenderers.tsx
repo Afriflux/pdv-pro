@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-dom-props, jsx-a11y/control-has-associated-label, jsx-a11y/alt-text, @typescript-eslint/no-explicit-any, jsx-a11y/anchor-is-valid */
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -76,7 +77,7 @@ export const DEFAULT_THEME: Theme = { color: 'orange', font: 'sans' }
 
 export function PageRendererConfig({ theme, children }: { theme: Theme, children: React.ReactNode }) {
   return (
-    <div className={`w-full min-h-screen ${FONT_MAP[theme.font] || FONT_MAP.sans} text-gray-900 bg-white selection:bg-${theme.color}-100`}>
+    <div className={`w-full min-h-screen ${FONT_MAP[theme.font] || FONT_MAP.sans} text-gray-900 bg-[#FDFCFB] selection:bg-gray-200`}>
       {children}
     </div>
   )
@@ -85,22 +86,22 @@ export function PageRendererConfig({ theme, children }: { theme: Theme, children
 export function HeroSection({ s, products, cta, theme = DEFAULT_THEME }: { s: Section; products: Product[]; cta: string; theme?: Theme }) {
   const colors = THEME_MAP[theme.color] || THEME_MAP.orange
   return (
-    <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white py-20 px-6 text-center overflow-hidden">
-      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 ${colors.glow} opacity-10 rounded-full blur-3xl pointer-events-none`} />
+    <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-ink text-white pt-24 pb-32 px-6 text-center overflow-hidden rounded-b-[48px] md:rounded-b-[80px] shadow-2xl">
+      <div className={`absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[600px] ${colors.glow} opacity-20 rounded-full blur-[100px] pointer-events-none`} />
 
-      <div className="relative max-w-xl mx-auto space-y-6">
-        <h1 className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
+      <div className="relative max-w-2xl mx-auto space-y-8 z-10">
+        <h1 className="text-4xl md:text-6xl font-black leading-[1.1] tracking-tight">
           {s.title || 'Bienvenue'}
         </h1>
-        {s.subtitle && <p className="text-gray-300 text-lg leading-relaxed">{s.subtitle}</p>}
+        {s.subtitle && <p className="text-gray-300 text-lg md:text-xl font-medium leading-relaxed max-w-xl mx-auto">{s.subtitle}</p>}
 
         {products.length > 0 && (
-          <div className="space-y-3 mt-8">
+          <div className="space-y-4 mt-10">
             {products.map(p => (
               <a
                 key={p.id}
                 href={`#product-${p.id}`}
-                className={`block ${colors.bgPrimary} ${colors.bgHover} text-white font-bold py-4 px-8 rounded-2xl text-lg transition shadow-lg ${colors.shadow}`}
+                className={`block ${colors.bgPrimary} ${colors.bgHover} text-white font-bold py-5 px-10 rounded-[100px] shadow-2xl ${colors.shadow} text-xl transition-all duration-300 hover:-translate-y-1 active:scale-95`}
               >
                 {s.cta || cta} — {p.price.toLocaleString('fr-FR')} FCFA
               </a>
@@ -109,7 +110,7 @@ export function HeroSection({ s, products, cta, theme = DEFAULT_THEME }: { s: Se
         )}
         {products.length === 0 && s.cta && (
           <a href="#contact"
-            className={`inline-block ${colors.bgPrimary} ${colors.bgHover} text-white font-bold py-4 px-10 rounded-2xl text-lg transition shadow-lg ${colors.shadow}`}>
+            className={`inline-block ${colors.bgPrimary} ${colors.bgHover} text-white font-bold py-5 px-12 rounded-[100px] shadow-2xl ${colors.shadow} text-xl transition-all duration-300 hover:-translate-y-1 active:scale-95`}>
             {s.cta}
           </a>
         )}
@@ -123,14 +124,14 @@ export function BenefitsSection({ s, theme = DEFAULT_THEME }: { s: Section; them
   const items = (s.items as string[] | undefined) || []
   if (items.length === 0) return null
   return (
-    <section className="py-14 px-6 bg-white">
+    <section className="py-20 px-6">
       <div className="max-w-xl mx-auto">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">Pourquoi nous choisir ?</h2>
-        <div className="grid grid-cols-1 gap-4">
+        <h2 className="text-3xl font-black text-gray-900 text-center mb-12">Pourquoi nous choisir ?</h2>
+        <div className="grid grid-cols-1 gap-5">
           {items.map((item, i) => (
-            <div key={i} className={`flex items-center gap-4 ${colors.bgLight} rounded-2xl p-4`}>
-              <div className={`w-8 h-8 ${colors.bgPrimary} rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>✓</div>
-              <span className="text-gray-800 font-medium">{typeof item === 'string' ? item : ''}</span>
+            <div key={i} className={`flex items-center gap-5 bg-white/60 backdrop-blur-2xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.03)] rounded-[32px] p-6 transition-all duration-300 hover:-translate-y-1`}>
+              <div className={`w-12 h-12 ${colors.bgLight} rounded-2xl flex items-center justify-center ${colors.textPrimary} font-black text-xl flex-shrink-0 shadow-inner`}>✓</div>
+              <span className="text-gray-800 font-bold text-lg">{typeof item === 'string' ? item : ''}</span>
             </div>
           ))}
         </div>
@@ -148,30 +149,30 @@ export function TestimonialsSection({ s, theme = DEFAULT_THEME }: { s: Section; 
   const avg = items.reduce((acc, curr) => acc + (curr.rating || 5), 0) / items.length
   
   return (
-    <section className="py-20 px-6 bg-gray-50 border-t border-gray-100">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">Ce que disent nos clients</h2>
+    <section className="py-24 px-6 bg-[#FDFDFD]">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-black text-gray-900 text-center mb-16 tracking-tight">Ce que disent nos clients</h2>
         
         {/* Résumé Trustpilot-like */}
-        <div className="bg-white rounded-3xl p-8 mb-10 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-8 md:gap-16">
+        <div className="bg-white/60 backdrop-blur-3xl rounded-[40px] p-10 mb-12 shadow-[0_8px_40px_rgb(0,0,0,0.03)] border border-white flex flex-col md:flex-row items-center gap-10 md:gap-20">
           <div className="text-center md:text-left flex-shrink-0">
-            <p className="text-6xl font-black text-gray-900 mb-2">{avg.toFixed(1)}</p>
-            <div className={`text-2xl ${colors.textPrimary} flex mb-2 justify-center md:justify-start`}>
+            <p className="text-7xl font-black text-gray-900 mb-2 tracking-tighter">{avg.toFixed(1)}</p>
+            <div className={`text-3xl ${colors.textPrimary} flex mb-2 justify-center md:justify-start gap-1`}>
                ★★★★★
             </div>
-            <p className="text-sm font-bold text-gray-500">Basé sur {items.length * 3 + 12} avis</p>
+            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-4">Basé sur {items.length * 3 + 12} avis</p>
           </div>
           
-          <div className="flex-1 w-full space-y-3">
+          <div className="flex-1 w-full space-y-4">
             {[5, 4, 3, 2, 1].map((star) => {
               const percentage = star === 5 ? 85 : star === 4 ? 10 : star === 3 ? 3 : star === 2 ? 1 : 1
               return (
-                <div key={star} className="flex items-center gap-3 text-sm font-bold text-gray-600">
-                  <span className="w-10">{star} <span className="text-gray-300">★</span></span>
-                  <div className="flex-1 h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                <div key={star} className="flex items-center gap-4 text-sm font-bold text-gray-400">
+                  <span className="w-8">{star} ★</span>
+                  <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
                     <div className={`h-full ${star >= 4 ? colors.bgPrimary : 'bg-gray-300'} rounded-full`} style={{ width: `${percentage}%` }} />
                   </div>
-                  <span className="w-10 text-right text-gray-400">{percentage}%</span>
+                  <span className="w-10 text-right opacity-50">{percentage}%</span>
                 </div>
               )
             })}
@@ -179,28 +180,28 @@ export function TestimonialsSection({ s, theme = DEFAULT_THEME }: { s: Section; 
         </div>
 
         {/* Liste des avis */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((t, i) => (
-            <div key={i} className="bg-white rounded-2xl p-8 shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-gray-50">
-              <div className="flex items-center gap-4 mb-4">
-                 <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-400 text-lg">
+            <div key={i} className="bg-white/60 backdrop-blur-2xl rounded-[32px] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-white hover:-translate-y-2 transition-all duration-300 flex flex-col items-start gap-4">
+              <div className={`flex items-center gap-1 text-lg ${colors.textPrimary}`}>
+                {'★★★★★'.split('').map((star, si) => (
+                  <span key={si} className={si < (t.rating || 5) ? '' : 'text-gray-200'}>{star}</span>
+                ))}
+              </div>
+              <p className="text-gray-700 font-medium text-[15px] leading-relaxed flex-1">&ldquo;{t.text}&rdquo;</p>
+              <div className="flex items-center gap-3 w-full border-t border-gray-100/50 pt-5 mt-auto">
+                 <div className={`w-10 h-10 rounded-full ${colors.bgLight} flex items-center justify-center font-black ${colors.textPrimary}`}>
                    {t.name.charAt(0).toUpperCase()}
                  </div>
                  <div>
-                   <p className="text-base font-bold text-gray-900 flex items-center gap-2">
+                   <p className="font-bold text-gray-900 leading-tight flex justify-between items-center w-full">
                      {t.name}
-                     <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded flex items-center gap-1 uppercase tracking-wider">
-                        <span className="font-sans">✓</span> Achat vérifié
-                     </span>
                    </p>
-                   <div className="flex items-center gap-1 mt-1">
-                     {'★★★★★'.split('').map((star, si) => (
-                       <span key={si} className={`text-sm ${si < (t.rating || 5) ? colors.textPrimary : 'text-gray-200'}`}>{star}</span>
-                     ))}
-                   </div>
+                   <span className="text-[10px] text-green-600 font-black flex items-center gap-1 uppercase tracking-widest mt-0.5">
+                      ✓ Achat vérifié
+                   </span>
                  </div>
               </div>
-              <p className="text-gray-600 text-base leading-relaxed">&ldquo;{t.text}&rdquo;</p>
             </div>
           ))}
         </div>
@@ -213,14 +214,14 @@ export function FaqSection({ s }: { s: Section; theme?: Theme }) {
   const items = (s.items as Array<{ q: string; a: string }> | undefined) || []
   if (items.length === 0) return null
   return (
-    <section className="py-14 px-6 bg-white border-t border-gray-50">
-      <div className="max-w-xl mx-auto">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">Questions fréquentes</h2>
-        <div className="space-y-4">
+    <section className="py-20 px-6">
+      <div className="max-w-2xl mx-auto">
+        <h2 className="text-3xl font-black text-gray-900 text-center mb-12">Questions fréquentes</h2>
+        <div className="space-y-5">
           {items.map((qa, i) => (
-            <div key={i} className="border border-gray-100 bg-gray-50/50 rounded-2xl p-6">
-              <p className="font-bold text-gray-900 mb-2">{qa.q}</p>
-              <p className="text-gray-600 text-sm leading-relaxed">{qa.a}</p>
+            <div key={i} className="bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)] transition-all hover:bg-white">
+              <p className="text-lg font-black text-gray-900 mb-3">{qa.q}</p>
+              <p className="text-gray-500 font-medium leading-relaxed">{qa.a}</p>
             </div>
           ))}
         </div>
@@ -233,14 +234,17 @@ export function ProgramSection({ s, theme: _theme = DEFAULT_THEME }: { s: Sectio
   const items = (s.items as string[] | undefined) || []
   if (items.length === 0) return null
   return (
-    <section className="py-14 px-6 bg-gray-50">
-      <div className="max-w-xl mx-auto">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">Programme détaillé</h2>
-        <div className="space-y-3">
+    <section className="py-20 px-6">
+      <div className="max-w-2xl mx-auto">
+        <h2 className="text-3xl font-black text-gray-900 text-center mb-12 tracking-tight">Programme détaillé</h2>
+        <div className="space-y-4 relative">
+          <div className="absolute top-0 bottom-0 left-6 md:left-10 w-1 bg-gray-100 rounded-full" />
           {items.map((item, i) => (
-            <div key={i} className="flex items-center gap-4 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-              <div className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">{i + 1}</div>
-              <span className="text-gray-800 font-medium">{typeof item === 'string' ? item : ''}</span>
+            <div key={i} className="flex flex-col md:flex-row items-start md:items-center gap-4 bg-white/50 backdrop-blur border border-gray-100/50 rounded-[32px] p-6 shadow-sm relative z-10 transition-all hover:-translate-y-1 hover:shadow-md">
+              <div className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-white shadow-md rounded-[20px] shrink-0 text-xl font-black text-gray-900 mx-auto md:mx-0">
+                 {i + 1}
+              </div>
+              <span className="text-gray-800 font-bold text-lg md:text-xl text-center md:text-left">{typeof item === 'string' ? item : ''}</span>
             </div>
           ))}
         </div>
@@ -251,9 +255,9 @@ export function ProgramSection({ s, theme: _theme = DEFAULT_THEME }: { s: Sectio
 
 export function ImageGallerySection({ s, theme: _theme = DEFAULT_THEME }: { s: Section; theme?: Theme }) {
   return (
-    <section className="py-12 px-6 bg-white">
-      <div className="max-w-xl mx-auto text-center">
-        {s.text && <p className="text-gray-600 font-medium">{s.text}</p>}
+    <section className="py-16 px-6">
+      <div className="max-w-2xl mx-auto text-center">
+        {s.text && <p className="text-gray-500 font-medium text-lg bg-gray-50 px-8 py-6 rounded-[32px]">{s.text}</p>}
       </div>
     </section>
   )
@@ -263,22 +267,26 @@ export function CoachProfileSection({ s, theme = DEFAULT_THEME }: { s: Section; 
   const colors = THEME_MAP[theme.color] || THEME_MAP.orange
   const creds = s.credentials || []
   return (
-    <section className="py-16 px-6 bg-white">
-      <div className="max-w-xl mx-auto text-center space-y-6">
-        <div className={`w-24 h-24 mx-auto ${colors.bgLight} rounded-full flex items-center justify-center text-4xl`}>👤</div>
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">{s.name || 'Votre Coach'}</h2>
-          {s.bio && <p className="text-gray-600 mt-4 leading-relaxed max-w-md mx-auto">{s.bio}</p>}
-        </div>
-        {creds.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2 pt-4">
-            {creds.map((c, i) => (
-               <span key={i} className={`px-3 py-1 text-xs font-bold uppercase tracking-wide rounded-full ${colors.bgLight} ${colors.textPrimary}`}>
-                 {c}
-               </span>
-            ))}
+    <section className="py-24 px-6">
+      <div className="max-w-3xl mx-auto text-center bg-white/60 backdrop-blur-3xl border border-white shadow-[0_8px_40px_rgb(0,0,0,0.03)] rounded-[48px] p-12 relative overflow-hidden">
+        <div className={`absolute top-0 left-0 w-full h-32 ${colors.bgLight} opacity-50`} />
+        
+        <div className="relative z-10 space-y-6">
+          <div className={`w-32 h-32 mx-auto bg-white shadow-xl rounded-full flex items-center justify-center text-5xl mb-6 ring-8 ring-white`}>👤</div>
+          <div>
+            <h2 className="text-3xl font-black text-gray-900">{s.name || 'Votre Coach'}</h2>
+            {s.bio && <p className="text-gray-500 font-medium mt-4 leading-relaxed text-lg max-w-xl mx-auto">{s.bio}</p>}
           </div>
-        )}
+          {creds.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2 pt-6">
+              {creds.map((c, i) => (
+                 <span key={i} className={`px-4 py-2 text-xs font-black uppercase tracking-widest rounded-full ${colors.bgLight} ${colors.textPrimary} border border-transparent`}>
+                   {c}
+                 </span>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )
@@ -287,22 +295,26 @@ export function CoachProfileSection({ s, theme = DEFAULT_THEME }: { s: Section; 
 export function CtaSection({ s, products, theme = DEFAULT_THEME }: { s: Section; products: Product[]; theme?: Theme }) {
   const colors = THEME_MAP[theme.color] || THEME_MAP.orange
   return (
-    <section className={`py-16 px-6 bg-gradient-to-r ${colors.gradient} text-white text-center`}>
-      <div className="max-w-xl mx-auto space-y-6">
-        <h2 className="text-2xl md:text-3xl font-bold leading-tight">{s.cta || 'Passer commande maintenant'}</h2>
-        {products.length > 0 && (
-          <div className="space-y-3 pt-4">
-             {products.map(p => (
-              <a
-                key={p.id}
-                href={`#product-${p.id}`}
-                className="block bg-white text-gray-900 font-bold py-4 px-8 rounded-2xl text-lg hover:bg-gray-50 transition shadow-lg"
-              >
-                Commander — {p.price.toLocaleString('fr-FR')} FCFA
-              </a>
-            ))}
-          </div>
-        )}
+    <section className="py-24 px-6 md:px-10">
+      <div className={`max-w-4xl mx-auto bg-gradient-to-br ${colors.gradient} rounded-[48px] p-12 md:p-20 text-center shadow-2xl relative overflow-hidden`}>
+        <div className="absolute inset-0 bg-white/10" style={{ mixBlendMode: 'overlay' }} />
+        
+        <div className="relative z-10 space-y-8">
+          <h2 className="text-4xl md:text-5xl font-black text-white leading-tight tracking-tight">{s.cta || 'Passez à l\'action'}</h2>
+          {products.length > 0 && (
+            <div className="pt-8 flex flex-col items-center gap-4">
+               {products.map(p => (
+                <a
+                  key={p.id}
+                  href={`#product-${p.id}`}
+                  className="bg-white text-gray-900 font-bold py-5 px-12 rounded-[100px] text-xl shadow-xl hover:scale-105 active:scale-95 transition-transform"
+                >
+                  Commander — {p.price.toLocaleString('fr-FR')} FCFA
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )
@@ -312,31 +324,37 @@ export function ProductCards({ products, theme = DEFAULT_THEME }: { products: Pr
   const colors = THEME_MAP[theme.color] || THEME_MAP.orange
   if (products.length === 0) return null
   return (
-    <section className="py-16 px-6 bg-gray-50 border-t border-gray-100">
-      <div className="max-w-xl mx-auto">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">Nos produits</h2>
-        <div className="space-y-6">
+    <section className="py-24 px-6 relative z-10">
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-black text-gray-900 text-center mb-16 tracking-tight">Le Catalogue Ultime</h2>
+        <div className="space-y-12">
           {products.map(p => (
-            <div key={p.id} id={`product-${p.id}`} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition">
-              {p.images?.[0] && (
-                 <div className="relative w-full h-56 overflow-hidden">
-                   <Image src={p.images[0]} alt={p.name} fill className="object-cover" />
+            <div key={p.id} id={`product-${p.id}`} className="bg-white/70 backdrop-blur-3xl border border-white rounded-[48px] overflow-hidden shadow-[0_8px_40px_rgb(0,0,0,0.05)] transition-all hover:shadow-[0_20px_60px_rgb(0,0,0,0.08)] group">
+              {p.images?.[0] ? (
+                 <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+                   <div className="absolute inset-0 bg-gray-50" />
+                   <Image src={p.images[0]} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                  </div>
+              ) : (
+                 <div className="relative w-full h-40 bg-gray-50 flex items-center justify-center text-4xl">🛍️</div>
               )}
-              <div className="p-6 md:p-8 space-y-4">
-                <h3 className="font-bold text-gray-900 text-xl">{p.name}</h3>
-                {p.description && <p className="text-gray-500 text-sm leading-relaxed">{p.description}</p>}
+              <div className="p-8 md:p-12">
+                <h3 className="font-black text-gray-900 text-3xl mb-4 tracking-tight leading-tight">{p.name}</h3>
+                {p.description && <p className="text-gray-500 font-medium text-[15px] md:text-lg leading-relaxed mb-8">{p.description}</p>}
                 
-                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <span className={`text-3xl font-black ${colors.textPrimary}`}>
-                    {p.price.toLocaleString('fr-FR')} <span className="text-lg font-bold">FCFA</span>
-                  </span>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-t border-gray-100 pt-8">
+                  <div>
+                    <p className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-1">Prix total</p>
+                    <span className="text-4xl font-black text-gray-900">
+                      {p.price.toLocaleString('fr-FR')} <span className="text-xl">FCFA</span>
+                    </span>
+                  </div>
                   <Link
                     href={`?checkout=${p.id}`}
                     scroll={false}
-                    className={`text-center ${colors.bgPrimary} ${colors.bgHover} text-white font-bold px-8 py-3.5 rounded-xl transition shadow-lg ${colors.shadow}`}
+                    className={`flex items-center justify-center ${colors.bgPrimary} ${colors.bgHover} text-white font-bold px-12 py-5 rounded-[100px] shadow-2xl ${colors.shadow} text-xl transition-transform active:scale-95 whitespace-nowrap`}
                   >
-                    Acheter
+                    Acheter maintenant
                   </Link>
                 </div>
               </div>
@@ -351,9 +369,9 @@ export function ProductCards({ products, theme = DEFAULT_THEME }: { products: Pr
 export function GenericSection({ s }: { s: Section }) {
   if (!s.text) return null
   return (
-    <section className="py-12 px-6 bg-white">
-      <div className="max-w-xl mx-auto text-center">
-        <p className="text-gray-600 leading-relaxed text-lg">{s.text}</p>
+    <section className="py-12 px-6">
+      <div className="max-w-2xl mx-auto text-center">
+        <p className="text-gray-600 font-medium leading-relaxed text-[15px] md:text-lg">{s.text}</p>
       </div>
     </section>
   )
@@ -361,27 +379,27 @@ export function GenericSection({ s }: { s: Section }) {
 
 export function CountdownSection({ s, theme: _theme = DEFAULT_THEME }: { s: Section; theme?: Theme }) {
   return (
-    <section className="py-14 px-6 bg-red-50 border-y border-red-100">
-      <div className="max-w-xl mx-auto text-center space-y-6">
-        <h2 className="text-2xl font-black text-red-600 uppercase tracking-wide flex items-center justify-center gap-2">
-           <span className="animate-pulse">⏳</span> {s.title || 'Offre Limitée'}
+    <section className="py-16 px-6">
+      <div className="max-w-xl mx-auto text-center space-y-6 bg-red-50/50 backdrop-blur-2xl border border-red-100/50 rounded-[40px] p-10 shadow-xl shadow-red-50/50">
+        <h2 className="text-2xl font-black text-red-600 uppercase tracking-widest flex items-center justify-center gap-3">
+           <span className="animate-pulse text-3xl">⏳</span> {s.title || 'Offre Limitée'}
         </h2>
-        {s.subtitle && <p className="text-red-800 font-medium">{s.subtitle}</p>}
+        {s.subtitle && <p className="text-red-900/60 font-bold text-lg">{s.subtitle}</p>}
         
-        <div className="flex justify-center gap-4">
-          <div className="bg-white px-4 py-3 rounded-xl shadow-sm border border-red-100 min-w-[70px]">
-            <span className="block text-3xl font-black text-red-600">02</span>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Heures</span>
+        <div className="flex justify-center gap-3 md:gap-4 pt-4">
+          <div className="bg-white px-5 py-4 rounded-[24px] shadow-sm border border-red-50 min-w-[80px]">
+            <span className="block text-4xl font-black text-red-600">02</span>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Heures</span>
           </div>
-          <div className="text-3xl font-black text-red-300 py-3">:</div>
-          <div className="bg-white px-4 py-3 rounded-xl shadow-sm border border-red-100 min-w-[70px]">
-            <span className="block text-3xl font-black text-red-600">14</span>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Minutes</span>
+          <div className="text-4xl font-black text-red-200 py-4">:</div>
+          <div className="bg-white px-5 py-4 rounded-[24px] shadow-sm border border-red-50 min-w-[80px]">
+            <span className="block text-4xl font-black text-red-600">14</span>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Minutes</span>
           </div>
-          <div className="text-3xl font-black text-red-300 py-3">:</div>
-          <div className="bg-white px-4 py-3 rounded-xl shadow-sm border border-red-100 min-w-[70px]">
-            <span className="block text-3xl font-black text-red-600 " dangerouslySetInnerHTML={{__html: '59'}} />
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Secondes</span>
+          <div className="text-4xl font-black text-red-200 py-4">:</div>
+          <div className="bg-white px-5 py-4 rounded-[24px] shadow-sm border border-red-50 min-w-[80px]">
+            <span className="block text-4xl font-black text-red-600 " dangerouslySetInnerHTML={{__html: '59'}} />
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Secondes</span>
           </div>
         </div>
       </div>
@@ -397,37 +415,37 @@ export function ComparisonSection({ s, theme = DEFAULT_THEME }: { s: Section; th
   const cons = items.find(i => i.name !== 'Nous') || { name: 'Les Autres', text: 'Lent, Cher, Complexe' }
 
   return (
-    <section className="py-16 px-6 bg-white">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-10">{s.title || 'Pourquoi nous choisir ?'}</h2>
+    <section className="py-24 px-6 md:px-10">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-3xl md:text-5xl font-black text-gray-900 text-center mb-16 tracking-tight">{s.title || 'Ce qui fait la différence'}</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-0 border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Les Autres (Cons) */}
-          <div className="bg-gray-50 p-8 md:px-12 md:py-10 border-r border-gray-100">
-            <h3 className="text-xl font-bold text-gray-500 mb-6 flex items-center gap-2">
-               <span className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-black">X</span>
+          <div className="bg-gray-50 border border-gray-100 rounded-[40px] p-10 md:p-14">
+            <h3 className="text-2xl font-black text-gray-400 mb-8 flex items-center gap-3">
+               <span className="w-10 h-10 rounded-full bg-gray-200/50 flex items-center justify-center text-sm font-black">X</span>
                {cons.name || 'La Concurrence'}
             </h3>
-            <ul className="space-y-4">
+            <ul className="space-y-5">
               {(cons.text || 'Lent, Cher').split(',').map((item, i) => (
-                <li key={i} className="flex gap-3 text-gray-400 font-medium">
-                  <span className="text-red-400 flex-shrink-0">✖</span> {item.trim()}
+                <li key={i} className="flex gap-4 text-gray-500 font-medium text-lg items-center">
+                  <span className="text-gray-300 flex-shrink-0 text-xl font-bold">✖</span> {item.trim()}
                 </li>
               ))}
             </ul>
           </div>
           
           {/* Nous (Pros) */}
-          <div className={`${colors.bgLight} p-8 md:px-12 md:py-10 relative overflow-hidden`}>
-            <div className={`absolute top-0 right-0 w-32 h-32 ${colors.glow} opacity-10 rounded-full blur-3xl`} />
-            <h3 className={`text-xl font-bold ${colors.textPrimary} mb-6 flex items-center gap-2 relative z-10`}>
-               <span className={`w-8 h-8 rounded-full ${colors.bgPrimary} flex items-center justify-center text-white text-sm font-black`}>✓</span>
+          <div className={`${colors.bgLight} border border-white rounded-[40px] p-10 md:p-14 relative overflow-hidden shadow-xl`}>
+            <div className={`absolute top-0 right-0 w-64 h-64 ${colors.glow} opacity-10 rounded-full blur-[80px] pointer-events-none`} />
+            <h3 className={`text-2xl font-black ${colors.textPrimary} mb-8 flex items-center gap-3 relative z-10`}>
+               <span className={`w-10 h-10 rounded-full ${colors.bgPrimary} flex items-center justify-center text-white text-sm font-black`}>✓</span>
                {pros.name || 'Notre Produit'}
             </h3>
-            <ul className="space-y-4 relative z-10">
+            <ul className="space-y-5 relative z-10">
               {(pros.text || 'Rapide, Efficace').split(',').map((item, i) => (
-                <li key={i} className="flex gap-3 font-bold text-gray-900">
-                  <span className={`${colors.textPrimary} flex-shrink-0`}>✔</span> {item.trim()}
+                <li key={i} className="flex gap-4 font-black text-gray-900 text-lg items-center">
+                  <span className={`${colors.textPrimary} flex-shrink-0 text-xl`}>✔</span> {item.trim()}
                 </li>
               ))}
             </ul>
@@ -469,27 +487,28 @@ export function CrossSellSection({ products, theme = DEFAULT_THEME }: { products
   if (!products || products.length === 0) return null
   
   return (
-    <section className="py-16 px-6 bg-white border-t border-gray-100">
-      <div className="max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-10">Découvrez aussi d'autres pépites</h2>
+    <section className="py-24 px-6 relative">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl lg:text-4xl font-black text-gray-900 text-center mb-16 tracking-tight">Découvrez d'autres pépites</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map(p => (
-            <div key={p.id} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group">
-              <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
+            <div key={p.id} className="bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:-translate-y-2 transition-transform duration-300 group flex flex-col h-full">
+              <div className="aspect-[4/3] bg-gray-50 relative overflow-hidden">
                 {p.images?.[0] ? (
                   <Image src={p.images[0]} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-4xl">🛍️</div>
                 )}
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-              <div className="p-5">
-                <h3 className="font-bold text-gray-900 text-base truncate mb-3">{p.name}</h3>
-                <div className="flex items-center justify-between">
-                  <span className="font-black text-gray-900">{p.price.toLocaleString('fr-FR')} FCFA</span>
+              <div className="p-6 flex flex-col flex-1">
+                <h3 className="font-bold text-gray-900 text-lg line-clamp-2 mb-4 leading-tight">{p.name}</h3>
+                <div className="flex items-center justify-between mt-auto">
+                  <span className="font-black text-gray-900">{p.price.toLocaleString('fr-FR')} <span className="text-xs">FCFA</span></span>
                   <Link
                     href={`?checkout=${p.id}&cross_sell=true`}
                     scroll={false}
-                    className={`text-xs font-bold text-white px-4 py-2 rounded-lg ${colors.bgPrimary} ${colors.bgHover} shadow-sm transition-transform active:scale-95`}
+                    className={`font-black text-white px-5 py-2.5 rounded-full ${colors.bgPrimary} ${colors.bgHover} shadow-md transition-transform active:scale-95 text-xs uppercase tracking-widest`}
                   >
                     Ajouter
                   </Link>

@@ -112,7 +112,7 @@ export async function POST(req: Request) {
   }
 
   // 7. Construire le PaymentIntent
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
 
   // Détermine le chemin webhook selon la méthode
   const webhookPath = method.startsWith('card') ? 'cinetpay' : method

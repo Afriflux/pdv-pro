@@ -1,7 +1,7 @@
 'use client'
 
 // ─── components/ambassadeur/ContractModal.tsx ─────────────────────────────────
-// Modal de signature du contrat ambassadeur PDV Pro
+// Modal de signature du contrat ambassadeur Yayyam
 // Affiche le contrat pré-rempli + checkbox d'acceptation + bouton signer
 
 import { useState } from 'react'
@@ -55,7 +55,7 @@ export default function ContractModal({
         {/* ── En-tête ── */}
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
           <div>
-            <h2 className="text-lg font-black text-[#1A1A1A]">📜 Contrat Ambassadeur PDV Pro</h2>
+            <h2 className="text-lg font-black text-[#1A1A1A]">📜 Contrat Ambassadeur Yayyam</h2>
             <p className="text-xs text-gray-400 mt-0.5">Veuillez lire attentivement avant de signer</p>
           </div>
           <button
@@ -73,12 +73,12 @@ export default function ContractModal({
           {/* Parties */}
           <div className="bg-[#FAFAF7] rounded-xl p-4 border border-gray-100">
             <p className="font-black text-[#1A1A1A] text-center mb-3 uppercase tracking-wider text-xs">
-              CONTRAT D&apos;AMBASSADEUR PDV PRO
+              CONTRAT D&apos;AMBASSADEUR YAYYAM
             </p>
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div>
                 <p className="text-gray-400 font-bold uppercase tracking-wider mb-1">Entre</p>
-                <p className="font-bold">PDV Pro (la Plateforme)</p>
+                <p className="font-bold">Yayyam (la Plateforme)</p>
               </div>
               <div>
                 <p className="text-gray-400 font-bold uppercase tracking-wider mb-1">Et</p>
@@ -99,7 +99,7 @@ export default function ContractModal({
           <div>
             <p className="font-black text-[#1A1A1A] mb-1">Article 1 — Objet</p>
             <p className="text-gray-600">
-              L&#39;Ambassadeur s&#39;engage à promouvoir PDV Pro et à recruter des vendeurs actifs sur la plateforme en
+              L&#39;Ambassadeur s&#39;engage à promouvoir Yayyam et à recruter des vendeurs actifs sur la plateforme en
               utilisant son code ambassadeur unique <strong className="font-mono">{ambassadorCode}</strong>.
             </p>
           </div>
@@ -113,7 +113,7 @@ export default function ContractModal({
               par filleul ayant rempli les conditions suivantes dans son premier mois :
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-1 ml-2">
-              <li>KYC vérifié (identité confirmée sur PDV Pro)</li>
+              <li>KYC vérifié (identité confirmée sur Yayyam)</li>
               <li>Minimum <strong>50 000 FCFA</strong> de CA réalisé</li>
               <li><strong>1 mois</strong> d&#39;existence sur la plateforme</li>
             </ul>
@@ -127,7 +127,7 @@ export default function ContractModal({
             <p className="font-black text-[#1A1A1A] mb-1">Article 3 — Obligations de l&#39;Ambassadeur</p>
             <ul className="list-disc list-inside text-gray-600 space-y-1 ml-2">
               <li>Ne recruter que des vendeurs réels et actifs</li>
-              <li>Respecter la charte de communication PDV Pro</li>
+              <li>Respecter la charte de communication Yayyam</li>
               <li>Ne pas fausser les conditions de validation des filleuls</li>
               <li>Maintenir son KYC vérifié sur la plateforme</li>
             </ul>
@@ -137,7 +137,7 @@ export default function ContractModal({
           <div>
             <p className="font-black text-[#1A1A1A] mb-1">Article 4 — Résiliation</p>
             <p className="text-gray-600">
-              PDV Pro se réserve le droit de résilier ce contrat et de désactiver le badge ambassadeur
+              Yayyam se réserve le droit de résilier ce contrat et de désactiver le badge ambassadeur
               en cas de fraude, de recrutement fictif ou de non-respect des présentes conditions.
               Toute commission en cours sera gelée jusqu&#39;à résolution du litige.
             </p>
@@ -147,8 +147,8 @@ export default function ContractModal({
           <div>
             <p className="font-black text-[#1A1A1A] mb-1">Article 5 — Durée</p>
             <p className="text-gray-600">
-              Ce contrat est valide tant que le programme ambassadeur est actif sur PDV Pro
-              et que le badge ambassadeur est maintenu actif par l&#39;équipe PDV Pro.
+              Ce contrat est valide tant que le programme ambassadeur est actif sur Yayyam
+              et que le badge ambassadeur est maintenu actif par l&#39;équipe Yayyam.
             </p>
           </div>
 
@@ -177,7 +177,7 @@ export default function ContractModal({
             </div>
             <p className="text-xs text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors">
               J&#39;ai lu attentivement et j&#39;accepte les termes du{' '}
-              <strong>Contrat Ambassadeur PDV Pro</strong>.
+              <strong>Contrat Ambassadeur Yayyam</strong>.
               Je certifie que les informations fournies sont exactes et m&#39;engage à respecter toutes les obligations définies ci-dessus.
             </p>
           </label>

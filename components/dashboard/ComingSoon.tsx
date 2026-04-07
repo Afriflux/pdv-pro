@@ -11,7 +11,7 @@ interface ComingSoonProps {
 
 export default function ComingSoon({ title, description, icon }: ComingSoonProps) {
   const handleNotify = () => {
-    const message = encodeURIComponent(`Bonjour PDV Pro ! Je souhaite être informé dès que la fonctionnalité "${title}" est disponible.`)
+    const message = encodeURIComponent(`Bonjour Yayyam ! Je souhaite être informé dès que la fonctionnalité "${title}" est disponible.`)
     window.open(`https://wa.me/221770000000?text=${message}`, '_blank')
   }
 

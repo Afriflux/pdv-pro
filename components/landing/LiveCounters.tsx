@@ -67,7 +67,7 @@ export function LiveCounters({ vendorsCount, productsCount, ordersCount }: { ven
       <div className="max-w-5xl mx-auto px-6 relative z-10">
         <div className="text-center mb-12">
            <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">Le Mouvement est lancé</span>
-           <h2 className="text-3xl md:text-5xl font-display font-black text-ink">L'écosystème PDV Pro en Temps Réel</h2>
+           <h2 className="text-3xl md:text-5xl font-display font-black text-ink">L'écosystème Yayyam en Temps Réel</h2>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

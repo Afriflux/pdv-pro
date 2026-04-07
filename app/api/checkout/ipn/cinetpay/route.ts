@@ -49,7 +49,6 @@ export async function POST(req: NextRequest) {
     // ── 3. Traitement du paiement ────────────────────────────────────────────
     // CinetPay : cpm_result === '00' = succès
     if (result !== '00') {
-      console.log('[IPN CinetPay] Paiement non réussi:', result, orderId)
       return NextResponse.json({ ignored: true })
     }
 

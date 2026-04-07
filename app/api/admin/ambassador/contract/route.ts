@@ -78,7 +78,6 @@ export async function PATCH(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
-    console.log(`[ambassador/contract] ✅ Contrat signé pour l'ambassadeur ${id}`)
 
     return NextResponse.json({ success: true, already_signed: false }, { status: 200 })
 

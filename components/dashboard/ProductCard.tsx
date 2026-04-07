@@ -6,7 +6,7 @@ import Image from 'next/image'
 import CopyButton from '@/components/dashboard/CopyButton'
 import ProductImageViewer from '@/components/dashboard/ProductImageViewer'
 import { toggleProductStatus, duplicateProduct } from '@/app/actions/products'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { QrCode, Eye } from 'lucide-react'
 import { QRCodeModal } from '@/components/dashboard/QRCodeModal'
 

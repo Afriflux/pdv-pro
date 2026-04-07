@@ -24,6 +24,22 @@ export interface WorkflowEventPayload {
 
 export async function executeWorkflows(storeId: string, triggerType: WorkflowTriggerType, payload: WorkflowEventPayload) {
   try {
+    // 0. Exécution des Webhooks App Store (Notion, Zapier, Make)
+    const activeWebhooks = await prisma.webhook.findMany({
+      where: { store_id: storeId, active: true }
+    });
+
+    for (const hook of activeWebhooks) {
+       // Pour l'instant, on déclenche les webhooks majeurs sur l'achat
+       if (hook.event === 'order.created' && triggerType.includes('Commande')) {
+          fetch(hook.url, {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify(payload)
+          }).catch(e => console.error(`[Webhook Call Error] ${hook.url}`, e));
+       }
+    }
+
     // 1. Récupérer tous les workflows actifs pour cet événement
     const workflows = await prisma.workflow.findMany({
       where: { 
@@ -99,9 +115,9 @@ export async function executeWorkflows(storeId: string, triggerType: WorkflowTri
               if (payload.client_email) {
                 await sendTransactionalEmail({
                   to: [{ email: String(payload.client_email), name: payload.client_name || 'Client' }],
-                  subject: `Message de ${payload.store_name || 'PDV Pro'}`,
+                  subject: `Message de ${payload.store_name || 'Yayyam'}`,
                   htmlContent: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"><p>${finalMessage.replace(/\n/g, '<br>')}</p></div>`,
-                  sender: { name: payload.store_name || 'PDV Pro', email: 'no-reply@pdvpro.sn' } // Envoi depuis l'alias par défaut
+                  sender: { name: payload.store_name || 'Yayyam', email: 'no-reply@yayyam.sn' } // Envoi depuis l'alias par défaut
                 });
                 console.log(`[Workflow Engine] Email envoyé avec succès à ${payload.client_email}`);
               }

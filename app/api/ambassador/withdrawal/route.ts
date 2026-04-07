@@ -129,10 +129,6 @@ export async function POST(req: Request): Promise<Response> {
       await supabaseAdmin.from('AmbassadorTransaction').update({ status: 'completed' }).eq('id', newTx.id)
     }
 
-    console.log(
-      `[Ambassador Withdrawal] ✅ Retrait ${amount} FCFA via ${method} au ${phone} — ambassadeur ${ambassadorId} (ID: ${payoutResult.transactionId})`
-    )
-
     return NextResponse.json(
       { message: `Retrait de ${amount.toLocaleString('fr-FR')} FCFA initié avec succès.` },
       { status: 200 }

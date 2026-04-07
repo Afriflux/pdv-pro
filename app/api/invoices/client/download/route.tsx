@@ -203,9 +203,10 @@ const InvoiceDocument = ({ order }: { order: InvoiceOrderProps }) => {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
             {store.logo_url && <Image src={store.logo_url} style={styles.logo} />}
             <Text style={styles.storeName}>{store.name}</Text>
-            <Text style={styles.storeLabel}>Partenaire certifié PDV Pro</Text>
+            <Text style={styles.storeLabel}>Partenaire certifié Yayyam</Text>
           </View>
           <View style={styles.headerRight}>
             <Text style={styles.invoiceTitle}>FACTURE / REÇU</Text>
@@ -289,7 +290,7 @@ const InvoiceDocument = ({ order }: { order: InvoiceOrderProps }) => {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Merci pour votre confiance avec {store.name} !</Text>
-          <Text style={styles.footerText}>Facture générée automatiquement et propulsée par l'infrastructure sécurisée de PDV Pro.</Text>
+          <Text style={styles.footerText}>Facture générée automatiquement et propulsée par l'infrastructure sécurisée de Yayyam.</Text>
           <Text style={styles.footerText}>Pas de TVA applicable au régime du vendeur.</Text>
         </View>
       </Page>

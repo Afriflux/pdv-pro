@@ -104,10 +104,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
-    console.log(
-      `[KYC /submit] Dossier soumis — boutique="${store.name}" (id=${store.id}) type=${documentType}`
-    )
-
     // 7. Notifier le super_admin via Telegram (fire-and-forget)
     const telegramToken = process.env.TELEGRAM_BOT_TOKEN
     const chatId        = process.env.TELEGRAM_ADMIN_CHAT_ID
@@ -122,7 +118,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                       `🏪 Boutique : ${store.name}\n` +
                       `📄 Document : ${documentType}\n` +
                       `👤 Nom : ${fullName.trim()}\n` +
-                      `🔗 Valider : https://pdvpro.com/admin/kyc`,
+                      `🔗 Valider : https://yayyam.com/admin/kyc`,
           parse_mode: 'Markdown',
         }),
       }).catch(() => {

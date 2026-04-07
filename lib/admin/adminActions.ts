@@ -57,7 +57,7 @@ export async function getAdminOverviewStats(): Promise<AdminOverviewStats> {
     supabase.from('Report').select('*', { count: 'exact', head: true }).eq('status', 'open')
   ])
 
-  // PDV Pro Revenue (La somme des platform_fee)
+  // Yayyam Revenue (La somme des platform_fee)
   const totalRevenue = ordersData?.reduce((sum, order) => sum + (order.platform_fee || 0), 0) || 0
 
   return {
@@ -307,7 +307,7 @@ export async function resolveReport(reportId: string, status: string, notes: str
        if (reporterObj?.phone) {
          await sendWhatsApp({
            to: reporterObj.phone,
-           body: `📢 *Mise à jour de votre signalement*\n\nVotre réclamation concernant "${complaint.type}" vient d'être traitée et son statut est passé à : *${status === 'resolved' ? '✅ Résolu' : '❌ Rejeté'}*.\n\nMerci pour votre vigilance.\n_Support PDV Pro_`
+           body: `📢 *Mise à jour de votre signalement*\n\nVotre réclamation concernant "${complaint.type}" vient d'être traitée et son statut est passé à : *${status === 'resolved' ? '✅ Résolu' : '❌ Rejeté'}*.\n\nMerci pour votre vigilance.\n_Support Yayyam Pro_`
          })
        }
      }
@@ -318,7 +318,7 @@ export async function resolveReport(reportId: string, status: string, notes: str
          if (storeOwner?.phone) {
             await sendWhatsApp({
               to: storeOwner.phone,
-              body: `⚠️ *Info de l'administration PDV Pro*\n\nLe signalement ("${complaint.type}") vous concernant a été analysé et clôturé avec le statut: *${status === 'resolved' ? '✅ Résolu' : '❌ Rejeté'}*.\n\nConsultez l'historique de votre boutique si nécessaire.`
+              body: `⚠️ *Info de l'administration Yayyam*\n\nLe signalement ("${complaint.type}") vous concernant a été analysé et clôturé avec le statut: *${status === 'resolved' ? '✅ Résolu' : '❌ Rejeté'}*.\n\nConsultez l'historique de votre boutique si nécessaire.`
             })
          }
        }
@@ -394,7 +394,7 @@ export async function updatePlatformConfig(payload: AdminPlatformConfig) {
     'Mise à jour des règles de commission (KV)',
     'PlatformConfig',
     'dynamic-tiers',
-    payload
+    payload as unknown as Record<string, unknown>
   )
 }
 
@@ -671,19 +671,19 @@ export async function processWithdrawal(withdrawalId: string, action: 'approve' 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        item_name: `Retrait PDV Pro - ${vendorName}`,
+        item_name: `Retrait Yayyam - ${vendorName}`,
         item_price: w.amount,
         currency: "XOF",
         ref_command: `WITHDRAWAL-${withdrawalId}`,
-        ipn_url: "https://pdvpro.com/api/ipn/withdrawal",
-        success_url: "https://pdvpro.com/admin/withdrawals",
-        cancel_url: "https://pdvpro.com/admin/withdrawals",
+        ipn_url: "https://yayyam.com/api/ipn/withdrawal",
+        success_url: "https://yayyam.com/admin/withdrawals",
+        cancel_url: "https://yayyam.com/admin/withdrawals",
         payment_method: w.payment_method
       })
     })
 
     // On suppose que res.ok ou un flag json valident le succès. 
-    // Si PayTech retourne une erreur (fonds insuffisants côté PDV, etc.), res.ok est ptet false.
+    // Si PayTech retourne une erreur (fonds insuffisants côté Yayyam, etc.), res.ok est ptet false.
     const textData = await res.text()
     console.log("[PayTech Transfer API] Réponse :", textData)
 

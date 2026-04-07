@@ -17,6 +17,8 @@ import {
   Wallet,
   LucideIcon,
   GraduationCap,
+  CalendarDays,
+  Workflow,
 } from 'lucide-react'
 
 interface NavItem {
@@ -39,6 +41,9 @@ const NAV: NavSection[] = [
       { name: 'Assistant IA', href: '/client/assistant', icon: Sparkles, badge: 'IA' },
       { name: 'Mes Achats & Suivis', href: '/client/orders', icon: Package },
       { name: 'Ma Bibliothèque', href: '/client/library', icon: BookOpen, badge: 'NEW' },
+      { name: 'Mes Réservations', href: '/client/agenda', icon: CalendarDays },
+      { name: 'Mes Tâches', href: '/client/tasks', icon: Sparkles },
+      { name: 'Mes Automatisations', href: '/client/workflows', icon: Workflow },
       { name: 'Catalogue Vendeurs', href: '/vendeurs', icon: Store },
     ]
   },
@@ -124,7 +129,7 @@ function SidebarContent({
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-1 py-1 rounded-xl hover:bg-white/5 transition-colors">
-              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">PDV</span>
+              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">Yayyam</span>
               <span className="text-2xl font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-emerald-400 tracking-tight drop-shadow-md">Acheteur</span>
             </div>
           )}
@@ -145,7 +150,7 @@ function SidebarContent({
       </div>
 
       <nav className={`flex-1 overflow-y-auto custom-scrollbar ${collapsed ? 'px-2' : 'px-3'} space-y-4`}>
-        {NAV.map(section => (
+        {(NAV || []).map(section => (
           <div key={section.title} className="flex flex-col">
             {!collapsed && (
               <div className="px-2 mt-4 mb-2">
@@ -155,7 +160,7 @@ function SidebarContent({
               </div>
             )}
             <div className="space-y-1">
-              {section.items.map(item => (
+              {(section?.items || []).map(item => (
                 <NavLink
                   key={item.href}
                   item={item}
@@ -271,6 +276,7 @@ export function ClientSidebar({
         <div className="fixed top-0 left-0 right-0 z-40 bg-[#052e22] border-b border-white/5 flex items-center justify-between px-4 h-14">
           <div className="flex items-center gap-2">
             <button
+               title="Ouvrir le menu"
                onClick={() => setMobileOpen(true)}
                className="text-white/60 hover:text-white transition p-1"
             >
@@ -279,7 +285,7 @@ export function ClientSidebar({
               </svg>
             </button>
             <Link href="/" className="flex items-center gap-1.5 ml-1" onClick={() => setMobileOpen(false)}>
-              <span className="text-lg font-display font-black text-white">PDV</span>
+              <span className="text-lg font-display font-black text-white">Yayyam</span>
               <span className="text-lg font-display font-black text-emerald-400">Acheteur</span>
             </Link>
           </div>
@@ -298,6 +304,7 @@ export function ClientSidebar({
 
           <div className="relative z-10 flex flex-col h-full w-full">
             <button
+              title="Fermer le menu"
               onClick={() => setMobileOpen(false)}
               className="absolute top-5 right-5 text-white/50 hover:text-white transition bg-white/5 hover:bg-white/10 rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-md border border-white/10 z-50"
             >

@@ -6,7 +6,7 @@ interface OrangeWebhookPayload {
   status: number        // 200 = succès
   message: string       // 'Accepted' = succès
   data: {
-    order_id: string    // = orderId PDV Pro
+    order_id: string    // = orderId Yayyam
     status: string      // 'SUCCESSFULL' = succès
     amount: number
     currency: string
@@ -60,10 +60,6 @@ export async function POST(req: Request): Promise<Response> {
     return new Response('OK', { status: 200 })
   }
 
-  console.log(
-    `[Orange Webhook] Reçu — order_id: ${payload.data?.order_id}, status: ${payload.data?.status}, http_status: ${payload.status}`
-  )
-
   // 3. Vérifier que le paiement est bien validé par Orange
   const isSuccess =
     payload.status === 200 &&
@@ -71,9 +67,6 @@ export async function POST(req: Request): Promise<Response> {
     payload.data?.status === 'SUCCESSFULL'
 
   if (!isSuccess) {
-    console.log(
-      `[Orange Webhook] Paiement non confirmé — statut HTTP: ${payload.status}, data.status: ${payload.data?.status}`
-    )
     // 200 silencieux : on ne réessaie pas pour un échec connu
     return new Response('OK', { status: 200 })
   }
@@ -87,12 +80,8 @@ export async function POST(req: Request): Promise<Response> {
     return new Response('OK', { status: 200 })
   }
 
-  // 5. Confirmer la commande
   try {
     await confirmOrder(orderId, transactionId)
-    console.log(
-      `[Orange Webhook] ✅ Commande confirmée — orderId: ${orderId}, txnid: ${transactionId}`
-    )
   } catch (error: unknown) {
 
     console.error(`[Orange Webhook] ❌ Erreur confirmOrder pour ${orderId}:`, error)

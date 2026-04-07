@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Loader2, Smartphone, CreditCard, CheckCircle2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

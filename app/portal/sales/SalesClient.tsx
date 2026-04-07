@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Filter, ArrowUpDown, ExternalLink, Package, Calendar, Tag, CheckCircle2, Clock, XCircle, AlertTriangle, Truck } from 'lucide-react'
+import { Search, Filter, ArrowUpDown, Package, Calendar, Tag, CheckCircle2, Clock, XCircle, AlertTriangle, Truck } from 'lucide-react'
 
 // --- Types ---
 type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'returned'

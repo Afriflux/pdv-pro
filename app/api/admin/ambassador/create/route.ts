@@ -138,10 +138,6 @@ export async function POST(req: Request): Promise<Response> {
       .update({ role: 'ambassador', updated_at: new Date().toISOString() })
       .eq('id', targetUserRow.id)
 
-    console.log(
-      `[Admin/Ambassador Create] ✅ Ambassadeur ${normalizedCode} créé pour ${email} (userId: ${targetUserRow.id})`
-    )
-
     return NextResponse.json(
       { ambassador: newAmb as { id: string; code: string; name: string } },
       { status: 201 }

@@ -39,7 +39,7 @@ interface UserRaw {
 }
 
 // ----------------------------------------------------------------
-// PAGE : LISTE DES VENDEURS — Charte PDV Pro (émeraude/or/crème)
+// PAGE : LISTE DES VENDEURS — Charte Yayyam (émeraude/or/crème)
 // ----------------------------------------------------------------
 export default async function AdminVendorsPage({ searchParams }: PageProps) {
   const params = await searchParams
@@ -164,7 +164,7 @@ export default async function AdminVendorsPage({ searchParams }: PageProps) {
             <div className="pb-1">
               <h1 className="text-3xl font-black text-white tracking-tight">Annuaire Vendeurs</h1>
               <p className="text-emerald-100/90 font-medium text-sm mt-1">
-                Gérez vos {count ?? 0} {count && count > 1 ? 'boutiques enregistrées' : 'boutique enregistrée'} sur PDV Pro.
+                Gérez vos {count ?? 0} {count && count > 1 ? 'boutiques enregistrées' : 'boutique enregistrée'} sur Yayyam.
               </p>
             </div>
           </div>

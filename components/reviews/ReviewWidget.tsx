@@ -8,6 +8,7 @@ import { Star, Loader2, CheckCircle2, Send, Camera, X } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { createClient } from '@/lib/supabase/client'
+import Image from 'next/image'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Review {
@@ -194,11 +195,14 @@ export function ReviewWidget({ storeId, productId, showForm = false }: ReviewWid
           >
             <X className="w-6 h-6" />
           </button>
-          <img 
-            src={selectedImage} 
-            alt="Review zoomée" 
-            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl" 
-          />
+          <div className="relative w-full max-w-4xl h-[90vh]">
+            <Image 
+              src={selectedImage} 
+              alt="Review zoomée" 
+              fill
+              className="object-contain rounded-xl shadow-2xl" 
+            />
+          </div>
         </div>
       )}
 
@@ -278,7 +282,7 @@ export function ReviewWidget({ storeId, productId, showForm = false }: ReviewWid
                           onClick={() => setSelectedImage(r.image_url!)}
                           className="relative w-20 h-20 rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:opacity-90 hover:scale-105 transition-all cursor-zoom-in"
                         >
-                          <img src={r.image_url} alt="Photo du client" className="w-full h-full object-cover" />
+                          <Image src={r.image_url} alt="Photo du client" fill className="object-cover" />
                         </button>
                       </div>
                     )}
@@ -393,7 +397,7 @@ export function ReviewWidget({ storeId, productId, showForm = false }: ReviewWid
                 {file ? (
                   <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
                     <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                      <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
+                      <Image src={URL.createObjectURL(file)} alt="preview" fill className="object-cover" unoptimized />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-bold text-gray-700 truncate">{file.name}</p>

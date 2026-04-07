@@ -39,7 +39,7 @@ import { Package, Wallet, Share2, TrendingUp, PhoneCall, Phone, ChevronRight } f
   }
 
   const DEFAULT_TESTIMONIALS: LandingTestimonial[] = [
-    { name: 'Mariam D.', biz: 'Boutique Cosmétiques', quote: "Avant PDV Pro, je perdais facilement 30% de mes commandes parce que les clients ne savaient pas comment payer. Maintenant Wave fait tout. Je dors tranquille.", badge: "🇸🇳 Dakar, Sénégal" },
+    { name: 'Mariam D.', biz: 'Boutique Cosmétiques', quote: "Avant Yayyam, je perdais facilement 30% de mes commandes parce que les clients ne savaient pas comment payer. Maintenant Wave fait tout. Je dors tranquille.", badge: "🇸🇳 Dakar, Sénégal" },
     { name: 'Kofi A.', biz: 'Vendeur Électronique', quote: "Le COD a tout changé. Mes clients à Abidjan avaient peur de payer d'avance. Maintenant ils commandent sans hésiter.", badge: "🇨🇮 Abidjan, Côte d'Ivoire" },
     { name: 'Awa B.', biz: 'Créatrice de Mode', quote: "L'IA Check360° m'a dit que mes ventes baissaient le mercredi. J'ai lancé une promo ce jour-là. +45% de commandes en une semaine.", badge: "🇲🇱 Bamako, Mali" }
   ]
@@ -47,15 +47,15 @@ import { Package, Wallet, Share2, TrendingUp, PhoneCall, Phone, ChevronRight } f
   const DEFAULT_FAQS: LandingFAQ[] = [
     {
       q: "Comment fonctionne la commission ?",
-      r: "La commission est dégressive et calculée automatiquement sur votre chiffre d'affaires mensuel : de 8% pour les débutants à seulement 5% pour les gros volumes. PDV Pro absorbe tous les frais techniques (passerelles et retraits), vous recevez votre net garanti."
+      r: "La commission est dégressive et calculée automatiquement sur votre chiffre d'affaires mensuel : de 8% pour les débutants à seulement 5% pour les gros volumes. Yayyam absorbe tous les frais techniques (passerelles et retraits), vous recevez votre net garanti."
     },
     {
       q: "Peut-on vendre des produits physiques ?",
-      r: "Oui ! PDV Pro supporte nativement le paiement à la livraison (COD) pour les vendeurs de produits physiques. Le COD suit simplement la même commission dégressive que les paiements digitaux (de 8% à 5%). Aucun abonnement requis — vous activez le paiement à la livraison depuis vos paramètres et c'est tout."
+      r: "Oui ! Yayyam supporte nativement le paiement à la livraison (COD) pour les vendeurs de produits physiques. Le COD suit simplement la même commission dégressive que les paiements digitaux (de 8% à 5%). Aucun abonnement requis — vous activez le paiement à la livraison depuis vos paramètres et c'est tout."
     },
     {
       q: "Quand sont disponibles mes fonds ?",
-      r: "Immédiatement. Dès que le paiement est confirmé, les fonds sont crédités sur votre portefeuille PDV Pro et disponibles pour un retrait. Pas d'attente de 48h, pas de délai."
+      r: "Immédiatement. Dès que le paiement est confirmé, les fonds sont crédités sur votre portefeuille Yayyam et disponibles pour un retrait. Pas d'attente de 48h, pas de délai."
     },
     {
       q: "Quelles passerelles sont disponibles ?",
@@ -63,7 +63,7 @@ import { Package, Wallet, Share2, TrendingUp, PhoneCall, Phone, ChevronRight } f
     },
     {
       q: "Y a-t-il un abonnement obligatoire ?",
-      r: "Non, jamais. PDV Pro fonctionne à 100% sur un modèle de commission. Aucun abonnement mensuel, aucun frais fixe, aucun coût caché. Nous ne gagnons de l'argent que quand vous en gagnez."
+      r: "Non, jamais. Yayyam fonctionne à 100% sur un modèle de commission. Aucun abonnement mensuel, aucun frais fixe, aucun coût caché. Nous ne gagnons de l'argent que quand vous en gagnez."
     },
     {
       q: "Peut-on vendre des produits digitaux ?",
@@ -75,7 +75,7 @@ import { Package, Wallet, Share2, TrendingUp, PhoneCall, Phone, ChevronRight } f
     },
     {
       q: "Qu'est-ce que les Communautés Telegram ?",
-      r: "Vous pouvez vendre l'accès à des groupes Telegram privés (formations, communautés exclusives, contenus premium). Le client paie sur votre boutique PDV Pro, et reçoit son invitation automatiquement."
+      r: "Vous pouvez vendre l'accès à des groupes Telegram privés (formations, communautés exclusives, contenus premium). Le client paie sur votre boutique Yayyam, et reçoit son invitation automatiquement."
     }
   ]
 
@@ -183,7 +183,7 @@ export default async function LandingPage() {
   const h1Lines = h1Raw.split('\n').filter(Boolean)
   const [h1L1, h1L2, h1L3] = h1Lines.length >= 3
     ? h1Lines
-    : ['Commencez à vendre', 'aujourd\'hui.', 'Encaissez sur Wave/OM.']
+    : ['Votre Super-App', 'de Croissance.', 'Tout-en-un.']
 
   // Counts en temps réel
   const [
@@ -210,7 +210,7 @@ export default async function LandingPage() {
             <div className="w-10 h-10 bg-emerald rounded-xl flex items-center justify-center transform -rotate-6 shadow-sm shadow-emerald/20">
               <Store className="text-white" size={24} />
             </div>
-            <span className="text-2xl font-display font-black tracking-tighter text-ink">PDV<span className="text-emerald">Pro</span></span>
+            <span className="text-2xl font-display font-black tracking-tighter text-ink">Yayyam</span>
           </div>
           
           <div className="hidden md:flex items-center gap-8 font-bold text-sm text-charcoal">
@@ -248,7 +248,7 @@ export default async function LandingPage() {
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
                 </span>
                 <span className="text-sm font-semibold text-amber-700">
-                  {get('landing_hero_badge', '🚀 Launch Week — Commission à 5% pour les 100 premiers vendeurs')}
+                  {get('landing_hero_badge', '🚀 Nouvelle Ère : Accès à l\'App Store et au Coach IA')}
                 </span>
               </div>
             )}
@@ -260,7 +260,7 @@ export default async function LandingPage() {
             </h1>
             
             <p className="text-xl md:text-2xl text-slate font-light max-w-3xl mx-auto leading-relaxed">
-              {get('landing_hero_subtitle', 'PDV Pro est la seule plateforme conçue pour encaisser rapidement en Afrique. Retrait possible dès 5 000 FCFA sur Wave ou Orange Money. Zéro frais fixe.')}
+              {get('landing_hero_subtitle', 'Un App Store puissant : Coach IA, Link-in-Bio, Gamification. Vendez sur un écosystème premium et encaissez vos gains sur Wave ou Orange Money dès 5 000 FCFA.')}
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
@@ -304,9 +304,9 @@ export default async function LandingPage() {
           
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="text-center mb-16">
-              <span className="inline-block bg-red-500/10 text-red-500 border border-red-500/20 rounded-full px-4 py-1.5 font-mono tracking-widest uppercase text-xs mb-6 font-bold shadow-sm">{get('landing_problem_supertitle', 'Le Casse-tête')}</span>
-              <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-white">{get('landing_problem_title', 'La vente sur WhatsApp est brisée.')}</h2>
-              <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">{get('landing_problem_subtitle', 'Vous perdez des ventes tous les jours à cause d\'un processus chaotique.')}</p>
+              <span className="inline-block bg-red-500/10 text-red-500 border border-red-500/20 rounded-full px-4 py-1.5 font-mono tracking-widest uppercase text-xs mb-6 font-bold shadow-sm">{get('landing_problem_supertitle', 'Le Plafond de Verre')}</span>
+              <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-white">{get('landing_problem_title', 'Les outils isolés bloquent votre croissance.')}</h2>
+              <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">{get('landing_problem_subtitle', 'Sans I.A., sans automatisation et sans Apps intégrées, vous plafonnez vos ventes.')}</p>
             </div>
           </div>
             
@@ -360,19 +360,19 @@ export default async function LandingPage() {
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
               <div>
-                <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">{get('landing_solution_supertitle', 'La Solution')}</span>
-                <h2 className="text-4xl md:text-6xl font-display font-black mb-6 text-ink leading-tight">{get('landing_solution_title', 'Passez au niveau supérieur.')}</h2>
+                <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">{get('landing_solution_supertitle', 'Le Yayyam App Store')}</span>
+                <h2 className="text-4xl md:text-6xl font-display font-black mb-6 text-ink leading-tight">{get('landing_solution_title', 'Une seule application. Résultat infini.')}</h2>
                 <p className="text-xl text-slate font-light mb-16 leading-relaxed">
                   {cfg['landing_solution_subtitle'] ? get('landing_solution_subtitle', '') : (
-                    <>Avec PDV Pro, centralisez votre activité et offrez une expérience <span className="font-medium text-emerald bg-emerald/10 px-2 py-0.5 rounded-md">premium</span> à vos clients.</>
+                    <>Branchez des <span className="font-medium text-emerald bg-emerald/10 px-2 py-0.5 rounded-md">Micro-Applications</span> à votre vitrine à la demande : IA, Gamification, Formateurs.</>
                   )}
                 </p>
                 
                 <div className="flex flex-col gap-8 relative before:absolute before:inset-y-4 before:left-[35px] md:before:left-[43px] before:w-[2px] before:bg-emerald/20">
                   {[
-                    { icon: <Store size={32} strokeWidth={2.5} />, title: 'Créez votre boutique en 2 minutes', desc: "Ajoutez votre logo, choisissez pdvpro.com/votre-nom. Votre vitrine professionnelle est disponible immédiatement." },
-                    { icon: <Package size={32} strokeWidth={2.5} />, title: 'Ajoutez vos produits et fixez vos prix', desc: "Photos, prix, variantes. Chacun aura son propre lien d'achat direct sans plus jamais répondre 'c'est combien ?'." },
-                    { icon: <Wallet size={32} strokeWidth={2.5} />, title: 'Vendez et recevez votre argent', desc: "Encaissez par Wave ou Orange Money, recevez directement votre argent sur votre wallet. Gagnez en autonomie." },
+                    { icon: <Store size={32} strokeWidth={2.5} />, title: 'Installez votre socle E-commerce', desc: "Boutique ultra-rapide (Link-in-Bio ou catalogue) connectée aux passerelles de Mobile Money." },
+                    { icon: <Package size={32} strokeWidth={2.5} />, title: 'Branchez le Coach IA', desc: "Utilisez notre App IA propriétaire pour générer vos fiches produits et auditer vos revenus en temps réel." },
+                    { icon: <Wallet size={32} strokeWidth={2.5} />, title: 'Monétisez depuis votre Wallet', desc: "Tout est micro-facturé à l'usage sur votre portefeuille. Zéro abonnement récurrent pour grandir." },
                   ].map((step, i) => (
                     <div key={i} className="flex gap-6 relative group z-10">
                       <div className="shrink-0 w-16 md:w-20 h-16 md:h-20 bg-white border-4 border-pearl text-emerald font-black flex items-center justify-center rounded-2xl shadow-lg group-hover:bg-emerald group-hover:text-white group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300">
@@ -399,7 +399,7 @@ export default async function LandingPage() {
                           <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
                           <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
                         </div>
-                        <div className="flex-1 bg-white/60 h-8 rounded-md border border-line/50 flex items-center justify-center text-xs text-slate font-mono">pdvpro.com/votreboutique</div>
+                        <div className="flex-1 bg-white/60 h-8 rounded-md border border-line/50 flex items-center justify-center text-xs text-slate font-mono">yayyam.com/votreboutique</div>
                       </div>
 
                       {/* Dashboard Content */}
@@ -499,7 +499,7 @@ export default async function LandingPage() {
             {/* Row 1 : Sens normal */}
             <div className="flex w-max">
                 {[1, 2].map((slide) => (
-                  <div key={slide} className="flex gap-6 pr-6 animate-marqueeX w-max" aria-hidden={slide === 2 ? "true" : undefined}>
+                  <div key={slide} className="flex gap-6 pr-6 animate-marqueeX w-max" >
                     {[
                       { icon: <Smartphone size={28} />, title: 'Boutique Mobile', desc: '98% de vos acheteurs sont sur smartphone. Notre design charge en 1 seconde et convertit mieux.' },
                       { icon: <Zap size={28} />, title: 'Upsell 1-Click', desc: 'Proposez une offre irrésistible juste après l\'achat. Augmentez votre panier moyen de 30% sans effort.' },
@@ -522,7 +522,7 @@ export default async function LandingPage() {
             {/* Row 2 : Sens inversé (marqueeXReverse) */}
             <div className="flex w-max">
                 {[1, 2].map((slide) => (
-                  <div key={slide} className="flex gap-6 pr-6 animate-marqueeX-reverse w-max" aria-hidden={slide === 2 ? "true" : undefined}>
+                  <div key={slide} className="flex gap-6 pr-6 animate-marqueeX-reverse w-max" >
                     {[
                       { icon: <Globe size={28} />, title: 'Marketing', desc: 'Codes promos, Vente Flash, Cross-selling et Programme d\'affiliation pour vos ambassadeurs.' },
                       { icon: <Users size={28} />, title: 'Call Center & Closers', desc: 'Vos paniers abandonnés sont automatiquement envoyés à nos experts qui relancent vos prospects pour vous.' },
@@ -596,7 +596,7 @@ export default async function LandingPage() {
                  </div>
                  <p className="text-xs text-blue-900/60 font-bold mb-1 uppercase tracking-wider">Transfert reçu avec succès</p>
                  <p className="text-2xl font-black text-blue-600 mb-2">+ 45 000 F</p>
-                 <p className="text-xs text-gray-500 font-medium">De: PDV PRO</p>
+                 <p className="text-xs text-gray-500 font-medium">De: YAYYAM</p>
                  <p className="text-[10px] text-gray-400 mt-2">Nouveau solde: 124 500 F</p>
                </div>
 
@@ -608,7 +608,7 @@ export default async function LandingPage() {
                  </div>
                  <p className="text-xs text-orange-900/60 font-bold mb-1 uppercase tracking-wider">Paiement reçu</p>
                  <p className="text-2xl font-black text-orange-600 mb-2">+ 120 000 F</p>
-                 <p className="text-xs text-gray-500 font-medium">De: PDV PRO PAYMENTS</p>
+                 <p className="text-xs text-gray-500 font-medium">De: YAYYAM PAYMENTS</p>
                  <p className="text-[10px] text-gray-400 mt-2">Nouveau solde: 450 000 F</p>
                </div>
             </div>
@@ -638,7 +638,7 @@ export default async function LandingPage() {
                 <div className="w-48 shrink-0 md:w-auto flex flex-col sticky left-0 z-20 bg-pearl/90 backdrop-blur-sm self-stretch pt-[104px] pb-6 pr-4">
                   <div className="space-y-6">
                     <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Votre CA mensuel</div>
-                    <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Commission PDV Pro</div>
+                    <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Commission Yayyam</div>
                     <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start mt-2">Vous recevez</div>
                     <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Frais passerelle</div>
                   </div>
@@ -734,7 +734,7 @@ export default async function LandingPage() {
                   <div className="absolute top-0 right-0 bg-gold text-white text-[10px] font-black uppercase px-3 py-1 rounded-bl-xl">Spécial E-commerce</div>
                   <div className="text-4xl leading-none mb-3 mt-2">📦</div>
                   <h4 className="font-display font-black text-ink text-xl mb-1">Service COD</h4>
-                  <p className="text-gold-dark font-bold text-sm">Paiement à la livraison : Commission dynamique</p>
+                  <p className="text-gold-dark font-bold text-sm">Paiement à la livraison : 5% fixe</p>
                </div>
                <div className="bg-white border-2 border-turquoise/30 rounded-2xl p-6 text-center shadow-lg flex-1 hover:border-turquoise transition-colors flex flex-col items-center justify-center">
                   <div className="text-4xl leading-none mb-3">🏦</div>
@@ -760,7 +760,7 @@ export default async function LandingPage() {
               <span className="inline-block bg-emerald/10 text-emerald font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 border border-emerald/20">La Machine à Cash</span>
               <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-ink">Trois leviers natifs pour <span className="text-emerald">exploser</span> votre C.A.</h2>
               <p className="text-xl text-slate font-light">
-                Ne laissez plus d'argent sur la table. PDV Pro intègre un arsenal de conversion secret, activable en un clic sans abonnement externe.
+                Ne laissez plus d'argent sur la table. Yayyam intègre un arsenal de conversion secret, activable en un clic sans abonnement externe.
               </p>
             </div>
 
@@ -847,7 +847,7 @@ export default async function LandingPage() {
               <span className="inline-block bg-ink/10 text-ink font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 shadow-sm border border-ink/10">Sans Boutiques & Sans Produits</span>
               <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-ink">L'Écosystème de <span className="text-emerald">Richesse Partagée</span></h2>
               <p className="text-xl text-slate font-light">
-                Vous n'avez pas de produit à vendre ? Aucun problème. PDV Pro est le terrain de jeu ultime pour générer des revenus passifs ou actifs en devenant partenaire des meilleurs vendeurs.
+                Vous n'avez pas de produit à vendre ? Aucun problème. Yayyam est le terrain de jeu ultime pour générer des revenus passifs ou actifs en devenant partenaire des meilleurs vendeurs.
               </p>
             </div>
 
@@ -900,7 +900,7 @@ export default async function LandingPage() {
           <div className="max-w-6xl mx-auto px-4 relative z-10">
             <div className="text-center mb-12">
               <span className="inline-block bg-emerald/10 border border-emerald/30 text-emerald text-xs font-bold px-3 py-1 rounded-full mb-4 shadow-sm">
-                {get('landing_telegram_supertitle', "EXCLUSIF PDV PRO")}
+                {get('landing_telegram_supertitle', "EXCLUSIF YAYYAM")}
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-white mb-4 whitespace-pre-wrap">
                 {get('landing_telegram_title', "Vendez l'accès à vos groupes\nTelegram privés")}
@@ -980,11 +980,11 @@ export default async function LandingPage() {
           ordersCount={ordersCount ?? 8500} 
         />
 
-        {/* COMPARAISON WHATSAPP VS PDV PRO */}
+        {/* COMPARAISON WHATSAPP VS YAYYAM */}
         <section className="py-16 bg-gray-50 border-t border-line">
           <div className="max-w-4xl mx-auto px-4">
             <h2 className="text-2xl md:text-3xl font-display font-bold text-center mb-10 text-ink">
-              Pourquoi passer de WhatsApp à PDV Pro ?
+              Pourquoi passer de WhatsApp à Yayyam ?
             </h2>
             <div className="grid md:grid-cols-2 gap-6">
               {/* Colonne WhatsApp */}
@@ -1002,14 +1002,14 @@ export default async function LandingPage() {
                   <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Confiance client limitée</li>
                 </ul>
               </div>
-              {/* Colonne PDV Pro */}
+              {/* Colonne Yayyam */}
               <div className="bg-white rounded-2xl p-6 border-2 border-[#0F7A60] shadow-xl shadow-emerald/10 relative flex flex-col">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#0F7A60] text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
                   Recommandé
                 </div>
                 <div className="text-center mb-6">
                   <span className="text-4xl block mb-2">🏪</span>
-                  <h3 className="font-bold text-xl text-[#0F7A60]">Vendre sur PDV Pro</h3>
+                  <h3 className="font-bold text-xl text-[#0F7A60]">Vendre sur Yayyam</h3>
                 </div>
                 <ul className="space-y-4 text-sm text-gray-700 font-medium flex-1">
                   <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Boutique pro avec votre marque</li>
@@ -1034,7 +1034,7 @@ export default async function LandingPage() {
               {get('landing_cta_title', 'Prêt à lancer votre business en ligne ?')}
             </h2>
             <div className="text-xl text-cream/80 font-light mb-12 max-w-2xl mx-auto space-y-2 whitespace-pre-line">
-              <p>{get('landing_cta_subtitle', 'Rejoignez PDV Pro gratuitement.\nAucun abonnement, vous ne payez que quand vous vendez.')}</p>
+              <p>{get('landing_cta_subtitle', 'Rejoignez Yayyam gratuitement.\nAucun abonnement, vous ne payez que quand vous vendez.')}</p>
             </div>
             <Link href={isLoggedIn ? dashboardUrl : "/register"} className="inline-block px-14 py-6 bg-red-600 text-white rounded-2xl font-black text-xl hover:bg-red-700 hover:scale-105 transition-all shadow-2xl shadow-red-600/20 mb-8 animate-pulse">
               {isLoggedIn ? "Mon espace" : get('landing_cta_button', 'Créer ma boutique maintenant')}
@@ -1056,14 +1056,14 @@ export default async function LandingPage() {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-6">
               <Store className="text-gold" size={28} />
-              <span className="text-2xl font-display font-black tracking-tighter text-white">PDV<span className="text-emerald-light">Pro</span></span>
+              <span className="text-2xl font-display font-black tracking-tighter text-white">Yayyam<span className="text-emerald-light">Pro</span></span>
             </div>
             <p className="font-light max-w-sm leading-relaxed text-sm text-white/60">
               La plateforme e-commerce tout-en-un conçue spécifiquement pour les réalités du commerce en Afrique de l&apos;Ouest.
             </p>
             <div className="flex gap-4 mt-6">
-               <a href={get('landing_instagram_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition"><Instagram size={18}/></a>
-               <a href={get('landing_facebook_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition"><Facebook size={18}/></a>
+               <a title="Instagram" aria-label="Instagram" href={get('landing_instagram_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition"><Instagram size={18}/></a>
+               <a title="Facebook" aria-label="Facebook" href={get('landing_facebook_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition"><Facebook size={18}/></a>
             </div>
           </div>
           
@@ -1091,7 +1091,7 @@ export default async function LandingPage() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/10 text-sm font-light text-white/40 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p>© {new Date().getFullYear()} PDV Pro. Tous droits réservés.</p>
+          <p>© {new Date().getFullYear()} Yayyam. Tous droits réservés.</p>
           <p>Propulsé par l&apos;innovation Africaine 🌍</p>
         </div>
       </footer>

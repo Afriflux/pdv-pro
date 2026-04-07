@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { CheckCircle2, Loader2, Palette, Paintbrush, Image as ImageIcon, Trash2, Camera, DownloadCloud } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import * as Actions from '@/app/actions/settings'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export function AppearanceTab({ store }: { store: Record<string, any> }) {
   const [primaryColor, setPrimaryColor] = useState(store?.primary_color ?? '#0F7A60')

@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { TelegramSettings } from '@/components/settings/TelegramSettings'
 import { BellRing, PackageX, CalendarClock } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export function NotificationsTab({ store }: { store: any }) {
   const [notifs, setNotifs] = useState({
@@ -38,7 +38,7 @@ export function NotificationsTab({ store }: { store: any }) {
       <div className="flex flex-col gap-2 relative z-10 px-2 pt-2">
         <h2 className="text-3xl font-black text-gray-900 tracking-tight">Centre de Notifications</h2>
         <p className="text-[15px] font-medium text-gray-500 max-w-xl leading-relaxed">
-          Configurez comment et quand PDV Pro communique avec vous. Contrôlez vos alertes système et l'intégration externe.
+          Configurez comment et quand Yayyam communique avec vous. Contrôlez vos alertes système et l'intégration externe.
         </p>
       </div>
 

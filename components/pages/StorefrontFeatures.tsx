@@ -41,11 +41,20 @@ export function StickyMobileCTA({ productId, price, theme }: { productId: string
   if (!visible) return null
 
   return (
-    <div className="fixed bottom-0 inset-x-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-40 md:hidden animate-in slide-in-from-bottom-full duration-300">
-      <Link href={`?checkout=${productId}`} scroll={false} className={`w-full flex items-center justify-between ${colors.bgPrimary} ${colors.bgHover} text-white font-bold px-6 py-4 rounded-2xl shadow-lg ${colors.shadow} transition-transform active:scale-95`}>
-        <span className="text-lg">Commander</span>
-        <span className="text-lg">{price.toLocaleString('fr-FR')} FCFA</span>
-      </Link>
+    <div className="fixed bottom-6 lg:bottom-10 inset-x-0 w-full flex justify-center z-40 px-4 pointer-events-none animate-in slide-in-from-bottom-24 duration-700 fade-in">
+      <div className="bg-white/70 backdrop-blur-3xl border border-white/80 p-2 lg:p-2.5 rounded-[100px] shadow-2xl shadow-[rgba(0,0,0,0.08)] flex items-center gap-4 w-full max-w-sm lg:max-w-md pointer-events-auto transition-transform hover:scale-[1.02]">
+        <div className="flex-1 pl-5">
+          <p className="text-[10px] lg:text-xs font-black text-gray-400 text-opacity-80 uppercase tracking-widest leading-none mb-0.5">Total à payer</p>
+          <p className="text-xl lg:text-2xl font-black text-gray-900 leading-tight tracking-tight">{price.toLocaleString('fr-FR')} <span className="text-sm">FCFA</span></p>
+        </div>
+        <Link 
+          href={`?checkout=${productId}`} 
+          scroll={false} 
+          className={`flex items-center justify-center ${colors.bgPrimary} ${colors.bgHover} text-white font-bold px-8 lg:px-10 py-4 lg:py-5 rounded-full shadow-lg ${colors.shadow} transition-all duration-300 hover:shadow-xl active:scale-95 whitespace-nowrap text-lg tracking-wide`}
+        >
+          Commander
+        </Link>
+      </div>
     </div>
   )
 }
@@ -53,26 +62,27 @@ export function StickyMobileCTA({ productId, price, theme }: { productId: string
 export function SalesPops() {
   const [pop, setPop] = useState<{name: string, city: string, time: string} | null>(null)
   
-  const NAMES = ['Amina', 'Fatou', 'Moussa', 'Oumar', 'Awa', 'Seydou', 'Khadija', 'Cheikh', 'Marie']
-  const CITIES = ['Dakar', 'Abidjan', 'Bamako', 'Conakry', 'Douala', 'Ouagadougou', 'Libreville']
-  
   useEffect(() => {
-    const firstTimeout = setTimeout(showRandomPop, 6000)
-    return () => clearTimeout(firstTimeout)
-  }, [])
+    const NAMES = ['Amina', 'Fatou', 'Moussa', 'Oumar', 'Awa', 'Seydou', 'Khadija', 'Cheikh', 'Marie']
+    const CITIES = ['Dakar', 'Abidjan', 'Bamako', 'Conakry', 'Douala', 'Ouagadougou', 'Libreville']
+    let timeoutId: NodeJS.Timeout
+    
+    const showRandomPop = () => {
+      const name = NAMES[Math.floor(Math.random() * NAMES.length)]
+      const city = CITIES[Math.floor(Math.random() * CITIES.length)]
+      const mins = Math.floor(Math.random() * 59) + 1
+      
+      setPop({ name, city, time: `Il y a ${mins} min` })
+      
+      timeoutId = setTimeout(() => {
+        setPop(null)
+        timeoutId = setTimeout(showRandomPop, Math.random() * 15000 + 10000) // 10 to 25s empty interval
+      }, 6000) // Show for 6s
+    }
 
-  const showRandomPop = () => {
-    const name = NAMES[Math.floor(Math.random() * NAMES.length)]
-    const city = CITIES[Math.floor(Math.random() * CITIES.length)]
-    const mins = Math.floor(Math.random() * 59) + 1
-    
-    setPop({ name, city, time: `Il y a ${mins} min` })
-    
-    setTimeout(() => {
-      setPop(null)
-      setTimeout(showRandomPop, Math.random() * 15000 + 10000) // 10 to 25s empty interval
-    }, 6000) // Show for 6s
-  }
+    timeoutId = setTimeout(showRandomPop, 6000)
+    return () => clearTimeout(timeoutId)
+  }, [])
 
   if (!pop) return null
 

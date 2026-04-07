@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-dom-props, jsx-a11y/control-has-associated-label, jsx-a11y/alt-text, @typescript-eslint/no-explicit-any, jsx-a11y/anchor-is-valid */
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -320,6 +321,31 @@ export default async function DashboardPage() {
       </header>
 
       <div className="w-full p-6 lg:p-10 space-y-8">
+
+        {/* ── GAMIFICATION BANNER (BOUCLE DE CROISSANCE) ───────────────────────── */}
+        <div className="w-full bg-gradient-to-r from-orange-400 via-orange-500 to-amber-500 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-xl shadow-orange-500/20 text-white overflow-hidden relative">
+           <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+           <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-amber-300/30 blur-2xl rounded-full translate-y-1/3 pointer-events-none"></div>
+           <div className="relative z-10 flex items-center gap-5">
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 text-3xl shrink-0">
+                🎯
+              </div>
+              <div>
+                <h3 className="text-2xl font-black tracking-tight mb-1">Défi du jour : Gagnez 500 FCFA !</h3>
+                <p className="font-medium text-white/90">Réalisez <strong className="text-white">5 ventes aujourd'hui</strong> pour débloquer votre prime, qui sera créditée directement sur votre Wallet Yayyam.</p>
+                <div className="mt-3 flex items-center gap-3">
+                  <div className="flex-1 h-2.5 bg-black/10 rounded-full overflow-hidden max-w-[200px] border border-white/10 shadow-inner">
+                    <div className="h-full bg-white rounded-full" style={{ width: `${Math.min(100, (countToday / 5) * 100)}%` }}></div>
+                  </div>
+                  <span className="text-xs font-black bg-white/20 px-2 py-0.5 rounded-md">{countToday} / 5</span>
+                </div>
+              </div>
+           </div>
+           <Link href="/dashboard/apps" className="relative z-10 mt-6 md:mt-0 bg-white text-orange-600 px-6 py-3.5 rounded-2xl font-bold hover:bg-orange-50 hover:scale-[1.02] transition-all shadow-lg shrink-0 flex flex-col items-center leading-tight">
+             <span>Voir la boutique</span>
+             <span className="text-[10px] font-medium text-orange-400">Pour échanger vos primes</span>
+           </Link>
+        </div>
 
         {isNewVendor && (
           <GettingStartedChecklist 

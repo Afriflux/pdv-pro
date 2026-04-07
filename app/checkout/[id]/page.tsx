@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import ProductPage from './ProductPage'
+import RecentOrderBadge from '@/components/widgets/RecentOrderBadge'
 import { getStorePromotions } from '@/lib/promotions/promotionActions'
 import { computeProductPrice } from '@/lib/promotions/promotionUtils'
 import { PixelTracker } from '@/components/tracking/PixelTracker'
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: CheckoutPageProps): Promise<M
 
   const store = product.store as any
   const storeName = Array.isArray(store) ? store[0]?.name : store?.name
-  const title = `${product.name} | ${storeName} — PDV Pro`
+  const title = `${product.name} | ${storeName} — Yayyam`
   const description = (product.description || '').substring(0, 160)
   const image = (product.images && product.images.length > 0) ? product.images[0] : ''
 
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: CheckoutPageProps): Promise<M
     title,
     description,
     alternates: {
-      canonical: `https://pdvpro.com/checkout/${params.id}`
+      canonical: `https://yayyam.com/checkout/${params.id}`
     },
     openGraph: {
       title,
@@ -252,6 +253,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         telegramCommunity={telegramCommunity}
         bumpProduct={bumpProduct}
         clientProfile={clientProfile}
+        recentOrderSlot={<RecentOrderBadge storeId={store.id} productId={product.id} />}
       />
     </>
   )

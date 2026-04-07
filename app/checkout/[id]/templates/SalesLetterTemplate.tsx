@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Lock, Star, CheckCircle, ChevronDown } from 'lucide-react'
+import { ArrowLeft, Lock, Star, CheckCircle } from 'lucide-react'
 
 export function SalesLetterTemplate({ 
   product, 
@@ -10,7 +10,7 @@ export function SalesLetterTemplate({
   handleOpenForm,
   showForm,
   checkoutFormNode,
-  imageGalleryNode
+  imageGalleryNode: _imageGalleryNode
 }: any) {
   const coverImage = product.images?.[0]
 

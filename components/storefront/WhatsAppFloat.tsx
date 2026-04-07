@@ -12,7 +12,7 @@ export default function WhatsAppFloat({ phone, storeName }: WhatsAppFloatProps) 
 
   // Nettoyage de base du numéro
   const cleanPhone = phone.replace(/\+/g, '').replace(/\s+/g, '')
-  const defaultMessage = `Bonjour ${storeName}, je suis intéressé par vos articles sur PDV Pro.`
+  const defaultMessage = `Bonjour ${storeName}, je suis intéressé par vos articles sur Yayyam.`
 
   return (
     <a

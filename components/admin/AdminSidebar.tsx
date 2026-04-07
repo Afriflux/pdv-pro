@@ -16,7 +16,6 @@ import {
   Handshake,
   AlertTriangle,
   Mail,
-  LayoutTemplate,
   PhoneCall,
   BookOpen,
   Globe,
@@ -64,8 +63,8 @@ const NAV: NavSection[] = [
   },
   {
     title: 'OUTILS',
-    items: [,
-      { name: 'Contenu Public', href: '/admin/marketplace', icon: Globe },
+    items: [
+      { name: 'Marketplace & Freemium', href: '/admin/marketplace', icon: Globe },
       { name: 'Intégrations', href: '/admin/integrations', icon: Puzzle },
       { name: 'Email Marketing', href: '/admin/email', icon: Mail },
       { name: 'Academy', href: '/admin/masterclass', icon: BookOpen },
@@ -168,7 +167,7 @@ function AdminSidebarContent({
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-1 py-1 rounded-xl group-hover/logo:bg-white/5 transition-colors">
-              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">PDV</span>
+              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">Yayyam</span>
               <span className="text-2xl font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-400 tracking-tight drop-shadow-md">Pro</span>
             </div>
           )}
@@ -344,7 +343,7 @@ export function AdminSidebar({
               </svg>
             </button>
             <Link href="/" className="flex items-center gap-1.5 ml-1" onClick={() => setMobileOpen(false)}>
-              <span className="text-lg font-display font-black text-white">PDV</span>
+              <span className="text-lg font-display font-black text-white">Yayyam</span>
               <span className="text-lg font-display font-black text-gold">Pro</span>
             </Link>
           </div>

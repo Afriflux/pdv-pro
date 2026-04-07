@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { Loader2, Save, Percent, Coins, ArrowUpRight, TrendingDown, Package, ShieldCheck } from 'lucide-react'
 import { updatePlatformConfig, AdminPlatformConfig } from '@/lib/admin/adminActions'
 
@@ -27,9 +27,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
 
     // Garde-fou mathématique : Les taux doivent être dégressifs ou égaux (tier1 >= tier2 >= tier3 >= tier4)
     if (tier1 < tier2 || tier2 < tier3 || tier3 < tier4) {
-      toast.error('Erreur Mathématique ⚠️', {
-        description: 'Les paliers de commission en ligne doivent être dégressifs (ex: 8% -> 7% -> 6% -> 5%).'
-      })
+      toast.error('Erreur Mathématique ⚠️ : Les paliers de commission en ligne doivent être dégressifs (ex: 8% -> 7% -> 6% -> 5%).')
       setSaving(false)
       return
     }

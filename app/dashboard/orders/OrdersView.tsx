@@ -376,7 +376,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
         {viewMode === 'list' ? (
           <>
             {/* VUE TABLEAU DE BORD (DATA-GRID) */}
-            <div className="bg-white/80 backdrop-blur-xl border border-white shadow-xl shadow-gray-200/50 rounded-[32px] overflow-hidden">
+            <div className="bg-white/80 backdrop-blur-xl border border-white shadow-xl shadow-gray-200/50 rounded-[32px] overflow-x-auto">
               <table className="w-full text-left whitespace-nowrap">
                 <thead className="bg-[#FAFAF7] border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                   <tr>
@@ -415,7 +415,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
                     const isPendingUrgent = ['pending', 'cod_pending'].includes(order.status) && (new Date().getTime() - new Date(order.created_at).getTime() > 24 * 60 * 60 * 1000)
                     
                     const waLink = `https://wa.me/${order.buyer_phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                     `Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de votre commande sur PDV Pro.`
+                     `Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de votre commande sur Yayyam.`
                     )}`
 
                     const getTimeAgo = (dateStr: string) => {

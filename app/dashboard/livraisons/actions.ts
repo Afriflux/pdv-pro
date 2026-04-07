@@ -3,6 +3,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
+import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 async function getStoreId() {
   const supabase = await createClient()
@@ -75,18 +78,27 @@ export async function getDeliveriesDataAction() {
   }
 }
 
-export async function createDelivererAction(name: string, phone: string) {
+export async function createDelivererAction(name: string, phone: string, expirationType: string = 'definitif') {
   try {
     const store = await getStoreId()
     if (!store) return { error: 'Non autorisé' }
 
     if (!name || !phone) return { error: 'Nom et téléphone requis' }
 
+    let expiresAt = null
+    if (expirationType !== 'definitif') {
+       const hours = parseInt(expirationType, 10)
+       if (!isNaN(hours) && hours > 0) {
+          expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000)
+       }
+    }
+
     const deliverer = await prisma.deliverer.create({
       data: {
         store_id: store.id,
         name,
-        phone
+        phone,
+        expires_at: expiresAt
       }
     })
 
@@ -120,10 +132,31 @@ export async function assignDelivererToOrderAction(orderId: string, delivererId:
     const store = await getStoreId()
     if (!store) return { error: 'Non autorisé' }
 
-    await prisma.order.updateMany({
+    const order = await prisma.order.findUnique({
       where: { id: orderId, store_id: store.id },
+      include: { product: { select: { name: true } } }
+    });
+
+    if (!order) return { error: 'Commande introuvable' }
+
+    await prisma.order.update({
+      where: { id: orderId },
       data: { deliverer_id: delivererId }
     })
+
+    if (delivererId) {
+      const deliverer = await prisma.deliverer.findUnique({ where: { id: delivererId } })
+      if (deliverer && deliverer.phone) {
+        const link = `${process.env.NEXT_PUBLIC_APP_URL || 'https://yayyam.sn'}/delivery/${deliverer.id}`
+        const dateStr = format(new Date(), "dd MMM à HH:mm", { locale: fr })
+        const message = `🚧 *NOUVELLE COURSE ASSIGNÉE*\n\nSalut ${deliverer.name}, une nouvelle course vient de t'être assignée par ${store.name} le ${dateStr}.\n\n*Client :* ${order.buyer_name}\n*Tél :* ${order.buyer_phone}\n*Adresse :* ${order.delivery_address || 'Non spécifiée'}\n*Produit :* ${order.product?.name}\n\n👉 *Ouvrir ta course ici :*\n${link}`
+        
+        await sendWhatsApp({
+          to: deliverer.phone,
+          body: message
+        }).catch(err => console.error('[WhatsApp Livreur Error]', err));
+      }
+    }
 
     revalidatePath('/dashboard/livraisons')
     return { success: true }

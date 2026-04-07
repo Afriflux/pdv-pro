@@ -12,7 +12,7 @@ import {
   PackagePlus,
   ArrowLeft
 } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 // ----------------------------------------------------------------
 // Types

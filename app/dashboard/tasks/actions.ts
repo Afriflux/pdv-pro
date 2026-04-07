@@ -17,19 +17,32 @@ async function getStoreId() {
   return store?.id || null
 }
 
+async function getUserId() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  return user?.id || null
+}
+
 export async function createTaskAction(data: { 
   title: string, priority: string, dueDate?: string,
   description?: string, taskType?: string, client_name?: string, client_phone?: string, order_id?: string
-}) {
+}, ownerType: 'vendor' | 'affiliate' | 'client' = 'vendor') {
   try {
-    const store_id = await getStoreId()
-    if (!store_id) return { error: 'Non autorisé' }
+    const user_id = await getUserId()
+    if (!user_id) return { success: false, error: 'Non autorisé' }
 
-    if (!data.title.trim()) return { error: 'Titre requis' }
+    let store_id = null
+    if (ownerType === 'vendor') {
+       store_id = await getStoreId()
+       if (!store_id) return { success: false, error: 'Boutique introuvable' }
+    }
+
+    if (!data.title.trim()) return { success: false, error: 'Titre requis' }
 
     const task = await prisma.task.create({
       data: {
         store_id,
+        user_id: ownerType !== 'vendor' ? user_id : null,
         title: data.title,
         priority: data.priority,
         status: 'todo',
@@ -43,24 +56,35 @@ export async function createTaskAction(data: {
     })
 
     revalidatePath('/dashboard/tasks')
+    revalidatePath('/client/tasks')
+    revalidatePath('/portal/tasks')
     return { success: true, task }
   } catch (error: any) {
     console.error('[Create Task Error]', error)
-    return { error: 'Erreur lors de la création de la tâche' }
+    return { success: false, error: 'Erreur lors de la création de la tâche' }
   }
 }
 
 export async function updateTaskStatus(taskId: string, newStatus: string) {
   try {
+    const user_id = await getUserId()
     const store_id = await getStoreId()
-    if (!store_id) return { error: 'Non autorisé' }
+    if (!user_id) return { error: 'Non autorisé' }
 
     await prisma.task.updateMany({
-      where: { id: taskId, store_id },
+      where: { 
+        id: taskId,
+        OR: [
+          { store_id: store_id || 'unmatchable' },
+          { user_id: user_id }
+        ]
+      },
       data: { status: newStatus }
     })
 
     revalidatePath('/dashboard/tasks')
+    revalidatePath('/client/tasks')
+    revalidatePath('/portal/tasks')
     return { success: true }
   } catch (error: any) {
     console.error('[Update Task Status Error]', error)
@@ -70,15 +94,24 @@ export async function updateTaskStatus(taskId: string, newStatus: string) {
 
 export async function updateTaskTitle(taskId: string, newTitle: string) {
   try {
+    const user_id = await getUserId()
     const store_id = await getStoreId()
-    if (!store_id) return { error: 'Non autorisé' }
+    if (!user_id) return { error: 'Non autorisé' }
 
     await prisma.task.updateMany({
-      where: { id: taskId, store_id },
+      where: { 
+        id: taskId,
+        OR: [
+          { store_id: store_id || 'unmatchable' },
+          { user_id: user_id }
+        ]
+      },
       data: { title: newTitle }
     })
 
     revalidatePath('/dashboard/tasks')
+    revalidatePath('/client/tasks')
+    revalidatePath('/portal/tasks')
     return { success: true }
   } catch (error: any) {
     console.error('[Update Task Title Error]', error)
@@ -88,14 +121,23 @@ export async function updateTaskTitle(taskId: string, newTitle: string) {
 
 export async function deleteTaskAction(taskId: string) {
   try {
+    const user_id = await getUserId()
     const store_id = await getStoreId()
-    if (!store_id) return { error: 'Non autorisé' }
+    if (!user_id) return { error: 'Non autorisé' }
 
     await prisma.task.deleteMany({
-      where: { id: taskId, store_id }
+      where: { 
+        id: taskId,
+        OR: [
+          { store_id: store_id || 'unmatchable' },
+          { user_id: user_id }
+        ]
+      }
     })
 
     revalidatePath('/dashboard/tasks')
+    revalidatePath('/client/tasks')
+    revalidatePath('/portal/tasks')
     return { success: true }
   } catch (error: any) {
     console.error('[Delete Task Error]', error)
@@ -134,4 +176,12 @@ export async function getStoreCustomersAction() {
     console.error(e)
     return { error: 'Erreur serveur', customers: [] }
   }
+}
+
+export async function createAffiliateTaskAction(data: any) {
+  return createTaskAction(data, 'affiliate')
+}
+
+export async function createClientTaskAction(data: any) {
+  return createTaskAction(data, 'client')
 }

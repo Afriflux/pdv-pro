@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { User, Lock, Trash2, Save, CheckCircle2, AlertCircle, Loader2, Landmark, Wallet, Smartphone, Building2, ArrowRightLeft, ShieldCheck, CreditCard, Camera } from 'lucide-react'
+import { User, Lock, Trash2, Save, CheckCircle2, AlertCircle, Loader2, Landmark, Wallet, Smartphone, Building2, CreditCard, Camera } from 'lucide-react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { updateClientProfile, deleteClientAccount } from '@/app/client/settings/actions'
@@ -221,7 +221,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                           <label htmlFor="avatar-upload" className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center transition-all duration-300 backdrop-blur-sm cursor-pointer scale-110 group-hover/avatar:scale-100">
                             <Camera size={28} className="text-white mb-2" strokeWidth={2} />
                             <span className="text-white text-[11px] font-bold tracking-widest uppercase">Modifier</span>
-                            <input id="avatar-upload" type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={handleFileChange} />
+                            <input title="Avatar" id="avatar-upload" type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={handleFileChange} />
                           </label>
                         </div>
                       </div>
@@ -255,8 +255,8 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                     <div className="space-y-2">
                       <label className="text-[13px] font-black uppercase tracking-wider text-gray-500 ml-1">Nom Complet</label>
                       <input
+                        title="Nom complet"
                         name="name"
-                        title="Nom Complet"
                         type="text"
                         defaultValue={profile?.name || ''}
                         className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-5 py-4 text-[15px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 transition-all shadow-inner"
@@ -278,8 +278,8 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                         </label>
                         <div className="relative group/input">
                           <input
-                            type="email"
                             title="L'email est verrouillé."
+                            type="email"
                             value={profile?.email || user.email || ''}
                             className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] pl-5 pr-12 py-4 text-[15px] font-semibold text-gray-500 focus:border-red-500 transition-all cursor-not-allowed shadow-inner"
                             readOnly
@@ -427,6 +427,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                               {withdrawalMethod === 'bank' ? "IBAN / RIB Complet" : "Numéro de téléphone"}
                             </label>
                             <input 
+                              title="Nom de la banque ou Mobile Money"
                               type="text"
                               value={withdrawalNumber}
                               onChange={(e) => setWithdrawalNumber(e.target.value)}
@@ -444,6 +445,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                               Nom complet du titulaire
                             </label>
                             <input 
+                              title="Nom sur le compte"
                               type="text"
                               value={withdrawalName}
                               onChange={(e) => setWithdrawalName(e.target.value)}
@@ -481,6 +483,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Seuil de déclenchement (FCFA)</label>
                             <div className="flex items-center gap-2 max-w-xs">
                               <input 
+                                title="Numéro de compte (IBAN ou Mobile)"
                                 type="number"
                                 value={autoWithdrawThreshold}
                                 onChange={(e) => setAutoWithdrawThreshold(Number(e.target.value))}

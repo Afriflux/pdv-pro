@@ -53,7 +53,7 @@ export default async function KYCPage() {
           </p>
           <div className="mt-4 inline-flex items-center gap-2 bg-[#0F7A60] text-white text-sm font-bold px-4 py-2 rounded-full">
             <span>✓</span>
-            <span>Vendeur vérifié PDV Pro</span>
+            <span>Vendeur vérifié Yayyam</span>
           </div>
         </div>
       )}

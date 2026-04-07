@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import ContractBanner from '@/components/vendor/ContractBanner'
 import GlobalCoach from '@/components/dashboard/GlobalCoach'
+import { prisma } from '@/lib/prisma'
 
 export default async function DashboardLayout({
   children,
@@ -34,6 +35,16 @@ export default async function DashboardLayout({
   const store      = storeRes.data as StoreRow | null
   const userProfile = userRes.data as UserRow | null
 
+  // Fetch installed apps if store exists
+  let installedApps: string[] = []
+  if (store) {
+    const apps = await prisma.installedApp.findMany({
+      where: { store_id: store.id, status: 'active' },
+      select: { app_id: true }
+    })
+    installedApps = apps.map(a => a.app_id)
+  }
+
   const storeName        = store?.name     ?? 'Mon Espace'
   const vendorName       = userProfile?.name    ?? (user.user_metadata?.name as string) ?? 'Vendeur'
   const avatarUrl        = userProfile?.avatar_url ?? (user.user_metadata?.avatar_url as string) ?? (user.user_metadata?.picture as string) ?? null
@@ -43,7 +54,13 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-[#FAFAF7]">
-      <Sidebar storeName={storeName} userName={vendorName} avatarUrl={avatarUrl} vendorType={storeVendorType} />
+      <Sidebar 
+        storeName={storeName} 
+        userName={vendorName} 
+        avatarUrl={avatarUrl} 
+        vendorType={storeVendorType} 
+        installedApps={installedApps}
+      />
 
       <main className="relative flex-1 bg-[#FAFAF7] min-w-0 min-h-screen overflow-auto">
         <GlobalHomeButton />

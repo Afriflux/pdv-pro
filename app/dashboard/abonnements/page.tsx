@@ -86,20 +86,13 @@ export default async function AbonnementsPage() {
     .in('status', ['confirmed', 'preparing', 'shipped', 'delivered', 'paid', 'completed'])
     .gte('created_at', threeMonthsAgo.toISOString())
 
-  // ── CA cumulé total ───────────────────────────────────────────────────────
-  const { data: walletRaw } = await supabase
-    .from('Wallet')
-    .select('total_earned')
-    .eq('vendor_id', store.id)
-    .maybeSingle()
-
   // ─── CALCULS ───────────────────────────────────────────────────────────────
 
   type OrderRow = { vendor_amount: number; status: string; created_at: string }
 
   const currentMonthOrders = (currentMonthOrdersRaw ?? []) as OrderRow[]
   const recentOrders       = (recentOrdersRaw ?? []) as OrderRow[]
-  const walletData         = walletRaw as { total_earned: number } | null
+
 
   const currentMonthCA = currentMonthOrders.reduce((s, o) => s + Number(o.vendor_amount), 0)
   const rate           = getCommissionRate(currentMonthCA)

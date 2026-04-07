@@ -20,7 +20,7 @@ export default function SubscriptionsClient() {
             <span className="text-turquoise">100% à la commission.</span>
           </h1>
           <p className="text-emerald-light/90 text-sm md:text-base font-medium leading-relaxed max-w-xl">
-            Chez PDV Pro, nous avons supprimé tous les abonnements mensuels et frais fixes. 
+            Chez Yayyam, nous avons supprimé tous les abonnements mensuels et frais fixes. 
             Notre succès est directement lié au vôtre : nous ne gagnons de l'argent que si vous en gagnez !
           </p>
         </div>

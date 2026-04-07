@@ -47,8 +47,8 @@ export async function GET(req: Request) {
 
     for (const user of usersToRemind) {
       let messageSent = false
-      const vendorName = user.store?.name || user.name || 'Partenaire PDV Pro'
-      const academyLink = 'https://pdvpro.com/dashboard/tips'
+      const vendorName = user.store?.name || user.name || 'Partenaire Yayyam'
+      const academyLink = 'https://yayyam.com/dashboard/tips'
 
       // Priorité 1 : WhatsApp
       if (user.store?.whatsapp) {
@@ -58,7 +58,7 @@ export async function GET(req: Request) {
       } 
       // Priorité 2 : Telegram
       else if (user.store?.telegram_chat_id) {
-        const text = `🚀 *Salut ${vendorName}, bienvenue sur PDV Pro !*\n\nNous avons remarqué que tu n'as pas encore jeté un œil à l'Académie PDV Pro.\nDes stratégies inédites t'y attendent (gratuitement) pour lancer ta boutique et exploser tes ventes en Afrique.\n\n👉 Découvre les secrets du Top 1% ici : \n${academyLink}\n\nÀ très vite ! 🎓`
+        const text = `🚀 *Salut ${vendorName}, bienvenue sur Yayyam !*\n\nNous avons remarqué que tu n'as pas encore jeté un œil à l'Académie Yayyam.\nDes stratégies inédites t'y attendent (gratuitement) pour lancer ta boutique et exploser tes ventes en Afrique.\n\n👉 Découvre les secrets du Top 1% ici : \n${academyLink}\n\nÀ très vite ! 🎓`
         
         try {
           await sendMessage(user.store.telegram_chat_id, text, {
@@ -78,7 +78,7 @@ export async function GET(req: Request) {
           type: 'masterclass_reminder',
           title: 'Relance Académie envoyée',
           message: 'Relance automatique J+3 envoyée via WhatsApp/Telegram.',
-          is_read: true
+          read: true
         }
       })
 

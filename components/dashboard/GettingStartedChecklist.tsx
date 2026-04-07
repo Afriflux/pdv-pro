@@ -165,7 +165,7 @@ export function GettingStartedChecklist({
           
           <h2 className="text-2xl lg:text-3xl font-black text-ink mb-3 text-center lg:text-left tracking-tight">Checklist de<br />Succès 🚀</h2>
           <p className="text-gray-500 text-sm font-medium text-center lg:text-left leading-relaxed">
-            Complétez ces étapes pour lancer votre business et encaisser vos premiers paiements sur PDV Pro.
+            Complétez ces étapes pour lancer votre business et encaisser vos premiers paiements sur Yayyam.
           </p>
         </div>
 

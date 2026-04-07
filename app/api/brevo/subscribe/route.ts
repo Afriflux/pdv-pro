@@ -25,14 +25,14 @@ interface SubscribeBody {
 // ─── Template HTML de confirmation d'abonnement ───────────────────────────────
 
 function buildConfirmationEmail(storeName: string): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
 
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PDV Pro</title>
+  <title>Yayyam</title>
 </head>
 <body style="margin:0;padding:0;background-color:#FAFAF7;font-family:Arial,sans-serif;color:#1A1A1A;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#FAFAF7;">
@@ -44,7 +44,7 @@ function buildConfirmationEmail(storeName: string): string {
           <!-- HEADER -->
           <tr>
             <td style="background-color:#0F7A60;padding:28px 32px;text-align:center;">
-              <h1 style="margin:0;font-size:26px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;">PDV Pro</h1>
+              <h1 style="margin:0;font-size:26px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;">Yayyam</h1>
               <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,0.75);letter-spacing:1px;text-transform:uppercase;">Plateforme de vente africaine</p>
             </td>
           </tr>
@@ -79,7 +79,7 @@ function buildConfirmationEmail(storeName: string): string {
           <!-- FOOTER -->
           <tr>
             <td style="background-color:#F4F4F0;padding:20px 32px;text-align:center;border-top:1px solid #E8E8E4;">
-              <p style="margin:0;font-size:12px;color:#888888;">© PDV Pro · Tous droits réservés</p>
+              <p style="margin:0;font-size:12px;color:#888888;">© Yayyam · Tous droits réservés</p>
               <p style="margin:6px 0 0;font-size:11px;color:#AAAAAA;">
                 <a href="${appUrl}/unsubscribe" style="color:#0F7A60;text-decoration:underline;">Se désabonner</a>
               </p>
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         to:          [{ email: email.trim() }],
         subject:     `Vous êtes abonné(e) aux offres de ${storeName} ! 🎉`,
         htmlContent: buildConfirmationEmail(storeName),
-        sender:      { name: `${storeName} via PDV Pro`, email: 'noreply@pdvpro.com' },
+        sender:      { name: `${storeName} via Yayyam`, email: 'noreply@yayyam.com' },
       }),
     ])
 
@@ -167,10 +167,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     const contactOk = contactResult.status === 'fulfilled' && contactResult.value === true
     const emailOk   = emailResult.status === 'fulfilled' && emailResult.value === true
-
-    console.log(
-      `[Brevo /subscribe] email=${email} store=${storeName} list=${targetListId} → contact=${contactOk} email=${emailOk}`
-    )
 
     // 6. Si le contact n'a pas pu être créé → retourner une erreur significative
     if (!contactOk) {

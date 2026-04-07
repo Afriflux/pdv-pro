@@ -3,7 +3,7 @@
 /**
  * lib/marketing/shortlink.ts
  * Server Actions pour le Marketing Hub
- * - createShortLink : Génère un lien court (pdvpro.com/s/xxxxxx)
+ * - createShortLink : Génère un lien court (yayyam.com/s/xxxxxx)
  * - logShortLinkClick : Enregistre un clic et l'IP/ville
  * - getStoreAnalytics : Récupère les stats pour le dashboard
  *

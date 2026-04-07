@@ -10,7 +10,7 @@ import {
   Loader2,
   ShieldAlert
 } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 interface VendorActionsProps {
   vendorId: string

@@ -1,5 +1,5 @@
 -- ─── sql/community_migration.sql ────────────────────────────────────────────
--- Migration : Tables Communauté PDV Pro
+-- Migration : Tables Communauté Yayyam
 -- CommunityPost | CommunityLike | CommunityComment
 -- Exécuter dans Supabase SQL Editor
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { PhoneCall, Inbox, CheckCircle2, XOctagon, Search, Calendar, Filter, MoreVertical, Star, Target, LayoutGrid, List, Loader2, Sparkles, TrendingUp, MessageCircle } from 'lucide-react'
+import { PhoneCall, Inbox, CheckCircle2, XOctagon, Search, Star, Target, LayoutGrid, List, Loader2, Sparkles, TrendingUp, MessageCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getTerminalLeads, claimLead, updateLeadStatus, LeadStatusType } from './actions'
 
@@ -21,7 +21,7 @@ export default function TerminalPage() {
     setLoading(true)
     const res = await getTerminalLeads()
     if (res.success) {
-      setLeads(res.leads)
+      setLeads(res.leads || [])
     }
     setLoading(false)
   }
@@ -90,7 +90,7 @@ export default function TerminalPage() {
   const lostLeads = filteredLeads.filter(l => l.status === 'lost')
 
   // Animations
-  const containerVars = {
+  const containerVars: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -98,7 +98,7 @@ export default function TerminalPage() {
     }
   }
 
-  const itemVars = {
+  const itemVars: any = {
     hidden: { opacity: 0, y: 15, scale: 0.95 },
     show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
   }
@@ -156,7 +156,7 @@ export default function TerminalPage() {
                  className="w-full pl-11 pr-4 py-3.5 text-sm font-bold bg-transparent text-gray-900 border-none focus:outline-none focus:ring-0 placeholder:text-gray-400 relative z-10"
                />
                {searchQuery && (
-                 <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 z-10 bg-gray-100 rounded-full p-1">
+                 <button title="Effacer la recherche" aria-label="Effacer la recherche" onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 z-10 bg-gray-100 rounded-full p-1">
                    <XOctagon size={12} />
                  </button>
                )}
@@ -262,7 +262,7 @@ export default function TerminalPage() {
                      <div className="bg-[#FAFAF7] p-3 rounded-xl mb-5 border border-gray-100 flex items-center justify-between group-hover:bg-emerald-50/30 transition-colors">
                        <p className="text-sm text-gray-900 font-black tracking-widest truncate mr-2">{lead.phone}</p>
                        <div className="flex items-center gap-2 shrink-0">
-                         <a href={`https://wa.me/${(lead.phone || '').replace(/[^0-9+]/g, '')}?text=${encodeURIComponent(`Bonjour ${lead.name}, je vous contacte concernant votre commande sur PDV Pro.`)}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${lead.name}`} className="w-9 h-9 flex items-center justify-center bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] rounded-xl shadow-sm hover:shadow-md hover:bg-[#25D366] hover:text-white transition-all">
+                         <a href={`https://wa.me/${(lead.phone || '').replace(/[^0-9+]/g, '')}?text=${encodeURIComponent(`Bonjour ${lead.name}, je vous contacte concernant votre commande sur Yayyam.`)}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${lead.name}`} className="w-9 h-9 flex items-center justify-center bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] rounded-xl shadow-sm hover:shadow-md hover:bg-[#25D366] hover:text-white transition-all">
                            <MessageCircle size={16} />
                          </a>
                          <a href={`tel:${lead.phone}`} aria-label={`Appeler le client ${lead.name} au ${lead.phone}`} className="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 text-[#0F7A60] rounded-xl shadow-sm hover:shadow-md hover:bg-[#0F7A60] hover:text-white transition-all">

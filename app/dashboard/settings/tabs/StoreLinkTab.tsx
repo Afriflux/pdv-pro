@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from 'react'
 import { Globe, Loader2, CheckCircle2, XCircle, Link as LinkIcon, ArrowUpRight, Copy } from 'lucide-react'
 import * as Actions from '@/app/actions/settings'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
 export function StoreLinkTab({ store }: { store: any }) {
   const [slug, setSlug] = useState(store?.slug || '')
   const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle')
   const [loading, setLoading] = useState(false)
-  const baseUrl = 'pdvpro.com/'
+  const baseUrl = 'yayyam.com/'
 
   const checkSlugDispo = async (val: string) => {
     if (!val || val === store?.slug) {
@@ -132,7 +132,7 @@ export function StoreLinkTab({ store }: { store: any }) {
               <div className="flex-1 w-full overflow-hidden">
                 <p className="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-3">Aperçu en direct</p>
                 <div className="flex items-center text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 truncate tracking-tight">
-                  <span className="text-gray-300 select-none">pdvpro.com/</span>
+                  <span className="text-gray-300 select-none">yayyam.com/</span>
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 drop-shadow-sm truncate">
                     {slug || store?.slug || 'votre-boutique'}
                   </span>
@@ -148,7 +148,7 @@ export function StoreLinkTab({ store }: { store: any }) {
                 </button>
                 <button 
                   type="button"
-                  onClick={() => window.open(`https://pdv-pro.com/${slug}`, '_blank')}
+                  onClick={() => window.open(`https://yayyam-pro.com/${slug}`, '_blank')}
                   className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-[14px] font-bold shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
                 >
                   Ouvrir <ArrowUpRight size={18} />
@@ -172,7 +172,7 @@ export function StoreLinkTab({ store }: { store: any }) {
                  
                  <div className="relative flex bg-white/80 border border-gray-200/80 rounded-[1rem] focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all shadow-sm overflow-hidden group/input">
                     <span className="px-5 py-4 bg-gray-50/80 border-r border-gray-200/80 text-gray-500 text-[15px] font-bold flex items-center select-none font-mono tracking-tight">
-                      pdvpro.com/
+                      yayyam.com/
                     </span>
                     <input
                       type="text"

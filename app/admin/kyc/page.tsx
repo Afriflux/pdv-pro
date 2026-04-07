@@ -112,22 +112,29 @@ export default async function AdminKYCPage({ searchParams }: { searchParams: Pro
   }
 
   // 2. Charger les stats globales
-  const { data: allStoreData, error } = await supabaseAdmin
+  const { data: allStoreData, error: storeError } = await supabaseAdmin
     .from('Store')
     .select('kyc_status')
 
+  const { data: allUserData, error: userError } = await supabaseAdmin
+    .from('User')
+    .select('kyc_status')
+    .neq('kyc_status', 'unverified') // Ignore unverified users to avoid cluttering stats
+
   let allStores = allStoreData ?? []
+  const allUsers = allUserData ?? []
+  
   let stores: StoreKYC[] = []
   let isDemoMode = false
 
-  // MODE DÉMO si aucune boutique (ou erreur)
-  if (!allStores || allStores.length === 0 || error) {
+  // MODE DÉMO si aucune donnée
+  if ((allStores.length === 0 && allUsers.length === 0) || storeError || userError) {
     isDemoMode = true
     allStores = MOCK_KYC_STORES as unknown as any[]
     stores = MOCK_KYC_STORES.filter(s => s.kyc_status === currentStatus)
   } else {
     // 3. Charger les dossiers réels filtrés
-    const { data: pendingKYC } = await supabaseAdmin
+    const { data: pendingStoreKYC } = await supabaseAdmin
       .from('Store')
       .select(`
         id, name, slug, kyc_status, kyc_document_type,
@@ -136,19 +143,40 @@ export default async function AdminKYCPage({ searchParams }: { searchParams: Pro
       .eq('kyc_status', currentStatus)
       .order('created_at', { ascending: true })
 
-    stores = (pendingKYC ?? []) as StoreKYC[]
+    const { data: pendingUserKYC } = await supabaseAdmin
+      .from('User')
+      .select(`
+        id, name, role, kyc_status, kyc_document_type,
+        kyc_documents, id_card_url, created_at
+      `)
+      .eq('kyc_status', currentStatus)
+      .order('created_at', { ascending: true })
+
+    const mappedUserKYC: StoreKYC[] = (pendingUserKYC || []).map(u => ({
+      id: u.id,
+      name: u.name || 'Utilisateur Anonyme',
+      slug: `user-${u.id}`,
+      kyc_status: u.kyc_status,
+      kyc_document_type: u.kyc_document_type,
+      kyc_documents: u.kyc_documents as any,
+      id_card_url: u.id_card_url,
+      created_at: u.created_at || new Date().toISOString(),
+      user_id: u.id
+    }))
+
+    stores = [...((pendingStoreKYC ?? []) as StoreKYC[]), ...mappedUserKYC].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
   }
 
-  // Calcul KPI
-  const kycStats = allStores.reduce((acc: any, curr) => {
+  // Calcul KPI combiné
+  const combinedStats = [...allStores, ...allUsers].reduce((acc: any, curr) => {
     acc[curr.kyc_status] = (acc[curr.kyc_status] || 0) + 1
     return acc
   }, {})
 
-  const totalSubmitted = kycStats['submitted'] || 0
-  const totalVerified = kycStats['verified'] || 0
-  const totalRejected = kycStats['rejected'] || 0
-  const totalProfiles = allStores.length
+  const totalSubmitted = combinedStats['submitted'] || 0
+  const totalVerified = combinedStats['verified'] || 0
+  const totalRejected = combinedStats['rejected'] || 0
+  const totalProfiles = allStores.length + allUsers.length
 
   return (
     <KYCClient 

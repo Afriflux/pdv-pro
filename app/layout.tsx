@@ -37,15 +37,15 @@ export async function generateMetadata(): Promise<Metadata> {
     return acc
   }, {})
 
-  const siteTitle = kv['seo_title'] || kv['platform_name'] || "PDV Pro — Vendez en ligne en Afrique de l'Ouest"
-  const siteDesc  = kv['seo_description'] || "Créez votre boutique en ligne en 10 minutes. Zéro abonnement. PDV Pro, la plateforme e-commerce pour l'Afrique de l'Ouest."
+  const siteTitle = kv['seo_title'] || kv['platform_name'] || "Yayyam — Vendez en ligne en Afrique de l'Ouest"
+  const siteDesc  = kv['seo_description'] || "Créez votre boutique en ligne en 10 minutes. Zéro abonnement. Yayyam, la plateforme e-commerce pour l'Afrique de l'Ouest."
   const siteKeys  = kv['seo_keywords'] ? kv['seo_keywords'].split(',').map(k => k.trim()) : ["ecommerce", "afrique", "boutique en ligne"]
   const siteImage = kv['seo_og_image'] || '/og-image.png'
 
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'),
     title: {
-      template: `%s | ${kv['platform_name'] || 'PDV Pro'}`,
+      template: `%s | ${kv['platform_name'] || 'Yayyam'}`,
       default: siteTitle,
     },
     description: siteDesc,
@@ -58,8 +58,8 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       locale: 'fr_FR',
-      url: 'https://pdvpro.com',
-      siteName: kv['platform_name'] || 'PDV Pro',
+      url: 'https://yayyam.com',
+      siteName: kv['platform_name'] || 'Yayyam',
       title: siteTitle,
       description: siteDesc,
       images: [{ url: siteImage, width: 1200, height: 630 }],
@@ -80,7 +80,7 @@ import AffiliateTracker from '@/components/affiliation/AffiliateTracker'
 import MaintenanceScreen from '@/components/MaintenanceScreen'
 import { headers } from 'next/headers'
 
-import { Toaster } from 'sonner'
+
 
 export default async function RootLayout({
   children,
@@ -118,7 +118,6 @@ export default async function RootLayout({
             <Suspense fallback={null}>
               <AffiliateTracker />
             </Suspense>
-            <Toaster position="top-right" richColors closeButton />
             {children}
             <FooterWrapper />
           </>

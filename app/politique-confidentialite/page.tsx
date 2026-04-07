@@ -7,7 +7,7 @@ export default function PrivacyPolicyPage() {
       <header className="bg-[#0F7A60] text-white py-6 px-6 shadow-md">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="text-2xl font-black tracking-tighter">
-            PDV <span className="text-emerald-200">Pro</span>
+            Yayyam <span className="text-emerald-200">Pro</span>
           </Link>
           <Link href="/" className="text-sm font-medium hover:text-emerald-100 transition">
             Retour à l'accueil
@@ -22,9 +22,9 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">1. Introduction</h2>
             <p>
-              PDV Pro ("nous", "notre") s'engage à protéger la vie privée des utilisateurs de notre plateforme. 
+              Yayyam ("nous", "notre") s'engage à protéger la vie privée des utilisateurs de notre plateforme. 
               Cette politique explique comment nous collectons, utilisons et protégeons vos données personnelles.
-              En utilisant PDV Pro, vous acceptez les pratiques décrites ici.
+              En utilisant Yayyam, vous acceptez les pratiques décrites ici.
             </p>
           </section>
 
@@ -53,7 +53,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">4. Stockage et Sécurité</h2>
             <p>
-              PDV Pro est opéré depuis le Sénégal. Vos données sont stockées de manière sécurisée 
+              Yayyam est opéré depuis le Sénégal. Vos données sont stockées de manière sécurisée 
               sur des infrastructures Cloud certifiées situées en Europe (via Supabase), garantissant un haut niveau de protection et de conformité.
             </p>
           </section>
@@ -70,7 +70,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-bold mb-4">6. Vos droits</h2>
             <p>
               Conformément à la législation en vigueur, vous disposez d'un droit d'accès, de rectification et de 
-              suppression de vos données. Contactez-nous à <span className="font-bold">support@pdvpro.com</span> pour toute demande.
+              suppression de vos données. Contactez-nous à <span className="font-bold">support@yayyam.com</span> pour toute demande.
             </p>
           </section>
 
@@ -83,7 +83,7 @@ export default function PrivacyPolicyPage() {
       {/* Footer */}
       <footer className="bg-gray-50 py-10 px-6 border-t border-gray-200">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-gray-600 text-sm">© 2026 PDV Pro — L'outil de vente intelligent pour l'Afrique de l'Ouest.</p>
+          <p className="text-gray-600 text-sm">© 2026 Yayyam — L'outil de vente intelligent pour l'Afrique de l'Ouest.</p>
         </div>
       </footer>
     </div>

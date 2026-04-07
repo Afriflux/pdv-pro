@@ -29,7 +29,7 @@ interface PlatformConfig {
 }
 
 // ----------------------------------------------------------------
-// PAGE PARAMÈTRES ADMIN — Charte PDV Pro
+// PAGE PARAMÈTRES ADMIN — Charte Yayyam
 // ----------------------------------------------------------------
 export default async function AdminSettingsPage({
   searchParams,

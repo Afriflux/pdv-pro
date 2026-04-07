@@ -6,6 +6,11 @@
   .text-balance {
     text-wrap: balance;
   }
+  .bg-legal-paper {
+    background-image: linear-gradient(#f0f0f0 1px, transparent 1px);
+    background-size: 100% 2em;
+    background-position: 0 1em;
+  }
 }
 
 @layer base {

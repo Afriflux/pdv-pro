@@ -1,8 +1,6 @@
-// @ts-nocheck
 'use client'
 
 import { useState } from 'react'
-import { Check, X, AlertCircle } from 'lucide-react'
 
 interface PixelSettingsProps {
   storeId: string
@@ -18,7 +16,6 @@ export default function PixelSettings({ storeId, initialMetaId, initialTiktokId,
   
   const [isSaving, setIsSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState('')
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -44,7 +41,6 @@ export default function PixelSettings({ storeId, initialMetaId, initialTiktokId,
       setTimeout(() => setSaveStatus('idle'), 3000)
     } catch (err: any) {
       setSaveStatus('error')
-      setErrorMessage(err.message)
     } finally {
       setIsSaving(false)
     }

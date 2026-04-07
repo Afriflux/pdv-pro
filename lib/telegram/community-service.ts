@@ -1,6 +1,6 @@
 /**
  * /lib/telegram/community-service.ts
- * Service de gestion des communautés Telegram liées aux boutiques PDV Pro.
+ * Service de gestion des communautés Telegram liées aux boutiques Yayyam.
  * 
  * Fonctions :
  * - handleConnectCommand : traite /connect CODE depuis un groupe
@@ -13,7 +13,7 @@ import { getTelegramToken } from '@/lib/telegram/bot-service'
 
 // ── handleConnectCommand ─────────────────────────────────────────────────────
 // Appelé depuis le webhook quand un user tape /connect CODE dans un groupe.
-// Lie le groupe Telegram à la boutique PDV Pro correspondant au code.
+// Lie le groupe Telegram à la boutique Yayyam correspondant au code.
 
 export async function handleConnectCommand(
   chatId: string,
@@ -39,7 +39,7 @@ export async function handleConnectCommand(
   if (!community) {
     return {
       success: false,
-      message: '❌ <b>Code invalide.</b>\n\nVérifiez le code et réessayez.\nGénérez un nouveau code dans votre Dashboard PDV Pro → Communautés.'
+      message: '❌ <b>Code invalide.</b>\n\nVérifiez le code et réessayez.\nGénérez un nouveau code dans votre Dashboard Yayyam → Communautés.'
     }
   }
 
@@ -47,7 +47,7 @@ export async function handleConnectCommand(
   if (community.code_expires_at && new Date(community.code_expires_at) < new Date()) {
     return {
       success: false,
-      message: '⏰ <b>Code expiré.</b>\n\nCe code a expiré. Générez un nouveau code dans votre Dashboard PDV Pro → Communautés.'
+      message: '⏰ <b>Code expiré.</b>\n\nCe code a expiré. Générez un nouveau code dans votre Dashboard Yayyam → Communautés.'
     }
   }
 
@@ -96,7 +96,7 @@ export async function handleConnectCommand(
     success: true,
     message:
       `✅ <b>Groupe lié avec succès !</b>\n\n` +
-      `Ce groupe est désormais connecté à la boutique <b>${store?.name || 'PDV Pro'}</b>.\n\n` +
+      `Ce groupe est désormais connecté à la boutique <b>${store?.name || 'Yayyam'}</b>.\n\n` +
       `🔒 Les acheteurs ayant payé un produit lié pourront être invités automatiquement.\n\n` +
       `Gérez cette communauté depuis votre Dashboard → Communautés.`
   }

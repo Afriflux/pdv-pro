@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { supabaseAdmin } from '@/lib/supabase/admin'
 import { sendWhatsApp, msgOrderConfirmed, msgVendorNewOrder } from '@/lib/whatsapp/sendWhatsApp'
-import { executeWorkflows } from '@/lib/workflows/engine'
+import { executeWorkflows } from '@/lib/workflows/execution'
 
 // Need to duplicate some telegram helpers or just leave simple error logging
 // For simplicity we will assume the main flow has standard COD webhook firing.
@@ -53,12 +52,12 @@ export async function POST(req: NextRequest) {
         buyer_email: baseOrder.buyer_email,
         buyer_phone: baseOrder.buyer_phone,
         delivery_address: baseOrder.delivery_address,
-        amount: amount,
+        total: amount,
+        subtotal: amount,
         platform_fee: platformFee,
         vendor_amount: vendorAmount,
         status: baseOrder.status || 'PENDING', // usually 'PENDING' for COD
-        payment_method: 'cod', // OTO is only for COD in our setup
-        source: 'upsell'
+        payment_method: 'cod' // OTO is only for COD in our setup
       }
     })
 

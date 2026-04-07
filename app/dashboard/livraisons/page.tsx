@@ -71,9 +71,9 @@ export default function LivraisonsDashboard() {
       ) : (
         <LivraisonsView 
           initialOrders={orders} 
-          initialDeliverers={deliverers}
+          deliverers={deliverers}
           storeName={store?.name} 
-          storeId={store?.id} 
+          storeId={store?.id || ''} 
         />
       )}
     </div>

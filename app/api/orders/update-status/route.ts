@@ -61,7 +61,7 @@ export async function PATCH(req: Request) {
     if (updateError) throw updateError
 
     // ── 5. NOTIFICATIONS (EMAIL + WHATSAPP) ────────────────────
-    const trackingUrl = `${req.headers.get('origin') || 'https://pdvpro.com'}/track?ref=${order_id}`
+    const trackingUrl = `${req.headers.get('origin') || 'https://yayyam.com'}/track?ref=${order_id}`
     
     let emailSubject = ''
     let emailTitle = ''
@@ -70,15 +70,15 @@ export async function PATCH(req: Request) {
     if (new_status === 'preparing') {
       emailSubject = 'Votre commande est en cours de préparation'
       emailTitle = 'Votre commande est en cours de préparation ⏳'
-      waMessage = `Bonjour ${order.buyer_name},\n\nVotre commande #${order_id.split('-')[0].toUpperCase()} sur ${store.name || 'PDV Pro'} est en cours de préparation. ⏳\n\nSuivez l'état ici : ${trackingUrl}`
+      waMessage = `Bonjour ${order.buyer_name},\n\nVotre commande #${order_id.split('-')[0].toUpperCase()} sur ${store.name || 'Yayyam'} est en cours de préparation. ⏳\n\nSuivez l'état ici : ${trackingUrl}`
     } else if (new_status === 'shipped') {
       emailSubject = 'Votre commande a été expédiée !'
       emailTitle = 'Votre commande a été expédiée ! 🚚'
-      waMessage = `Bonjour ${order.buyer_name},\n\nBonne nouvelle ! Votre commande #${order_id.split('-')[0].toUpperCase()} sur ${store.name || 'PDV Pro'} a été expédiée et est en route ! 🚚\n\nSuivez l'acheminement ici : ${trackingUrl}`
+      waMessage = `Bonjour ${order.buyer_name},\n\nBonne nouvelle ! Votre commande #${order_id.split('-')[0].toUpperCase()} sur ${store.name || 'Yayyam'} a été expédiée et est en route ! 🚚\n\nSuivez l'acheminement ici : ${trackingUrl}`
     } else if (new_status === 'delivered') {
       emailSubject = 'Votre commande a été livrée — laissez un avis !'
       emailTitle = 'Votre commande a été livrée ! 🎉'
-      waMessage = `Bonjour ${order.buyer_name},\n\nVotre commande #${order_id.split('-')[0].toUpperCase()} sur ${store.name || 'PDV Pro'} a été livrée avec succès ! 🎉\n\nMerci de votre confiance. N'hésitez pas à laisser un avis.\n\nHistorique de la commande : ${trackingUrl}`
+      waMessage = `Bonjour ${order.buyer_name},\n\nVotre commande #${order_id.split('-')[0].toUpperCase()} sur ${store.name || 'Yayyam'} a été livrée avec succès ! 🎉\n\nMerci de votre confiance. N'hésitez pas à laisser un avis.\n\nHistorique de la commande : ${trackingUrl}`
     }
 
     if (emailSubject) {
@@ -96,7 +96,7 @@ export async function PATCH(req: Request) {
               <p style="text-align: center; margin: 30px 0;">
                 <a href="${trackingUrl}" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Suivre ma commande</a>
               </p>
-              <p>Merci pour votre confiance dans la boutique ${store.name || 'PDV Pro'} !</p>
+              <p>Merci pour votre confiance dans la boutique ${store.name || 'Yayyam'} !</p>
             </div>
           `
         }).catch(err => console.error('[Brevo Status Update Error]', err))

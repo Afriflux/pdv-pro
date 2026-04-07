@@ -5,7 +5,7 @@ import { MapPin } from 'lucide-react'
 import { ZoneList } from './ZoneList'
 
 export const metadata = {
-  title: 'Zones Tarifaires | PDV Pro',
+  title: 'Zones Tarifaires | Yayyam',
 }
 
 export default async function ZonesPage() {

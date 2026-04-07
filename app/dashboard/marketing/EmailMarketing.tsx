@@ -1,13 +1,14 @@
-// @ts-nocheck
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { Plus, Mail, Clock, CheckCircle2, Send, MessageCircle, AlertCircle, Phone } from 'lucide-react'
-import { toast } from 'sonner'
+import { useState } from 'react'
+import { Plus, Mail, CheckCircle2, Send, MessageCircle, Phone } from 'lucide-react'
+import { toast } from '@/lib/toast'
 
-export default function EmailMarketing({ store }: { store: any }) {
-  const [campaigns, setCampaigns] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+interface EmailMarketingProps {
+  store: { id: string; name: string; whatsapp: string | null; whatsapp_abandoned_cart: boolean }
+}
+
+export default function EmailMarketing({ store }: EmailMarketingProps) {
   const [showForm, setShowForm] = useState(false)
   
   // Brevo state
@@ -20,19 +21,7 @@ export default function EmailMarketing({ store }: { store: any }) {
   const [waActive, setWaActive] = useState(store?.whatsapp_abandoned_cart || false)
   const [savingWa, setSavingWa] = useState(false)
 
-  const loadCampaigns = useCallback(async () => {
-    try {
-      const res = await fetch('/api/brevo/campaign')
-      const data = await res.json()
-      if (res.ok) setCampaigns(data.campaigns || [])
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
 
-  useEffect(() => { loadCampaigns() }, [loadCampaigns])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,7 +37,6 @@ export default function EmailMarketing({ store }: { store: any }) {
         setShowForm(false)
         setSubject('')
         setHtmlContent('')
-        loadCampaigns()
       } else throw new Error("Erreur")
     } catch {
       toast.error("Erreur de création.")

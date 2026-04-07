@@ -138,11 +138,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     // 5. Construire le nom de la campagne et les infos sender
     const sender = {
-      name:  store?.name ?? 'PDV Pro',
-      email: 'noreply@pdvpro.com',
+      name:  store?.name ?? 'Yayyam',
+      email: 'noreply@yayyam.com',
     }
 
-    const campaignName = `[${store?.name ?? 'PDV Pro'}] ${subject.trim()} — ${new Date().toLocaleDateString('fr-FR')}`
+    const campaignName = `[${store?.name ?? 'Yayyam'}] ${subject.trim()} — ${new Date().toLocaleDateString('fr-FR')}`
 
     // 6. Créer la campagne dans Brevo
     const campaignId = await createEmailCampaign({
@@ -160,10 +160,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         { status: 503 }
       )
     }
-
-    console.log(
-      `[Brevo /campaign POST] Campagne créée : id=${campaignId} store=${store?.name} listId=${listId}`
-    )
 
     return NextResponse.json(
       {

@@ -89,15 +89,15 @@ export default async function AdminLandingPage() {
 
   // Parses JSON ou fallback defaults
   let testimonials: Testimonial[] = [
-    { id: '1', name: 'Mariam D.', business: 'Boutique Cosmétiques', quote: "Avant PDV Pro, je perdais facilement 30% de mes commandes parce que les clients ne savaient pas comment payer. Maintenant Wave fait tout. Je dors tranquille.", city: "Dakar, Sénégal", country_flag: "🇸🇳", active: true },
+    { id: '1', name: 'Mariam D.', business: 'Boutique Cosmétiques', quote: "Avant Yayyam, je perdais facilement 30% de mes commandes parce que les clients ne savaient pas comment payer. Maintenant Wave fait tout. Je dors tranquille.", city: "Dakar, Sénégal", country_flag: "🇸🇳", active: true },
     { id: '2', name: 'Kofi A.', business: 'Vendeur Électronique', quote: "Le COD a tout changé. Mes clients à Abidjan avaient peur de payer d'avance. Maintenant ils commandent sans hésiter.", city: "Abidjan, Côte d'Ivoire", country_flag: "🇨🇮", active: true },
     { id: '3', name: 'Awa B.', business: 'Créatrice de Mode', quote: "L'IA Check360° m'a dit que mes ventes baissaient le mercredi. J'ai lancé une promo ce jour-là. +45% de commandes en une semaine.", city: "Bamako, Mali", country_flag: "🇲🇱", active: true }
   ]
   
   let faq: FAQ[] = [
     { id: 'f1', question: "Comment fonctionne la commission ?", answer: "La commission est dégressive et calculée automatiquement... (Modifiez-moi)", order: 1, active: true },
-    { id: 'f2', question: "Peut-on vendre des produits physiques ?", answer: "Oui ! PDV Pro supporte nativement le paiement à la livraison (COD)...", order: 2, active: true },
-    { id: 'f3', question: "Y a-t-il un abonnement obligatoire ?", answer: "Non, jamais. PDV Pro fonctionne à 100% sur un modèle de commission...", order: 3, active: true }
+    { id: 'f2', question: "Peut-on vendre des produits physiques ?", answer: "Oui ! Yayyam supporte nativement le paiement à la livraison (COD)...", order: 2, active: true },
+    { id: 'f3', question: "Y a-t-il un abonnement obligatoire ?", answer: "Non, jamais. Yayyam fonctionne à 100% sur un modèle de commission...", order: 3, active: true }
   ]
   
   try { 
@@ -159,7 +159,7 @@ export default async function AdminLandingPage() {
         initialGeneral={{
           landing_hero_badge: configMap.landing_hero_badge || '🚀 Launch Week — Commission à 5% pour les 100 premiers vendeurs',
           landing_hero_h1: configMap.landing_hero_h1 || 'Commencez à vendre\naujourd\'hui.\nEncaissez sur Wave/OM.',
-          landing_hero_subtitle: configMap.landing_hero_subtitle || 'PDV Pro est la seule plateforme qui synchronise votre WhatsApp avec les paiements mobile money locaux. Sans code, sans friction.',
+          landing_hero_subtitle: configMap.landing_hero_subtitle || 'Yayyam est la seule plateforme qui synchronise votre WhatsApp avec les paiements mobile money locaux. Sans code, sans friction.',
           landing_hero_cta_primary: configMap.landing_hero_cta_primary || 'Lancer ma boutique',
           landing_hero_cta_secondary: configMap.landing_hero_cta_secondary || 'Voir les boutiques actives →',
           landing_problem_supertitle: configMap.landing_problem_supertitle || 'Le Casse-tête',
@@ -167,13 +167,13 @@ export default async function AdminLandingPage() {
           landing_problem_subtitle: configMap.landing_problem_subtitle || 'Vous perdez des ventes tous les jours à cause d\'un processus chaotique.',
           landing_solution_supertitle: configMap.landing_solution_supertitle || 'La Solution',
           landing_solution_title: configMap.landing_solution_title || 'Passez au niveau supérieur.',
-          landing_solution_subtitle: configMap.landing_solution_subtitle || 'Avec PDV Pro, centralisez votre activité et offrez une expérience premium à vos clients.',
+          landing_solution_subtitle: configMap.landing_solution_subtitle || 'Avec Yayyam, centralisez votre activité et offrez une expérience premium à vos clients.',
           landing_features_supertitle: configMap.landing_features_supertitle || 'L\'arsenal complet',
           landing_features_title: configMap.landing_features_title || 'Tout ce dont vous avez besoin pour grandir.',
           landing_sectors_supertitle: configMap.landing_sectors_supertitle || 'Déjà utilisé au Sénégal, en Côte d\'Ivoire et au Mali.',
           landing_sectors_title: configMap.landing_sectors_title || 'Parfait pour tous les business.',
           landing_sectors_subtitle: configMap.landing_sectors_subtitle || 'Peu importe ce que vous vendez, nous gérons le processus de la vitrine jusqu\'à votre poche.',
-          landing_telegram_supertitle: configMap.landing_telegram_supertitle || 'EXCLUSIF PDV PRO',
+          landing_telegram_supertitle: configMap.landing_telegram_supertitle || 'EXCLUSIF YAYYAM',
           landing_telegram_title: configMap.landing_telegram_title || 'Vendez l\'accès à vos groupes\nTelegram privés',
           landing_telegram_subtitle: configMap.landing_telegram_subtitle || 'Formations, coaching, contenus exclusifs — créez un produit, liez-le à votre groupe Telegram, et vos clients reçoivent automatiquement leur invitation après paiement.',
           

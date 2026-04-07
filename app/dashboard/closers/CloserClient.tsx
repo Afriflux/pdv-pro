@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Settings, Trash2, CheckCircle, PhoneCall, Plus, Package, Layers, Store } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { updateStoreCloserSettings, updateProductCloserSettings } from './actions'
 
 export interface CloserPerformance {

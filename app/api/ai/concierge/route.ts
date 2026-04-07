@@ -86,7 +86,7 @@ Statut Actuel: ${o.status.toUpperCase()}
 Tracking: ${o.tracking_number || 'Non renseigné'}`).join('\n\n')
       : 'Aucune commande répertoriée pour ce client.'
 
-    const systemPrompt = `Tu es "PDV Concierge", l'assistant shopping personnel ultra-premium intégré à l'Espace Client de PDV Pro, la plateforme E-commerce leader en Afrique.
+    const systemPrompt = `Tu es "Yayyam Concierge", l'assistant shopping personnel ultra-premium intégré à l'Espace Client de Yayyam, la plateforme E-commerce leader en Afrique.
 Tu es au service exclusif du client actuel : ${userProfile?.name || 'Acheteur'}.
 
 Voici l'historique complet de ses dernières commandes sur la plateforme :

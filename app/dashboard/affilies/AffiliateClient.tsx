@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { Settings, Trash2, TrendingUp, CheckCircle, Plus, Users, MousePointer2, BadgeDollarSign, ExternalLink, MessageCircle, XCircle, Layers, Store, Package, Layout, AlertCircle } from 'lucide-react'
 import { updateStoreAffiliateSettings, approveAffiliate, rejectAffiliate, updateProductAffiliateSettings, updateSalePageAffiliateSettings } from '@/lib/affiliates/affiliateActions'
 
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://pdvpro.com'
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
 
 export interface AffiliateData {
   id:             string
@@ -180,14 +180,14 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
     
     if (res.success) {
       // Message via WA
-      const waMsg = `Bonjour ! Votre code affilié PDV Pro est : ${aff.code}`
+      const waMsg = `Bonjour ! Votre code affilié Yayyam est : ${aff.code}`
       const phone = aff.user?.phone?.replace(/\D/g, '') ?? ''
 
       if (phone) {
         const encodedMessage = encodeURIComponent(waMsg)
         window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank')
       } else {
-        toast.info("L'affilié a été approuvé, mais aucun numéro WhatsApp n'est enregistré pour l'envoi du message.")
+        toast("L'affilié a été approuvé, mais aucun numéro WhatsApp n'est enregistré pour l'envoi du message.")
       }
 
       setAffiliates(prev => prev.map(a => a.id === aff.id ? { ...a, status: 'active' } : a))
@@ -262,7 +262,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
   const handleExportCSV = async () => {
     // Client-side export for simplicity if we already have the data
     if (!initialWithdrawals.length) {
-      toast.info('Aucun retrait à exporter')
+      toast('Aucun retrait à exporter')
       return
     }
     

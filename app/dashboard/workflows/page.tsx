@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
-import WorkflowsClient from './WorkflowsClient'
+import { UniversalWorkflowBuilder } from '@/components/shared/workflows/UniversalWorkflowBuilder'
+import { toggleWorkflowStatus, saveWorkflow, deleteWorkflow, cloneWorkflowTemplate } from './actions'
 
 // ─── Page Workflows — accessible à tous les vendeurs ─────────────────────────
 // Plus de guard PRO ni de dépendance à prisma/subscriptions
@@ -38,6 +39,29 @@ export default async function WorkflowsPage() {
     lastRun: w.last_run ? new Date(w.last_run).toLocaleDateString() : 'Jamais'
   }))
 
+  const globalWorkflowsRaw = await prisma.workflow.findMany({
+    where: { store_id: null, user_id: null },
+    orderBy: { created_at: 'desc' }
+  }).catch(() => [])
+
+  const globalWorkflows = globalWorkflowsRaw.map((w: any) => ({
+    id: w.id,
+    title: w.title,
+    description: w.description || '',
+    status: 'inactive',
+    triggerType: w.triggerType,
+    config: w.config || {},
+    actionCount: w.config?.actions?.length || 0,
+    is_premium: w.is_premium,
+    price: w.price
+  }))
+
+  const assetPurchases = await prisma.assetPurchase.findMany({
+    where: { store_id: store.id, asset_type: 'WORKFLOW' },
+    select: { asset_id: true }
+  }).catch(() => [])
+  const purchasedAssetIds = assetPurchases.map(a => a.asset_id)
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-40">
@@ -50,7 +74,19 @@ export default async function WorkflowsPage() {
       </header>
 
       <main className="w-full flex-1">
-        <WorkflowsClient initialWorkflows={typedWorkflows} storeId={store.id} />
+        <UniversalWorkflowBuilder 
+          initialWorkflows={typedWorkflows} 
+          globalWorkflows={globalWorkflows}
+          purchasedAssetIds={purchasedAssetIds}
+          ownerId={store.id} 
+          ownerType="vendor"
+          actions={{
+            toggleStatus: toggleWorkflowStatus,
+            saveWorkflow: saveWorkflow as any,
+            deleteWorkflow: deleteWorkflow,
+            cloneWorkflow: cloneWorkflowTemplate
+          }}
+        />
       </main>
     </div>
   )

@@ -1,7 +1,7 @@
 'use client'
 
 import { Download } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { useState } from 'react'
 
 export function ExportButton() {
@@ -9,7 +9,7 @@ export function ExportButton() {
 
   const handleExport = () => {
     setLoading(true)
-    toast.info('Génération du rapport en cours...')
+    toast.success('Génération du rapport en cours...')
     // Simulation simple de délai avant "lance" l'impression (Native) ou l'export
     setTimeout(() => {
       setLoading(false)

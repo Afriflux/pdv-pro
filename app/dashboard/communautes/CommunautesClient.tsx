@@ -1,7 +1,7 @@
 'use client'
 
 // ─── app/dashboard/communautes/CommunautesClient.tsx ─────────────────────────
-// Client Component — Feed communautaire PDV Pro
+// Client Component — Feed communautaire Yayyam
 // 4 onglets : Feed | Classement | Groupes | Ressources
 
 import { useState, useCallback, useRef } from 'react'
@@ -71,10 +71,10 @@ const CATEGORY_LABELS: Record<string, { label: string; emoji: string; color: str
 
 const RESOURCES = [
   { emoji: '📖', title: 'Comment écrire une description qui vend',  desc: 'Les 5 éléments d\'une fiche produit irrésistible pour le marché africain.' },
-  { emoji: '🎯', title: '5 techniques pour booster vos ventes',     desc: 'Stratégies éprouvées par les top-vendeurs PDV Pro pour multiplier leur CA.' },
+  { emoji: '🎯', title: '5 techniques pour booster vos ventes',     desc: 'Stratégies éprouvées par les top-vendeurs Yayyam pour multiplier leur CA.' },
   { emoji: '📸', title: 'Guide photo produit avec un smartphone',   desc: 'Prendre des photos professionnelles avec votre téléphone en 10 minutes.' },
   { emoji: '💡', title: 'Utiliser WhatsApp Business pour vendre',   desc: 'Catalogue, réponses automatiques et statuts : guide complet.' },
-  { emoji: '📊', title: 'Comprendre vos analytics PDV Pro',         desc: 'Lire vos statistiques et prendre les bonnes décisions pour votre boutique.' },
+  { emoji: '📊', title: 'Comprendre vos analytics Yayyam',         desc: 'Lire vos statistiques et prendre les bonnes décisions pour votre boutique.' },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
       const canvas = await html2canvas(cardRef.current, { backgroundColor: '#ffffff', scale: 2, useCORS: true })
       const imgData = canvas.toDataURL('image/png')
       const link = document.createElement('a')
-      link.download = `pdvpro-success-${post.id}.png`
+      link.download = `yayyam-success-${post.id}.png`
       link.href = imgData
       link.click()
     } catch(err) {
@@ -581,7 +581,7 @@ export default function CommunautesClient({
             
             <div className="mb-6 px-2">
                <h2 className="text-xl font-black text-[#1A1A1A] tracking-tight">Navigation</h2>
-               <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Hub Social PDV Pro</p>
+               <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Hub Social Yayyam</p>
             </div>
 
             {/* Menu */}
@@ -738,7 +738,7 @@ export default function CommunautesClient({
                             <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/10">Annonce Officielle</span>
                           </div>
                           <p className="font-medium text-[13px] leading-relaxed mb-4 text-emerald-50">
-                            Bienvenue dans le nouveau <b>Hub Communautaire PDV Pro !</b> Restez engagé, vendez plus, et connectez vos groupes Telegram pour notifier automatiquement vos membres. 🚀
+                            Bienvenue dans le nouveau <b>Hub Communautaire Yayyam !</b> Restez engagé, vendez plus, et connectez vos groupes Telegram pour notifier automatiquement vos membres. 🚀
                           </p>
                           <button className="text-xs font-black bg-white text-[#0F7A60] px-4 py-2 rounded-xl shadow-sm hover:scale-105 hover:shadow-md transition-all">
                             Voir les Nouveautés
@@ -798,7 +798,7 @@ export default function CommunautesClient({
                         <div className="absolute -right-4 -top-4 text-8xl opacity-20 pointer-events-none">👑</div>
                         <div className="relative z-10">
                           <h3 className="text-xl font-black mb-1">Vous êtes au sommet !</h3>
-                          <p className="text-sm font-medium opacity-90">Statut Élite débloqué. Vous dominez le classement PDV Pro.</p>
+                          <p className="text-sm font-medium opacity-90">Statut Élite débloqué. Vous dominez le classement Yayyam.</p>
                         </div>
                       </div>
                     )
@@ -966,7 +966,7 @@ export default function CommunautesClient({
                     Gérez vos <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0DE0A1] to-emerald-400">Communautés Telegram</span>
                   </h2>
                   <p className="text-slate-300 font-medium text-[15px] leading-relaxed max-w-xl">
-                    Connectez vos groupes et canaux Telegram à PDV Pro. Automatisez les ajouts, gérez les expulsions expirées et vendez l'accès VIP à vos audiences en pilote automatique.
+                    Connectez vos groupes et canaux Telegram à Yayyam. Automatisez les ajouts, gérez les expulsions expirées et vendez l'accès VIP à vos audiences en pilote automatique.
                   </p>
                   
                   <Link
@@ -1023,7 +1023,7 @@ export default function CommunautesClient({
                       </div>
                       
                       <div className="pt-4 mt-auto border-t border-slate-100 flex items-center justify-between">
-                         <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Guide PDV Pro</span>
+                         <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Guide Yayyam</span>
                          <span className="w-8 h-8 rounded-full bg-emerald-50 text-[#0F7A60] flex items-center justify-center group-hover/res:bg-[#0F7A60] group-hover/res:text-white transition-colors">
                            <ChevronRight size={16} strokeWidth={3} />
                          </span>
@@ -1037,7 +1037,7 @@ export default function CommunautesClient({
                     💡
                   </div>
                   <div className="flex-1 text-center sm:text-left">
-                    <p className="text-lg font-black text-white">L'académie PDV Pro s'agrandit</p>
+                    <p className="text-lg font-black text-white">L'académie Yayyam s'agrandit</p>
                     <p className="text-sm text-slate-300 font-medium mt-1">
                       De nouveaux guides experts sont ajoutés chaque semaine. Restez à l'affût pour propulser vos ventes !
                     </p>
@@ -1068,7 +1068,7 @@ export default function CommunautesClient({
                       <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/10">Nouveauté</span>
                     </div>
                     <p className="font-medium text-[13px] leading-relaxed mb-4 text-emerald-50">
-                      Bienvenue dans le nouveau <b>Hub Communautaire PDV Pro !</b> Restez engagé, vendez plus, et connectez vos groupes Telegram pour notifier automatiquement vos membres. 🚀
+                      Bienvenue dans le nouveau <b>Hub Communautaire Yayyam !</b> Restez engagé, vendez plus, et connectez vos groupes Telegram pour notifier automatiquement vos membres. 🚀
                     </p>
                   </div>
                 </div>

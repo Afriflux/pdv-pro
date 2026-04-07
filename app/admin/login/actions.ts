@@ -1,6 +1,6 @@
 'use server'
 
-// ─── Server Action : Connexion Admin PDV Pro ──────────────────────────────────
+// ─── Server Action : Connexion Admin Yayyam ──────────────────────────────────
 // Vérifie l'identité + le rôle avant d'autoriser l'accès à /admin
 // Rôles autorisés : super_admin, gestionnaire, support
 
@@ -14,13 +14,15 @@ const ADMIN_ROLES = ['super_admin', 'gestionnaire', 'support'] as const
 type AdminRole = typeof ADMIN_ROLES[number]
 
 export async function adminSignIn(formData: FormData): Promise<void> {
-  const email    = formData.get('email') as string
+  let email = formData.get('email') as string
   const password = formData.get('password') as string
 
   // Validation basique des champs
   if (!email || !password) {
     redirect('/admin/login?error=invalid_credentials')
   }
+
+  email = email.trim().toLowerCase()
 
   const supabase = await createClient()
 

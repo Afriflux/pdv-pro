@@ -85,7 +85,7 @@ export async function POST(req: Request) {
           client_email: buyerData?.email || user.email || '',
           product_name: productData.name,
           question: question.trim(),
-          store_name: productData.store?.name || 'PDV Pro',
+          store_name: productData.store?.name || 'Yayyam',
         }).catch(e => console.error('[Workflow Engine Question Error]', e));
       }
     } catch (wfErr) {

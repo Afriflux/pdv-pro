@@ -9,7 +9,7 @@ interface ShareButtonProps {
 }
 
 /**
- * ShareButton — OBLIGATOIRE sur toute page publique PDV Pro
+ * ShareButton — OBLIGATOIRE sur toute page publique Yayyam
  * Boutique vitrine, page de vente, page produit, lien de paiement
  */
 export function ShareButton({ url, title, className = '' }: ShareButtonProps) {

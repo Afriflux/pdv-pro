@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { Eye, EyeOff, Loader2, UserPlus } from 'lucide-react'
 
 // ----------------------------------------------------------------
@@ -70,7 +70,7 @@ export default function CreateAdminForm() {
     }
   }
 
-  // Classe commune pour les inputs — charte PDV Pro
+  // Classe commune pour les inputs — charte Yayyam
   const inputCls =
     'w-full bg-[#FAFAF7] border border-gray-200 rounded-2xl py-3 px-4 text-sm font-bold text-[#1A1A1A] ' +
     'focus:bg-white focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 outline-none transition-all duration-300 ' +
@@ -89,7 +89,7 @@ export default function CreateAdminForm() {
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            placeholder="admin@pdvpro.com"
+            placeholder="admin@yayyam.com"
             className={inputCls}
             required
             autoComplete="off"

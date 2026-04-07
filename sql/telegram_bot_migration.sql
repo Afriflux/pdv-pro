@@ -1,5 +1,5 @@
--- /Users/cheikhabdoulkhadredjeylanidjitte/Desktop/PDV Pro/sql/telegram_bot_migration.sql
--- Migration pour l'intégration du Bot Telegram @PDVProBot
+-- /Users/cheikhabdoulkhadredjeylanidjitte/Desktop/Yayyam/sql/telegram_bot_migration.sql
+-- Migration pour l'intégration du Bot Telegram @YayyamProBot
 -- À exécuter dans le SQL Editor de Supabase
 
 -- 1. Ajout des colonnes Telegram à la table Store

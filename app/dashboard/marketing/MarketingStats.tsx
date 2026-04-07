@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useMemo } from 'react'
@@ -33,7 +32,7 @@ export default function MarketingStats({ links }: MarketingStatsProps) {
     if (links.length > 0) {
       const topLink = [...links].sort((a, b) => (b.clicks || 0) - (a.clicks || 0))[0]
       if (topLink && topLink.clicks > 0) {
-        bestLink = topLink.short_code ? `pdvpro.com/s/${topLink.short_code}` : 'Lien actif'
+        bestLink = topLink.short_code ? `yayyam.com/s/${topLink.short_code}` : 'Lien actif'
       }
     }
 

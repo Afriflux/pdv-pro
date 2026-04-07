@@ -1,5 +1,5 @@
 // ─── app/dashboard/communautes/page.tsx ──────────────────────────────────────
-// Server Component — Communauté PDV Pro
+// Server Component — Communauté Yayyam
 // Charge posts + leaderboard en parallèle, délègue l'UI à CommunautesClient
 
 import { redirect } from 'next/navigation'

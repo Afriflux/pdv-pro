@@ -77,7 +77,7 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json(FALLBACK_ACTIONS, { status: 200 })
   }
 
-  const systemPrompt = `Tu es l'assistant IA de PDV Pro, plateforme e-commerce africaine.
+  const systemPrompt = `Tu es l'assistant IA de Yayyam, plateforme e-commerce africaine.
 Tu analyses les données d'un vendeur et génères EXACTEMENT 3 actions.
 Les actions sont concrètes, actionnables aujourd'hui, adaptées au marché africain (Wave, Orange Money, WhatsApp, COD).
 Priorité high = urgent à faire maintenant.

@@ -1,5 +1,5 @@
 /**
- * Service central de calcul des commissions PDV Pro
+ * Service central de calcul des commissions Yayyam
  *
  * MODÈLE DE COMMISSION :
  * ─────────────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ const ONLINE_PAYMENT_METHODS = new Set([
 export async function getCommissionTiers() {
   const cfg = await getPlatformConfig()
   return {
-    COD_RATE: cfg.cod / 100,
+    COD_RATE: 0.05,
     TIERS: [
       { maxCA: 100_000,   rate: cfg.tier_1 / 100 },
       { maxCA: 500_000,   rate: cfg.tier_2 / 100 },
@@ -56,7 +56,7 @@ export async function getCommissionTiers() {
 
 /**
  * Détermine le taux de commission applicable selon le CA mensuel du vendeur.
- * Utilise le modèle dégressif PDV Pro pour les ventes en ligne.
+ * Utilise le modèle dégressif Yayyam pour les ventes en ligne.
  */
 export async function getCommissionRate(monthlyCA: number): Promise<number> {
   const { TIERS } = await getCommissionTiers()
@@ -78,7 +78,7 @@ export async function getCommissionTierLabel(monthlyCA: number): Promise<string>
 }
 
 /**
- * Calcule la commission PDV Pro sur une vente.
+ * Calcule la commission Yayyam sur une vente.
  */
 export async function calculateCommission(
   productBase:   number, // (subtotal - promo_discount)
