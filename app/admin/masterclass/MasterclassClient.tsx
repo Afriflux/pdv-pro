@@ -45,6 +45,9 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
     readTime: '5 min',
     intro: '',
     is_active: true,
+    is_premium: false,
+    price: 0,
+    allowed_roles: ['all'] as string[],
     tips: [{ number: 1, title: '', desc: '', imageUrl: '', videoUrl: '' }]
   })
 
@@ -95,6 +98,9 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
       readTime: '5 min',
       intro: '',
       is_active: true,
+      is_premium: false,
+      price: 0,
+      allowed_roles: ['all'],
       tips: [{ number: 1, title: '', desc: '', imageUrl: '', videoUrl: '' }]
     })
     setEditingId(null)
@@ -109,6 +115,9 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
       readTime: article.readTime || '5 min',
       intro: article.intro || '',
       is_active: article.is_active ?? true,
+      is_premium: article.is_premium ?? false,
+      price: article.price ?? 0,
+      allowed_roles: article.allowed_roles || ['all'],
       tips: typeof article.tips === 'string' ? JSON.parse(article.tips) : article.tips
     })
     setEditingId(article.id)
@@ -130,6 +139,9 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
       readTime: generatedArticle.readTime || '5 min',
       intro: generatedArticle.intro || '',
       is_active: false, // Brouillon par défaut pour relecture
+      is_premium: false,
+      price: 0,
+      allowed_roles: ['all'],
       tips: generatedArticle.tips || [{ number: 1, title: '', desc: '', imageUrl: '', videoUrl: '' }]
     })
     setEditingId(null)
@@ -239,7 +251,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
               <GraduationCap className="w-8 h-8" />
             </div>
             <div className="pb-1">
-              <h1 className="text-3xl font-black text-white tracking-tight">Yayyam Academy</h1>
+              <h1 className="text-3xl font-black text-white tracking-tight">Yayyam Academie</h1>
               <p className="text-emerald-100/90 font-medium text-sm mt-1 max-w-lg leading-relaxed">
                 Le centre de formation exclusif des vendeurs. Partagez votre expertise au travers de modules éducatifs.
               </p>
@@ -359,7 +371,17 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                             </div>
                             <div className="max-w-[300px]">
                               <p className="font-black text-gray-900 truncate text-[15px] group-hover:text-[#0F7A60] transition-colors">{article.title}</p>
-                              <p className="text-xs text-gray-400 font-medium truncate mt-0.5">{article.intro}</p>
+                              <p className="text-xs text-gray-400 font-medium truncate mt-0.5 mb-1.5">{article.intro}</p>
+                              <div className="flex flex-wrap gap-1">
+                               {(article.allowed_roles || ['all']).map((r: string) => {
+                                 const roleName = r === 'all' ? 'TOUS' : r === 'vendor' ? 'VENDEUR' : r === 'closer' ? 'CLOSER' : r === 'client' ? 'ACHETEUR' : r === 'affiliate' ? 'AFFILIÉ' : r;
+                                 return (
+                                   <span key={r} className="text-[8px] font-bold uppercase tracking-widest text-[#0D5C4A] bg-[#0F7A60]/10 px-1.5 py-0.5 rounded-full border border-[#0F7A60]/20 shadow-sm">
+                                     {roleName}
+                                   </span>
+                                 )
+                               })}
+                             </div>
                             </div>
                           </div>
                         </td>
@@ -447,10 +469,25 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                              <div className="absolute top-3 left-3 bg-[#0F7A60] text-white text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm">
                                {article.category}
                              </div>
+                             {article.is_premium && (
+                               <div className="absolute bottom-3 left-3 bg-amber-400 text-amber-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm flex items-center gap-1">
+                                 ⭐ {article.price}F
+                               </div>
+                             )}
                            </div>
 
                            {/* Corps Carte */}
                            <div className="p-6 flex flex-col flex-1">
+                             <div className="flex flex-wrap gap-1 mb-2">
+                               {(article.allowed_roles || ['all']).map((r: string) => {
+                                 const roleName = r === 'all' ? 'TOUS' : r === 'vendor' ? 'VENDEUR' : r === 'closer' ? 'CLOSER' : r === 'client' ? 'ACHETEUR' : r === 'affiliate' ? 'AFFILIÉ' : r;
+                                 return (
+                                   <span key={r} className="text-[9px] font-bold uppercase tracking-widest text-[#0D5C4A] bg-[#0F7A60]/10 px-2 py-0.5 rounded-full border border-[#0F7A60]/20 shadow-sm">
+                                     {roleName}
+                                   </span>
+                                 )
+                               })}
+                             </div>
                              <h3 className="text-lg font-black text-gray-900 leading-snug mb-3 group-hover:text-[#0F7A60] transition-colors line-clamp-2">{article.title}</h3>
                              <p className="text-[13px] text-gray-500 font-medium line-clamp-2 leading-relaxed mb-6 flex-1">{article.intro}</p>
                              
@@ -560,6 +597,47 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                    <div className="md:col-span-2">
                      <label className="block text-sm font-bold text-gray-700 mb-2">Introduction (Teaser)</label>
                      <textarea required rows={3} value={formData.intro} onChange={e => setFormData({...formData, intro: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:bg-white focus:border-[#0F7A60] outline-none shadow-inner resize-none" placeholder="Donnez envie au vendeur de lire ce guide..." />
+                   </div>
+                   
+                   <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-emerald-50/50 rounded-2xl border border-emerald-100">
+                     <div>
+                       <label className="block text-sm font-bold text-emerald-900 mb-3">Audience ciblée (Destiné à)</label>
+                       <div className="flex flex-wrap gap-2">
+                         {['all', 'vendor', 'closer', 'affiliate', 'client', 'admin'].map(role => (
+                           <label key={role} className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-emerald-200/60 cursor-pointer hover:border-emerald-500 shadow-sm transition-colors">
+                             <input 
+                               type="checkbox" 
+                               checked={formData.allowed_roles.includes(role)}
+                               onChange={(e) => {
+                                 let newRoles = [...formData.allowed_roles]
+                                 if (e.target.checked) {
+                                   if (role === 'all') newRoles = ['all']
+                                   else {
+                                     newRoles = newRoles.filter(r => r !== 'all')
+                                     newRoles.push(role)
+                                   }
+                                 } else {
+                                   newRoles = newRoles.filter(r => r !== role)
+                                   if (newRoles.length === 0) newRoles = ['all']
+                                 }
+                                 setFormData({...formData, allowed_roles: newRoles})
+                               }}
+                               className="text-emerald-600 focus:ring-emerald-500 rounded-sm"
+                             />
+                             <span className="text-xs font-bold text-gray-800 uppercase">{role === 'all' ? 'Tous' : role}</span>
+                           </label>
+                         ))}
+                       </div>
+                     </div>
+                     <div className="flex flex-col gap-3">
+                       <label className="flex items-center gap-2 cursor-pointer pt-1">
+                         <input type="checkbox" checked={formData.is_premium} onChange={e => setFormData({...formData, is_premium: e.target.checked})} className="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 cursor-pointer" />
+                         <span className="text-sm font-bold text-emerald-900">Cours Premium (Payant)</span>
+                       </label>
+                       {formData.is_premium && (
+                         <input type="number" value={formData.price} onChange={e => setFormData({...formData, price: Number(e.target.value)})} className="w-full bg-white border border-emerald-200 rounded-xl p-3 text-sm focus:border-[#0F7A60] outline-none shadow-sm animate-in fade-in" placeholder="Prix en FCFA (ex: 5000)" />
+                       )}
+                     </div>
                    </div>
                  </div>
               </div>

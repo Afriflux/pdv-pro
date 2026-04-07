@@ -348,7 +348,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
                           {(task.client_name || task.client_phone || task.order_id) && (
                             <div className="flex flex-wrap gap-2 mt-1 mb-2">
                               {task.client_phone ? (
-                                <a href={`https://wa.me/${task.client_phone.replace(/\+/g, '')}?text=Bonjour${task.client_name ? ` ${task.client_name}` : ''}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded text-[10px] font-bold hover:bg-green-100 transition border border-green-200">
+                                <a suppressHydrationWarning href={`https://wa.me/${task.client_phone.replace(/\+/g, '')}?text=Bonjour${task.client_name ? ` ${task.client_name}` : ''}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded text-[10px] font-bold hover:bg-green-100 transition border border-green-200">
                                   <Phone size={10} /> {task.client_name || task.client_phone}
                                 </a>
                               ) : task.client_name ? (

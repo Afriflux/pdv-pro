@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { signOut } from '@/app/auth/actions'
-import { 
+import { Store,  
   LayoutDashboard, 
   Package, 
   Wallet, 
@@ -22,7 +22,7 @@ import {
   GraduationCap,
   Inbox,
   Calendar,
-} from 'lucide-react'
+ } from 'lucide-react'
 import { NotificationBell } from '@/components/dashboard/NotificationBell'
 
 // ----------------------------------------------------------------
@@ -87,6 +87,7 @@ function NavLink({ item, active, onClick, collapsed }: { item: NavItem, active: 
   return (
     <div className="relative group/navitem">
       <Link
+        suppressHydrationWarning
         href={item.href}
         onClick={onClick}
         className={`flex items-center relative overflow-hidden ${collapsed ? 'justify-center px-0 w-11 h-11 mx-auto rounded-xl' : 'px-3 gap-3 py-2.5 rounded-xl'} transition-all duration-300 ${
@@ -99,7 +100,7 @@ function NavLink({ item, active, onClick, collapsed }: { item: NavItem, active: 
            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white to-white/30 rounded-l-xl shadow-[0_0_12px_rgba(255,255,255,0.6)]" />
         )}
         
-        <Icon className={`${collapsed ? 'w-[20px] h-[20px]' : 'w-[18px] h-[18px]'} flex-shrink-0 transition-transform duration-300 ${active ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'group-hover/navitem:scale-110'}`} />
+        <Icon suppressHydrationWarning className={`${collapsed ? 'w-[20px] h-[20px]' : 'w-[18px] h-[18px]'} flex-shrink-0 transition-transform duration-300 ${active ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'group-hover/navitem:scale-110'}`} />
         {!collapsed && <span className="text-[13px] truncate relative z-10">{item.name}</span>}
         {!collapsed && item.badge && (
           <span className="ml-auto text-[9px] font-black bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 px-2 py-0.5 rounded-md shadow-sm relative z-10 uppercase tracking-wider">
@@ -209,7 +210,7 @@ function SidebarContent({
         <Link href="/" className="flex items-center gap-1.5 focus:outline-none group/logo" onClick={onClose}>
           {collapsed ? (
             <div className="w-11 h-11 bg-gradient-to-br from-white/20 to-white/5 border border-white/20 rounded-xl flex items-center justify-center shadow-lg group-hover/logo:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all">
-              <span className="text-xl font-display font-black text-white tracking-tight">C</span>
+              <Store className="w-6 h-6 text-emerald-400 stroke-[2.5]" />
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-1 py-1 rounded-xl group-hover/logo:bg-white/5 transition-colors">

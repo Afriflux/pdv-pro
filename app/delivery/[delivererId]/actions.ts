@@ -21,7 +21,7 @@ export async function getDelivererDataAction(delivererId: string) {
     }
 
     // Get orders assigned to this deliverer
-    const orders = const updated = await prisma.order.findMany({
+    const orders = await prisma.order.findMany({
       where: {
         deliverer_id: delivererId,
         status: { in: ['preparing', 'shipped', 'delivered'] }
@@ -43,7 +43,7 @@ export async function getDelivererDataAction(delivererId: string) {
     // Assigning Delivery Zones
     const storeZones = await prisma.deliveryZone.findMany({
       where: { store_id: deliverer.store_id },
-      select: { id: true, name: true, phone: true }
+      select: { id: true, name: true }
     })
     const zoneMap = new Map(storeZones.map(z => [z.id, z.name]))
 
@@ -63,7 +63,7 @@ export async function getDelivererDataAction(delivererId: string) {
 export async function markOrderAsDeliveredAction(orderId: string, delivererId: string) {
   try {
     // Vérifier si la commande appartient bien à ce livreur
-    const order = const updated = await prisma.order.findFirst({
+    const order = await prisma.order.findFirst({
       where: { id: orderId, deliverer_id: delivererId }
     })
 
@@ -71,7 +71,7 @@ export async function markOrderAsDeliveredAction(orderId: string, delivererId: s
       return { error: 'Commande non autorisée ou introuvable' }
     }
 
-    const updated = await prisma.order.update({
+    await prisma.order.update({
       where: { id: orderId },
       data: { status: 'delivered' }
     })

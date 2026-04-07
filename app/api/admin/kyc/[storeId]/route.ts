@@ -11,7 +11,7 @@ import { sendTransactionalEmail } from '@/lib/brevo/brevo-service'
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface PatchBody {
-  action: 'approve' | 'reject'
+  action: 'approve' | 'reject' | 'correction'
   reason?: string
 }
 
@@ -187,16 +187,16 @@ export async function PATCH(
 
     const { action, reason } = body as PatchBody
 
-    if (!action || !['approve', 'reject'].includes(action)) {
+    if (!action || !['approve', 'reject', 'correction'].includes(action)) {
       return NextResponse.json(
-        { success: false, error: "Action invalide — 'approve' ou 'reject' attendu" },
+        { success: false, error: "Action invalide — 'approve', 'reject', ou 'correction' attendu" },
         { status: 400 }
       )
     }
 
-    if (action === 'reject' && !reason?.trim()) {
+    if ((action === 'reject' || action === 'correction') && !reason?.trim()) {
       return NextResponse.json(
-        { success: false, error: 'Une raison de rejet est obligatoire' },
+        { success: false, error: 'Une raison de refus ou correction est obligatoire' },
         { status: 400 }
       )
     }
@@ -281,9 +281,8 @@ export async function PATCH(
         target_id: storeId,
         details: { name: storeData.name }
       })
-
     } else {
-      // ── Rejet ────────────────────────────────────────────────────────────────
+      // ── Rejet / Correction ────────────────────────────────────────────────────────────────
 
       // Mettre à jour kyc_documents en ajoutant rejection_reason
       const existingDocs = (storeData.kyc_documents as KYCDocuments | null) ?? {}
@@ -310,7 +309,7 @@ export async function PATCH(
       if (vendorEmail) {
         sendTransactionalEmail({
           to:          [{ email: vendorEmail, name: vendorName }],
-          subject:     '❌ Votre dossier KYC a été refusé — Yayyam',
+          subject:     action === 'correction' ? '⚠️ Action requise sur votre dossier KYC — Yayyam' : '❌ Votre dossier KYC a été refusé — Yayyam',
           htmlContent: buildRejectionEmail(vendorName, storeData.name as string, reason!.trim()),
         }).catch(() => {})
       }
@@ -318,7 +317,7 @@ export async function PATCH(
       // ── Audit Log ────────────────────────────────────────────────────────
       await supabaseAdmin.from('AdminLog').insert({
         admin_id: user.id,
-        action: 'REJECT_KYC',
+        action: action === 'correction' ? 'CORRECTION_KYC' : 'REJECT_KYC',
         target_type: isUserKyc ? 'user' : 'store',
         target_id: storeId,
         details: { name: storeData.name, reason: reason!.trim() }

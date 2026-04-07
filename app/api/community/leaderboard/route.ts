@@ -48,6 +48,8 @@ function getLevel(totalEarned: number): { level: string; emoji: string } {
 
 // ─── Route GET ────────────────────────────────────────────────────────────────
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const supabase = await createClient()

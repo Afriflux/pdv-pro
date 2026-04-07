@@ -30,38 +30,7 @@ export default async function ClientOrdersPage() {
     .or(orCondition)
     .order('created_at', { ascending: false })
 
-  const mockOrders = [
-    {
-      id: "mock_order_1",
-      created_at: new Date().toISOString(),
-      total: 25000,
-      order_type: "physical",
-      status: "delivered",
-      Store: { name: "Boutique Mode Express", slug: "mode-express" },
-      product_id: "prod_1"
-    },
-    {
-      id: "mock_order_2",
-      created_at: new Date(Date.now() - 86400000).toISOString(),
-      total: 10000,
-      order_type: "digital",
-      status: "confirmed",
-      download_token: "mock_token_123",
-      Store: { name: "Tech Academy", slug: "tech-academy" },
-      product_id: "prod_2"
-    },
-    {
-      id: "mock_order_3",
-      created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-      total: 15000,
-      order_type: "physical",
-      status: "shipped",
-      Store: { name: "Accessoires Pro", slug: "accessoires-pro" },
-      product_id: "prod_3"
-    }
-  ]
-
-  const orders = [...mockOrders, ...(dbOrders || [])]
+  const orders = dbOrders || []
 
   return (
     <div className="w-full relative min-h-[calc(100vh-80px)] pb-12">

@@ -1,0 +1,36 @@
+app/admin/kyc/page.tsx(35,38): error TS6133: 'storeError' is declared but its value is never read.
+app/admin/kyc/page.tsx(39,37): error TS6133: 'userError' is declared but its value is never read.
+app/admin/marketplace/actions.ts(42,16): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'WorkflowWhereInput'.
+app/admin/marketplace/MarketplaceControls.tsx(4,57): error TS6133: 'Unlock' is declared but its value is never read.
+app/admin/marketplace/MarketplaceControls.tsx(14,37): error TS2304: Cannot find name 'useState'.
+app/admin/marketplace/MarketplaceControls.tsx(16,37): error TS2304: Cannot find name 'useState'.
+app/admin/marketplace/MarketplaceControls.tsx(17,37): error TS2304: Cannot find name 'useState'.
+app/admin/marketplace/MarketplaceControls.tsx(18,45): error TS2304: Cannot find name 'useState'.
+app/admin/marketplace/MarketplaceControls.tsx(20,35): error TS2304: Cannot find name 'useState'.
+app/admin/marketplace/MarketplaceControls.tsx(28,36): error TS7006: Parameter 't' implicitly has an 'any' type.
+app/admin/marketplace/MarketplaceControls.tsx(30,36): error TS7006: Parameter 'w' implicitly has an 'any' type.
+app/admin/marketplace/MarketplaceControls.tsx(32,44): error TS7006: Parameter 'm' implicitly has an 'any' type.
+app/admin/marketplace/MarketplaceControls.tsx(83,75): error TS7006: Parameter 't' implicitly has an 'any' type.
+app/admin/marketplace/MarketplaceControls.tsx(84,80): error TS7006: Parameter 't' implicitly has an 'any' type.
+app/admin/marketplace/MarketplaceControls.tsx(85,63): error TS7006: Parameter 't' implicitly has an 'any' type.
+app/dashboard/apps/AppStoreClient.tsx(3,27): error TS6133: 'useTransition' is declared but its value is never read.
+app/dashboard/apps/quotes/page.tsx(4,24): error TS6133: 'Copy' is declared but its value is never read.
+app/dashboard/apps/quotes/page.tsx(4,111): error TS6133: 'Download' is declared but its value is never read.
+app/dashboard/apps/quotes/page.tsx(6,46): error TS2724: '"./actions"' has no exported member named 'toggleQuoteStatusAction'. Did you mean 'updateQuoteStatusAction'?
+app/dashboard/apps/quotes/page.tsx(6,46): error TS6133: 'toggleQuoteStatusAction' is declared but its value is never read.
+app/dashboard/apps/quotes/page.tsx(105,9): error TS6133: 'getStatusText' is declared but its value is never read.
+app/dashboard/marketplace/actions.ts(64,11): error TS2353: Object literal may only specify known properties, and 'description' does not exist in type 'Without<TransactionCreateInput, TransactionUncheckedCreateInput> & TransactionUncheckedCreateInput'.
+app/dashboard/marketplace/actions.ts(75,11): error TS2353: Object literal may only specify known properties, and 'price' does not exist in type 'Without<AssetPurchaseCreateInput, AssetPurchaseUncheckedCreateInput> & AssetPurchaseUncheckedCreateInput'.
+app/dashboard/pages/new/NewPageFlow.tsx(994,67): error TS2339: Property 'type' does not exist on type 'never'.
+app/dashboard/webhooks/page.tsx(4,19): error TS6133: 'Plus' is declared but its value is never read.
+app/dashboard/workflows/page.tsx(83,11): error TS2322: Type '{ id: any; title: any; description: any; status: string; triggerType: any; config: any; actionCount: any; is_premium: any; price: any; }[]' is not assignable to type 'WorkflowDef[]'.
+  Type '{ id: any; title: any; description: any; status: string; triggerType: any; config: any; actionCount: any; is_premium: any; price: any; }' is not assignable to type 'WorkflowDef'.
+    Types of property 'status' are incompatible.
+      Type 'string' is not assignable to type '"active" | "inactive"'.
+app/delivery/[delivererId]/page.tsx(131,20): error TS7022: 'waMsg' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+app/delivery/[delivererId]/page.tsx(131,28): error TS2349: This expression is not callable.
+  Type 'String' has no call signatures.
+app/delivery/[delivererId]/page.tsx(132,103): error TS2448: Block-scoped variable 'waMsg' used before its declaration.
+components/pages/LiveCheckoutDrawer.tsx(17,63): error TS6133: 'storeName' is declared but its value is never read.
+components/shared/workflows/UniversalWorkflowBuilder.tsx(338,86): error TS2345: Argument of type '"closer" | "affiliate" | "vendor"' is not assignable to parameter of type '"client" | "affiliate" | "vendor" | undefined'.
+  Type '"closer"' is not assignable to type '"client" | "affiliate" | "vendor" | undefined'.

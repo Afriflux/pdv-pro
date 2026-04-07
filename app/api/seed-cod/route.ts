@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const store_id = "de848551-ded9-4284-a4e7-3af349cc3f0f" // L'identifiant exact de ta boutique

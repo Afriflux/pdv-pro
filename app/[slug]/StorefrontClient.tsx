@@ -11,6 +11,8 @@ import NewsletterWidget from '@/components/brevo/NewsletterWidget'
 import WhatsAppFloat from '@/components/storefront/WhatsAppFloat'
 import StoreSocialLinks from '@/components/storefront/StoreSocialLinks'
 import { PixelTracker } from '@/components/tracking/PixelTracker'
+import { SocialProofWidget } from '@/components/shared/storefront/SocialProofWidget'
+import { HelpdeskWidget } from '@/components/shared/storefront/HelpdeskWidget'
 import { ReactNode } from 'react'
 
 interface StorefrontClientProps {
@@ -25,6 +27,7 @@ interface StorefrontClientProps {
   socialLinks: Record<string, string> | null
   accent: string
   socialProofSlot?: ReactNode
+  recentReviews?: any[]
 }
 
 export function StorefrontClient({
@@ -39,6 +42,7 @@ export function StorefrontClient({
   socialLinks,
   accent,
   socialProofSlot,
+  recentReviews = [],
 }: StorefrontClientProps) {
   
   const containerVariants = {
@@ -53,22 +57,6 @@ export function StorefrontClient({
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100 } }
   }
-
-  // Couleurs dynamiques pour le Glassmorphism
-  const hexToRgb = (hex: string) => {
-    let r = 0, g = 0, b = 0;
-    if (hex.length === 4) {
-      r = parseInt(hex[1] + hex[1], 16);
-      g = parseInt(hex[2] + hex[2], 16);
-      b = parseInt(hex[3] + hex[3], 16);
-    } else if (hex.length === 7) {
-      r = parseInt(hex[1] + hex[2], 16);
-      g = parseInt(hex[3] + hex[4], 16);
-      b = parseInt(hex[5] + hex[6], 16);
-    }
-    return `${r}, ${g}, ${b}`;
-  }
-  const accentRgb = hexToRgb(accent)
 
   return (
     <div className="min-h-screen bg-[#FDFDFD] text-gray-900 relative overflow-hidden font-body">
@@ -115,9 +103,9 @@ export function StorefrontClient({
       <PixelTracker metaId={store.meta_pixel_id} tiktokId={store.tiktok_pixel_id} googleId={store.google_tag_id} storeName={store.name} />
 
       {/* Arrière-plan "Aurora / Glow" dynamique */}
-      <div className="fixed top-0 inset-x-0 h-[600px] pointer-events-none z-0" style={{ background: `linear-gradient(to bottom, rgba(${accentRgb}, 0.12), transparent)`}} />
-      <div className="fixed -top-40 -right-40 w-[500px] h-[500px] rounded-full blur-[100px] opacity-30 pointer-events-none z-0" style={{ backgroundColor: accent }} />
-      <div className="fixed top-40 -left-20 w-[300px] h-[300px] rounded-full blur-[100px] opacity-20 pointer-events-none z-0" style={{ backgroundColor: accent }} />
+      <div className="fixed top-0 inset-x-0 h-[600px] pointer-events-none z-0 bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_12%,transparent)] to-transparent" />
+      <div className="fixed -top-40 -right-40 w-[500px] h-[500px] rounded-full blur-[100px] opacity-30 pointer-events-none z-0 bg-[var(--accent)]" />
+      <div className="fixed top-40 -left-20 w-[300px] h-[300px] rounded-full blur-[100px] opacity-20 pointer-events-none z-0 bg-[var(--accent)]" />
 
       <motion.div 
         variants={containerVariants} 
@@ -132,7 +120,7 @@ export function StorefrontClient({
           
           {/* Main Info Box */}
           <motion.div variants={itemVariants} className="lg:col-span-2 bg-white/60 backdrop-blur-3xl rounded-[32px] p-8 md:p-10 shadow-2xl shadow-[rgba(0,0,0,0.03)] border border-white relative overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-32 md:h-40 opacity-80" style={{ backgroundImage: store.banner_url ? `url(${store.banner_url})` : `linear-gradient(135deg, ${accent}, rgba(${accentRgb}, 0.5))`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+             <div className="absolute top-0 left-0 w-full h-32 md:h-40 opacity-80 bg-cover bg-center" style={{ backgroundImage: store.banner_url ? `url(${store.banner_url})` : `linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 50%, transparent))` }} />
              <div className="absolute top-0 left-0 w-full h-32 md:h-40 bg-gradient-to-b from-transparent to-white/60 backdrop-blur-[2px]" />
              
              <div className="relative pt-12 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
@@ -140,7 +128,7 @@ export function StorefrontClient({
                   {store.logo_url ? (
                     <Image src={store.logo_url} alt={store.name} width={144} height={144} className="object-cover w-full h-full" />
                   ) : (
-                    <span className="text-4xl font-black" style={{ color: accent }}>{store.name[0]}</span>
+                    <span className="text-4xl font-black text-[var(--accent)]">{store.name[0]}</span>
                   )}
                 </div>
                 <div className="flex-1 pb-2">
@@ -162,7 +150,7 @@ export function StorefrontClient({
 
              {store.description && (
                <div className="mt-8 relative">
-                 <div className="absolute left-0 top-0 bottom-0 w-1 rounded-full" style={{ backgroundColor: accent }} />
+                 <div className="absolute left-0 top-0 bottom-0 w-1 rounded-full bg-[var(--accent)]" />
                  <p className="pl-5 text-gray-600 font-medium leading-relaxed max-w-2xl text-[15px]">
                    {store.description}
                  </p>
@@ -182,7 +170,7 @@ export function StorefrontClient({
             </div>
 
             <div className="bg-white/60 backdrop-blur-2xl rounded-[32px] p-6 shadow-2xl shadow-[rgba(0,0,0,0.03)] border border-white flex flex-col items-center justify-center text-center group transition hover:-translate-y-1">
-               <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style={{ backgroundColor: `rgba(${accentRgb}, 0.1)`, color: accent }}>
+               <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--accent)]">
                 <Activity className="w-6 h-6" />
               </div>
               <p className="text-3xl font-black text-gray-900">{salesCount ?? 0}</p>
@@ -225,7 +213,7 @@ export function StorefrontClient({
                           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
                       ) : (
-                        <div className="w-full aspect-video flex items-center justify-center text-4xl" style={{ backgroundColor: `rgba(${accentRgb}, 0.05)` }}>
+                        <div className="w-full aspect-video flex items-center justify-center text-4xl bg-[color-mix(in_srgb,var(--accent)_5%,transparent)]">
                           ✨
                         </div>
                       )}
@@ -263,10 +251,45 @@ export function StorefrontClient({
           </motion.section>
         )}
 
+        {/* =========================================
+            4. SMART REVIEWS (Témoignages)
+            ========================================= */}
+        {recentReviews.length > 0 && (
+          <motion.section variants={itemVariants} className="pt-12">
+            <div className="flex items-center gap-4 mb-8">
+              <h2 className="text-xl font-black text-gray-900 tracking-tight">Que disent nos clients ?</h2>
+              <div className="h-[2px] flex-1 bg-gradient-to-r from-gray-100 to-transparent" />
+            </div>
+            
+            <div className="flex overflow-x-auto pb-8 gap-6 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x">
+              {recentReviews.slice(0, 8).map(review => (
+                <div key={review.id} className="min-w-[300px] shrink-0 bg-white/60 backdrop-blur-xl border border-white p-6 rounded-[24px] shadow-2xl shadow-[rgba(0,0,0,0.02)] snap-center flex flex-col justify-between">
+                   <div>
+                      <div className="flex gap-1 mb-3">
+                         {Array.from({length: 5}).map((_, i) => (
+                           <Star key={i} size={16} className={i < review.rating ? 'text-amber-500 fill-amber-500' : 'text-gray-200'} />
+                         ))}
+                      </div>
+                      <p className="text-gray-700 italic font-medium leading-relaxed">"{review.comment}"</p>
+                   </div>
+                   <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+                     <span className="font-black text-gray-900">{review.buyer_name}</span>
+                     {review.verified && (
+                       <span className="flex items-center gap-1 text-[10px] uppercase font-black tracking-widest text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
+                         <BadgeCheck size={12} /> Achat Vérifié
+                       </span>
+                     )}
+                   </div>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
         {/* EMPTY STATE */}
         {(products.length === 0 && pages.length === 0) && (
           <motion.div variants={itemVariants} className="bg-white/80 backdrop-blur-2xl rounded-[40px] p-16 text-center shadow-2xl shadow-[rgba(0,0,0,0.03)] border border-white max-w-lg mx-auto relative overflow-hidden">
-            <div className="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-6 shadow-xl shadow-[rgba(0,0,0,0.05)] border border-white" style={{ backgroundColor: `rgba(${accentRgb}, 0.05)` }}>
+            <div className="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center text-4xl mb-6 shadow-xl shadow-[rgba(0,0,0,0.05)] border border-white bg-[color-mix(in_srgb,var(--accent)_5%,transparent)]">
               🏗️
             </div>
             <h3 className="text-2xl font-black text-gray-900 mb-3">Bientôt disponible</h3>
@@ -315,6 +338,8 @@ export function StorefrontClient({
         </motion.div>
 
         <WhatsAppFloat phone={waPhone} storeName={store.name} />
+        <SocialProofWidget storeId={store.id} />
+        <HelpdeskWidget storeId={store.id} accentColor={accent} />
       </motion.div>
     </div>
   )

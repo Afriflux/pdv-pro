@@ -1,6 +1,6 @@
 // ─── Types unifiés ────────────────────────────────────────────────────────────
 
-export type PaymentMethod = 'wave' | 'orange_money' | 'card_cinetpay' | 'card_paytech'
+export type PaymentMethod = 'wave' | 'orange_money' | 'card_cinetpay' | 'card_paytech' | 'bictorys' | 'kkiapay'
 
 export interface PaymentIntent {
   orderId: string
@@ -71,7 +71,7 @@ export function calculateFees(amount: number, method: PaymentMethod): number {
   if (method === 'wave' || method === 'orange_money') {
     return Math.round(amount * 0.01) // 1% fixe Mobile Money
   }
-  return Math.round(amount * 0.03) // 3% Carte bancaire
+  return Math.round(amount * 0.03) // 3% Carte bancaire / Agrégateurs (CinetPay, Bictorys, KKiaPay)
 }
 
 /**
@@ -309,4 +309,84 @@ export async function initiateCardPayment(
   }
 
   return { checkoutUrl: result.data.payment_url }
+}
+
+// ─── Bictorys ─────────────────────────────────────────────────────────────────
+
+export async function initiateBictorysPayment(
+  intent: PaymentIntent
+): Promise<{ checkoutUrl: string }> {
+  const apiKey = process.env.BICTORYS_API_KEY
+  if (!apiKey) throw new Error('[Bictorys] BICTORYS_API_KEY non configurée')
+
+  const response = await fetch('https://api.bictorys.com/v1/payments', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      amount: intent.amount,
+      currency: intent.currency,
+      reference: intent.orderId,
+      description: `Commande Yayyam #${intent.orderId}`,
+      return_url: intent.redirectUrl,
+      notify_url: intent.webhookUrl,
+      customer: {
+        phone: intent.customerPhone,
+        email: intent.customerEmail,
+      },
+    }),
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.text()
+    throw new Error(`[Bictorys] Erreur API (${response.status}) : ${errorBody}`)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = (await response.json()) as any
+  const url = result?.data?.checkout_url || result?.checkout_url || result?.url
+  if (!url) throw new Error('[Bictorys] URL de checkout absente')
+
+  return { checkoutUrl: url }
+}
+
+// ─── KKiaPay ──────────────────────────────────────────────────────────────────
+
+export async function initiateKKiapayPayment(
+  intent: PaymentIntent
+): Promise<{ checkoutUrl: string }> {
+  const apiKey = process.env.KKIAPAY_API_KEY
+  if (!apiKey) throw new Error('[KKiaPay] KKIAPAY_API_KEY non configurée')
+
+  const response = await fetch('https://api.kkiapay.me/api/v1/payments/request', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+    },
+    body: JSON.stringify({
+      amount: intent.amount,
+      currency: intent.currency || 'XOF',
+      reason: `Commande Yayyam #${intent.orderId}`,
+      partnerId: intent.orderId,
+      phone: intent.customerPhone,
+      email: intent.customerEmail,
+      callback: intent.redirectUrl,
+      webhook: intent.webhookUrl,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.text()
+    throw new Error(`[KKiaPay] Erreur API (${response.status}) : ${errorBody}`)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = (await response.json()) as any
+  const url = result?.url || result?.payment_url
+  if (!url) throw new Error('[KKiaPay] URL de checkout absente')
+
+  return { checkoutUrl: url }
 }

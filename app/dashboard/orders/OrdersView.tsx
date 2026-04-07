@@ -305,7 +305,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
             />
           </div>
 
-          <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+          <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
             
             {/* Toggle View */}
             <div className="flex items-center bg-[#FAFAF7] border border-line rounded-xl p-1 shrink-0">
@@ -452,8 +452,8 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
                           <div className="flex flex-col gap-1.5">
                             <span className="font-black text-[#1A1A1A] text-[15px]">{order.buyer_name}</span>
                             <div className="flex items-center gap-2 mt-0.5">
-                              <a href={`tel:${order.buyer_phone}`} onClick={e => e.stopPropagation()} className="font-mono text-[11px] text-gray-500 hover:text-[#0F7A60] font-bold flex items-center gap-1.5 bg-gray-100 hover:bg-emerald-50 px-2 py-1 rounded-md transition-colors"><PhoneIcon size={12}/>{order.buyer_phone}</a>
-                              <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1.5 text-white bg-gradient-to-r from-[#25D366] to-[#1EBE5C] px-2.5 py-1 font-bold text-[10px] rounded-md shadow-sm shadow-[#25D366]/20 transition-transform active:scale-95 hover:shadow-md" title="WhatsApp">
+                              <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} onClick={e => e.stopPropagation()} className="font-mono text-[11px] text-gray-500 hover:text-[#0F7A60] font-bold flex items-center gap-1.5 bg-gray-100 hover:bg-emerald-50 px-2 py-1 rounded-md transition-colors"><PhoneIcon size={12}/>{order.buyer_phone}</a>
+                              <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1.5 text-white bg-gradient-to-r from-[#25D366] to-[#1EBE5C] px-2.5 py-1 font-bold text-[10px] rounded-md shadow-sm shadow-[#25D366]/20 transition-transform active:scale-95 hover:shadow-md" title="WhatsApp">
                                 <WhatsAppIcon className="w-3.5 h-3.5" /> WhatsApp
                               </a>
                             </div>
@@ -498,7 +498,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
           </>
         ) : (
           /* VUE KANBAN (BOARD) */
-          <div className="flex gap-4 overflow-x-auto pb-6 pt-2" style={{ scrollbarWidth: 'thin' }}>
+          <div className="flex gap-4 overflow-x-auto pb-6 pt-2">
             {KANBAN_COLUMNS.map(column => {
               const columnOrders = filteredOrders.filter(o => column.statuses.includes(o.status))
               

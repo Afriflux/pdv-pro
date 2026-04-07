@@ -57,6 +57,7 @@ export default function SocialKit({ storeName, storeUrl }: { storeName: string, 
              <Copy size={16} /> Copier
            </button>
            <a 
+             suppressHydrationWarning
              href={`https://wa.me/?text=${encodeURIComponent(activeTab.text)}`}
              target="_blank" rel="noopener noreferrer"
              className="flex items-center justify-center gap-2 py-3.5 bg-[#25D366] hover:bg-[#1EBE5A] text-white rounded-xl font-black text-sm transition-colors shadow-sm"

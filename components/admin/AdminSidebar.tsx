@@ -4,8 +4,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { signOut } from '@/app/auth/actions'
-import { 
+import { Store,  
   LayoutDashboard,
+  Zap,
   Users,
   ShoppingBag,
   Wallet,
@@ -15,7 +16,7 @@ import {
   Puzzle,
   Handshake,
   AlertTriangle,
-  Mail,
+
   PhoneCall,
   BookOpen,
   Globe,
@@ -24,8 +25,11 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronUp,
-  History
-} from 'lucide-react'
+  History,
+  LayoutTemplate,
+  Smartphone,
+  UserCircle
+ } from 'lucide-react'
 import { NotificationBell } from '../dashboard/NotificationBell' // On réutilise celle du dashboard
 
 interface NavItem {
@@ -47,8 +51,9 @@ const NAV: NavSection[] = [
       { name: 'Vue d\'ensemble', href: '/admin', icon: LayoutDashboard },
       { name: 'Vendeurs', href: '/admin/vendeurs', icon: Users },
       { name: 'Ambassadeurs', href: '/admin/ambassadeurs', icon: Handshake },
+      { name: 'Clients', href: '/admin/clients', icon: UserCircle },
       { name: 'Commandes', href: '/admin/orders', icon: ShoppingBag },
-      { name: 'Validation COD', href: '/admin/closing', icon: PhoneCall },
+      { name: 'Closers (COD)', href: '/admin/closing', icon: PhoneCall },
       { name: 'Retraits', href: '/admin/retraits', icon: Wallet },
     ]
   },
@@ -62,12 +67,14 @@ const NAV: NavSection[] = [
     ]
   },
   {
-    title: 'OUTILS',
+    title: 'OUTILS & STORE',
     items: [
-      { name: 'Marketplace & Freemium', href: '/admin/marketplace', icon: Globe },
+      { name: 'App Store Manager', href: '/admin/apps', icon: Smartphone, badge: 'NEW' },
+      { name: 'Créateur de Thèmes', href: '/admin/themes', icon: LayoutTemplate, badge: 'NEW' },
+      { name: 'Créateur de Workflows', href: '/admin/workflows', icon: Zap, badge: 'NEW' },
+      { name: 'Marketplace (Admin)', href: '/admin/marketplace', icon: Globe },
       { name: 'Intégrations', href: '/admin/integrations', icon: Puzzle },
-      { name: 'Email Marketing', href: '/admin/email', icon: Mail },
-      { name: 'Academy', href: '/admin/masterclass', icon: BookOpen },
+      { name: 'Yayyam Académie', href: '/admin/masterclass', icon: BookOpen },
     ]
   },
   {
@@ -83,6 +90,7 @@ function NavLink({ item, active, onClick, collapsed }: { item: NavItem, active: 
   return (
     <div className="relative group/navitem">
       <Link
+        suppressHydrationWarning
         href={item.href}
         onClick={onClick}
         className={`flex items-center relative overflow-hidden ${collapsed ? 'justify-center px-0 w-11 h-11 mx-auto rounded-xl' : 'px-3 gap-3 py-2.5 rounded-xl'} transition-all duration-300 ${
@@ -95,7 +103,7 @@ function NavLink({ item, active, onClick, collapsed }: { item: NavItem, active: 
            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white to-white/30 rounded-l-xl shadow-[0_0_12px_rgba(255,255,255,0.6)]" />
         )}
         
-        <Icon className={`${collapsed ? 'w-[20px] h-[20px]' : 'w-[18px] h-[18px]'} flex-shrink-0 transition-transform duration-300 ${active ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'group-hover/navitem:scale-110'}`} />
+        <Icon suppressHydrationWarning className={`${collapsed ? 'w-[20px] h-[20px]' : 'w-[18px] h-[18px]'} flex-shrink-0 transition-transform duration-300 ${active ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'group-hover/navitem:scale-110'}`} />
         {!collapsed && <span className="text-[13px] truncate relative z-10">{item.name}</span>}
         {!collapsed && item.badge && (
           <span className="ml-auto text-[9px] font-black bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 px-2 py-0.5 rounded-md shadow-sm relative z-10 uppercase tracking-wider">
@@ -163,7 +171,7 @@ function AdminSidebarContent({
         <Link href="/" className="flex items-center gap-1.5 focus:outline-none group/logo" onClick={onClose}>
           {collapsed ? (
             <div className="w-11 h-11 bg-gradient-to-br from-white/20 to-white/5 border border-white/20 rounded-xl flex items-center justify-center shadow-lg group-hover/logo:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all">
-              <span className="text-xl font-display font-black text-white tracking-tight">P</span>
+              <Store className="w-6 h-6 text-emerald-400 stroke-[2.5]" />
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-1 py-1 rounded-xl group-hover/logo:bg-white/5 transition-colors">

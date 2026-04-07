@@ -63,7 +63,15 @@ export default async function DashboardLayout({
       />
 
       <main className="relative flex-1 bg-[#FAFAF7] min-w-0 min-h-screen overflow-auto">
-        <GlobalHomeButton />
+        
+        {/* 🌟 UNIVERSAL MESH BACKGROUND 🌟 */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+          <div className="absolute top-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-emerald-300/10 blur-[130px] pointer-events-none mix-blend-multiply animate-pulse [animation-duration:10s]" />
+          <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] rounded-full bg-teal-300/10 blur-[120px] pointer-events-none mix-blend-multiply animate-pulse [animation-duration:12s] [animation-delay:2s]" />
+        </div>
+
+        <div className="relative z-10 w-full h-full">
+          <GlobalHomeButton />
         {/* Bandeau alerte contrat — affiché uniquement si non signé */}
         {!contractAccepted && store && (
           <ContractBanner
@@ -73,8 +81,9 @@ export default async function DashboardLayout({
           />
         )}
 
-        <div className="pt-14 lg:pt-0 pb-12">
+        <div className="pt-14 lg:pt-0 pb-12 w-full max-w-[2000px] mx-auto px-4 lg:px-8 xl:px-10 min-h-full">
           {children}
+        </div>
         </div>
       </main>
 

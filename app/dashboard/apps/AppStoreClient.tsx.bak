@@ -1,0 +1,287 @@
+'use client'
+
+import React, { useState, useTransition } from 'react'
+import { 
+  Link as LinkIcon, Zap, BookOpen, Trophy, 
+  CheckCircle2, Download, Blocks, Star, Users, Briefcase, Gem,
+  MessageSquare, ShoppingBag, Truck, Calendar, CreditCard, Banknote
+} from 'lucide-react'
+import { MobileSimulator } from '@/components/shared/simulator/MobileSimulator'
+import { installAppAction, uninstallAppAction } from './actions'
+import { Loader2 } from 'lucide-react'
+
+interface AppItem {
+  id: string
+  name: string
+  category: string
+  description: string
+  icon: React.ReactNode
+  isPro?: boolean
+  features: string[]
+}
+
+const STORE_APPS: AppItem[] = [
+  // Croissance & Marketing 
+  { id: 'marketing', category: 'Marketing', name: 'Campagnes E-mail & SMS', description: 'Créez des newsletters et des séquences marketing puissantes.', icon: <Zap className="w-8 h-8 text-blue-500" />, features: ['Funnels E-mail', 'SMS Marketing', 'Audiences ciblées'] },
+  { id: 'workflows', category: 'Marketing', name: 'Automatisations & Relances', description: 'Relance des paniers abandonnés sur WhatsApp et séquences automatisées.', icon: <Zap className="w-8 h-8 text-rose-500" />, features: ['WhatsApp', 'Triggers d\'achat', 'Gain de temps'] },
+  { id: 'affilies', category: 'Marketing', name: 'Réseau d\'Affiliation', description: 'Laissez d\'autres personnes vendre vos produits pour vous.', icon: <Trophy className="w-8 h-8 text-orange-500" />, features: ['Tracking automatique', 'Commissions', 'Liens uniques'] },
+  { id: 'promotions', category: 'Marketing', name: 'Coupons & Upsells', description: 'Faites des offres spéciales, Bumps et One-Time-Offers pour booster le panier moyen.', icon: <ShoppingBag className="w-8 h-8 text-pink-500" />, isPro: true, features: ['Order Bumps', 'Flash Sales', 'Coupons'] },
+  { id: 'telegram-alerts', category: 'Marketing', name: 'Alertes & Bot Telegram', description: 'Recevez des notifications en direct sur Telegram pour vos ventes et alertes stock.', icon: <Zap className="w-8 h-8 text-cyan-500" />, features: ['Alertes Ventes', 'Infos Stock', 'Temps Réel'] },
+  { id: 'telegram', category: 'Communauté', name: 'Monétisation Telegram', description: 'Vendez l\'accès à vos groupes privés et canaux automatiqument avec des abonnements.', icon: <MessageSquare className="w-8 h-8 text-sky-500" />, isPro: true, features: ['Abonnements auto', 'Canaux Payants', 'Retrait Membres'] },
+  { id: 'ambassadeur', category: 'Marketing', name: 'Programme Ambassadeurs VIP', description: 'Récompensez vos meilleurs clients avec un statut VIP et des avantages.', icon: <Gem className="w-8 h-8 text-emerald-400" />, isPro: true, features: ['Niveaux VIP', 'Cashback', 'Fidélisation'] },
+
+  // Outils Créatifs & IA
+  { id: 'links', category: 'Création', name: 'Lien en Bio (Link-in-Bio)', description: 'Regroupez tous vos liens, réseaux et produits clés sur une page unique.', icon: <LinkIcon className="w-8 h-8 text-indigo-500" />, features: ['Social-friendly', 'Micro-site', 'Stats'] },
+  { id: 'ai-generator', category: 'Création', name: 'Assistant Coach IA', description: 'L\'Intelligence Artificielle qui rédige vos textes de vente et structure vos offres.', icon: <Star className="w-8 h-8 text-amber-500" />, isPro: true, features: ['Génération de Copy', 'Création de Mails', 'Coach Business'] },
+
+  // Productivité & CRM
+  { id: 'webhooks', category: 'CRM', name: 'Notion, Zapier & Webhooks', description: 'Exportez vos ventes automatiquement vers Notion, Excel, Zapier ou Make en temps réel.', icon: <Zap className="w-8 h-8 text-violet-500" />, isPro: true, features: ['Intégration Notion', 'Zapier / Make', 'Temps Réel'] },
+  { id: 'customers', category: 'CRM', name: 'CRM Avancé', description: 'Base de données clients et Lifetime Value (LTV).', icon: <Users className="w-8 h-8 text-blue-400" />, features: ['Filtres Achats', 'Segmentation', 'Export CSV'] },
+  { id: 'livraisons', category: 'Opérations', name: 'Logistique & Livraisons', description: 'Gestion des livreurs, statuts d\'expédition et suivi physique.', icon: <Truck className="w-8 h-8 text-slate-500" />, features: ['Tableau de bord Livreurs', 'Statuts', 'Zones'] },
+  { id: 'agenda', category: 'Opérations', name: 'Bookings & Réservations', description: 'Gérez vos créneaux de coaching/consulting avec un calendrier intégré.', icon: <Calendar className="w-8 h-8 text-purple-500" />, features: ['Google Meet', 'Agenda partagé', 'Visios'] },
+  { id: 'tasks', category: 'Opérations', name: 'Tâches & Organisation', description: 'Outil de to-do list et gestion de projets intégré à vos ventes.', icon: <CheckCircle2 className="w-8 h-8 text-emerald-500" />, features: ['Kanban', 'Rappels', 'Focus mode'] },
+  { id: 'communautes', category: 'Opérations', name: 'Espace Communautaire', description: 'Hébergez vos propres forums et cercles privés d\'acheteurs sans quitter la plateforme.', icon: <Users className="w-8 h-8 text-cyan-600" />, features: ['Forum', 'Posts VIP', 'Engagement'] },
+  { id: 'closers', category: 'Opérations', name: 'Closing Délégué', description: 'Confiez vos leads chauds à des closers professionnels.', icon: <Briefcase className="w-8 h-8 text-amber-600" />, isPro: true, features: ['Commissions directes', 'Suivi Appels', 'Outsourcing'] },
+  { id: 'academy', category: 'Opérations', name: 'Yayyam Academy', description: 'Accédez aux meilleures stratégies e-commerce et mindsets de vente.', icon: <BookOpen className="w-8 h-8 text-emerald-600" />, features: ['10 cours gratuits', 'Vidéos 4K', 'Ressources PDF'] },
+  { id: 'quotes', category: 'Opérations', name: 'Devis & Factures B2B', description: 'Générez des devis professionnels interactifs payables en ligne.', icon: <Briefcase className="w-8 h-8 text-neutral-600" />, features: ['PDF interactif', 'Suivi du statut', 'Paiement direct'] },
+
+  // Passrelles de Paiement (Extensions)
+  { id: 'cinetpay', category: 'Paiements', name: 'CinetPay', description: 'Acceptez MTN, Moov, Orange, Visa et Mastercard dans toute l\'Afrique.', icon: <CreditCard className="w-8 h-8 text-green-500" />, features: ['Multi-pays', 'Cards', 'Mobile Money'] },
+  { id: 'paytech', category: 'Paiements', name: 'PayTech', description: 'Alternative solide pour les paiements locaux avec API.', icon: <Banknote className="w-8 h-8 text-indigo-400" />, features: ['API Robuste', 'Sécurisé', 'Devises locales'] },
+  { id: 'intouch', category: 'Paiements', name: 'InTouch', description: 'Solution complète pour les gros volumes de transactions.', icon: <CreditCard className="w-8 h-8 text-slate-800" />, isPro: true, features: ['Corporate', 'Paiement de masse', 'Guichet'] },
+  { id: 'payment-links', category: 'Paiements', name: 'Liens de Paiement', description: 'Créez des liens de paiement directs pour encaisser sans création de produit complète.', icon: <Banknote className="w-8 h-8 text-[#0F7A60]" />, features: ['Rapide', 'Sans page de vente', 'Lien Unique'] },
+
+  // NOUVELLES EXTENSIONS (Validation V1/V2)
+  { id: 'server-side-pixels', category: 'Marketing', name: 'Pixels & Meta CAPI', description: 'Contournez iOS 14. Injectez vos pixels Meta, TikTok et Snapchat en Server-Side.', icon: <Zap className="w-8 h-8 text-indigo-600" />, isPro: true, features: ['Server-Side API', 'TikTok Pro', 'Anti-Adblock'] },
+  { id: 'social-proof', category: 'Marketing', name: 'Preuve Sociale (Pop-ups)', description: 'Notifications automatiques des derniers achats pour booster la confiance.', icon: <Users className="w-8 h-8 text-rose-600" />, features: ['Pop-up Vente', 'Customisation', 'Haut +15% CRO'] },
+  { id: 'volume-discounts', category: 'Opérations', name: 'Prix de Gros & Lots (B2B)', description: 'Gérez des prix dégressifs (ex: 1 pour 5k, 3 pour 12k) pour augmenter le panier.', icon: <ShoppingBag className="w-8 h-8 text-amber-600" />, features: ['Prix Dégressifs', 'Mode B2B', 'Gros Volume'] },
+  { id: 'smart-reviews', category: 'Marketing', name: 'Avis 5 Étoiles Automatisés', description: 'Boîte à avis automatisée via WhatsApp pour récolter des 5 étoiles après livraison.', icon: <Star className="w-8 h-8 text-yellow-400" />, features: ['SMS + WhatsApp', 'Avis Vérifiés', 'Trust Badge'] },
+  { id: 'helpdesk', category: 'CRM', name: 'Helpdesk & SAV', description: 'Centralisez les réclamations clients, retours et remboursements en un seul tableau.', icon: <MessageSquare className="w-8 h-8 text-teal-600" />, features: ['Ticketing', 'Historique Client', 'Résolution Rapide'] },
+  { id: 'subscriptions', category: 'Paiements', name: 'Abonnements Récurrents', description: 'Vendez des accès VIP ou box. Débit automatique de la carte bancaire CinetPay.', icon: <CreditCard className="w-8 h-8 text-violet-600" />, isPro: true, features: ['Facturation Auto', 'SaaS Model', 'Retrait Récurrent'] },
+]
+
+import { useRouter } from 'next/navigation'
+
+export function AppStoreClient({ initialInstalled }: { initialInstalled: string[] }) {
+  const [installedAppIds, setInstalledAppIds] = useState<string[]>(initialInstalled)
+  const [simulatedApp, setSimulatedApp] = useState<AppItem | null>(null)
+  const [installingId, setInstallingId] = useState<string | null>(null)
+  
+  const [activeCategory, setActiveCategory] = useState<string>('Toutes')
+  
+  const categories = ['Toutes', ...Array.from(new Set(STORE_APPS.map(a => a.category)))]
+  const router = useRouter()
+
+  const toggleInstall = async (app: AppItem) => {
+    if (installingId) return
+    setInstallingId(app.id)
+
+    const isCurrentlyInstalled = installedAppIds.includes(app.id)
+    
+    // Optimistic UI update
+    if (isCurrentlyInstalled) {
+      setInstalledAppIds(prev => prev.filter(id => id !== app.id))
+    } else {
+      setInstalledAppIds(prev => [...prev, app.id])
+    }
+
+    try {
+      if (isCurrentlyInstalled) {
+        const res = await uninstallAppAction(app.id)
+          if (!res.success) throw new Error(res.error)
+        } else {
+          // Check if it's a payment gateway to possibly ask for API keys later
+          const res = await installAppAction(app.id)
+          if (!res.success) throw new Error(res.error)
+        }
+        router.refresh()
+      } catch (e) {
+        // Revert on failure
+        console.error("Installation failure", e)
+        alert("Echec de l'installation/désinstallation. Veuillez réessayer.")
+        setInstalledAppIds(initialInstalled)
+      } finally {
+        setInstallingId(null)
+      }
+  }
+
+  const filteredApps = STORE_APPS.filter(app => activeCategory === 'Toutes' || app.category === activeCategory)
+
+  // Statistiques
+  const appsEnVitrine = STORE_APPS.length
+  const installCounts = installedAppIds.length
+
+  return (
+    <div className="flex w-full h-[calc(100vh-6rem)] overflow-hidden bg-[#FAFAF7] font-sans">
+      
+      {/* Principal Column */}
+      <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+        <div className="max-w-6xl mx-auto space-y-8 pb-20">
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-8">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-3 bg-gradient-to-br from-[#0F7A60] to-emerald-800 text-white rounded-2xl shadow-lg">
+                  <Blocks size={28} />
+                </div>
+                <h1 className="text-4xl font-display font-black text-[#1A1A1A] tracking-tight">App Store Hub</h1>
+              </div>
+              <p className="text-gray-500 font-medium tracking-tight text-lg mt-3">Transformez votre boutique basique en empire modulaire. Installez et retirez les fonctionnalités en 1 clic.</p>
+            </div>
+            
+            <div className="flex items-center gap-4 bg-white px-5 py-3 rounded-2xl border border-gray-100 shadow-sm shrink-0">
+               <div className="text-center px-4 border-r border-gray-100">
+                  <p className="text-2xl font-black text-ink">{appsEnVitrine}</p>
+                  <p className="text-[10px] uppercase font-bold text-gray-400">Apps Utiles</p>
+               </div>
+               <div className="text-center px-4">
+                  <p className="text-2xl font-black text-emerald-600">{installCounts}</p>
+                  <p className="text-[10px] uppercase font-bold text-emerald-600/60">Installées</p>
+               </div>
+            </div>
+          </div>
+
+          {/* Categories Pill Menu */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm ${
+                  activeCategory === cat
+                    ? 'bg-ink text-white border-transparent'
+                    : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-ink border border-gray-200'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredApps.map(app => {
+              const isInstalled = installedAppIds.includes(app.id)
+
+              return (
+              <div 
+                key={app.id} 
+                onMouseEnter={() => setSimulatedApp(app)}
+                onMouseLeave={() => setSimulatedApp(null)}
+                className={`bg-white rounded-[24px] p-6 border-2 transition-all duration-300 flex flex-col h-full ${
+                  isInstalled 
+                    ? 'border-[#0F7A60] shadow-xl shadow-[#0F7A60]/10 scale-[1.02] bg-emerald-50/10' 
+                    : 'border-gray-100 hover:border-gray-200 hover:shadow-xl hover:-translate-y-1'
+                }`}
+              >
+                <div className="flex justify-between items-start mb-5">
+                  <div className={`p-4 rounded-[20px] shadow-inner ${isInstalled ? 'bg-gradient-to-br from-emerald-100 to-teal-50' : 'bg-gray-50'}`}>
+                    {app.icon}
+                  </div>
+                  
+                  <div className="flex flex-col gap-2 items-end">
+                    {app.isPro && (
+                      <span className="flex items-center gap-1 text-[10px] uppercase font-black tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
+                        <Star size={12} className="fill-amber-500" /> Premium
+                      </span>
+                    )}
+                    {isInstalled && (
+                      <span className="flex items-center gap-1 text-[10px] uppercase font-black tracking-wider text-emerald-700 bg-emerald-100 px-2 py-1 rounded-lg">
+                        Actif
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex-1">
+                  <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{app.category}</div>
+                  <h3 className="font-black text-[#1A1A1A] text-lg mb-2 leading-tight">{app.name}</h3>
+                  <p className="text-[13px] text-gray-500 leading-relaxed font-medium">{app.description}</p>
+                </div>
+                
+                <div className="mt-5 space-y-2 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                  {app.features.map((feat, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-[12px] font-bold text-gray-500">
+                      <CheckCircle2 size={14} className={isInstalled ? 'text-[#0F7A60]' : 'text-gray-300'} />
+                      <span className={isInstalled ? 'text-gray-800' : ''}>{feat}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-auto flex gap-2">
+                  <button
+                    onClick={() => toggleInstall(app)}
+                    disabled={installingId !== null}
+                    className={`flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                      isInstalled 
+                        ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 disabled:opacity-50' 
+                        : 'bg-gradient-to-r from-ink to-slate text-white hover:from-black hover:to-ink shadow-lg shadow-black/10 disabled:opacity-50'
+                    }`}
+                  >
+                    {installingId === app.id ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : isInstalled ? (
+                      'Retirer'
+                    ) : (
+                      <><Download size={16} /> Ajouter à la plateforme</>
+                    )}
+                  </button>
+                  {isInstalled && (
+                    <a href={`/dashboard/apps/${app.id}`} className="flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-[#0F7A60] text-white hover:opacity-90 shadow-lg shadow-emerald-900/10">
+                      Configurer
+                    </a>
+                  )}
+                </div>
+              </div>
+            )})}
+          </div>
+
+        </div>
+      </div>
+
+      {/* Simulator Column */}
+      <div className="hidden lg:flex w-[400px] border-l border-gray-200 bg-white flex-col justify-center sticky top-0 h-full p-4 relative overflow-hidden">
+        {/* Gradients */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-100 rounded-full blur-[100px] pointer-events-none opacity-50"></div>
+
+        {simulatedApp ? (
+          <div className="animate-in fade-in zoom-in-95 duration-300 relative h-full flex flex-col justify-center z-10 w-full max-w-[320px] mx-auto">
+             <MobileSimulator title={simulatedApp.name}>
+               <div className="p-6 flex flex-col items-center justify-center h-full text-center space-y-6 mt-10">
+                 <div className="w-24 h-24 bg-white/50 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-xl border border-white">
+                   {simulatedApp.icon}
+                 </div>
+                 <div>
+                   <h4 className="font-black text-[#1A1A1A] text-2xl mb-2">{simulatedApp.name}</h4>
+                   <p className="text-[14px] text-gray-500 font-medium">Installez cette extension pour l'activer sur votre menu de bord gauche en temps-réel.</p>
+                 </div>
+                 
+                 <div className="w-full space-y-3 mt-10 text-left bg-white/50 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-white">
+                   <h5 className="text-xs font-black text-gray-400 uppercase tracking-widest px-2 mb-3">Atouts techniques</h5>
+                   {simulatedApp.features.map((ft, i) => (
+                     <div key={i} className="px-4 py-3 bg-white rounded-xl text-sm font-bold text-gray-700 shadow-sm flex items-center gap-3">
+                        <CheckCircle2 size={16} className="text-emerald-500" />
+                        {ft}
+                     </div>
+                   ))}
+                 </div>
+                 
+               </div>
+             </MobileSimulator>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full text-center px-8 relative z-10">
+            <div className="w-32 h-32 bg-gray-50 rounded-full flex items-center justify-center mb-6 border border-gray-100 shadow-inner">
+               <Blocks size={48} className="text-gray-300" />
+            </div>
+            <h3 className="font-black text-ink text-2xl mb-3">Expérience App Store</h3>
+            <p className="text-[15px] leading-relaxed font-medium text-gray-500">
+              Survolez une application pour lire un aperçu technique sur le simulateur.
+              <br/><br/>
+              Cliquez ensuite sur <span className="font-bold text-ink">Ajouter</span> pour l'injecter immédiatement dans votre Sidebar.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -121,8 +121,11 @@ model Store {
   kyc_documents                                       Json?
   social_links                                        Json?
   meta_pixel_id                                       String?
+  meta_capi_token                                     String?
   tiktok_pixel_id                                     String?
   google_tag_id                                       String?
+  seo_title                                           String?
+  seo_description                                     String?
   telegram_chat_id                                    String?
   telegram_notifications                              Json?                  @default("{\"stock\": true, \"orders\": true, \"payments\": true, \"whatsapp\": true}")
   referred_by                                         String?
@@ -152,9 +155,15 @@ model Store {
   gamification_active                                 Boolean?               @default(false)
   gamification_config                                 Json?
   vendor_type_updated_at                              DateTime?
+  social_proof_active                                 Boolean                @default(false)
+  social_proof_config                                 Json?
+  volume_discounts_active                             Boolean                @default(false)
+  volume_discounts_config                             Json?
+  smart_reviews_active                                Boolean                @default(false)
   Affiliate                                           Affiliate[]
   AffiliateReferral                                   AffiliateReferral?
   Ambassador_Ambassador_store_idToStore               Ambassador[]           @relation("Ambassador_store_idToStore")
+  HelpdeskTicket                                      HelpdeskTicket[]
   AmbassadorReferral                                  AmbassadorReferral?
   blockedDates                                        BlockedDate[]
   bookings                                            Booking[]
@@ -814,9 +823,10 @@ model MasterclassArticle {
   tips       Json
   is_active  Boolean  @default(true)
   is_premium Boolean  @default(false)
-  price      Float    @default(0)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  price         Float    @default(0)
+  allowed_roles String[] @default(["all"])
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   @@schema("public")
 }
@@ -831,6 +841,24 @@ model MasterclassProgress {
   @@unique([user_id, article_id])
   @@schema("public")
 }
+
+model MarketplaceApp {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?
+  icon_url        String?
+  category        String
+  is_premium      Boolean  @default(false)
+  price           Float    @default(0)
+  allowed_roles   String[] @default(["all"])
+  features        Json?
+  active          Boolean  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  
+  @@schema("public")
+}
+
 
 model BlockedDate {
   id         String   @id @default(cuid())
@@ -2079,6 +2107,25 @@ model Quote {
   updated_at   DateTime @updatedAt
   store        Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
 
+  @@index([store_id])
+  @@schema("public")
+}
+
+model HelpdeskTicket {
+  id             String    @id @default(uuid())
+  store_id       String
+  order_id       String?
+  customer_name  String
+  customer_email String?
+  customer_phone String?
+  subject        String
+  message        String
+  status         String    @default("OPEN")
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  store Store @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  
   @@index([store_id])
   @@schema("public")
 }

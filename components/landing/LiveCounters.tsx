@@ -64,7 +64,7 @@ export function LiveCounters({ vendorsCount, productsCount, ordersCount }: { ven
       {/* Glow decorative background */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-emerald/5 blur-[100px] rounded-full pointer-events-none" />
       
-      <div className="max-w-5xl mx-auto px-6 relative z-10">
+      <div className="w-full mx-auto max-w-[1800px] px-6 md:px-12 lg:px-20 xl:px-32 relative z-10">
         <div className="text-center mb-12">
            <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">Le Mouvement est lancé</span>
            <h2 className="text-3xl md:text-5xl font-display font-black text-ink">L'écosystème Yayyam en Temps Réel</h2>

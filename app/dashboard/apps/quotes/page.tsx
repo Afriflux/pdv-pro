@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, Copy, FileText, ChevronLeft, User, DollarSign, Calendar, Activity, CheckCircle2, Send, Download } from 'lucide-react'
+import { Trash2, FileText, ChevronLeft, User, DollarSign, Calendar, Activity, CheckCircle2, Send, Plus } from 'lucide-react'
 import Link from 'next/link'
-import { getQuotesAction, createQuoteAction, toggleQuoteStatusAction, deleteQuoteAction, updateQuoteStatusAction } from './actions'
+import { getQuotesAction, createQuoteAction, deleteQuoteAction, updateQuoteStatusAction } from './actions'
 
 type QuoteItem = { description: string, quantity: number, unit_price: number }
 
@@ -102,16 +102,6 @@ export default function QuotesPage() {
     }
   }
 
-  const getStatusText = (status: string) => {
-    switch(status) {
-      case 'DRAFT': return 'Brouillon'
-      case 'SENT': return 'Envoyé'
-      case 'ACCEPTED': return 'Accepté & Facturé'
-      case 'REJECTED': return 'Refusé'
-      default: return 'Brouillon'
-    }
-  }
-
   const totalPreview = items.reduce((acc, curr) => acc + (curr.quantity * curr.unit_price), 0)
 
   return (
@@ -187,6 +177,7 @@ export default function QuotesPage() {
                        {index === 0 && <label className="text-xs font-bold text-gray-500">Qté</label>}
                        <input 
                          type="number" required min="1" value={item.quantity}
+                         aria-label="Quantité" title="Quantité"
                          onChange={e => handleUpdateItem(index, 'quantity', parseInt(e.target.value))}
                          className="w-full bg-white border-2 border-line rounded-xl px-3 py-2.5 text-ink font-medium focus:border-[#0F7A60] outline-none text-center"
                        />
@@ -195,12 +186,14 @@ export default function QuotesPage() {
                        {index === 0 && <label className="text-xs font-bold text-gray-500">Prix Unitaire</label>}
                        <input 
                          type="number" required min="1" value={item.unit_price}
+                         aria-label="Prix Unitaire" title="Prix Unitaire"
                          onChange={e => handleUpdateItem(index, 'unit_price', parseFloat(e.target.value))}
                          className="w-full bg-white border-2 border-line rounded-xl px-3 py-2.5 text-ink font-medium focus:border-[#0F7A60] outline-none text-right"
                        />
                     </div>
                     <button 
                       type="button" onClick={() => handleRemoveItem(index)}
+                      aria-label="Supprimer la ligne"
                       className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors border-2 border-transparent hover:border-red-100"
                     >
                       <Trash2 size={18} />
@@ -270,6 +263,7 @@ export default function QuotesPage() {
                         <td className="p-4">
                            <select 
                              value={quote.status}
+                             aria-label="Statut du devis" title="Statut du devis"
                              onChange={(e) => handleUpdateStatus(quote.id, e.target.value)}
                              className={`text-xs font-bold px-3 py-1.5 rounded-full border-0 cursor-pointer outline-none ${getStatusColor(quote.status)}`}
                            >
@@ -295,6 +289,7 @@ export default function QuotesPage() {
                            </button>
                            <button
                              onClick={() => handleDelete(quote.id)}
+                             aria-label="Supprimer le devis"
                              className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent"
                            >
                              <Trash2 size={18}/>

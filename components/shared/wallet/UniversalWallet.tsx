@@ -8,6 +8,7 @@ import { fr } from 'date-fns/locale'
 import { toast } from '@/lib/toast'
 import { handleUniversalWithdraw, handleUniversalDeposit } from '@/app/actions/wallet'
 import { AutoWithdrawSettings } from '@/app/dashboard/wallet/AutoWithdrawSettings'
+import { useYayyamSound } from '@/hooks/useYayyamSound'
 
 export interface TransactionRow {
   id: string
@@ -95,6 +96,9 @@ export function UniversalWallet({
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [showDepositModal, setShowDepositModal] = useState(false)
   
+  // Audio
+  const { playSuccess } = useYayyamSound()
+  
   // Form states
   const [withdrawAmount, setWithdrawAmount] = useState<number>(5000)
   const [withdrawInputValue, setWithdrawInputValue] = useState<string>('5000')
@@ -166,6 +170,7 @@ export function UniversalWallet({
       const res = await handleUniversalWithdraw(ownerType, ownerId, amt, withdrawMethod, withdrawPhone)
       if (res.error) toast.error(res.error)
       else {
+        playSuccess()
         toast.success(`Demande de retrait de ${amt.toLocaleString('fr-FR')} FCFA confirmée !`)
         setShowWithdrawModal(false)
         setWithdrawAmount(5000)

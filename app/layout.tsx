@@ -22,6 +22,11 @@ const mono = Space_Mono({
 })
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import type { Viewport } from 'next'
+
+export const viewport: Viewport = {
+  themeColor: '#0F7A60',
+}
 
 export const revalidate = 60 // Refresh cache every minute to apply admin SEO changes
 
@@ -82,6 +87,8 @@ import { headers } from 'next/headers'
 
 
 
+import InstallPWA from '@/components/pwa/InstallPWA'
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -120,6 +127,7 @@ export default async function RootLayout({
             </Suspense>
             {children}
             <FooterWrapper />
+            <InstallPWA />
           </>
         )}
         <script dangerouslySetInnerHTML={{ __html: `

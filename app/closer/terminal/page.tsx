@@ -262,10 +262,10 @@ export default function TerminalPage() {
                      <div className="bg-[#FAFAF7] p-3 rounded-xl mb-5 border border-gray-100 flex items-center justify-between group-hover:bg-emerald-50/30 transition-colors">
                        <p className="text-sm text-gray-900 font-black tracking-widest truncate mr-2">{lead.phone}</p>
                        <div className="flex items-center gap-2 shrink-0">
-                         <a href={`https://wa.me/${(lead.phone || '').replace(/[^0-9+]/g, '')}?text=${encodeURIComponent(`Bonjour ${lead.name}, je vous contacte concernant votre commande sur Yayyam.`)}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${lead.name}`} className="w-9 h-9 flex items-center justify-center bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] rounded-xl shadow-sm hover:shadow-md hover:bg-[#25D366] hover:text-white transition-all">
+                         <a suppressHydrationWarning href={`https://wa.me/${(lead.phone || '').replace(/[^0-9+]/g, '')}?text=${encodeURIComponent(`Bonjour ${lead.name}, je vous contacte concernant votre commande sur Yayyam.`)}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${lead.name}`} className="w-9 h-9 flex items-center justify-center bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] rounded-xl shadow-sm hover:shadow-md hover:bg-[#25D366] hover:text-white transition-all">
                            <MessageCircle size={16} />
                          </a>
-                         <a href={`tel:${lead.phone}`} aria-label={`Appeler le client ${lead.name} au ${lead.phone}`} className="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 text-[#0F7A60] rounded-xl shadow-sm hover:shadow-md hover:bg-[#0F7A60] hover:text-white transition-all">
+                         <a suppressHydrationWarning href={`tel:${lead.phone}`} aria-label={`Appeler le client ${lead.name} au ${lead.phone}`} className="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 text-[#0F7A60] rounded-xl shadow-sm hover:shadow-md hover:bg-[#0F7A60] hover:text-white transition-all">
                            <PhoneCall size={16} />
                          </a>
                        </div>

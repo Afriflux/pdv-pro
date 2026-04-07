@@ -79,6 +79,7 @@ export default function MarketingClient({ store, links, products, domain }: Mark
                   </button>
                   
                   <a 
+                    suppressHydrationWarning
                     href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
                     target="_blank" rel="noopener noreferrer"
                     className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors"

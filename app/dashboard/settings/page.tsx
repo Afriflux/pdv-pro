@@ -15,7 +15,8 @@ export default async function SettingsPage() {
       updated_at, banner_url,
       notif_new_order, notif_weekly_report, notif_stock_alert,
       social_links,
-      meta_pixel_id, tiktok_pixel_id, google_tag_id,
+      meta_pixel_id, meta_capi_token, tiktok_pixel_id, google_tag_id,
+      seo_title, seo_description,
       telegram_chat_id, telegram_notifications,
       withdrawal_method, withdrawal_number, withdrawal_name,
       contract_accepted, contract_accepted_at, vendor_type
@@ -60,8 +61,8 @@ export default async function SettingsPage() {
     <div className="w-full relative min-h-[calc(100vh-80px)]">
       {/* 🌟 MESH BACKGROUND DYNAMIQUE COSMÉTIQUE 🌟 */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden bg-[#FAFAFA]">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-400/20 blur-[130px] pointer-events-none mix-blend-multiply animate-pulse" style={{ animationDuration: '8s' }} />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-teal-400/15 blur-[120px] pointer-events-none mix-blend-multiply animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-400/20 blur-[130px] pointer-events-none mix-blend-multiply animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-teal-400/15 blur-[120px] pointer-events-none mix-blend-multiply animate-pulse" />
         <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] rounded-full bg-indigo-300/10 blur-[100px] pointer-events-none mix-blend-multiply" />
       </div>
 

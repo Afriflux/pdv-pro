@@ -26,7 +26,7 @@ export default function PricingCalculator({ tiers }: PricingCalculatorProps) {
   const otherPlatformCost = monthlySales * 0.12 // ~12% moyenne sur d'autres plateformes
 
   return (
-    <div className="bg-white rounded-[2rem] p-8 md:p-12 shadow-2xl shadow-ink/5 border border-line max-w-4xl mx-auto mt-20 relative overflow-hidden">
+    <div className="bg-white rounded-[2rem] p-8 md:p-12 shadow-2xl shadow-ink/5 border border-line max-w-[1600px] w-full mx-auto mt-20 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute -top-40 -right-40 w-96 h-96 bg-emerald/10 rounded-full blur-3xl pointer-events-none"></div>
 

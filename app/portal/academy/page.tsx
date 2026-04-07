@@ -24,7 +24,7 @@ export default async function AcademyPage() {
   }
 
   // Récupération des articles
-  const dbArticles = await getMasterclassArticles(false)
+  const dbArticles = await getMasterclassArticles(false, 'affiliate')
 
   // Progression de l'utilisateur
   const completedProgresses = await prisma.masterclassProgress.findMany({

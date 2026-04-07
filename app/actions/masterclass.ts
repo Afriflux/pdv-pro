@@ -19,10 +19,19 @@ async function checkAdmin() {
   }
 }
 
-export async function getMasterclassArticles(adminMode = false) {
+export async function getMasterclassArticles(adminMode = false, roleTarget?: string) {
   try {
+    const where: any = adminMode ? {} : { is_active: true }
+    
+    if (roleTarget && !adminMode) {
+      where.OR = [
+        { allowed_roles: { has: 'all' } },
+        { allowed_roles: { has: roleTarget } }
+      ]
+    }
+
     const articles = await prisma.masterclassArticle.findMany({
-      where: adminMode ? undefined : { is_active: true },
+      where,
       orderBy: { created_at: 'desc' }
     })
     return articles
@@ -52,6 +61,9 @@ export async function createMasterclassArticle(data: {
   intro: string
   tips: any
   is_active: boolean
+  is_premium?: boolean
+  price?: number
+  allowed_roles?: string[]
 }) {
   await checkAdmin()
   try {

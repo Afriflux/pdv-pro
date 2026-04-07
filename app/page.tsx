@@ -3,31 +3,27 @@ import Link from 'next/link'
 import { 
   ArrowRight, 
   CheckCircle2, 
-  MessageCircle, 
   AlertCircle, 
-  Smartphone, 
   Zap, 
   Store, 
-  ChartBar, 
   Shield, 
-  Globe,
-  Instagram,
-  Facebook,
   ChevronDown,
   Sparkles,
-  Users,
-  Briefcase
+  Users
 } from 'lucide-react'
 import PricingCalculator from './PricingCalculator'
 import { getCommissionTiers } from '@/lib/commission/commission-service'
 import { LandingNav } from '@/components/landing/LandingNav'
-import { HeroStats } from './components/HeroStats'
+
+import { BentoGrid } from "@/components/landing/BentoGrid";
+import { HeroSection } from "@/components/landing/HeroSection";
+
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { CountdownBanner } from '@/components/landing/CountdownBanner'
 import { LiveCounters } from '@/components/landing/LiveCounters'
 import { TestimonialSlider } from '@/components/landing/TestimonialSlider'
-import { Package, Wallet, Share2, TrendingUp, PhoneCall, Phone, ChevronRight } from 'lucide-react'
+import { Share2, TrendingUp, PhoneCall, Phone } from 'lucide-react'
 
 
   // Types pour les données dynamiques
@@ -204,359 +200,63 @@ export default async function LandingPage() {
         text: get('landing_banner_text', 'Lancement officiel le 1er Avril 2026')
       }} />
       {/* ── HEADER NAVIGATION ── */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-line shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-emerald rounded-xl flex items-center justify-center transform -rotate-6 shadow-sm shadow-emerald/20">
-              <Store className="text-white" size={24} />
+      {/* ── HEADER NAVIGATION ── */}
+      <div className="sticky top-4 z-50 px-4 md:px-0 flex justify-center pointer-events-none">
+        <header className="pointer-events-auto w-full max-w-4xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl shadow-emerald/5 rounded-full h-16 flex items-center justify-between px-6 transition-all duration-300 hover:bg-white/80">
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-9 h-9 bg-emerald rounded-[10px] shadow-sm flex items-center justify-center transform -rotate-6 transition-transform group-hover:rotate-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.65.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.65.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.65.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.65.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg>
             </div>
-            <span className="text-2xl font-display font-black tracking-tighter text-ink">Yayyam</span>
-          </div>
+            <span className="text-xl font-display font-black tracking-tighter text-ink">
+              Yayyam<span className="text-emerald">Pro</span>
+            </span>
+          </Link>
           
-          <div className="hidden md:flex items-center gap-8 font-bold text-sm text-charcoal">
-            <a href="#features" className="hover:text-emerald transition">Fonctionnalités</a>
-            <a href="#pricing" className="hover:text-emerald transition">Tarifs</a>
-            <Link href="/vendeurs" className="hover:text-emerald transition">Marketplace</Link>
-            <a href="#faq" className="hover:text-emerald transition">FAQ</a>
+          <div className="hidden md:flex items-center gap-6 font-bold text-xs uppercase tracking-widest text-charcoal">
+            <a href="#features" className="hover:text-emerald hover:scale-105 transition-all">Atouts</a>
+            <a href="#pricing" className="hover:text-emerald hover:scale-105 transition-all">Tarifs</a>
+            <Link suppressHydrationWarning href="/vendeurs" className="hover:text-emerald hover:scale-105 transition-all flex items-center gap-1">
+               <span suppressHydrationWarning>Marché</span>
+               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+            </Link>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <LandingNav isLoggedIn={isLoggedIn} dashboardUrl={dashboardUrl} />
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
 
       <main>
-        {/* 1. HERO SECTION */}
-        <section className="relative pt-24 pb-32 overflow-hidden px-6 bg-cream">
-          {/* Motif SVG géométrique subtil */}
-          <svg className="absolute inset-0 w-full h-full opacity-[0.03] pointer-events-none">
-            <defs>
-              <pattern id="geo" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
-                <path d="M40 0 L80 40 L40 80 L0 40 Z" fill="none" stroke="#0D5C4A" strokeWidth="1"/>
-                <circle cx="40" cy="40" r="2" fill="#0D5C4A" opacity="0.3"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#geo)"/>
-          </svg>
+        <HeroSection 
+          badge={get("landing_hero_badge", "🚀 Nouvelle Ère : Accès à l\u0027App Store et au Coach IA")}
+          h1L1={h1L1}
+          h1L2={h1L2}
+          h1L3={h1L3}
+          subtitle={get("landing_hero_subtitle", "Un App Store puissant : Coach IA, Link-in-Bio, Gamification. Vendez sur un écosystème premium et encaissez vos gains sur Wave ou Orange Money dès 5 000 FCFA.")}
+          ctaPrimary={get("landing_hero_cta_primary", "Lancer ma boutique")}
+          ctaSecondary={get("landing_hero_cta_secondary", "Voir les boutiques actives →")}
+          isLoggedIn={isLoggedIn}
+          dashboardUrl={dashboardUrl}
+        />
 
-          <div className="max-w-5xl mx-auto text-center space-y-8 relative z-10">
-            {(cfg['landing_hero_badge'] || new Date() < new Date('2026-03-31T00:00:00+00:00')) && (
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-full px-4 py-1.5 mb-6 animate-in fade-in slide-in-from-bottom-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
-                </span>
-                <span className="text-sm font-semibold text-amber-700">
-                  {get('landing_hero_badge', '🚀 Nouvelle Ère : Accès à l\'App Store et au Coach IA')}
-                </span>
-              </div>
-            )}
-            
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-tight text-ink leading-[1.1]">
-              {h1L1}<br />
-              {h1L2}<br />
-              <span className="text-emerald italic">{h1L3}</span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-slate font-light max-w-3xl mx-auto leading-relaxed">
-              {get('landing_hero_subtitle', 'Un App Store puissant : Coach IA, Link-in-Bio, Gamification. Vendez sur un écosystème premium et encaissez vos gains sur Wave ou Orange Money dès 5 000 FCFA.')}
-            </p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-              <Link href={isLoggedIn ? dashboardUrl : "/register"} className="w-full sm:w-auto px-8 py-4 bg-emerald hover:bg-emerald-rich text-white font-semibold rounded-full text-lg transition shadow-xl shadow-emerald/20 flex items-center justify-center gap-2">
-                {isLoggedIn ? "Mon espace" : get('landing_hero_cta_primary', 'Lancer ma boutique')} <ArrowRight size={20} />
-              </Link>
-              <Link href="/vendeurs" className="w-full sm:w-auto px-8 py-4 bg-white border border-emerald text-emerald hover:bg-emerald/5 rounded-full font-medium text-lg transition flex items-center justify-center shadow-sm">
-                {get('landing_hero_cta_secondary', 'Voir les boutiques actives →')}
-              </Link>
-            </div>
-            
-            <HeroStats />
-          </div>
-        </section>
-
-        {/* BARRE DE SOCIAL PROOF ANIMÉE - FIXÉ EN BAS */}
-        <div className="fixed bottom-0 left-0 right-0 z-[100] bg-[#1A1A1A] text-white py-3 overflow-hidden flex whitespace-nowrap border-t border-white/5 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
-          <style>{`
-            @keyframes marqueeHero {
-              from { transform: translateX(0); }
-              to { transform: translateX(-50%); }
-            }
-            .animate-marqueeHero {
-              animation: marqueeHero 20s linear infinite;
-            }
-          `}</style>
-          <div className="animate-marqueeHero flex items-center gap-8 text-sm">
-            {[...get('landing_ticker_text', '🔒 Paiements sécurisés Wave & Orange Money , 💰 Zéro abonnement — ne payez que sur vos ventes , 🎯 Upsell 1-Click , 📦 Gestion des livraisons intégrée , 🤖 IA marketing incluse , 📞 Récupération Paniers Abandonnés , 🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l\'Afrique de l\'Ouest').split(',').map(s=>s.trim()).filter(Boolean), ...get('landing_ticker_text', '🔒 Paiements sécurisés Wave & Orange Money , 💰 Zéro abonnement — ne payez que sur vos ventes , 🎯 Upsell 1-Click , 📦 Gestion des livraisons intégrée , 🤖 IA marketing incluse , 📞 Récupération Paniers Abandonnés , 🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l\'Afrique de l\'Ouest').split(',').map(s=>s.trim()).filter(Boolean)].map((item, i) => (
-              <React.Fragment key={i}>
-                <span>{item}</span>
-                <span>•</span>
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        {/* 2. LE PROBLÈME (Douleurs vendeurs WhatsApp) */}
-        <section className="py-24 bg-ink border-y border-line/10 relative overflow-hidden">
-          {/* Decorative background glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-red-500/10 blur-[100px] rounded-full pointer-events-none"></div>
-          
-          <div className="max-w-7xl mx-auto px-6 relative z-10">
-            <div className="text-center mb-16">
-              <span className="inline-block bg-red-500/10 text-red-500 border border-red-500/20 rounded-full px-4 py-1.5 font-mono tracking-widest uppercase text-xs mb-6 font-bold shadow-sm">{get('landing_problem_supertitle', 'Le Plafond de Verre')}</span>
-              <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-white">{get('landing_problem_title', 'Les outils isolés bloquent votre croissance.')}</h2>
-              <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">{get('landing_problem_subtitle', 'Sans I.A., sans automatisation et sans Apps intégrées, vous plafonnez vos ventes.')}</p>
-            </div>
-          </div>
-            
-          <div className="relative w-full max-w-7xl mx-auto">
-            {/* CSS pour scrollbar visible et stylisée sur Desktop */}
-            <style>{`
-              .custom-scrollbar {
-                -ms-overflow-style: none;
-                scrollbar-width: thin;
-                scrollbar-color: rgba(255,255,255,0.2) transparent;
-              }
-              .custom-scrollbar::-webkit-scrollbar {
-                height: 8px;
-              }
-              .custom-scrollbar::-webkit-scrollbar-track {
-                background: transparent; 
-              }
-              .custom-scrollbar::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.2); 
-                border-radius: 10px;
-              }
-              .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                background: rgba(255, 255, 255, 0.4); 
-              }
-            `}</style>
-            
-            <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory px-6 pb-8 custom-scrollbar">
-              {[
-                { icon: <MessageCircle size={32} />, title: 'Réponses infinies', desc: "Vous passez 3h par jour à répondre \"C'est combien ?\" sur WhatsApp. Chaque réponse en retard = une vente perdue." },
-                { icon: <Smartphone size={32} />, title: 'Pas de vitrine stable', desc: "Un statut WhatsApp disparaît en 24h. Vos clients ne savent pas avec certitude ce que vous vendez." },
-                { icon: <AlertCircle size={32} />, title: 'Paiements risqués', desc: "Captures d'écran falsifiées, virements qui n'arrivent pas, clients qui disparaissent. Vous prenez tous les risques." },
-                { icon: <ChartBar size={32} />, title: 'Zéro visibilité', desc: "Vous ne savez pas quels produits se vendent le mieux, ni combien vous avez réellement gagné à la fin du mois." },
-              ].map((item, i) => (
-                <div key={i} className="snap-center shrink-0 w-[85vw] md:w-[320px] lg:w-[280px] xl:w-[300px] bg-charcoal/50 backdrop-blur-sm p-8 rounded-3xl border border-white/5 shadow-2xl relative group hover:border-red-500/30 transition-all duration-300 flex flex-col items-center text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 mb-6 group-hover:scale-110 group-hover:bg-red-500/20 transition-all duration-300 shadow-lg border border-red-500/20">
-                    {item.icon}
-                  </div>
-                  <h3 className="text-xl font-display font-bold mb-3 text-white">{item.title}</h3>
-                  <p className="text-cream/60 leading-relaxed text-sm font-light">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 3. LA SOLUTION (3 Étapes) */}
-        <section className="py-32 px-6 bg-pearl relative overflow-hidden">
-          {/* Subtle glow */}
-          <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-emerald/5 blur-[100px] rounded-full pointer-events-none"></div>
-
-          <div className="max-w-7xl mx-auto relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-              <div>
-                <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">{get('landing_solution_supertitle', 'Le Yayyam App Store')}</span>
-                <h2 className="text-4xl md:text-6xl font-display font-black mb-6 text-ink leading-tight">{get('landing_solution_title', 'Une seule application. Résultat infini.')}</h2>
-                <p className="text-xl text-slate font-light mb-16 leading-relaxed">
-                  {cfg['landing_solution_subtitle'] ? get('landing_solution_subtitle', '') : (
-                    <>Branchez des <span className="font-medium text-emerald bg-emerald/10 px-2 py-0.5 rounded-md">Micro-Applications</span> à votre vitrine à la demande : IA, Gamification, Formateurs.</>
-                  )}
-                </p>
-                
-                <div className="flex flex-col gap-8 relative before:absolute before:inset-y-4 before:left-[35px] md:before:left-[43px] before:w-[2px] before:bg-emerald/20">
-                  {[
-                    { icon: <Store size={32} strokeWidth={2.5} />, title: 'Installez votre socle E-commerce', desc: "Boutique ultra-rapide (Link-in-Bio ou catalogue) connectée aux passerelles de Mobile Money." },
-                    { icon: <Package size={32} strokeWidth={2.5} />, title: 'Branchez le Coach IA', desc: "Utilisez notre App IA propriétaire pour générer vos fiches produits et auditer vos revenus en temps réel." },
-                    { icon: <Wallet size={32} strokeWidth={2.5} />, title: 'Monétisez depuis votre Wallet', desc: "Tout est micro-facturé à l'usage sur votre portefeuille. Zéro abonnement récurrent pour grandir." },
-                  ].map((step, i) => (
-                    <div key={i} className="flex gap-6 relative group z-10">
-                      <div className="shrink-0 w-16 md:w-20 h-16 md:h-20 bg-white border-4 border-pearl text-emerald font-black flex items-center justify-center rounded-2xl shadow-lg group-hover:bg-emerald group-hover:text-white group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300">
-                        {step.icon}
-                      </div>
-                      <div className="pt-2 md:pt-4">
-                        <h3 className="text-xl md:text-2xl font-display font-black mb-2 text-ink group-hover:text-emerald transition-colors">{step.title}</h3>
-                        <p className="text-slate leading-relaxed font-light text-base md:text-lg">{step.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="relative lg:pl-10">
-                {/* Mockup Premium */}
-                <div className="relative group perspective-1000 hidden md:block">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-emerald to-turquoise opacity-20 blur-2xl rounded-[3rem] group-hover:opacity-30 transition duration-1000"></div>
-                  <div className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-[2rem] p-2 shadow-2xl relative overflow-hidden transform transition-all duration-700 hover:-translate-y-2 hover:rotate-1">
-                    <div className="bg-cream/50 rounded-[1.5rem] p-6 border border-line/50 flex flex-col gap-6">
-                      {/* Browser header */}
-                      <div className="flex items-center gap-3 pb-4 border-b border-line/50">
-                        <div className="flex gap-1.5 pl-2">
-                          <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-                          <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-                          <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
-                        </div>
-                        <div className="flex-1 bg-white/60 h-8 rounded-md border border-line/50 flex items-center justify-center text-xs text-slate font-mono">yayyam.com/votreboutique</div>
-                      </div>
-
-                      {/* Dashboard Content */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="col-span-2 bg-gradient-to-br from-emerald to-emerald-rich p-6 rounded-2xl text-white shadow-lg relative overflow-hidden flex items-center">
-                           <div>
-                             <p className="text-emerald-50 text-sm font-medium mb-1 tracking-wider uppercase">Revenus du jour</p>
-                             <p className="font-display font-black text-4xl">145 000 F</p>
-                           </div>
-                           <div className="ml-auto bg-white/20 px-3 py-1.5 rounded-lg flex items-center gap-2 backdrop-blur-sm border border-white/20">
-                             <Sparkles size={16} /> <span className="text-[10px] uppercase font-bold tracking-widest">IA Check360°</span>
-                           </div>
-                        </div>
-                        
-                        <div className="col-span-1 bg-white p-5 rounded-2xl border border-line/50 shadow-sm flex flex-col justify-between hover:border-emerald/30 transition-colors">
-                           <p className="text-slate text-xs tracking-widest uppercase font-bold mb-2">Visites</p>
-                           <p className="font-display font-bold text-3xl text-ink">342</p>
-                        </div>
-
-                        <div className="col-span-1 bg-white p-5 rounded-2xl border border-line/50 shadow-sm flex flex-col justify-end min-h-[100px] relative overflow-hidden hover:border-emerald/30 transition-colors">
-                           <div className="flex items-end gap-1 w-full h-12 opacity-80">
-                             <div className="bg-emerald/20 w-1/4 rounded-t-sm h-1/4"></div>
-                             <div className="bg-emerald/50 w-1/4 rounded-t-sm h-2/4"></div>
-                             <div className="bg-emerald w-1/4 rounded-t-sm h-full"></div>
-                             <div className="bg-emerald/30 w-1/4 rounded-t-sm h-2/4"></div>
-                           </div>
-                        </div>
-
-                        <div className="col-span-2 space-y-3 mt-2">
-                          <div className="bg-white p-4 rounded-xl border border-line/50 shadow-sm flex items-center gap-4 hover:border-emerald/30 transition-colors cursor-default">
-                            <div className="w-10 h-10 rounded-lg bg-emerald/10 flex items-center justify-center text-emerald shrink-0"><CheckCircle2 size={20} /></div>
-                            <div>
-                               <p className="text-sm font-bold text-ink tracking-wide">Paiement reçu</p>
-                               <p className="text-xs text-slate mt-0.5">Wave Mobile Money</p>
-                            </div>
-                            <div className="ml-auto font-bold text-emerald">+15 000 F</div>
-                          </div>
-                          <div className="bg-white p-4 rounded-xl border border-line/50 shadow-sm flex items-center gap-4 hover:border-gold/30 transition-colors cursor-default">
-                            <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center text-gold shrink-0"><Store size={20} /></div>
-                            <div>
-                               <p className="text-sm font-bold text-ink tracking-wide">Commande COD</p>
-                               <p className="text-xs text-slate mt-0.5">En attente de livraison</p>
-                            </div>
-                            <div className="ml-auto font-bold text-gold">+2 500 F</div>
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 4. FONCTIONNALITÉS CLÉS (Marquee Automatique) */}
-        <section id="features" className="py-24 bg-white border-y border-line overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16 max-w-3xl mx-auto">
-              <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">{get('landing_features_supertitle', "L'arsenal complet")}</span>
-              <h2 className="text-4xl md:text-6xl font-display font-black mb-6 tracking-tight text-ink">
-                {cfg['landing_features_title'] ? get('landing_features_title', '') : (
-                  <>Tout ce dont vous avez besoin pour <span className="text-emerald relative inline-block">grandir.<span className="absolute -bottom-2 left-0 w-full h-3 bg-gold/30 -rotate-2"></span></span></>
-                )}
-              </h2>
-            </div>
-          </div>
-            
-          {/* Inject inline styles for the marquee animation */}
-          <style>{`
-            @keyframes marqueeX {
-              from { transform: translateX(0); }
-              to { transform: translateX(-100%); }
-            }
-            @keyframes marqueeXReverse {
-              from { transform: translateX(-100%); }
-              to { transform: translateX(0); }
-            }
-            .animate-marqueeX {
-              animation: marqueeX 35s linear infinite;
-            }
-            .animate-marqueeX-reverse {
-              animation: marqueeXReverse 40s linear infinite;
-            }
-            .hover-pause:hover .animate-marqueeX, 
-            .hover-pause:hover .animate-marqueeX-reverse {
-              animation-play-state: paused;
-            }
-          `}</style>
-
-          <div className="relative py-4 hover-pause flex flex-col gap-6 w-full">
-            {/* Fade Edges for premium effect (desktop only) */}
-            <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
-
-            {/* Row 1 : Sens normal */}
-            <div className="flex w-max">
-                {[1, 2].map((slide) => (
-                  <div key={slide} className="flex gap-6 pr-6 animate-marqueeX w-max" >
-                    {[
-                      { icon: <Smartphone size={28} />, title: 'Boutique Mobile', desc: '98% de vos acheteurs sont sur smartphone. Notre design charge en 1 seconde et convertit mieux.' },
-                      { icon: <Zap size={28} />, title: 'Upsell 1-Click', desc: 'Proposez une offre irrésistible juste après l\'achat. Augmentez votre panier moyen de 30% sans effort.' },
-                      { icon: <Store size={28} />, title: 'Gestion Livraisons', desc: 'Configurez vos zones tarifaires. Le client paie le produit + la livraison en un seul clic.' },
-                      { icon: <Shield size={28} />, title: 'Automatisations WA', desc: 'Vos clients reçoivent des confirmations de commande et de suivi directement sur WhatsApp.' },
-                      { icon: <ChartBar size={28} />, title: 'Analytics', desc: 'Suivez vos vues, vos ventes, votre taux de conversion et l\'origine de vos clients en temps réel.' },
-                    ].map((feat, i) => (
-                      <div key={i} className="group p-8 w-[350px] md:w-[420px] shrink-0 bg-pearl/30 border border-line rounded-[2rem] hover:bg-white hover:border-emerald/40 hover:shadow-2xl hover:shadow-emerald/10 transition-all duration-300">
-                        <div className="inline-flex w-14 h-14 bg-white rounded-2xl items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 border border-line group-hover:border-emerald/30 text-emerald">
-                          {feat.icon}
-                        </div>
-                        <h3 className="text-2xl font-display font-bold text-ink mb-3 group-hover:text-emerald transition-colors">{feat.title}</h3>
-                        <p className="text-slate text-sm leading-relaxed font-light">{feat.desc}</p>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-            </div>
-
-            {/* Row 2 : Sens inversé (marqueeXReverse) */}
-            <div className="flex w-max">
-                {[1, 2].map((slide) => (
-                  <div key={slide} className="flex gap-6 pr-6 animate-marqueeX-reverse w-max" >
-                    {[
-                      { icon: <Globe size={28} />, title: 'Marketing', desc: 'Codes promos, Vente Flash, Cross-selling et Programme d\'affiliation pour vos ambassadeurs.' },
-                      { icon: <Users size={28} />, title: 'Call Center & Closers', desc: 'Vos paniers abandonnés sont automatiquement envoyés à nos experts qui relancent vos prospects pour vous.' },
-                      { icon: <MessageCircle size={28} />, title: 'Groupes Telegram', desc: 'Vendez l\'accès à des groupes privés. L\'invitation est envoyée automatiquement après chaque paiement.' },
-                      { icon: <Sparkles size={28} />, title: 'Ambassadeurs / Auto-Retrait', desc: 'Vos affiliés et closers sont payés automatiquement par le système, les mains libres.' },
-                      { icon: <Briefcase size={28} />, title: 'Produits Digitaux & Services', desc: 'Vendez des Ebooks, VOD, ou des Coachings avec notre système de réservation natif.' },
-                    ].map((feat, i) => (
-                      <div key={i} className="group p-8 w-[350px] md:w-[420px] shrink-0 bg-pearl/30 border border-line rounded-[2rem] hover:bg-white hover:border-emerald/40 hover:shadow-2xl hover:shadow-emerald/10 transition-all duration-300">
-                        <div className="inline-flex w-14 h-14 bg-white rounded-2xl items-center justify-center mb-6 shadow-sm group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300 border border-line group-hover:border-emerald/30 text-emerald">
-                          {feat.icon}
-                        </div>
-                        <h3 className="text-2xl font-display font-bold text-ink mb-3 group-hover:text-emerald transition-colors">{feat.title}</h3>
-                        <p className="text-slate text-sm leading-relaxed font-light">{feat.desc}</p>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-            </div>
-
-          </div>
-        </section>
+        <BentoGrid 
+          supertitle={get("landing_problem_supertitle", "L\u0027arsenal complet")} 
+          title={get("landing_problem_title", "Une seule application. Résultat infini.")} 
+        />
 
         {/* 5. TEMPLATES & SECTEURS */}
         <section className="py-32 px-6 bg-ink text-white overflow-hidden relative border-y border-line/10">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl bg-emerald/10 blur-[150px] rounded-full pointer-events-none"></div>
           
-          <div className="max-w-7xl mx-auto relative z-10 text-center">
+          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 relative z-10 text-center">
              <div className="mb-14 max-w-3xl mx-auto">
                 <p className="font-bold text-gold uppercase tracking-widest text-sm mb-4">{get('landing_sectors_supertitle', "Déjà utilisé au Sénégal, en Côte d'Ivoire et au Mali.")}</p>
                 <h2 className="text-4xl md:text-5xl font-display font-black mb-6 text-white">{get('landing_sectors_title', "Parfait pour tous les business.")}</h2>
                 <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">{get('landing_sectors_subtitle', "Peu importe ce que vous vendez, nous gérons le processus de la vitrine jusqu'à votre poche.")}</p>
              </div>
 
-             <div className="flex flex-wrap justify-center gap-4 mb-16 max-w-4xl mx-auto">
+             <div className="flex flex-wrap justify-center gap-4 mb-16 max-w-[1800px] mx-auto w-full px-4 md:px-8">
                {['Prêt-à-porter', 'Cosmétiques', 'Électronique', 'Alimentation', 'Services (RDV)', 'Restauration', 'Art & Déco', 'Produits Digitaux', 'B2B & Gros', 'Santé & Bien-être'].map((tag, i) => (
                  <div key={i} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-sm font-bold tracking-widest text-cream/80 hover:border-emerald hover:text-white hover:bg-emerald/20 shadow-sm hover:shadow-emerald/20 transition-all cursor-default transform hover:-translate-y-1">
                    {tag.toUpperCase()}
@@ -565,8 +265,8 @@ export default async function LandingPage() {
              </div>
 
              <div>
-               <Link href="/vendeurs" className="inline-flex items-center bg-white text-ink px-8 py-4 rounded-xl font-bold hover:bg-emerald hover:text-white transition gap-2 shadow-xl shadow-white/5">
-                 Voir les boutiques actives <ArrowRight size={20} />
+               <Link suppressHydrationWarning href="/vendeurs" className="inline-flex items-center bg-white text-ink px-8 py-4 rounded-xl font-bold hover:bg-emerald hover:text-white transition gap-2 shadow-xl shadow-white/5">
+                  <span suppressHydrationWarning>Voir les boutiques actives</span> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                </Link>
              </div>
           </div>
@@ -574,7 +274,7 @@ export default async function LandingPage() {
 
         {/* 6. TÉMOIGNAGES */}
         <section className="py-24 px-6 bg-cream border-b border-line">
-          <div className="max-w-7xl mx-auto relative z-10">
+          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 relative z-10">
             <h2 className="text-3xl md:text-5xl font-display font-black text-center mb-16 tracking-tight text-ink">Avis des précurseurs.</h2>
             <TestimonialSlider testimonials={testimonialData} />
           </div>
@@ -582,7 +282,7 @@ export default async function LandingPage() {
 
         {/* 6.5 PREUVES DE RETRAITS (Mode Cash) */}
         <section className="py-20 px-6 bg-white overflow-hidden relative">
-          <div className="max-w-5xl mx-auto text-center">
+          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-8 text-center">
             <span className="inline-block bg-emerald/10 text-emerald font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 border border-emerald/20">Transparence Totale</span>
             <h2 className="text-3xl md:text-4xl font-display font-black mb-6 text-ink">L'argent va <span className="text-emerald">directement</span> sur votre téléphone.</h2>
             <p className="text-lg text-slate font-light max-w-2xl mx-auto mb-12">Retraits traités tous les jours vers Wave et Orange Money. Pas de blocage, pas de délai artificiel. C'est votre argent, vous en disposez quand vous voulez (dès 5 000 FCFA).</p>
@@ -621,7 +321,7 @@ export default async function LandingPage() {
 
         {/* 7. TARIFS & CALCULATEUR */}
         <section id="pricing" className="py-24 px-6 bg-pearl">
-          <div className="max-w-7xl mx-auto">
+          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32">
             <div className="text-center mb-12">
               <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block">Tarification</span>
               <h2 className="text-3xl md:text-5xl font-display font-black mb-4 text-ink">Un modèle clair.</h2>
@@ -724,7 +424,7 @@ export default async function LandingPage() {
               </Link>
             </div>
 
-            <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 mb-16 mt-6 max-w-5xl mx-auto">
+            <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 mb-16 mt-6 w-full max-w-[1800px] mx-auto px-4 md:px-8">
                <div className="bg-white border-2 border-emerald/20 rounded-2xl p-6 text-center shadow-lg flex-1 hover:border-emerald transition-colors flex flex-col items-center justify-center">
                  <div className="text-4xl leading-none mb-3">💳</div>
                  <h4 className="font-display font-black text-ink text-xl mb-1">Mobile Money</h4>
@@ -755,7 +455,7 @@ export default async function LandingPage() {
         <section className="py-24 px-6 bg-white overflow-hidden relative border-y border-line/10">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald/5 blur-[100px] rounded-full pointer-events-none"></div>
           
-          <div className="max-w-7xl mx-auto relative z-10">
+          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 relative z-10">
             <div className="text-center mb-16 max-w-3xl mx-auto">
               <span className="inline-block bg-emerald/10 text-emerald font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 border border-emerald/20">La Machine à Cash</span>
               <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-ink">Trois leviers natifs pour <span className="text-emerald">exploser</span> votre C.A.</h2>
@@ -842,7 +542,7 @@ export default async function LandingPage() {
         <section className="py-24 px-6 bg-[#FAFAF7] overflow-hidden relative">
           <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-emerald/5 blur-[100px] rounded-full pointer-events-none"></div>
           
-          <div className="max-w-7xl mx-auto relative z-10">
+          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 relative z-10">
             <div className="text-center mb-16 max-w-3xl mx-auto">
               <span className="inline-block bg-ink/10 text-ink font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 shadow-sm border border-ink/10">Sans Boutiques & Sans Produits</span>
               <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-ink">L'Écosystème de <span className="text-emerald">Richesse Partagée</span></h2>
@@ -851,7 +551,7 @@ export default async function LandingPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-[1800px] mx-auto px-4 md:px-8">
               {/* Affiliation */}
               <div className="bg-white rounded-[2rem] p-10 border-2 border-emerald/20 flex flex-col relative overflow-hidden group shadow-lg hover:shadow-2xl hover:shadow-emerald/20 transition-all duration-300 transform hover:-translate-y-2">
                 <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
@@ -865,8 +565,9 @@ export default async function LandingPage() {
                 <p className="text-slate leading-relaxed font-light mb-8">
                   Accédez à un catalogue exclusif de produits à fort taux de conversion. Partagez votre lien de tracking intelligent et touchez jusqu'à <span className="font-bold text-ink">50% de commission</span> sur chaque vente. L'argent est transféré automatiquement sur votre Mobile Money à chaque seuil atteint.
                 </p>
-                <Link href="/register?role=affiliate" className="mt-auto inline-flex items-center gap-2 text-emerald font-bold hover:text-emerald-rich transition-colors group/link w-fit">
-                  Devenir Affilié <ChevronRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
+                <Link suppressHydrationWarning href="/register?role=affiliate" className="mt-auto inline-flex items-center gap-2 text-emerald font-bold hover:text-emerald-rich transition-colors group/link w-fit">
+                  <span suppressHydrationWarning>Devenir Affilié</span> 
+                  <svg className="group-hover/link:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                 </Link>
               </div>
 
@@ -885,8 +586,9 @@ export default async function LandingPage() {
                 <p className="text-cream/80 leading-relaxed font-light mb-8 relative z-10">
                   Transformez votre téléphone en machine à cash. Connectez-vous sur votre <span className="font-bold text-white">Terminal Closer</span> et rappelez les paniers abandonnés des gros vendeurs. Chaque client convaincu vous rapporte une commission fixe. Zéro prospection, uniquement des leads ultra-qualifiés avec intention d'achat.
                 </p>
-                <Link href="/register?role=closer" className="relative z-10 mt-auto inline-flex items-center gap-2 text-emerald-light font-bold hover:text-white transition-colors group/link w-fit">
-                  Rejoindre les Closers <ChevronRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
+                <Link suppressHydrationWarning href="/register?role=closer" className="relative z-10 mt-auto inline-flex items-center gap-2 text-emerald-light font-bold hover:text-white transition-colors group/link w-fit">
+                  <span suppressHydrationWarning>Rejoindre les Closers</span> 
+                  <svg className="group-hover/link:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                 </Link>
               </div>
 
@@ -897,7 +599,7 @@ export default async function LandingPage() {
         {/* ── Section Communautés Telegram ──────────────────────────────── */}
         <section className="py-20 bg-ink border-y border-white/5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald/5 blur-[120px] rounded-full pointer-events-none" />
-          <div className="max-w-6xl mx-auto px-4 relative z-10">
+          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 px-4 relative z-10">
             <div className="text-center mb-12">
               <span className="inline-block bg-emerald/10 border border-emerald/30 text-emerald text-xs font-bold px-3 py-1 rounded-full mb-4 shadow-sm">
                 {get('landing_telegram_supertitle', "EXCLUSIF YAYYAM")}
@@ -952,7 +654,7 @@ export default async function LandingPage() {
 
         {/* 8. FAQ */}
         <section id="faq" className="py-24 bg-cream px-6">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-[1800px] mx-auto w-full px-4 md:px-8">
               <h2 className="text-3xl md:text-5xl font-display font-black text-center mb-16 text-ink">Questions Fréquentes.</h2>
               
               <div className="max-w-3xl mx-auto space-y-4">
@@ -982,7 +684,7 @@ export default async function LandingPage() {
 
         {/* COMPARAISON WHATSAPP VS YAYYAM */}
         <section className="py-16 bg-gray-50 border-t border-line">
-          <div className="max-w-4xl mx-auto px-4">
+          <div className="max-w-[1800px] mx-auto w-full px-6 md:px-12 lg:px-20 xl:px-32">
             <h2 className="text-2xl md:text-3xl font-display font-bold text-center mb-10 text-ink">
               Pourquoi passer de WhatsApp à Yayyam ?
             </h2>
@@ -1029,7 +731,7 @@ export default async function LandingPage() {
           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-600/10 blur-[150px] rounded-full pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gold/10 blur-[120px] rounded-full pointer-events-none" />
 
-          <div className="max-w-4xl mx-auto text-center relative z-10">
+          <div className="max-w-[1800px] mx-auto w-full px-4 md:px-8 text-center relative z-10">
             <h2 className="text-4xl md:text-6xl font-display font-black mb-6 tracking-tight text-white leading-tight whitespace-pre-line">
               {get('landing_cta_title', 'Prêt à lancer votre business en ligne ?')}
             </h2>
@@ -1052,7 +754,7 @@ export default async function LandingPage() {
 
       {/* FOOTER */}
       <footer className="bg-ink border-t border-white/5 pt-16 pb-28 px-6 relative">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mt-4">
+        <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 grid grid-cols-1 md:grid-cols-4 gap-12 mt-4">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-6">
               <Store className="text-gold" size={28} />
@@ -1062,8 +764,12 @@ export default async function LandingPage() {
               La plateforme e-commerce tout-en-un conçue spécifiquement pour les réalités du commerce en Afrique de l&apos;Ouest.
             </p>
             <div className="flex gap-4 mt-6">
-               <a title="Instagram" aria-label="Instagram" href={get('landing_instagram_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition"><Instagram size={18}/></a>
-               <a title="Facebook" aria-label="Facebook" href={get('landing_facebook_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition"><Facebook size={18}/></a>
+               <a suppressHydrationWarning title="Instagram" aria-label="Instagram" href={get('landing_instagram_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition">
+                 <svg suppressHydrationWarning xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+               </a>
+               <a suppressHydrationWarning title="Facebook" aria-label="Facebook" href={get('landing_facebook_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition">
+                 <svg suppressHydrationWarning xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+               </a>
             </div>
           </div>
           
@@ -1083,14 +789,14 @@ export default async function LandingPage() {
               <li><Link href="/conditions-utilisation" className="hover:text-emerald-light transition">Conditions d'utilisation</Link></li>
               <li><Link href="/politique-confidentialite" className="hover:text-emerald-light transition">Politique de confidentialité</Link></li>
               <li><Link href="/mentions-legales" className="hover:text-emerald-light transition">Mentions légales</Link></li>
-              <li><a href={`https://wa.me/${get('landing_whatsapp_support', '221780476393')}`} target="_blank" className="hover:text-emerald-light transition flex items-center gap-2">
+              <li><a suppressHydrationWarning href={`https://wa.me/${get('landing_whatsapp_support', '221780476393')}`} target="_blank" className="hover:text-emerald-light transition flex items-center gap-2">
                 <span className="w-2 h-2 bg-emerald rounded-full animate-pulse"></span>
                 Support WhatsApp
               </a></li>
             </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/10 text-sm font-light text-white/40 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 mt-16 pt-8 border-t border-white/10 text-sm font-light text-white/40 flex flex-col md:flex-row justify-between items-center gap-4">
           <p>© {new Date().getFullYear()} Yayyam. Tous droits réservés.</p>
           <p>Propulsé par l&apos;innovation Africaine 🌍</p>
         </div>

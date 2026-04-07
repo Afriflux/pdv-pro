@@ -43,7 +43,7 @@ export function TestimonialSlider({ testimonials }: { testimonials: LandingTesti
   return (
     <div 
       ref={scrollRef}
-      className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 custom-scrollbar pt-4 px-6 md:px-0"
+      className="flex gap-6 xl:gap-10 overflow-x-auto md:justify-center snap-x snap-mandatory pb-8 custom-scrollbar pt-4 px-6 md:px-0"
     >
       <style>{`
         .custom-scrollbar {
@@ -66,7 +66,7 @@ export function TestimonialSlider({ testimonials }: { testimonials: LandingTesti
       {testimonials.map((test, i) => (
         <div 
           key={i} 
-          className="snap-center shrink-0 w-[85vw] md:w-[350px] bg-white p-8 rounded-[2rem] border border-line relative shadow-sm hover:border-emerald/30 hover:shadow-xl transition-all flex flex-col group"
+          className="snap-center shrink-0 w-[85vw] md:w-[400px] lg:w-[450px] flex-1 max-w-[500px] bg-white p-8 rounded-[2rem] border border-line relative shadow-sm hover:border-emerald/30 hover:shadow-xl transition-all flex flex-col group"
         >
           {/* Decorative quote */}
           <div className="font-display text-9xl text-emerald/5 absolute top-4 right-8 leading-none select-none group-hover:text-emerald/10 transition-colors">"</div>

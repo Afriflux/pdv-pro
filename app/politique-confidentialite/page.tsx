@@ -35,7 +35,7 @@ export default function PrivacyPolicyPage() {
               <li>Informations d'identification (Nom, Prénom, Email).</li>
               <li>Informations de boutique (Nom de l'espace, numéro de téléphone).</li>
               <li>Données de transaction (Historique des ventes, montants collectés).</li>
-              <li>Informations de paiement (Via nos passerelles partenaires : Wave, CinetPay, PayTech).</li>
+              <li>Informations de paiement (Via nos passerelles partenaires : Wave, CinetPay, PayTech, Bictorys, KKiaPay).</li>
             </ul>
           </section>
 
@@ -62,7 +62,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-bold mb-4">5. Partage des données</h2>
             <p>
               Nous ne vendons jamais vos données. Elles ne sont partagées qu'avec les prestataires de paiement 
-              nécessaires au bon fonctionnement de vos ventes (Wave, CinetPay, PayTech) et conformément aux obligations légales.
+              nécessaires au bon fonctionnement de vos ventes (Wave, CinetPay, PayTech, Bictorys, KKiaPay) et conformément aux obligations légales.
             </p>
           </section>
 

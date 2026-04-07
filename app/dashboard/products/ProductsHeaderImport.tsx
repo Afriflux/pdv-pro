@@ -15,19 +15,19 @@ export default function ProductsHeaderImport() {
   const [activeView, setActiveView] = useState<ActiveView>('none')
 
   return (
-    <>
-      {/* ── Header ── */}
-      <header className="bg-white/80 backdrop-blur-2xl border-b border-gray-100/50 shadow-sm px-6 py-5 sticky top-14 lg:top-0 z-20">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-0.5">
-              <Link href="/dashboard" className="text-slate hover:text-ink transition flex-shrink-0 text-lg">
-                ←
-              </Link>
-              <h1 className="font-display text-ink text-xl font-bold">Mes Produits</h1>
+    <div className="w-full relative z-10 px-6 lg:px-10">
+      <div className="w-full animate-in fade-in zoom-in-95 duration-700">
+        <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 mb-8 border-b border-gray-200/40 relative z-10 pt-8">
+          <div className="flex items-center gap-5">
+            <div className="flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-xl rounded-[1.2rem] text-rose-500 shadow-[0_8px_30px_rgb(244,63,94,0.12)] border border-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+            </div>
+            <div>
+              <h1 className="text-3xl font-black bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent tracking-tight">Catalogue de Produits</h1>
+              <p className="text-gray-500 text-[15px] font-medium mt-1">Gérez votre inventaire, importez en masse ou générez avec l'IA.</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-3 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
             {/* Bouton Générateur IA */}
             <button
               onClick={() => setActiveView(v => v === 'ia' ? 'none' : 'ia')}
@@ -64,30 +64,26 @@ export default function ProductsHeaderImport() {
               <span className="font-bold">+</span> Nouveau produit
             </Link>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* ── Section Import CSV (conditionnelle) ── */}
-      {activeView === 'csv' && (
-        <div className="px-6 py-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          <ImportCSV />
-        </div>
-      )}
+        {/* ── Section Import CSV (conditionnelle) ── */}
+        {activeView === 'csv' && (
+          <div className="py-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <ImportCSV />
+          </div>
+        )}
 
-      {/* ── Section Générateur IA (conditionnelle) ── */}
-      {activeView === 'ia' && (
-        <div className="px-6 py-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          <UniversalAIGenerator 
-            mode="bulk-products" 
-            onImportSuccess={() => {
-            // Optionnel : on peut fermer la vue après un import réussi
-            // setActiveView('none')
-            // Rechargement manuel de la liste dans le parent via router.refresh 
-            // mais l'URL n'a pas changé, on peut trigger un mutate ou refresh natif 
-            window.location.reload()
-          }} />
-        </div>
-      )}
-    </>
+        {/* ── Section Générateur IA (conditionnelle) ── */}
+        {activeView === 'ia' && (
+          <div className="py-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <UniversalAIGenerator 
+              mode="bulk-products" 
+              onImportSuccess={() => {
+              window.location.reload()
+            }} />
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

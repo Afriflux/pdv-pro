@@ -8,6 +8,8 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: Request) {
   try {
     // Vérification basique d'autorisation (Bearer token ou paramètre secret)

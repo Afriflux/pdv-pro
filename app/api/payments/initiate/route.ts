@@ -31,7 +31,7 @@ interface OrderRow {
 
 // ─── Validation méthode ───────────────────────────────────────────────────────
 
-const VALID_METHODS: PaymentMethod[] = ['wave', 'orange_money', 'card_cinetpay', 'card_paytech']
+const VALID_METHODS: PaymentMethod[] = ['wave', 'orange_money', 'card_cinetpay', 'card_paytech', 'bictorys', 'kkiapay']
 
 function isValidMethod(value: unknown): value is PaymentMethod {
   return VALID_METHODS.includes(value as PaymentMethod)
@@ -135,7 +135,7 @@ export async function POST(req: Request) {
 
   // 8. Router vers la bonne passerelle et retourner le résultat
   try {
-    let checkoutUrl: string
+    let checkoutUrl: string = ''
 
     switch (method) {
       case 'wave': {
@@ -154,6 +154,20 @@ export async function POST(req: Request) {
         checkoutUrl = result.checkoutUrl
         break
       }
+      case 'bictorys': {
+        const { initiateBictorysPayment } = await import('@/lib/payments/payment-service')
+        const result = await initiateBictorysPayment(intent)
+        checkoutUrl = result.checkoutUrl
+        break
+      }
+      case 'kkiapay': {
+        const { initiateKKiapayPayment } = await import('@/lib/payments/payment-service')
+        const result = await initiateKKiapayPayment(intent)
+        checkoutUrl = result.checkoutUrl
+        break
+      }
+      default:
+        throw new Error('Méthode non implémentée')
     }
 
     return NextResponse.json({ checkoutUrl, fees, vendorAmount }, { status: 200 })

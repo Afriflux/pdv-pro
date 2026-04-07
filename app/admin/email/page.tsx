@@ -123,54 +123,10 @@ async function EmailDashboardContent() {
     getListStats(3).catch((): ListStat => ({ totalSubscribers: 0, totalBlacklisted: 0 })),
   ]) as [Campaign[], ListStat, ListStat, ListStat]
 
-  // Injection de données de test "Hauts de Gamme" si le tableau est vide ou en erreur (pour le preview)
-  const isMock = !fetchedCampaigns || fetchedCampaigns.length === 0
-  
-  const campaigns = isMock ? [
-    {
-      id: 101,
-      name: "🔥 [PROMO] Novembre - Livraison Offerte",
-      subject: "Faites exploser vos ventes ce week-end sur Afriflux 🚀",
-      status: "sent",
-      createdAt: new Date(Date.now() - 3 * 86400000).toISOString(),
-      statistics: { globalStats: { delivered: 2840, uniqueOpens: 1249, uniqueClicks: 324, unsubscribed: 5, hardBounces: 2, softBounces: 1 } }
-    },
-    {
-      id: 102,
-      name: "💡 Newsletter Vendeurs #14",
-      subject: "Découvrez le nouveau Dashboard et Intégrations API",
-      status: "sent",
-      createdAt: new Date(Date.now() - 10 * 86400000).toISOString(),
-      statistics: { globalStats: { delivered: 1205, uniqueOpens: 805, uniqueClicks: 410, unsubscribed: 0, hardBounces: 0, softBounces: 0 } }
-    },
-    {
-      id: 103,
-      name: "🛒 Relance Panier Abandonné (Auto)",
-      subject: "Votre article exclusif vous attend...",
-      status: "in_process",
-      createdAt: new Date(Date.now() - 1 * 3600000).toISOString(),
-      statistics: { globalStats: { delivered: 154, uniqueOpens: 42, uniqueClicks: 5, unsubscribed: 0, hardBounces: 0, softBounces: 0 } }
-    },
-    {
-      id: 104,
-      name: "📢 Annonce Nouvelle Grille Tarifaire",
-      subject: "Alerte Élite : 0% de commission jusqu'en Janvier !",
-      status: "scheduled",
-      createdAt: new Date().toISOString(),
-      scheduledAt: new Date(Date.now() + 2 * 86400000).toISOString(),
-    },
-    {
-      id: 105,
-      name: "📊 Sondage Satisfaction Q4",
-      subject: "Votre avis compte énormément pour nous 💛",
-      status: "draft",
-      createdAt: new Date().toISOString(),
-    }
-  ] : (fetchedCampaigns || [])
-
-  const list1 = isMock && (!fetchedList1 || fetchedList1.totalSubscribers === 0) ? { totalSubscribers: 45420, totalBlacklisted: 12 } : (fetchedList1 || { totalSubscribers: 0, totalBlacklisted: 0 })
-  const list2 = isMock && (!fetchedList2 || fetchedList2.totalSubscribers === 0) ? { totalSubscribers: 1890, totalBlacklisted: 0 } : (fetchedList2 || { totalSubscribers: 0, totalBlacklisted: 0 })
-  const list3 = isMock && (!fetchedList3 || fetchedList3.totalSubscribers === 0) ? { totalSubscribers: 125430, totalBlacklisted: 89 } : (fetchedList3 || { totalSubscribers: 0, totalBlacklisted: 0 })
+  const campaigns = fetchedCampaigns || []
+  const list1 = fetchedList1 || { totalSubscribers: 0, totalBlacklisted: 0 }
+  const list2 = fetchedList2 || { totalSubscribers: 0, totalBlacklisted: 0 }
+  const list3 = fetchedList3 || { totalSubscribers: 0, totalBlacklisted: 0 }
 
   return (
     <div className="space-y-6 w-full">

@@ -73,6 +73,7 @@ export default function OrderCard({ order }: OrderCardProps) {
           <p className="font-black text-emerald">{order.total.toLocaleString('fr-FR')} F</p>
           <div className="flex gap-1.5 text-xs font-bold">
             <a 
+              suppressHydrationWarning
               href={`https://wa.me/${order.buyer_phone.replace(/\D/g, '')}`}
               target="_blank"
               className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all"

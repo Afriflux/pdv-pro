@@ -37,27 +37,22 @@ export default async function MarketingHubPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#FAFAF7] pb-12">
-      {/* Header Premium */}
-      <header className="bg-white border-b border-gray-100 px-6 py-8 md:px-10">
-        <div className="w-full flex flex-col md:flex-row md:items-start md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0F7A60] to-teal-700 flex items-center justify-center text-white shadow-md">
-                🎯
-              </span>
-              <h1 className="text-2xl md:text-3xl font-black text-[#1A1A1A] tracking-tight">Command Center</h1>
+    <div className="w-full relative z-10 px-6 lg:px-10 pb-20">
+      <div className="w-full animate-in fade-in zoom-in-95 duration-700">
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 mb-10 border-b border-gray-200/40 relative z-10 pt-8">
+          <div className="flex items-center gap-5">
+            <div className="flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-xl rounded-[1.2rem] text-[#0F7A60] shadow-[0_8px_30px_rgb(15,122,96,0.12)] border border-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
             </div>
-            <p className="text-sm text-gray-500 mt-2 font-medium max-w-xl leading-relaxed">
-              Pilotez la croissance de votre boutique. Distribuez vos liens, configurez vos Pixels pour recibler vos visiteurs, et laissez l'IA créer vos campagnes publicitaires.
-            </p>
+            <div>
+              <h1 className="text-3xl font-black bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent tracking-tight">Command Center</h1>
+              <p className="text-gray-500 text-[15px] font-medium mt-1 max-w-2xl">Pilotez la croissance de votre boutique, configurez vos Pixels pour recibler vos visiteurs, et utilisez l'IA.</p>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Contenu principal - Tabbed Layout */}
-      <div className="w-full w-full px-4 md:px-6 py-8">
-        {store ? (
+        <div className="w-full">
+          {store ? (
           <MarketingHubClient 
             store={store}
             products={products || []}
@@ -73,7 +68,8 @@ export default async function MarketingHubPage() {
             </p>
           </div>
         )}
+        </div>
       </div>
-    </main>
+    </div>
   )
 }

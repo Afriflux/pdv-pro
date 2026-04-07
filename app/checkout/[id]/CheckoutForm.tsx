@@ -48,6 +48,8 @@ interface Product {
     vendor_type: 'digital' | 'physical' | 'hybrid' | null
     coaching_max_per_day?: number | null
     coaching_min_notice?: number | null
+    volume_discounts_active?: boolean
+    volume_discounts_config?: any
   }
 }
 
@@ -177,8 +179,30 @@ export function CheckoutForm({
   const variant = variants.find(v => v.id === selectedVariant)
   const basePrice = baseProductPrice + (variant?.price_adjust ?? 0)
 
+  // ── Volume Discounts Logic (B2B) ──────────────────────────────
+  let volumeDiscountAmount = 0
+  
+  if (product.store.volume_discounts_active && product.store.volume_discounts_config) {
+    const config = typeof product.store.volume_discounts_config === 'string' 
+      ? JSON.parse(product.store.volume_discounts_config) 
+      : product.store.volume_discounts_config
+      
+    if (config?.rules && Array.isArray(config.rules)) {
+      // Find the highest rule where quantity >= rule.quantity
+      const sortedRules = [...config.rules].sort((a, b) => b.quantity - a.quantity)
+      const validRule = sortedRules.find(r => quantity >= r.quantity)
+      if (validRule) {
+        if (validRule.discountType === 'percentage') {
+          volumeDiscountAmount = (basePrice * quantity) * (validRule.value / 100)
+        } else if (validRule.discountType === 'fixed') {
+          volumeDiscountAmount = validRule.value
+        }
+      }
+    }
+  }
+
   const bumpPrice = bumpProduct && bumpAccepted ? bumpProduct.price : 0
-  const grossSubtotal      = (basePrice * quantity) + bumpPrice
+  const grossSubtotal      = (basePrice * quantity) - volumeDiscountAmount + bumpPrice
   const promoDiscountAmount = appliedPromo?.discount ?? 0
   const subtotal           = Math.max(0, grossSubtotal - promoDiscountAmount)
 
@@ -417,7 +441,7 @@ export function CheckoutForm({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={product.store.logo_url} alt={product.store.name || "Logo boutique"} className="w-10 h-10 rounded-full object-cover" />
           ) : (
-            <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold" style={{ backgroundColor: `${accent}11`, color: accent }}>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-[color-mix(in_srgb,var(--accent)_11%,transparent)] text-[var(--accent)]">
               {product.store.name[0]}
             </div>
           )}
@@ -431,6 +455,12 @@ export function CheckoutForm({
             <span>{product.name} × {quantity}</span>
             <span>{(basePrice * quantity).toLocaleString('fr-FR')} F</span>
           </div>
+          {volumeDiscountAmount > 0 && (
+            <div className="flex justify-between text-sm font-bold pt-1 text-[var(--accent)]">
+              <span>Volume Discount (B2B)</span>
+              <span>-{Math.round(volumeDiscountAmount).toLocaleString('fr-FR')} F</span>
+            </div>
+          )}
           {bumpAccepted && bumpProduct && (
             <div className="flex justify-between text-sm text-gray-600 mt-1">
               <span>+ {bumpProduct.name}</span>
@@ -438,7 +468,7 @@ export function CheckoutForm({
             </div>
           )}
           {appliedPromo && (
-            <div className="flex justify-between text-sm font-bold pt-1" style={{ color: accent }}>
+            <div className="flex justify-between text-sm font-bold pt-1 text-[var(--accent)]">
               <span>PROMO ({appliedPromo.code})</span>
               <span>-{appliedPromo.discount.toLocaleString('fr-FR')} F</span>
             </div>
@@ -451,7 +481,7 @@ export function CheckoutForm({
           )}
           <div className="border-t border-gray-100 pt-2 mt-2 flex justify-between font-black">
             <span className="text-gray-700">Total</span>
-            <span style={{ color: accent }}>{total.toLocaleString('fr-FR')} FCFA</span>
+            <span className="text-[var(--accent)]">{total.toLocaleString('fr-FR')} FCFA</span>
           </div>
         </div>
 
@@ -496,7 +526,7 @@ export function CheckoutForm({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={product.store.logo_url} alt={product.store.name || "Logo boutique"} className="w-10 h-10 rounded-full object-cover" />
         ) : (
-          <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold" style={{ backgroundColor: `${accent}11`, color: accent }}>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-[color-mix(in_srgb,var(--accent)_11%,transparent)] text-[var(--accent)]">
             {product.store.name[0]}
           </div>
         )}
@@ -518,7 +548,7 @@ export function CheckoutForm({
 
           {computedPrice.hasDiscount && (
             <div className="flex items-center gap-2 mt-2">
-              <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: `${accent}11`, color: accent }}>
+              <span className="text-xs font-bold px-2 py-0.5 rounded bg-[color-mix(in_srgb,var(--accent)_11%,transparent)] text-[var(--accent)]">
                 Offre spéciale
               </span>
               <span className="text-sm text-gray-400 line-through">
@@ -527,7 +557,7 @@ export function CheckoutForm({
             </div>
           )}
 
-          <p className="text-2xl font-extrabold pt-1" style={{ color: accent }}>
+          <p className="text-2xl font-extrabold pt-1 text-[var(--accent)]">
             {baseProductPrice.toLocaleString('fr-FR')}{' '}
             <span className="text-base font-medium opacity-60">
               FCFA{product.payment_type === 'recurring' ? getIntervalSuffix(product.recurring_interval) : ''}
@@ -551,20 +581,7 @@ export function CheckoutForm({
                   key={v.id} type="button"
                   onClick={() => setSelectedVariant(v.id)}
                   disabled={v.stock === 0}
-                  className="px-4 py-2 rounded-xl border text-sm font-medium transition"
-                  style={selectedVariant === v.id ? {
-                    borderColor: accent,
-                    backgroundColor: `${accent}08`,
-                    color: accent
-                  } : v.stock === 0 ? {
-                    borderColor: '#f1f1f1',
-                    backgroundColor: '#fafaf7',
-                    color: '#ccc',
-                    cursor: 'not-allowed'
-                  } : {
-                    borderColor: '#eee',
-                    color: '#666'
-                  }}
+                  className={`px-4 py-2 rounded-xl border text-sm font-medium transition ${selectedVariant === v.id ? "border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_8%,transparent)] text-[var(--accent)]" : v.stock === 0 ? "border-[#f1f1f1] bg-[#fafaf7] text-[#ccc] cursor-not-allowed" : "border-[#eee] text-[#666]"}`}
                 >
                   {v.value_1}{v.value_2 ? ` / ${v.value_2}` : ''}
                   {v.price_adjust !== 0 && (
@@ -579,10 +596,18 @@ export function CheckoutForm({
           </section>
         )}
 
-        {/* Quantité */}
+        {/* Quantité & Palier B2B */}
         {product.type === 'physical' && (
           <section className="bg-white rounded-2xl shadow-sm p-4 border border-gray-100">
-            <h2 className="font-semibold text-gray-800 text-sm mb-3">Quantité</h2>
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="font-semibold text-gray-800 text-sm">Quantité</h2>
+              {volumeDiscountAmount > 0 && (
+                <span className="text-[10px] sm:text-xs font-black bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md uppercase tracking-widest animate-pulse">
+                  Palier débloqué !
+                </span>
+              )}
+            </div>
+            
             <div className="flex items-center gap-4">
               <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 className="w-10 h-10 rounded-xl border border-gray-200 text-xl font-bold text-gray-600 hover:bg-gray-50 transition">−</button>
@@ -590,6 +615,48 @@ export function CheckoutForm({
               <button type="button" onClick={() => setQuantity(quantity + 1)}
                 className="w-10 h-10 rounded-xl border border-gray-200 text-xl font-bold text-gray-600 hover:bg-gray-50 transition">+</button>
             </div>
+
+            {/* Widget Volume Discounts B2B */}
+            {product.store.volume_discounts_active && product.store.volume_discounts_config && (() => {
+              const config = typeof product.store.volume_discounts_config === 'string' 
+                ? JSON.parse(product.store.volume_discounts_config) 
+                : product.store.volume_discounts_config
+                
+              if (config?.rules && config.rules.length > 0) {
+                const sortedRules = [...config.rules].sort((a, b) => a.quantity - b.quantity)
+                
+                return (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="text-xs font-black text-gray-800 mb-3">{config.title || "Achetez plus, économisez plus !"}</p>
+                    <div className="flex flex-col gap-2">
+                      {sortedRules.map((rule: any, idx: number) => {
+                        const isUnlocked = quantity >= rule.quantity
+                        return (
+                          <div 
+                            key={idx} 
+                            onClick={() => setQuantity(rule.quantity)}
+                            className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${isUnlocked ? 'border-emerald-500 bg-emerald-50/50 scale-[1.02] shadow-sm' : 'border-gray-100 bg-gray-50 hover:border-emerald-200 hover:bg-emerald-50/30'}`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className={`w-5 h-5 rounded-full flex items-center justify-center border ${isUnlocked ? 'bg-emerald-500 border-emerald-600' : 'bg-white border-gray-300'}`}>
+                                {isUnlocked && <span className="w-2 h-2 bg-white rounded-full"></span>}
+                              </div>
+                              <span className={`text-sm font-bold ${isUnlocked ? 'text-emerald-900' : 'text-gray-600'}`}>
+                                Achetez {rule.quantity} articles
+                              </span>
+                            </div>
+                            <span className={`text-sm font-black px-2 py-1 rounded-md ${isUnlocked ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-100 text-rose-600'}`}>
+                              - {rule.discountType === 'percentage' ? `${rule.value}%` : `${rule.value.toLocaleString('fr-FR')} F`}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              }
+              return null
+            })()}
           </section>
         )}
 
@@ -607,8 +674,7 @@ export function CheckoutForm({
                       key={dur}
                       type="button"
                       onClick={() => { setSelectedDuration(dur); setSelectedSlotStr(''); }}
-                      className={`px-4 py-2 rounded-xl text-sm font-bold transition border-2 ${selectedDuration === dur ? 'text-white border-transparent' : 'text-gray-600 bg-white hover:bg-gray-50 border-gray-200'}`}
-                      style={selectedDuration === dur ? { backgroundColor: accent } : {}}
+                      className={`px-4 py-2 rounded-xl text-sm font-bold transition border-2 ${selectedDuration === dur ? "text-white border-transparent bg-[var(--accent)]" : "text-gray-600 bg-white hover:bg-gray-50 border-gray-200"}`}
                     >
                       {dur >= 60 ? `${Math.floor(dur/60)}h${dur%60 ? dur%60 : ''}` : `${dur} min`}
                     </button>
@@ -629,8 +695,7 @@ export function CheckoutForm({
                   setSelectedDate(e.target.value)
                   setSelectedSlotStr('') // reset time
                 }}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition appearance-none"
-                style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition appearance-none ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
               />
             </div>
 
@@ -776,8 +841,7 @@ export function CheckoutForm({
                 type="text" value={name} onChange={e => setName(e.target.value)}
                 onBlur={reportAbandonedCart}
                 placeholder="Votre nom"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition"
-                style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
               />
             </div>
           )}
@@ -792,8 +856,7 @@ export function CheckoutForm({
                 type="email" value={email} onChange={e => setEmail(e.target.value)} required
                 onBlur={reportAbandonedCart}
                 placeholder="votre@email.com (pour recevoir le reçu)"
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition"
-                style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
               />
             </div>
           </div>
@@ -806,8 +869,7 @@ export function CheckoutForm({
               type="tel" value={phone} onChange={e => setPhone(e.target.value)} required
               onBlur={reportAbandonedCart}
               placeholder="+221 77 ..."
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition"
-              style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
             />
           </div>
 
@@ -823,8 +885,7 @@ export function CheckoutForm({
                     title="Sélectionnez votre zone de livraison"
                     value={selectedZoneId}
                     onChange={(e) => setSelectedZoneId(e.target.value)}
-                    className="w-full border border-gray-200 bg-white rounded-xl px-4 py-3 text-gray-800 focus:ring-2 outline-none text-sm transition appearance-none"
-                    style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+                    className="w-full border border-gray-200 bg-white rounded-xl px-4 py-3 text-gray-800 focus:ring-2 outline-none text-sm transition appearance-none ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
                   >
                     <option value="" disabled>Sélectionnez votre zone</option>
                     {deliveryZones.map(z => (
@@ -846,14 +907,12 @@ export function CheckoutForm({
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Quartier, ville..."
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-28 text-gray-800 placeholder:text-gray-400 focus:ring-2 outline-none text-sm transition"
-                  style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-28 text-gray-800 placeholder:text-gray-400 focus:ring-2 outline-none text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
                 />
                 <button
                   type="button"
                   onClick={detectLocation}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 font-bold italic"
-                  style={{ backgroundColor: `${accent}11`, color: accent, border: `1px solid ${accent}22` }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 font-bold italic bg-[color-mix(in_srgb,var(--accent)_11%,transparent)] text-[var(--accent)] border border-[color-mix(in_srgb,var(--accent)_22%,transparent)]"
                 >
                   {locating ? (
                     <span className="animate-pulse">LOC...</span>
@@ -875,9 +934,9 @@ export function CheckoutForm({
             <h2 className="font-semibold text-gray-800 text-sm">Code promo ?</h2>
 
             {appliedPromo ? (
-              <div className="flex items-center justify-between p-3 rounded-xl border" style={{ backgroundColor: `${accent}05`, borderColor: `${accent}11` }}>
+              <div className="flex items-center justify-between p-3 rounded-xl border bg-[color-mix(in_srgb,var(--accent)_5%,transparent)] border-[color-mix(in_srgb,var(--accent)_11%,transparent)]">
                 <div>
-                  <p className="text-sm font-bold" style={{ color: accent }}>{appliedPromo.code}</p>
+                  <p className="text-sm font-bold text-[var(--accent)]">{appliedPromo.code}</p>
                   <p className="text-[10px] opacity-70">Réduction active : -{appliedPromo.discount.toLocaleString('fr-FR')} FCFA</p>
                 </div>
                 <button type="button" onClick={removePromo} className="opacity-40 hover:opacity-100 p-1">✕</button>
@@ -889,15 +948,13 @@ export function CheckoutForm({
                   placeholder="CODE"
                   value={promoCodeInput}
                   onChange={e => setPromoCodeInput(e.target.value)}
-                  className="flex-1 uppercase font-mono px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition"
-                  style={{ '--tw-ring-color': `${accent}33` } as React.CSSProperties}
+                  className="flex-1 uppercase font-mono px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
                 />
                 <button
                   type="button"
                   onClick={handleApplyPromo}
                   disabled={promoLoading || !promoCodeInput.trim()}
-                  className="text-white px-4 rounded-xl text-sm font-black transition disabled:opacity-30"
-                  style={{ backgroundColor: accent }}
+                  className="text-white px-4 rounded-xl text-sm font-black transition disabled:opacity-30 bg-[var(--accent)]"
                 >
                   {promoLoading ? '...' : 'OK'}
                 </button>
@@ -909,7 +966,7 @@ export function CheckoutForm({
 
         {/* COD */}
         {showCOD && (
-          <section className="rounded-2xl border p-4" style={{ backgroundColor: `${accent}05`, borderColor: `${accent}11` }}>
+          <section className="rounded-2xl border p-4 bg-[color-mix(in_srgb,var(--accent)_5%,transparent)] border-[color-mix(in_srgb,var(--accent)_11%,transparent)]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold text-gray-800">💵 Paiement à la livraison</p>
@@ -917,8 +974,7 @@ export function CheckoutForm({
               </div>
               <div
                 onClick={() => setUseCOD(v => !v)}
-                className="w-12 h-7 rounded-full transition-colors cursor-pointer relative"
-                style={{ backgroundColor: useCOD ? accent : '#eee' }}
+                className={`w-12 h-7 rounded-full transition-colors cursor-pointer relative ${useCOD ? "bg-[var(--accent)]" : "bg-[#eee]"}`}
               >
                 <div className={`absolute top-1.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${useCOD ? 'left-7' : 'left-1.5'}`} />
               </div>
@@ -937,7 +993,7 @@ export function CheckoutForm({
             }}
           >
             {/* Liseré indicateur (optionnel, pour faire premium) */}
-            <div className="absolute top-0 left-0 bottom-0 w-1.5" style={{ backgroundColor: accent }} />
+            <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[var(--accent)]" />
 
             <div className="flex items-start gap-4">
               {/* Image du produit bump */}
@@ -986,7 +1042,7 @@ export function CheckoutForm({
                 <p className="text-xs text-gray-500 mt-2 line-clamp-2">
                   <span className="font-bold text-gray-700">{bumpProduct.name}</span>
                 </p>
-                <p className="text-sm font-black mt-2 inline-flex items-center px-2.5 py-1 rounded-lg" style={{ backgroundColor: `${accent}15`, color: accent }}>
+                <p className="text-sm font-black mt-2 inline-flex items-center px-2.5 py-1 rounded-lg bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] text-[var(--accent)]">
                   + {bumpProduct.price.toLocaleString('fr-FR')} FCFA
                 </p>
               </div>
@@ -1031,7 +1087,7 @@ export function CheckoutForm({
             </div>
           )}
           {appliedPromo && (
-            <div className="flex justify-between text-sm font-bold pt-1" style={{ color: accent }}>
+            <div className="flex justify-between text-sm font-bold pt-1 text-[var(--accent)]">
               <span>PROMO ({appliedPromo.code})</span>
               <span>-{appliedPromo.discount.toLocaleString('fr-FR')} F</span>
             </div>
@@ -1044,15 +1100,14 @@ export function CheckoutForm({
           )}
           <div className="border-t border-gray-100 pt-3 flex justify-between items-end font-black">
             <span className="text-gray-900">Total à payer</span>
-            <span className="text-xl" style={{ color: accent }}>{total.toLocaleString('fr-FR')} <span className="text-xs opacity-50">FCFA</span></span>
+            <span className="text-xl text-[var(--accent)]">{total.toLocaleString('fr-FR')} <span className="text-xs opacity-50">FCFA</span></span>
           </div>
         </section>
 
         {/* Boutons */}
         <button
           type="submit" disabled={loading}
-          className="w-full text-white font-black py-4 rounded-2xl transition text-base shadow-xl uppercase"
-          style={{ backgroundColor: accent, opacity: loading ? 0.5 : 1 }}
+          className="w-full text-white font-black py-4 rounded-2xl transition text-base shadow-xl uppercase bg-[var(--accent)] disabled:opacity-50"
         >
           {loading
             ? 'CHARGEMENT...'

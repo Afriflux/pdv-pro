@@ -169,10 +169,10 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
                   <p className="font-bold text-ink text-sm">{order.buyer_phone}</p>
                 </div>
                 <div className="flex gap-2">
-                  <a href={`tel:${order.buyer_phone}`} aria-label="Appeler le client" title="Appeler le client" className="p-2 bg-cream rounded-lg text-ink hover:text-emerald transition-colors">
+                  <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} aria-label="Appeler le client" title="Appeler le client" className="p-2 bg-cream rounded-lg text-ink hover:text-emerald transition-colors">
                     <Phone size={14} />
                   </a>
-                  <a href={waLink} aria-label="Contacter sur WhatsApp" title="Contacter sur WhatsApp" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#25D366]/10 rounded-lg text-[#25D366] hover:bg-[#25D366]/20 transition-colors">
+                  <a suppressHydrationWarning href={waLink} aria-label="Contacter sur WhatsApp" title="Contacter sur WhatsApp" target="_blank" rel="noopener noreferrer" className="p-2 bg-[#25D366]/10 rounded-lg text-[#25D366] hover:bg-[#25D366]/20 transition-colors">
                     <MessageCircle size={14} />
                   </a>
                 </div>

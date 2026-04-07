@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Timer, ArrowRight } from 'lucide-react'
+import { Timer } from 'lucide-react'
 
 interface BannerProps {
   active: boolean;
@@ -92,10 +92,11 @@ export function CountdownBanner({ config }: { config?: BannerProps }) {
           </div>
           
           <Link 
+            suppressHydrationWarning
             href="/register" 
             className="hidden sm:flex items-center gap-1.5 bg-white text-red-600 font-bold px-4 py-2 rounded-lg text-xs hover:bg-red-50 hover:scale-105 transition-all shadow-lg"
           >
-            S'inscrire gratuitement <ArrowRight size={14} />
+            <span suppressHydrationWarning>S'inscrire gratuitement</span> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </Link>
         </div>
 

@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     // Ce Cron tourne toutes les heures pour vérifier l'ancienneté.
 
     // On considère qu'une commande est éligible au décaissement 48h après sa livraison.
-    const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000)
+    
 
     // Récupère les commandes 'delivered' datant de +48h mais pas encore libérées
     // Logique simplifiée ici : si on stockait 'funds_cleared' sur la commande...

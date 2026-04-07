@@ -28,5 +28,10 @@ export default async function AppStorePage() {
     }
   }
 
-  return <AppStoreClient initialInstalled={installedApps} />
+  const dbApps = await prisma.marketplaceApp.findMany({
+    where: { active: true },
+    orderBy: { created_at: 'asc' }
+  })
+
+  return <AppStoreClient initialInstalled={installedApps} dbApps={dbApps as any} />
 }

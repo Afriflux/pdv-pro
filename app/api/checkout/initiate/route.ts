@@ -11,6 +11,7 @@ import { orderConfirmationEmail } from '@/lib/brevo/email-templates'
 import { sendWhatsApp, msgVendorNewOrder, msgOrderConfirmed } from '@/lib/whatsapp/sendWhatsApp'
 import { sendSaleNotification } from '@/lib/telegram/community-service'
 import { executeWorkflows } from '@/lib/workflows/execution'
+import { sendMetaCAPIPurchaseEvent } from '@/lib/tracking/capi'
 
 function roundTo5(amount: number): number {
   return Math.ceil(amount / 5) * 5
@@ -86,7 +87,10 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 1. VALIDATION SERVEUR DU PRODUIT & STOCK ──────────────────
-    const product = await prisma.product.findUnique({ where: { id: product_id } })
+    const product = await prisma.product.findUnique({ 
+      where: { id: product_id },
+      include: { store: { select: { volume_discounts_active: true, volume_discounts_config: true, meta_pixel_id: true, meta_capi_token: true } } }
+    })
     if (!product || !product.active || product.store_id !== store_id) {
       return NextResponse.json({ error: 'Produit introuvable ou inactif.' }, { status: 404 })
     }
@@ -111,7 +115,26 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const grossSubtotal = (basePrice * quantity) + (bumpProduct ? bumpProduct.price : 0)
+    let volumeDiscountAmount = 0
+    if (product.store?.volume_discounts_active && product.store?.volume_discounts_config) {
+      const config = typeof product.store.volume_discounts_config === 'string' 
+        ? JSON.parse(product.store.volume_discounts_config) 
+        : product.store.volume_discounts_config
+        
+      if (config?.rules && Array.isArray(config.rules)) {
+        const sortedRules = [...config.rules].sort((a, b) => b.quantity - a.quantity)
+        const validRule = sortedRules.find(r => quantity >= r.quantity)
+        if (validRule) {
+          if (validRule.discountType === 'percentage') {
+            volumeDiscountAmount = (basePrice * quantity) * (validRule.value / 100)
+          } else if (validRule.discountType === 'fixed') {
+            volumeDiscountAmount = validRule.value
+          }
+        }
+      }
+    }
+
+    const grossSubtotal = (basePrice * quantity) - volumeDiscountAmount + (bumpProduct ? bumpProduct.price : 0)
     let promoDiscountAmount = 0
     let promoAffiliateId: string | null = null
 
@@ -456,6 +479,24 @@ export async function POST(req: NextRequest) {
         customer_city: city || 'Inconnue',
         store_name: storeRecordData?.name || 'Yayyam',
       }).catch(e => console.error('[Workflow Engine Error]', e));
+
+      // Trigger Meta CAPI si activé
+      if (product.store?.meta_pixel_id && product.store?.meta_capi_token) {
+        sendMetaCAPIPurchaseEvent({
+          pixelId: product.store.meta_pixel_id,
+          capiToken: product.store.meta_capi_token,
+          eventId: orderRecord.id,
+          orderId: orderRecord.id,
+          value: total,
+          currency: 'XOF',
+          contentName: product.name,
+          customerEmail: buyer_email || undefined,
+          customerPhone: buyer_phone,
+          customerName: buyer_name,
+          clientIp: req.headers.get('x-forwarded-for') || undefined,
+          clientUserAgent: req.headers.get('user-agent') || undefined
+        }).catch(e => console.error('[CAPI COD Error]', e));
+      }
 
       if (product.oto_active && product.oto_product_id) {
          return NextResponse.json({ 

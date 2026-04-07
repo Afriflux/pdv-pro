@@ -6,7 +6,7 @@ import { toast } from '@/lib/toast'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type PaymentMethod = 'wave' | 'orange_money' | 'card_cinetpay' | 'card_paytech'
+type PaymentMethod = 'wave' | 'orange_money' | 'card_cinetpay' | 'card_paytech' | 'bictorys' | 'kkiapay'
 
 interface PaymentMethodSelectorProps {
   amount: number
@@ -33,7 +33,7 @@ export default function PaymentMethodSelector({
 }: PaymentMethodSelectorProps) {
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(() => {
     if (clientProfile?.client_payment_method) {
-      if (['wave', 'orange_money', 'card_cinetpay', 'card_paytech'].includes(clientProfile.client_payment_method)) {
+      if (['wave', 'orange_money', 'card_cinetpay', 'card_paytech', 'bictorys', 'kkiapay'].includes(clientProfile.client_payment_method)) {
         return clientProfile.client_payment_method as PaymentMethod
       }
     }
@@ -190,13 +190,13 @@ export default function PaymentMethodSelector({
         <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
           <div className="flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-gray-500" />
-            <span className="text-sm font-black text-gray-800">Carte Bancaire</span>
+            <span className="text-sm font-black text-gray-800">Cartes & Panafricains</span>
           </div>
           <span className="text-[10px] font-bold text-gray-400">Frais : 3%</span>
         </div>
 
-        {/* Boutons CinetPay + PayTech */}
-        <div className="flex gap-3 p-3">
+        {/* Boutons Agrégateurs */}
+        <div className="grid grid-cols-2 gap-3 p-3">
           <MethodButton
             id="card_cinetpay"
             label="CinetPay"
@@ -208,6 +208,18 @@ export default function PaymentMethodSelector({
             label="PayTech"
             emoji="🏦"
             subtitle="Mobile + Carte"
+          />
+          <MethodButton
+            id="bictorys"
+            label="Bictorys"
+            emoji="🌍"
+            subtitle="Afrique & Cartes"
+          />
+          <MethodButton
+            id="kkiapay"
+            label="KKiaPay"
+            emoji="🚀"
+            subtitle="Cartes & Mobile"
           />
         </div>
       </div>

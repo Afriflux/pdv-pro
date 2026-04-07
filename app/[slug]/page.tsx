@@ -23,7 +23,10 @@ const getStoreBySlug = cache(async (slug: string) => {
       id, name, slug, description, logo_url, banner_url, created_at,
       primary_color, category, whatsapp, social_links,
       meta_pixel_id, tiktok_pixel_id, google_tag_id,
-      is_active, kyc_status, user:User(phone)
+      seo_title, seo_description,
+      is_active, kyc_status, user:User(phone),
+      volume_discounts_active, volume_discounts_config,
+      smart_reviews_active
     `)
     .eq('slug', slug)
     .single()
@@ -37,11 +40,11 @@ export async function generateMetadata({ params }: StorePageProps): Promise<Meta
   if (!store) return { title: 'Espace introuvable' }
 
   return {
-    title: store.name + ' — Yayyam',
-    description: store.description ?? `Découvrez l'espace de vente de ${store.name}`,
+    title: store.seo_title || `${store.name} — Yayyam`,
+    description: store.seo_description || store.description || `Découvrez l'espace de vente de ${store.name}`,
     openGraph: {
-      title: store.name,
-      description: store.description ?? '',
+      title: store.seo_title || store.name,
+      description: store.seo_description || store.description || '',
       images: store.logo_url ? [store.logo_url] : [],
     },
   }
@@ -100,7 +103,7 @@ export default async function StorePage({ params }: StorePageProps) {
       .eq('status', 'delivered'),
     supabase
       .from('Review')
-      .select('rating')
+      .select('*')
       .eq('store_id', store.id)
   ])
 
@@ -125,6 +128,7 @@ export default async function StorePage({ params }: StorePageProps) {
       salesCount={salesCount ?? 0}
       avgRating={avgRating}
       reviewCount={reviewCount}
+      recentReviews={store.smart_reviews_active ? reviews || [] : []}
       waPhone={waPhone}
       socialLinks={socialLinks}
       accent={accent}

@@ -89,6 +89,8 @@ function buildTopProductsCsv(products: { name: string; sales: number; revenue: n
 
 // ─── Route GET ────────────────────────────────────────────────────────────────
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     // ── Auth vendeur ──────────────────────────────────────────────────────────

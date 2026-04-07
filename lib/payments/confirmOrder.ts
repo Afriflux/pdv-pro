@@ -9,6 +9,7 @@ import {
 import { notifyNewOrder, createNotification } from '@/lib/notifications/createNotification'
 import { createDigitalAccess }   from '@/lib/digital/token'
 import { createAndStoreInvoice } from '@/lib/invoice/createInvoice'
+import { sendMetaCAPIPurchaseEvent } from '@/lib/tracking/capi'
 import { 
   triggerNewOrderTelegram, 
   triggerPaymentTelegram 
@@ -100,7 +101,7 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
   // ── 3. Charger la boutique ─────────────────────────────────────────────────
   const { data: storeRaw } = await supabase
     .from('Store')
-    .select('user_id, name')
+    .select('user_id, name, meta_pixel_id, meta_capi_token')
     .eq('id', order.store_id)
     .single()
 
@@ -296,6 +297,21 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
         }),
       }).catch(e => console.error('[WhatsApp vendeur]', e))
     }
+  }
+
+  // ── 10. Meta CAPI Server-Side Tracking ────────────────────────────────────
+  if (storeRaw && storeRaw.meta_pixel_id && storeRaw.meta_capi_token) {
+    sendMetaCAPIPurchaseEvent({
+      pixelId: storeRaw.meta_pixel_id as string,
+      capiToken: storeRaw.meta_capi_token as string,
+      eventId: orderId,
+      orderId: orderId,
+      value: order.total,
+      currency: 'XOF',
+      contentName: product.name,
+      customerPhone: order.buyer_phone,
+      customerName: order.buyer_name
+    }).catch(e => console.error('[CAPI IPN Error]', e))
   }
 
   return { confirmed: true, status: newStatus }

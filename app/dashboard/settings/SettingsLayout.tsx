@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   User, Globe, Palette, Store as StoreIcon, Share2, 
   ShieldCheck, Bell, Wallet, CheckCircle2, 
-  FileText, AlertTriangle
+  FileText, AlertTriangle, Search
 } from 'lucide-react'
 
 // Imports des Tabs
@@ -20,6 +20,7 @@ import { FinanceTab } from './tabs/FinanceTab'
 import { KycTab } from './tabs/KycTab'
 import { ContractTab } from './tabs/ContractTab'
 import { DangerZoneTab } from './tabs/DangerZoneTab'
+import { SeoTab } from './tabs/SeoTab'
 
 export function SettingsLayout({ store, profile, userId }: any) {
   const [activeSection, setActiveSection] = useState('profil')
@@ -47,6 +48,7 @@ export function SettingsLayout({ store, profile, userId }: any) {
       case 'notifications': return <NotificationsTab store={store} />
       case 'retrait': return <FinanceTab store={store} />
       case 'kyc': return <KycTab store={store} />
+      case 'seo': return <SeoTab store={store} />
       case 'contrat': return <ContractTab store={store} />
       case 'danger': return <DangerZoneTab />
       default: return <ProfileTab profile={profile} userId={userId} />
@@ -65,6 +67,7 @@ export function SettingsLayout({ store, profile, userId }: any) {
           <MenuBtn active={activeSection === 'vendor'} icon={<StoreIcon className="w-5 h-5" />} label="Type de Vendeur" onClick={() => setActiveSection('vendor')} />
           <div className="hidden lg:block h-6" />
           <MenuBtn active={activeSection === 'reseaux'} icon={<Share2 className="w-5 h-5" />} label="Réseaux Sociaux" onClick={() => setActiveSection('reseaux')} />
+          <MenuBtn active={activeSection === 'seo'} icon={<Search className="w-5 h-5" />} label="Référencement & SEO" onClick={() => setActiveSection('seo')} />
           <MenuBtn active={activeSection === 'securite'} icon={<ShieldCheck className="w-5 h-5" />} label="Sécurité" onClick={() => setActiveSection('securite')} />
           <MenuBtn active={activeSection === 'notifications'} icon={<Bell className="w-5 h-5" />} label="Notifications" onClick={() => setActiveSection('notifications')} />
           <div className="hidden lg:block h-6" />

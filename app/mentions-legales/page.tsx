@@ -61,6 +61,8 @@ export default function LegalNoticesPage() {
               <li>Wave Mobile Money</li>
               <li>CinetPay</li>
               <li>PayTech</li>
+              <li>Bictorys</li>
+              <li>KKiaPay</li>
             </ul>
           </section>
 

@@ -201,6 +201,7 @@ export default function TipsClient({ userId, isPro }: TipsClientProps) {
 
               {selectedTip.cta_url && selectedTip.cta_label && (
                 <a 
+                  suppressHydrationWarning
                   href={selectedTip.cta_url}
                   className="bg-emerald-deep hover:bg-gray-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2"
                 >

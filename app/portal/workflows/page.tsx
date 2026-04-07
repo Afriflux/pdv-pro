@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { UniversalWorkflowBuilder } from '@/components/shared/workflows/UniversalWorkflowBuilder'
-import { saveAffiliateWorkflow, deleteWorkflow, toggleWorkflowStatus } from '@/app/dashboard/workflows/actions'
+import { saveAffiliateWorkflow, deleteWorkflow, toggleWorkflowStatus, cloneWorkflowTemplate } from '@/app/dashboard/workflows/actions'
 
 export default async function PortalWorkflowsPage() {
   const supabase = await createClient()
@@ -27,8 +27,29 @@ export default async function PortalWorkflowsPage() {
     updated_at: w.updated_at.toISOString(),
   }))
 
+  const globalWorkflowsRaw = await prisma.workflow.findMany({
+    where: { store_id: null, user_id: null },
+    orderBy: { created_at: 'desc' }
+  }).catch(() => [])
+
+  const globalWorkflows = globalWorkflowsRaw.map((w: any) => ({
+    id: w.id,
+    title: w.title,
+    description: w.description || '',
+    status: 'inactive',
+    triggerType: w.triggerType,
+    config: w.config || {},
+    actionCount: w.config?.actions?.length || 0,
+    is_premium: w.is_premium,
+    price: w.price
+  }))
+
+  // Les affiliés n'ont pas de store_id dans AssetPurchase pour le moment
+  const assetPurchases: {asset_id: string}[] = []
+  const purchasedAssetIds = assetPurchases.map(a => a.asset_id)
+
   return (
-    <div className="flex flex-col min-h-screen bg-transparent p-6 md:p-10 max-w-[1400px] mx-auto z-10 relative">
+    <div className="flex flex-col min-h-screen bg-transparent p-6 md:p-10 w-full relative z-10">
       <header className="mb-10 w-full relative z-10 flex flex-col justify-between gap-6">
         <div>
            <div className="inline-flex items-center gap-2 bg-[#0F7A60]/10 border border-[#0F7A60]/20 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest text-[#0F7A60] mb-4">
@@ -42,12 +63,15 @@ export default async function PortalWorkflowsPage() {
       <main className="w-full">
         <UniversalWorkflowBuilder 
           initialWorkflows={plainWorkflows} 
+          globalWorkflows={globalWorkflows as any}
+          purchasedAssetIds={purchasedAssetIds}
           ownerId={user.id} 
           ownerType="affiliate"
           actions={{
             saveWorkflow: saveAffiliateWorkflow,
             deleteWorkflow,
-            toggleStatus: toggleWorkflowStatus
+            toggleStatus: toggleWorkflowStatus,
+            cloneWorkflow: cloneWorkflowTemplate
           }}
         />
       </main>

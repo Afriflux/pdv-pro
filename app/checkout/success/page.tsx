@@ -193,7 +193,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             
             {(store as any)?.whatsapp && (
               <div className="mt-2">
-                <a href={`https://wa.me/${(store as any).whatsapp}?text=${encodeURIComponent(`Bonjour, j'ai réservé une session de "${product?.name}" le ${new Date(booking.date).toLocaleDateString('fr-FR')} à ${booking.start_time} (Commande #${formattedOrderId}). J'ai un imprévu, est-il possible de reprogrammer ce rendez-vous s'il vous plaît ?`)}`} target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 bg-white border border-line hover:bg-cream text-dust text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
+                <a suppressHydrationWarning href={`https://wa.me/${(store as any).whatsapp}?text=${encodeURIComponent(`Bonjour, j'ai réservé une session de "${product?.name}" le ${new Date(booking.date).toLocaleDateString('fr-FR')} à ${booking.start_time} (Commande #${formattedOrderId}). J'ai un imprévu, est-il possible de reprogrammer ce rendez-vous s'il vous plaît ?`)}`} target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 bg-white border border-line hover:bg-cream text-dust text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
                   Demander une reprogrammation
                 </a>
               </div>
@@ -251,14 +251,14 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             <p className="text-slate mb-4 leading-snug">Partagez ce lien avec vos amis. Pour chaque achat via votre lien, vous gagnez une commission.</p>
             <div className="flex gap-2">
               <input type="text" readOnly value={`https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} className="flex-1 text-xs px-3 py-2 bg-white border border-line rounded-lg text-dust outline-none truncate" />
-              <a href={`https://wa.me/?text=Découvre %20${encodeURIComponent(product?.name || '')}%20sur%20Yayyam%20Pro:%20https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-[#25D366] text-white rounded-lg flex items-center justify-center hover:bg-[#20b858] transition">
+              <a suppressHydrationWarning href={`https://wa.me/?text=Découvre %20${encodeURIComponent(product?.name || '')}%20sur%20Yayyam%20Pro:%20https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-[#25D366] text-white rounded-lg flex items-center justify-center hover:bg-[#20b858] transition">
                 <Share2 size={16} />
               </a>
             </div>
           </div>
           
           {(store as any)?.whatsapp && (
-             <a href={`https://wa.me/${(store as any).whatsapp}?text=Bonjour, concernant ma commande ${formattedOrderId}...`} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#25D366] text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-[#20b858] transition shadow-lg mb-8">
+             <a suppressHydrationWarning href={`https://wa.me/${(store as any).whatsapp}?text=Bonjour, concernant ma commande ${formattedOrderId}...`} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#25D366] text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-[#20b858] transition shadow-lg mb-8">
                <MessageCircle size={18} />
                Contacter sur WhatsApp
              </a>

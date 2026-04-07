@@ -48,7 +48,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">3. Paiements et Retraits</h2>
             <p>
-              Les paiements sont effectués via Wave, CinetPay ou PayTech. 
+              Les paiements sont effectués via Wave, CinetPay, PayTech, Bictorys ou KKiaPay. 
               Le vendeur reçoit le montant net (H.T. commission) sur son solde Yayyam. 
               Les retraits vers un compte Wave Mobile Money sont gratuits dans le plan gratuit.
             </p>

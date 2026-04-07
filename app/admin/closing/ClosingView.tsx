@@ -324,7 +324,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
               className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#0F7A60] focus:border-[#0F7A60] outline-none transition-all"
             />
          </div>
-         <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0" style={{ scrollbarWidth: 'none' }}>
+         <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
             <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-xl border border-gray-200 shrink-0">
                <CalendarIcon className="w-4 h-4 text-gray-400 ml-2" />
                <select 
@@ -406,8 +406,8 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
                              <div className="flex flex-col gap-1.5">
                                 <span className="font-black text-gray-900 text-[15px]">{lockBadge}{req.buyerName}</span>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                   <a href={`tel:${req.buyerPhone}`} onClick={() => startCall(req.id)} className="font-mono text-[11px] text-gray-500 hover:text-[#0F7A60] font-bold flex items-center gap-1.5 bg-gray-100 hover:bg-emerald-50 px-2 py-1 rounded-md transition-colors"><PhoneIcon size={12}/>{req.buyerPhone}</a>
-                                   <a href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-white bg-gradient-to-r from-[#25D366] to-[#1EBE5C] hover:shadow-md px-2.5 py-1 font-bold text-[10px] sm:text-xs rounded-md shadow-sm shadow-[#25D366]/20 transition-transform active:scale-95" title="WhatsApp">
+                                   <a suppressHydrationWarning href={`tel:${req.buyerPhone}`} onClick={() => startCall(req.id)} className="font-mono text-[11px] text-gray-500 hover:text-[#0F7A60] font-bold flex items-center gap-1.5 bg-gray-100 hover:bg-emerald-50 px-2 py-1 rounded-md transition-colors"><PhoneIcon size={12}/>{req.buyerPhone}</a>
+                                   <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-white bg-gradient-to-r from-[#25D366] to-[#1EBE5C] hover:shadow-md px-2.5 py-1 font-bold text-[10px] sm:text-xs rounded-md shadow-sm shadow-[#25D366]/20 transition-transform active:scale-95" title="WhatsApp">
                                       <WhatsAppIcon className="w-3.5 h-3.5" /> WhatsApp
                                    </a>
                                 </div>
@@ -481,11 +481,11 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
                              </span>
                            </div>
                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mt-3">
-                             <a href={`tel:${req.buyerPhone}`} onClick={() => startCall(req.id)} className="flex-1 inline-flex items-center justify-center gap-2 text-gray-500 hover:text-[#0F7A60] font-black px-4 py-2.5 bg-gray-100 hover:bg-[#0F7A60]/10 rounded-xl transition-all border border-transparent hover:border-[#0F7A60]/20 text-sm">
+                             <a suppressHydrationWarning href={`tel:${req.buyerPhone}`} onClick={() => startCall(req.id)} className="flex-1 inline-flex items-center justify-center gap-2 text-gray-500 hover:text-[#0F7A60] font-black px-4 py-2.5 bg-gray-100 hover:bg-[#0F7A60]/10 rounded-xl transition-all border border-transparent hover:border-[#0F7A60]/20 text-sm">
                                 <PhoneIcon size={16} />
                                 {req.buyerPhone}
                              </a>
-                             <a href={waLink} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white hover:bg-[#1EBE5C] font-black px-4 py-2.5 rounded-xl transition-all shadow-md shadow-[#25D366]/20 text-sm hover:-translate-y-0.5" title="Lancer une discussion WhatsApp">
+                             <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-2 bg-[#25D366] text-white hover:bg-[#1EBE5C] font-black px-4 py-2.5 rounded-xl transition-all shadow-md shadow-[#25D366]/20 text-sm hover:-translate-y-0.5" title="Lancer une discussion WhatsApp">
                                 <WhatsAppIcon className="w-4 h-4" /> Message Direct
                              </a>
                            </div>

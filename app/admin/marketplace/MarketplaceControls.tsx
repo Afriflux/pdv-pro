@@ -1,7 +1,8 @@
 'use client'
 
 
-import { Activity, LayoutTemplate, Zap, BookOpen, Lock, Unlock, Save } from 'lucide-react'
+import { useState } from 'react'
+import { Activity, LayoutTemplate, Zap, BookOpen, Save, Lock } from 'lucide-react'
 import { updateResourceMonetizationAction } from './actions'
 
 type ResourceType = 'template' | 'workflow' | 'masterclass'
@@ -64,6 +65,9 @@ export default function MarketplaceControls({
                     <span className={!item.is_premium ? "text-emerald-500 font-bold text-xs" : "text-gray-400 text-xs font-medium"}>Gratuit</span>
                     <button 
                       onClick={() => handleUpdate(type, item.id, !item.is_premium, item.price || 0)}
+                      aria-label="Basculer Modèle Freemium"
+                      role="switch"
+                      aria-checked={item.is_premium ? 'true' : 'false'}
                       className={`relative w-12 h-6 rounded-full transition-colors ${item.is_premium ? 'bg-amber-500' : 'bg-line'}`}
                     >
                       <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all shadow-sm ${item.is_premium ? 'left-7' : 'left-1'}`} />
@@ -77,6 +81,8 @@ export default function MarketplaceControls({
                   <input 
                     type="number"
                     min="0"
+                    aria-label="Prix en FCFA"
+                    title="Prix en FCFA"
                     disabled={!item.is_premium}
                     value={item.price || 0}
                     onChange={(e) => {

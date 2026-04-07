@@ -182,7 +182,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                   <div>
                     <p className="text-[10px] font-black text-slate uppercase tracking-wider mb-1">Téléphone</p>
                     <div className="flex items-center gap-2">
-                      <a href={`tel:${order.buyer_phone}`} aria-label="Appeler le client" title="Appeler le client" className="p-2 bg-cream rounded-lg text-ink hover:text-emerald transition-colors">
+                      <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} aria-label="Appeler le client" title="Appeler le client" className="p-2 bg-cream rounded-lg text-ink hover:text-emerald transition-colors">
                         <Phone size={14} />
                       </a>
                       <p className="font-bold text-ink">{order.buyer_phone}</p>
@@ -217,6 +217,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               </div>
 
               <a
+                suppressHydrationWarning
                 href={`https://wa.me/${order.buyer_phone.replace(/\D/g, '')}?text=Bonjour ${order.buyer_name.split(' ')[0]}, je vous contacte au sujet de votre commande sur Yayyam.`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex items-center justify-center gap-3 w-full bg-[#25D366] hover:bg-[#1EBE59] text-white font-black py-4 rounded-2xl transition shadow-lg shadow-green-200"

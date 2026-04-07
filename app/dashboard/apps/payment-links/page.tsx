@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Link as LinkIcon, Trash2, Copy, CheckCircle2, ChevronLeft, CreditCard, Activity, Coins } from 'lucide-react'
+import { Plus, Link as LinkIcon, Trash2, Copy, CheckCircle2, ChevronLeft, CreditCard, Activity } from 'lucide-react'
 import Link from 'next/link'
 import { getPaymentLinksAction, createPaymentLinkAction, togglePaymentLinkAction, deletePaymentLinkAction } from './actions'
 

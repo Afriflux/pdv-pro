@@ -14,7 +14,7 @@ interface LiveCheckoutDrawerProps {
   storeName?: string
 }
 
-export function LiveCheckoutDrawer({ pageId, products, theme, storeName }: LiveCheckoutDrawerProps) {
+export function LiveCheckoutDrawer({ pageId, products, theme }: LiveCheckoutDrawerProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const checkoutProductId = searchParams.get('checkout')

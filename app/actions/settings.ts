@@ -281,3 +281,37 @@ export async function updatePixels(data: {
   revalidatePath('/dashboard/settings')
   return { success: true }
 }
+
+/**
+ * Met à jour le paramétrage SEO et les Pixels de Tracking
+ */
+export async function updateSEO(data: {
+  seo_title?: string
+  seo_description?: string
+  meta_pixel_id?: string
+  meta_capi_token?: string
+  tiktok_pixel_id?: string
+  google_tag_id?: string
+}) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Non autorisé')
+
+  const { error } = await supabase
+    .from('Store')
+    .update({
+      seo_title: data.seo_title || null,
+      seo_description: data.seo_description || null,
+      meta_pixel_id: data.meta_pixel_id || null,
+      meta_capi_token: data.meta_capi_token || null,
+      tiktok_pixel_id: data.tiktok_pixel_id || null,
+      google_tag_id: data.google_tag_id || null,
+      updated_at: new Date().toISOString()
+    })
+    .eq('user_id', user.id)
+
+  if (error) throw new Error(error.message)
+
+  revalidatePath('/dashboard/settings')
+  return { success: true }
+}

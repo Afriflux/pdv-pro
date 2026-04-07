@@ -36,12 +36,11 @@ export async function getMarketplaceResourcesAction() {
 export async function getGlobalWorkflowsAction() {
    const isSuper = await checkIsSuperAdmin()
    if (!isSuper) return { success: false, error: 'Non autorisé' }
-   // Assuming global workflows represent templates that people can use
-   // Let's find workflows with is_template = true, if that exists, or just we will add workflows manually if needed.
+   
    const workflows = await prisma.workflow.findMany({ 
-      where: { name: { not: '' } }, // Fetch any we can mock as global? Hmm, let's fetch those that have is_premium flag set possibly.
+      where: { store_id: null, user_id: null },
       orderBy: { created_at: 'desc' },
-      take: 20
+      take: 50
    })
    return { success: true, workflows }
 }

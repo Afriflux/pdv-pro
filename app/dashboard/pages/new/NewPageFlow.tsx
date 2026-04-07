@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Sparkles, Globe, LayoutTemplate, ArrowRight, Wand2, Lock, Unlock, CreditCard } from 'lucide-react'
+import { Sparkles, Globe, LayoutTemplate, ArrowRight, Wand2, Lock, CreditCard } from 'lucide-react'
 import { purchaseAssetAction } from '@/app/dashboard/marketplace/actions'
 
 // ----------------------------------------------------------------
@@ -44,7 +44,7 @@ const SUGGESTIONS = [
 // ----------------------------------------------------------------
 // Composant
 // ----------------------------------------------------------------
-export function NewPageFlow({ storeId, products, initialTemplateData, globalTemplates = [] }: NewPageFlowProps) {
+export function NewPageFlow({ storeId, products, initialTemplateData, globalTemplates = [], purchasedAssetIds = [] }: NewPageFlowProps) {
   const router = useRouter()
 
   // Étape 1 : choisir le template
@@ -538,6 +538,7 @@ export function NewPageFlow({ storeId, products, initialTemplateData, globalTemp
               <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
                 <button 
                   onClick={() => setPurchaseModalId(null)} 
+                  aria-label="Fermer la fenêtre" title="Fermer"
                   className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
                 >
                   <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -991,7 +992,8 @@ export function NewPageFlow({ storeId, products, initialTemplateData, globalTemp
                      comparison: '⚖️ Comparaison',
                      video: '▶️ Vidéos'
                    }
-                   const label = labels[s.type] || s.type
+                   const typeKey = typeof s === 'string' ? s : (s as any).type || 'unknown'
+                   const label = labels[typeKey] || typeKey
                    return (
                      <div key={i} className={`text-xs font-semibold px-3 py-1.5 rounded-full border border-gray-100 bg-gray-50 text-gray-600 flex items-center gap-1.5`}>
                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>

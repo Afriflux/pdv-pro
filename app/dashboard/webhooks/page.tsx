@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Webhook, Plus, Trash2, Link as LinkIcon, Loader2, Code2, AlertTriangle, Blocks, CheckCircle2, Copy, Send, Settings2, Activity, Check } from 'lucide-react'
+import { Webhook, Trash2, Link as LinkIcon, Loader2, Code2, AlertTriangle, Blocks, CheckCircle2, Copy, Send, Settings2, Activity, Check } from 'lucide-react'
 import { getWebhooksAction, createWebhookAction, deleteWebhookAction, testWebhookAction } from './actions'
 
 // Helper to determine platform based on URL

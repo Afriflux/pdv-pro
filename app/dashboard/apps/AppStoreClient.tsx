@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition } from 'react'
+import React, { useState } from 'react'
 import { 
   Link as LinkIcon, Zap, BookOpen, Trophy, 
   CheckCircle2, Download, Blocks, Star, Users, Briefcase, Gem,
@@ -20,41 +20,56 @@ interface AppItem {
   features: string[]
 }
 
-const STORE_APPS: AppItem[] = [
-  // Croissance & Marketing 
-  { id: 'marketing', category: 'Marketing', name: 'Campagnes E-mail & SMS', description: 'Créez des newsletters et des séquences marketing puissantes.', icon: <Zap className="w-8 h-8 text-blue-500" />, features: ['Funnels E-mail', 'SMS Marketing', 'Audiences ciblées'] },
-  { id: 'workflows', category: 'Marketing', name: 'Automatisations & Relances', description: 'Relance des paniers abandonnés sur WhatsApp et séquences automatisées.', icon: <Zap className="w-8 h-8 text-rose-500" />, features: ['WhatsApp', 'Triggers d\'achat', 'Gain de temps'] },
-  { id: 'affilies', category: 'Marketing', name: 'Réseau d\'Affiliation', description: 'Laissez d\'autres personnes vendre vos produits pour vous.', icon: <Trophy className="w-8 h-8 text-orange-500" />, features: ['Tracking automatique', 'Commissions', 'Liens uniques'] },
-  { id: 'promotions', category: 'Marketing', name: 'Coupons & Upsells', description: 'Faites des offres spéciales, Bumps et One-Time-Offers pour booster le panier moyen.', icon: <ShoppingBag className="w-8 h-8 text-pink-500" />, isPro: true, features: ['Order Bumps', 'Flash Sales', 'Coupons'] },
-  { id: 'telegram-alerts', category: 'Marketing', name: 'Alertes & Bot Telegram', description: 'Recevez des notifications en direct sur Telegram pour vos ventes et alertes stock.', icon: <Zap className="w-8 h-8 text-cyan-500" />, features: ['Alertes Ventes', 'Infos Stock', 'Temps Réel'] },
-  { id: 'telegram', category: 'Communauté', name: 'Monétisation Telegram', description: 'Vendez l\'accès à vos groupes privés et canaux automatiqument avec des abonnements.', icon: <MessageSquare className="w-8 h-8 text-sky-500" />, isPro: true, features: ['Abonnements auto', 'Canaux Payants', 'Retrait Membres'] },
-  { id: 'ambassadeur', category: 'Marketing', name: 'Programme Ambassadeurs VIP', description: 'Récompensez vos meilleurs clients avec un statut VIP et des avantages.', icon: <Gem className="w-8 h-8 text-emerald-400" />, isPro: true, features: ['Niveaux VIP', 'Cashback', 'Fidélisation'] },
-
-  // Outils Créatifs & IA
-  { id: 'links', category: 'Création', name: 'Lien en Bio (Link-in-Bio)', description: 'Regroupez tous vos liens, réseaux et produits clés sur une page unique.', icon: <LinkIcon className="w-8 h-8 text-indigo-500" />, features: ['Social-friendly', 'Micro-site', 'Stats'] },
-  { id: 'ai-generator', category: 'Création', name: 'Assistant Coach IA', description: 'L\'Intelligence Artificielle qui rédige vos textes de vente et structure vos offres.', icon: <Star className="w-8 h-8 text-amber-500" />, isPro: true, features: ['Génération de Copy', 'Création de Mails', 'Coach Business'] },
-
-  // Productivité & CRM
-  { id: 'webhooks', category: 'CRM', name: 'Notion, Zapier & Webhooks', description: 'Exportez vos ventes automatiquement vers Notion, Excel, Zapier ou Make en temps réel.', icon: <Zap className="w-8 h-8 text-violet-500" />, isPro: true, features: ['Intégration Notion', 'Zapier / Make', 'Temps Réel'] },
-  { id: 'customers', category: 'CRM', name: 'CRM Avancé', description: 'Base de données clients et Lifetime Value (LTV).', icon: <Users className="w-8 h-8 text-blue-400" />, features: ['Filtres Achats', 'Segmentation', 'Export CSV'] },
-  { id: 'livraisons', category: 'Opérations', name: 'Logistique & Livraisons', description: 'Gestion des livreurs, statuts d\'expédition et suivi physique.', icon: <Truck className="w-8 h-8 text-slate-500" />, features: ['Tableau de bord Livreurs', 'Statuts', 'Zones'] },
-  { id: 'agenda', category: 'Opérations', name: 'Bookings & Réservations', description: 'Gérez vos créneaux de coaching/consulting avec un calendrier intégré.', icon: <Calendar className="w-8 h-8 text-purple-500" />, features: ['Google Meet', 'Agenda partagé', 'Visios'] },
-  { id: 'tasks', category: 'Opérations', name: 'Tâches & Organisation', description: 'Outil de to-do list et gestion de projets intégré à vos ventes.', icon: <CheckCircle2 className="w-8 h-8 text-emerald-500" />, features: ['Kanban', 'Rappels', 'Focus mode'] },
-  { id: 'communautes', category: 'Opérations', name: 'Espace Communautaire', description: 'Hébergez vos propres forums et cercles privés d\'acheteurs sans quitter la plateforme.', icon: <Users className="w-8 h-8 text-cyan-600" />, features: ['Forum', 'Posts VIP', 'Engagement'] },
-  { id: 'closers', category: 'Opérations', name: 'Closing Délégué', description: 'Confiez vos leads chauds à des closers professionnels.', icon: <Briefcase className="w-8 h-8 text-amber-600" />, isPro: true, features: ['Commissions directes', 'Suivi Appels', 'Outsourcing'] },
-  { id: 'academy', category: 'Opérations', name: 'Yayyam Academy', description: 'Accédez aux meilleures stratégies e-commerce et mindsets de vente.', icon: <BookOpen className="w-8 h-8 text-emerald-600" />, features: ['10 cours gratuits', 'Vidéos 4K', 'Ressources PDF'] },
-  { id: 'quotes', category: 'Opérations', name: 'Devis & Factures B2B', description: 'Générez des devis professionnels interactifs payables en ligne.', icon: <Briefcase className="w-8 h-8 text-neutral-600" />, features: ['PDF interactif', 'Suivi du statut', 'Paiement direct'] },
-
-  // Passrelles de Paiement (Extensions)
-  { id: 'cinetpay', category: 'Paiements', name: 'CinetPay', description: 'Acceptez MTN, Moov, Orange, Visa et Mastercard dans toute l\'Afrique.', icon: <CreditCard className="w-8 h-8 text-green-500" />, features: ['Multi-pays', 'Cards', 'Mobile Money'] },
-  { id: 'paytech', category: 'Paiements', name: 'PayTech', description: 'Alternative solide pour les paiements locaux avec API.', icon: <Banknote className="w-8 h-8 text-indigo-400" />, features: ['API Robuste', 'Sécurisé', 'Devises locales'] },
-  { id: 'intouch', category: 'Paiements', name: 'InTouch', description: 'Solution complète pour les gros volumes de transactions.', icon: <CreditCard className="w-8 h-8 text-slate-800" />, isPro: true, features: ['Corporate', 'Paiement de masse', 'Guichet'] },
-  { id: 'payment-links', category: 'Paiements', name: 'Liens de Paiement', description: 'Créez des liens de paiement directs pour encaisser sans création de produit complète.', icon: <Banknote className="w-8 h-8 text-[#0F7A60]" />, features: ['Rapide', 'Sans page de vente', 'Lien Unique'] },
-]
-
+import { MarketplaceApp } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 
-export function AppStoreClient({ initialInstalled }: { initialInstalled: string[] }) {
+export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled: string[], dbApps: MarketplaceApp[] }) {
+  
+  // Transform from DB to AppItem format
+  const getIcon = (_name: string, id: string) => {
+    switch (id) {
+      case 'marketing': return <Zap className="w-8 h-8 text-blue-500" />
+      case 'workflows': return <Zap className="w-8 h-8 text-rose-500" />
+      case 'affilies': return <Trophy className="w-8 h-8 text-orange-500" />
+      case 'promotions': return <ShoppingBag className="w-8 h-8 text-pink-500" />
+      case 'telegram-alerts': return <Zap className="w-8 h-8 text-cyan-500" />
+      case 'telegram': return <MessageSquare className="w-8 h-8 text-sky-500" />
+      case 'ambassadeur': return <Gem className="w-8 h-8 text-emerald-400" />
+      case 'links': return <LinkIcon className="w-8 h-8 text-indigo-500" />
+      case 'ai-generator': return <Star className="w-8 h-8 text-amber-500" />
+      case 'webhooks': return <Zap className="w-8 h-8 text-violet-500" />
+      case 'customers': return <Users className="w-8 h-8 text-blue-400" />
+      case 'livraisons': return <Truck className="w-8 h-8 text-slate-500" />
+      case 'agenda': return <Calendar className="w-8 h-8 text-purple-500" />
+      case 'tasks': return <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+      case 'communautes': return <Users className="w-8 h-8 text-cyan-600" />
+      case 'closers': return <Briefcase className="w-8 h-8 text-amber-600" />
+      case 'academy': return <BookOpen className="w-8 h-8 text-emerald-600" />
+      case 'quotes': return <Briefcase className="w-8 h-8 text-neutral-600" />
+      case 'cinetpay': return <CreditCard className="w-8 h-8 text-green-500" />
+      case 'paytech': return <Banknote className="w-8 h-8 text-indigo-400" />
+      case 'intouch': return <CreditCard className="w-8 h-8 text-slate-800" />
+      case 'payment-links': return <Banknote className="w-8 h-8 text-[#0F7A60]" />
+      case 'server-side-pixels': return <Zap className="w-8 h-8 text-indigo-600" />
+      case 'social-proof': return <Users className="w-8 h-8 text-rose-600" />
+      case 'volume-discounts': return <ShoppingBag className="w-8 h-8 text-amber-600" />
+      case 'smart-reviews': return <Star className="w-8 h-8 text-yellow-400" />
+      case 'helpdesk': return <MessageSquare className="w-8 h-8 text-teal-600" />
+      case 'subscriptions': return <CreditCard className="w-8 h-8 text-violet-600" />
+      default: return <Blocks className="w-8 h-8 text-gray-500" />
+    }
+  }
+
+  const STORE_APPS: AppItem[] = dbApps.map(app => ({
+    id: app.id,
+    name: app.name,
+    category: app.category,
+    description: app.description || '',
+    icon: getIcon(app.icon_url || 'blocks', app.id),
+    isPro: app.is_premium,
+    features: app.features as string[]
+  }))
+
   const [installedAppIds, setInstalledAppIds] = useState<string[]>(initialInstalled)
   const [simulatedApp, setSimulatedApp] = useState<AppItem | null>(null)
   const [installingId, setInstallingId] = useState<string | null>(null)
@@ -199,23 +214,56 @@ export function AppStoreClient({ initialInstalled }: { initialInstalled: string[
                   ))}
                 </div>
 
-                <button
-                  onClick={() => toggleInstall(app)}
-                  disabled={installingId !== null}
-                  className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all mt-auto ${
-                    isInstalled 
-                      ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 disabled:opacity-50' 
-                      : 'bg-gradient-to-r from-ink to-slate text-white hover:from-black hover:to-ink shadow-lg shadow-black/10 disabled:opacity-50'
-                  }`}
-                >
-                  {installingId === app.id ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : isInstalled ? (
-                    'Retirer / Désinstaller'
-                  ) : (
-                    <><Download size={16} /> Ajouter à la plateforme</>
-                  )}
-                </button>
+                <div className="mt-auto flex gap-2">
+                  <button
+                    onClick={() => toggleInstall(app)}
+                    disabled={installingId !== null}
+                    className={`flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                      isInstalled 
+                        ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 disabled:opacity-50' 
+                        : 'bg-gradient-to-r from-ink to-slate text-white hover:from-black hover:to-ink shadow-lg shadow-black/10 disabled:opacity-50'
+                    }`}
+                  >
+                    {installingId === app.id ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : isInstalled ? (
+                      'Retirer'
+                    ) : (
+                      <><Download size={16} /> Ajouter à la plateforme</>
+                    )}
+                  </button>
+                  {isInstalled && (() => {
+                    // Mapping des apps vers leurs vraies routes
+                    const routeMap: Record<string, string> = {
+                      'marketing': '/dashboard/marketing',
+                      'workflows': '/dashboard/workflows',
+                      'affilies': '/dashboard/affilies',
+                      'promotions': '/dashboard/promotions',
+                      'telegram-alerts': '/dashboard/telegram',
+                      'telegram': '/dashboard/telegram',
+                      'ambassadeur': '/dashboard/ambassadeur',
+                      'links': '/dashboard/links',
+                      'ai-generator': '/dashboard/ai-generator',
+                      'webhooks': '/dashboard/webhooks',
+                      'customers': '/dashboard/customers',
+                      'livraisons': '/dashboard/livraisons',
+                      'agenda': '/dashboard/agenda',
+                      'tasks': '/dashboard/tasks',
+                      'communautes': '/dashboard/communautes',
+                      'closers': '/dashboard/closers',
+                      'academy': '/dashboard/tips', // Yayyam Académie
+                      'cinetpay': '/dashboard/settings',
+                      'paytech': '/dashboard/settings',
+                      'intouch': '/dashboard/settings',
+                    };
+                    const configRoute = routeMap[app.id] || `/dashboard/apps/${app.id}`;
+                    return (
+                      <a href={configRoute} className="flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-[#0F7A60] text-white hover:opacity-90 shadow-lg shadow-emerald-900/10">
+                        Configurer
+                      </a>
+                    );
+                  })()}
+                </div>
               </div>
             )})}
           </div>

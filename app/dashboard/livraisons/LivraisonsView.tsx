@@ -424,7 +424,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
       </div>
 
       {/* 2. ONGLETS DE STATUTS */}
-      <div className="flex gap-2 sm:gap-4 border-b border-line pb-px overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+      <div className="flex gap-2 sm:gap-4 border-b border-line pb-px overflow-x-auto scrollbar-hide">
          <button 
            onClick={() => setActiveTab('ALL')}
            className={`px-4 sm:px-6 py-3 font-bold text-sm sm:text-base transition-colors whitespace-nowrap border-b-2 ${activeTab === 'ALL' ? 'border-ink text-ink' : 'border-transparent text-dust hover:text-ink'}`}
@@ -574,8 +574,8 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                     <div className="flex flex-col gap-1">
                       <span className="font-black text-ink text-sm truncate max-w-[150px]">{order.buyer_name}</span>
                       <div className="flex items-center gap-2 mt-1">
-                        <a href={`tel:${order.buyer_phone}`} onClick={e => e.stopPropagation()} className="text-[11px] text-slate hover:text-[#0F7A60] font-bold flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md transition-colors"><PhoneIcon size={10}/>{order.buyer_phone || 'N/A'}</a>
-                        <a href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1 text-white bg-[#25D366] hover:bg-[#1EBE5C] p-1 font-bold text-[10px] rounded-md shadow-sm transition-transform active:scale-95" title="Contacter par WhatsApp">
+                        <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} onClick={e => e.stopPropagation()} className="text-[11px] text-slate hover:text-[#0F7A60] font-bold flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md transition-colors"><PhoneIcon size={10}/>{order.buyer_phone || 'N/A'}</a>
+                        <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1 text-white bg-[#25D366] hover:bg-[#1EBE5C] p-1 font-bold text-[10px] rounded-md shadow-sm transition-transform active:scale-95" title="Contacter par WhatsApp">
                           <WhatsAppIcon className="w-3.5 h-3.5" />
                         </a>
                       </div>
@@ -646,7 +646,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
         </div>
       </div>
       ) : (
-        <div className="flex gap-4 overflow-x-auto pb-4 snap-x relative lg:grid lg:grid-cols-3 lg:snap-none" style={{ scrollbarWidth: 'none' }}>
+        <div className="flex gap-4 overflow-x-auto pb-4 snap-x relative lg:grid lg:grid-cols-3 lg:snap-none scrollbar-hide">
            {['confirmed', 'preparing', 'shipped'].map(columnStatus => {
              const colOrders = filteredOrders.filter(o => o.status === columnStatus)
              const colConf = STATUS_CONFIG[columnStatus]
@@ -814,7 +814,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                   <h2 className="text-xl font-black text-ink">Flotte de Livreurs</h2>
                   <p className="text-sm text-slate font-medium">Gérez vos coursiers externes et internes.</p>
                </div>
-               <button onClick={() => setShowDeliverersModal(false)} className="w-10 h-10 bg-white border border-line rounded-xl flex justify-center items-center text-slate hover:text-ink transition active:scale-95 shadow-sm">
+               <button onClick={() => setShowDeliverersModal(false)} title="Fermer" className="w-10 h-10 bg-white border border-line rounded-xl flex justify-center items-center text-slate hover:text-ink transition active:scale-95 shadow-sm">
                  <X size={20} />
                </button>
              </div>
@@ -842,6 +842,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                    </div>
                    <div className="w-full">
                       <select
+                         title="Expiration du lien"
                          value={newDelivererExpiration === 'definitif' || newDelivererExpiration === '24' || newDelivererExpiration === '48' ? newDelivererExpiration : 'custom'}
                          onChange={e => setNewDelivererExpiration(e.target.value)}
                          className="w-full bg-white border border-[#0F7A60]/20 rounded-xl px-3 py-2 text-sm outline-none focus:border-[#0F7A60] font-medium mb-3"
@@ -890,6 +891,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                              <LinkIcon size={12} /> Copier Portail
                            </button>
                            <button 
+                             title="Supprimer livreur"
                              onClick={() => handleDeleteDeliverer(d.id)}
                              className="bg-red-50 hover:bg-red-100 text-red-600 w-8 h-8 rounded-lg flex items-center justify-center transition"
                            >
@@ -919,7 +921,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                  <p className="text-white/70 text-[10px] font-bold tracking-widest mt-0.5">MODE LIVRAISON YAYYAM</p>
                </div>
              </div>
-             <button onClick={() => setIsDeliveryMode(false)} className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center active:scale-95 transition">
+             <button onClick={() => setIsDeliveryMode(false)} title="Fermer mode livraison" className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center active:scale-95 transition">
                <X size={20} />
              </button>
            </div>
@@ -985,17 +987,17 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                              {order.delivery_address || 'Adresse introuvable'}
                            </p>
                          </div>
-                         <a href={addressNavUrl} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-cream text-ink rounded-xl flex items-center justify-center border border-line shrink-0 active:scale-95 transition">
+                         <a href={addressNavUrl} target="_blank" rel="noopener noreferrer" title="Ouvrir dans Maps" aria-label="Ouvrir dans Maps" className="w-10 h-10 bg-cream text-ink rounded-xl flex items-center justify-center border border-line shrink-0 active:scale-95 transition">
                            <MapPin size={18} />
                          </a>
                        </div>
 
                        {deliveryModeTab === 'pending' ? (
                          <div className="flex gap-2">
-                            <a href={`tel:${order.buyer_phone}`} className="flex-1 bg-ink text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-sm active:scale-95 transition shadow-lg shadow-ink/20">
+                            <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} aria-label="Appeler l'acheteur" className="flex-1 bg-ink text-white py-4 rounded-2xl flex items-center justify-center gap-2 font-black text-sm active:scale-95 transition shadow-lg shadow-ink/20">
                               <PhoneIcon size={18} /> Appeler
                             </a>
-                            <a href={waLink} target="_blank" rel="noopener noreferrer" className="w-14 shrink-0 bg-[#25D366] text-white py-4 rounded-2xl flex items-center justify-center font-black active:scale-95 transition shadow-lg shadow-[#25D366]/20">
+                            <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" aria-label="Contacter sur WhatsApp" className="w-14 shrink-0 bg-[#25D366] text-white py-4 rounded-2xl flex items-center justify-center font-black active:scale-95 transition shadow-lg shadow-[#25D366]/20">
                               <WhatsAppIcon className="w-6 h-6" />
                             </a>
                             <button 

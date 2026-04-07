@@ -129,7 +129,7 @@ export default function DelivererPortal({ params }: { params: { delivererId: str
          ) : (
            displayOrders.map(order => {
              const waMsg = `Bonjour ${order.buyer_name.split(' ')[0]}, c'est ${deliverer.name}, votre livreur de ${deliverer.store.name}. Je suis en route !`
-              `https://wa.me/${order.buyer_phone?.replace(/\D/g, '') || ''}?text=${encodeURIComponent(waMsg)}`
+             const waUrl = `https://wa.me/${order.buyer_phone?.replace(/\D/g, '') || ''}?text=${encodeURIComponent(waMsg)}`
              const navUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.delivery_address || '')}`
 
              return (
@@ -172,10 +172,13 @@ export default function DelivererPortal({ params }: { params: { delivererId: str
                  {activeTab === 'pending' ? (
                    <div className="grid grid-cols-2 gap-3">
                       <div className="flex gap-2 col-span-2">
-                        <a href={`tel:${order.buyer_phone}`} className="flex-1 bg-ink text-white py-3.5 rounded-xl flex items-center justify-center gap-2 font-black text-sm active:scale-95 transition shadow-md">
+                        <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} className="flex-1 bg-ink text-white py-3.5 rounded-xl flex items-center justify-center gap-2 font-black text-sm active:scale-95 transition shadow-md">
                           <Phone size={16} /> Appeler
                         </a>
-                        <a href={navUrl} target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#FAFAF7] border border-line text-ink py-3.5 rounded-xl flex items-center justify-center gap-2 font-black text-sm active:scale-95 transition shadow-sm">
+                        <a suppressHydrationWarning href={waUrl} target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#25D366] text-white py-3.5 rounded-xl flex items-center justify-center gap-2 font-black text-sm active:scale-95 transition shadow-sm">
+                          WhatsApp
+                        </a>
+                        <a suppressHydrationWarning href={navUrl} target="_blank" rel="noopener noreferrer" className="flex-1 bg-[#FAFAF7] border border-line text-ink py-3.5 rounded-xl flex items-center justify-center gap-2 font-black text-sm active:scale-95 transition shadow-sm">
                           <Navigation2 size={16} /> GPS
                         </a>
                       </div>

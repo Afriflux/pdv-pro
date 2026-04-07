@@ -190,10 +190,9 @@ export function UniversalWorkflowBuilder({
     }
   }
 
-  // ============== VIEW : DASHBOARD ==============
   if (view === 'dashboard') {
     return (
-      <div className="max-w-[1200px] mx-auto px-6 pb-20 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="w-full px-6 pb-20 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* HEADER HERO */}
         <div className="bg-gradient-to-br from-[#0F7A60] to-emerald-deep rounded-[2.5rem] p-8 lg:p-12 text-white relative overflow-hidden shadow-xl shadow-emerald-deep/10">
@@ -335,7 +334,7 @@ export function UniversalWorkflowBuilder({
                           onClick={async () => {
                              if (!actions.cloneWorkflow || !ownerId) return;
                              setCloneLoading(wf.id)
-                             const res = await actions.cloneWorkflow(wf.id, ownerId, ownerType)
+                             const res = await actions.cloneWorkflow(wf.id, ownerId, ownerType as any)
                              if (res.success) {
                                toast.success("Modèle installé avec succès !")
                                window.location.reload()
@@ -363,6 +362,8 @@ export function UniversalWorkflowBuilder({
             <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
               <button 
                 onClick={() => setPurchaseModalWf(null)} 
+                title="Fermer la fenêtre"
+                aria-label="Fermer la fenêtre"
                 className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
               >
                 <X size={16} className="text-gray-500" />

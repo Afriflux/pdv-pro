@@ -136,10 +136,10 @@ export default function CloserCallsClient({ activeLeads: initialLeads }: CloserC
                    </div>
   
                    <div className="flex items-center justify-between lg:justify-end gap-3 w-full lg:w-1/3 pt-4 border-t border-gray-100 lg:border-t-0 lg:pt-0">
-                      <a href={`tel:${lead.phone}`} title="Appeler" className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-3.5 bg-white border border-gray-200 hover:border-[#0F7A60] hover:bg-[#0F7A60] text-gray-700 hover:text-white rounded-xl font-black transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                      <a suppressHydrationWarning href={`tel:${lead.phone}`} title="Appeler" className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-3.5 bg-white border border-gray-200 hover:border-[#0F7A60] hover:bg-[#0F7A60] text-gray-700 hover:text-white rounded-xl font-black transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                         <PhoneCall size={18} /> <span className="lg:hidden xl:inline">Appeler</span>
                       </a>
-                      <a href={`https://wa.me/${lead.phone}?text=Bonjour ${lead.name},`} target="_blank" rel="noreferrer" title="Message WhatsApp" className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-3.5 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white rounded-xl font-black transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                      <a suppressHydrationWarning href={`https://wa.me/${lead.phone}?text=Bonjour ${lead.name},`} target="_blank" rel="noreferrer" title="Message WhatsApp" className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-3.5 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white rounded-xl font-black transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                         <MessageCircle size={18} /> <span className="lg:hidden xl:inline">WhatsApp</span>
                       </a>
                       
