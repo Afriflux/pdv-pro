@@ -65,7 +65,6 @@ export default async function AcademyPage() {
               </div>
             </div>
             <div className="h-2 w-full bg-black/40 rounded-full overflow-hidden">
-              {/* eslint-disable-next-line */}
               <div className="h-full bg-emerald rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, userProgress)}%` }}></div>
             </div>
             <p className="text-xs text-emerald/80 mt-3 font-bold">🎯 {completedCount} guide(s) sur {totalArticles} étudiés.</p>

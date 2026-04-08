@@ -124,7 +124,6 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
       <div className="bg-white border border-line rounded-2xl shadow-lg p-10 max-w-md w-full text-center">
         
         {/* Icône succès animée */}
-        {/* eslint-disable-next-line */}
         <div className="w-20 h-20 border-2 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce" style={{ backgroundColor: `${accent}11`, borderColor: `${accent}33`, color: accent }}>
            <CheckCircle2 size={40} strokeWidth={2.5} />
         </div>
@@ -166,7 +165,6 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             {isCod ? (
               <span className="text-amber-600 font-medium font-mono text-xs">À LA LIVRAISON</span>
             ) : (
-              {/* eslint-disable-next-line */}
               <span className="font-medium flex items-center gap-1" style={{ color: accent }}>Payé <Check size={14} /></span>
             )}
           </div>

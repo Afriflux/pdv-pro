@@ -137,7 +137,6 @@ export default function MarketingClient({ store, links, products, domain }: Mark
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="h-2 w-32 bg-gray-100 rounded-full overflow-hidden">
-                        {/* eslint-disable-next-line */}
                         <div 
                           className="h-full bg-blue-500 rounded-full w-[var(--bar-width)]" 
                           style={{ '--bar-width': `${Math.min(100, (link.clicks / (totalClicks || 1)) * 100)}%` } as React.CSSProperties}
