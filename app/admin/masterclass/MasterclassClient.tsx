@@ -251,9 +251,9 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
               <GraduationCap className="w-8 h-8" />
             </div>
             <div className="pb-1">
-              <h1 className="text-3xl font-black text-white tracking-tight">Yayyam Academie</h1>
+              <h1 className="text-3xl font-black text-white tracking-tight">Yayyam Académie</h1>
               <p className="text-emerald-100/90 font-medium text-sm mt-1 max-w-lg leading-relaxed">
-                Le centre de formation exclusif des vendeurs. Partagez votre expertise au travers de modules éducatifs.
+                Le centre de formation exclusif de la plateforme. Partagez votre expertise au travers de modules éducatifs pour vos différentes audiences.
               </p>
             </div>
           </div>

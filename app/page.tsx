@@ -289,13 +289,13 @@ export default async function LandingPage() {
             
             <div className="flex justify-center gap-4 flex-wrap">
                {/* Mockup Preuve de retrait Wave */}
-               <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 w-72 text-left shadow-sm hover:shadow-md transition-shadow transform hover:-translate-y-1">
+               <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-5 w-72 text-left shadow-sm hover:shadow-md transition-shadow transform hover:-translate-y-1">
                  <div className="flex justify-between items-center mb-4">
-                   <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-black text-xs">W</div>
+                   <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-black text-xs">Y</div>
                    <span className="text-[10px] text-gray-400 font-medium">Aujourd'hui, 09:42</span>
                  </div>
-                 <p className="text-xs text-blue-900/60 font-bold mb-1 uppercase tracking-wider">Transfert reçu avec succès</p>
-                 <p className="text-2xl font-black text-blue-600 mb-2">+ 45 000 F</p>
+                 <p className="text-xs text-emerald-900/60 font-bold mb-1 uppercase tracking-wider">Transfert reçu avec succès</p>
+                 <p className="text-2xl font-black text-emerald-600 mb-2">+ 45 000 F</p>
                  <p className="text-xs text-gray-500 font-medium">De: YAYYAM</p>
                  <p className="text-[10px] text-gray-400 mt-2">Nouveau solde: 124 500 F</p>
                </div>

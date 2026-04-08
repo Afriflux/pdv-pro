@@ -114,25 +114,31 @@ const NAV: NavSection[] = [
 // ----------------------------------------------------------------
 function NavLink({ item, active, onClick, collapsed }: { item: NavItem, active: boolean, onClick?: () => void, collapsed?: boolean }) {
   const Icon = item.icon
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <div className="relative group/navitem">
       <Link
         suppressHydrationWarning
         href={item.href}
         onClick={onClick}
-        className={`flex items-center relative overflow-hidden ${collapsed ? 'justify-center px-0 w-11 h-11 mx-auto rounded-xl' : 'px-3 gap-3 py-2.5 rounded-xl'} transition-all duration-300 ${
+        className={`flex items-center relative overflow-hidden ${mounted && collapsed ? 'justify-center px-0 w-11 h-11 mx-auto rounded-xl' : 'px-3 gap-3 py-2.5 rounded-xl'} transition-all duration-300 ${
           active
             ? 'bg-gradient-to-r from-white/15 to-white/5 text-white font-bold shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-white/10 backdrop-blur-md'
             : 'text-white/60 hover:bg-white/10 hover:text-white hover:shadow-sm'
         }`}
       >
-        {active && !collapsed && (
+        {active && (!mounted || !collapsed) && (
            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white to-white/30 rounded-l-xl shadow-[0_0_12px_rgba(255,255,255,0.6)]" />
         )}
         
-        <Icon suppressHydrationWarning className={`${collapsed ? 'w-[20px] h-[20px]' : 'w-[18px] h-[18px]'} flex-shrink-0 transition-transform duration-300 ${active ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'group-hover/navitem:scale-110'}`} />
-        {!collapsed && <span className="text-[13px] truncate relative z-10">{item.name}</span>}
-        {!collapsed && item.badge && (
+        <Icon suppressHydrationWarning className={`${mounted && collapsed ? 'w-[20px] h-[20px]' : 'w-[18px] h-[18px]'} flex-shrink-0 transition-transform duration-300 ${active ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'group-hover/navitem:scale-110'}`} />
+        {(!mounted || !collapsed) && <span className="text-[13px] truncate relative z-10">{item.name}</span>}
+        {(!mounted || !collapsed) && item.badge && (
           <span className="ml-auto text-[9px] font-black bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 px-2 py-0.5 rounded-md shadow-sm relative z-10 uppercase tracking-wider">
             {item.badge}
           </span>
@@ -486,7 +492,7 @@ export function Sidebar({
 
         {/* Drawer */}
         <div
-          className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-[#043324] transform transition-transform duration-300 relative overflow-hidden shadow-2xl ${
+          className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-[#043324] transform transition-transform duration-300 overflow-hidden shadow-2xl ${
             mobileOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >

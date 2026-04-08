@@ -298,7 +298,7 @@ export function ClientSidebar({
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
         )}
 
-        <div className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-[#043324] transform transition-transform duration-300 relative overflow-hidden shadow-2xl ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-[#043324] transform transition-transform duration-300 overflow-hidden shadow-2xl ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="absolute inset-0 bg-gradient-to-b from-[#064e3b]/95 via-[#043324] to-[#021f15] z-0 pointer-events-none"></div>
           <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.04] mix-blend-overlay z-0 pointer-events-none"></div>
 
