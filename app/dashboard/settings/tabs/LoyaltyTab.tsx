@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Trophy, Gift, Save, AlertCircle } from 'lucide-react'
+import { Trophy, Save, AlertCircle } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { getLoyaltyConfig, updateLoyaltyConfig } from '@/app/actions/loyalty'
 
-export function LoyaltyTab({ store }: any) {
+export function LoyaltyTab({ store }: { store: Record<string, unknown> & { id: string } }) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [enabled, setEnabled] = useState(false)
@@ -28,8 +28,8 @@ export function LoyaltyTab({ store }: any) {
     try {
       const res = await updateLoyaltyConfig(store.id, enabled, points, maxPct)
       if (res.success) toast.success("Configuration de fidélité sauvegardée")
-    } catch (e: any) {
-      toast.error(e.message || "Erreur de sauvegarde")
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Erreur de sauvegarde")
     } finally {
       setSaving(false)
     }
@@ -58,6 +58,8 @@ export function LoyaltyTab({ store }: any) {
           <label className="relative inline-flex items-center cursor-pointer">
             <input 
               type="checkbox" 
+              title="Activer le programme de fidélité"
+              aria-label="Activer le programme de fidélité"
               checked={enabled} 
               onChange={(e) => setEnabled(e.target.checked)} 
               className="sr-only peer" 
@@ -72,6 +74,8 @@ export function LoyaltyTab({ store }: any) {
             <div className="flex items-center gap-3">
               <input 
                 type="number" 
+                title="Points gagnés par 100 FCFA dépensé"
+                aria-label="Points gagnés par 100 FCFA dépensé"
                 min={1} 
                 max={100}
                 value={points}
@@ -90,6 +94,8 @@ export function LoyaltyTab({ store }: any) {
             <div className="flex items-center gap-3">
               <input 
                 type="number" 
+                title="Utilisation maximum par commande (%)"
+                aria-label="Utilisation maximum par commande (%)"
                 min={5} 
                 max={100}
                 value={maxPct}

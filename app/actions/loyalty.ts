@@ -55,7 +55,7 @@ export async function earnLoyaltyPoints(phone: string, storeId: string, amountSp
   if (!config || !config.enabled) return { success: false, reason: "Store loyalty disabled" }
 
   // Calcul basique: X points = montant/100 * config.points_per_100
-  let pointsBase = Math.floor(amountSpent / 100) * config.points_per_100
+  const pointsBase = Math.floor(amountSpent / 100) * config.points_per_100
 
   // Multiplicateur selon le niveau
   const tier = account.tier

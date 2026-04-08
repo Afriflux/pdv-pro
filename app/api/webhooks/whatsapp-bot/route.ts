@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const phone = From.replace('whatsapp:', '')
 
     // Tenter de trouver le store_id à partir de la conversation existante
-    let conversation = await prisma.whatsappConversation.findFirst({
+    const conversation = await prisma.whatsappConversation.findFirst({
       where: { phone },
       orderBy: { updated_at: 'desc' } // prend la dernière conversation active
     })
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     return new NextResponse(twiMLResponse, {
       headers: { 'Content-Type': 'text/xml' }
     })
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[WhatsApp Bot Webhook] Erreur:', err)
     return new NextResponse('Internal error', { status: 500 })
   }

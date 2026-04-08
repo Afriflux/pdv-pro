@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Mail } from 'lucide-react'
+import { Mail, Trophy } from 'lucide-react'
 import { PromotionData } from '@/lib/promotions/promotionType'
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector'
 import LocalPaymentBadges from '@/components/widgets/LocalPaymentBadges'
@@ -49,7 +49,7 @@ interface Product {
     coaching_max_per_day?: number | null
     coaching_min_notice?: number | null
     volume_discounts_active?: boolean
-    volume_discounts_config?: any
+    volume_discounts_config?: unknown
   }
 }
 
@@ -106,7 +106,6 @@ export function CheckoutForm({
   clientProfile,
 }: CheckoutFormProps) {
   const router = useRouter()
-  const accent = product.store.primary_color || '#0F7A60'
 
   const getIntervalSuffix = (interval?: string | null) => {
     switch(interval) {
@@ -178,9 +177,8 @@ export function CheckoutForm({
   }, [phone, product.cash_on_delivery, product.store.id])
 
   // ── Fidélité (Points) ─────────────────────────────────────────
-  const [loyaltyData, setLoyaltyData] = useState<{ enabled: boolean, config?: any, account: any | null } | null>(null)
+  const [loyaltyData, setLoyaltyData] = useState<{ enabled: boolean, config?: { maxPerc: number, [key: string]: unknown }, account: { balance: number, tier: string, [key: string]: unknown } | null } | null>(null)
   const [redeemPoints, setRedeemPoints] = useState<number>(0)
-  const [loyaltyLoading, setLoyaltyLoading] = useState(false)
 
   useEffect(() => {
     if (!phone || phone.trim().length < 8) {
@@ -189,18 +187,16 @@ export function CheckoutForm({
       return
     }
     const timer = setTimeout(async () => {
-      setLoyaltyLoading(true)
       try {
         const { checkLoyaltyAccount } = await import('@/app/actions/loyalty')
         const data = await checkLoyaltyAccount(phone.trim(), product.store.id)
         if (data && data.enabled) {
-          setLoyaltyData(data as any)
+          setLoyaltyData(data as { enabled: boolean, config?: { maxPerc: number, [key: string]: unknown }, account: { balance: number, tier: string, [key: string]: unknown } | null })
           setRedeemPoints(0)
         } else {
           setLoyaltyData(null)
         }
       } catch { /* silent */ }
-      setLoyaltyLoading(false)
     }, 800)
     return () => clearTimeout(timer)
   }, [phone, product.store.id])
@@ -586,21 +582,23 @@ export function CheckoutForm({
             <div className="flex items-center gap-2 mt-3">
               <input
                 type="number"
+                title="Points à utiliser"
+                aria-label="Points à utiliser"
                 min="0"
-                max={Math.min(loyaltyData.account.balance, maxAllowedPoints)}
+                max={Math.min(loyaltyData.account?.balance || 0, maxAllowedPoints)}
                 value={redeemPoints}
-                onChange={e => setRedeemPoints(Math.min(Number(e.target.value), loyaltyData.account.balance, maxAllowedPoints))}
+                onChange={e => setRedeemPoints(Math.min(Number(e.target.value), loyaltyData.account?.balance || 0, maxAllowedPoints))}
                 className="w-20 px-2 py-1.5 text-sm font-bold border border-orange-200 outline-none rounded bg-white text-gray-800"
               />
               <button 
                 type="button"
-                onClick={() => setRedeemPoints(Math.min(loyaltyData.account.balance, maxAllowedPoints))}
+                onClick={() => setRedeemPoints(Math.min(loyaltyData.account?.balance || 0, maxAllowedPoints))}
                 className="text-[10px] font-bold text-orange-600 bg-white border border-gray-100 px-2 py-1.5 rounded uppercase tracking-wide shadow-sm hover:bg-orange-600 hover:text-white transition"
               >
-                Max ({Math.min(loyaltyData.account.balance, maxAllowedPoints)})
+                Max ({Math.min(loyaltyData.account?.balance || 0, maxAllowedPoints)})
               </button>
             </div>
-            <p className="text-[10px] text-orange-700 mt-2 font-medium">Vous économisez {loyaltyDiscount} FCFA sur cette commande (Max {loyaltyData.config.maxPerc}%).</p>
+            <p className="text-[10px] text-orange-700 mt-2 font-medium">Vous économisez {loyaltyDiscount} FCFA sur cette commande (Max {loyaltyData.config?.maxPerc || 0}%).</p>
           </div>
         )}
 
@@ -736,7 +734,7 @@ export function CheckoutForm({
             </div>
 
             {/* Widget Volume Discounts B2B */}
-            {product.store.volume_discounts_active && product.store.volume_discounts_config && (() => {
+            {product.store.volume_discounts_active && !!product.store.volume_discounts_config && (() => {
               const config = typeof product.store.volume_discounts_config === 'string' 
                 ? JSON.parse(product.store.volume_discounts_config) 
                 : product.store.volume_discounts_config
@@ -748,7 +746,7 @@ export function CheckoutForm({
                   <div className="mt-4 pt-4 border-t border-gray-100">
                     <p className="text-xs font-black text-gray-800 mb-3">{config.title || "Achetez plus, économisez plus !"}</p>
                     <div className="flex flex-col gap-2">
-                      {sortedRules.map((rule: any, idx: number) => {
+                      {sortedRules.map((rule: { quantity: number; discountType: string; value: number }, idx: number) => {
                         const isUnlocked = quantity >= rule.quantity
                         return (
                           <div 
@@ -926,16 +924,7 @@ export function CheckoutForm({
                             type="button"
                             disabled={isFull && !isSelected}
                             onClick={() => setSelectedSlotStr(slotValue)}
-                            className={`py-2.5 px-2 rounded-xl border-2 text-sm font-bold transition flex items-center justify-center ${isFull && !isSelected ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-100' : ''}`}
-                            style={isSelected ? {
-                              backgroundColor: `${accent}15`,
-                              borderColor: accent,
-                              color: accent
-                            } : (!isFull ? {
-                              borderColor: '#e5e7eb',
-                              color: '#374151',
-                              backgroundColor: '#fff'
-                            } : {})}
+                            className={`py-2.5 px-2 rounded-xl border-2 text-sm font-bold transition flex items-center justify-center ${isFull && !isSelected ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-100' : isSelected ? 'bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] border-[var(--accent)] text-[var(--accent)]' : 'border-gray-200 text-gray-700 bg-white'}`}
                           >
                             {combo.start} - {combo.end} {isFull && !isSelected ? '(Complet)' : ''}
                           </button>
@@ -1119,12 +1108,7 @@ export function CheckoutForm({
         {/* ORDER BUMP - OFFRE ADDITIONNELLE 🚀 */}
         {bumpProduct && product.bump_active && (
           <section 
-            className="rounded-2xl border-2 p-4 md:p-5 relative overflow-hidden transition-all duration-300"
-            style={{ 
-              borderColor: bumpAccepted ? accent : '#f1f1f1',
-              backgroundColor: bumpAccepted ? `${accent}08` : '#ffffff',
-              boxShadow: bumpAccepted ? `0 4px 20px -5px ${accent}40` : 'none'
-            }}
+            className={`rounded-2xl border-2 p-4 md:p-5 relative overflow-hidden transition-all duration-300 ${bumpAccepted ? 'border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_8%,transparent)] shadow-[0_4px_20px_-5px_color-mix(in_srgb,var(--accent)_40%,transparent)]' : 'border-[#f1f1f1] bg-white'}`}
           >
             {/* Liseré indicateur (optionnel, pour faire premium) */}
             <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-[var(--accent)]" />
@@ -1159,10 +1143,7 @@ export function CheckoutForm({
                         checked={bumpAccepted}
                         onChange={() => setBumpAccepted(!bumpAccepted)}
                       />
-                      <div className="block w-6 h-6 rounded border-2 transition-colors" style={{ 
-                        borderColor: bumpAccepted ? accent : '#d1d5db',
-                        backgroundColor: bumpAccepted ? accent : 'transparent'
-                      }}>
+                      <div className={`block w-6 h-6 rounded border-2 transition-colors ${bumpAccepted ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-gray-300 bg-transparent'}`}>
                         {bumpAccepted && (
                           <svg className="w-4 h-4 text-white mx-auto mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />

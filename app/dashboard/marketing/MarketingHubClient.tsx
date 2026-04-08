@@ -24,6 +24,7 @@ interface MarketingHubClientProps {
     whatsapp_abandoned_cart: boolean;
   }
   products: { id: string; name: string; type: string; views?: number }[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   links: any[]
   domain: string
 }

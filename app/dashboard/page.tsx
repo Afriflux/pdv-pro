@@ -291,6 +291,9 @@ export default async function DashboardPage() {
 
   // --- Check si le vendeur est nouveau (a configuré tous les éléments essentiels) ---
   const isNewVendor = safeProductCount === 0 || safeZoneCount === 0 || safePromoCount === 0 || safeDelivererCount === 0 || safeWalletSettingCount === 0 || !hasSettingsChecked
+  
+  const todayProgressProps = { style: { width: `${Math.min(100, (countToday / 5) * 100)}%` } };
+  const levelProgressProps = { style: { width: `${progressPercent}%` } };
 
   return (
     <main className="min-h-screen bg-[#FAFAF7] font-sans pb-20 relative">
@@ -342,7 +345,7 @@ export default async function DashboardPage() {
                 <p className="font-medium text-white/90">Réalisez <strong className="text-white">5 ventes aujourd'hui</strong> pour débloquer votre prime, qui sera créditée directement sur votre Wallet Yayyam.</p>
                 <div className="mt-3 flex items-center gap-3">
                   <div className="flex-1 h-2.5 bg-black/10 rounded-full overflow-hidden max-w-[200px] border border-white/10 shadow-inner">
-                    <div className="h-full bg-white rounded-full" style={{ width: `${Math.min(100, (countToday / 5) * 100)}%` }}></div>
+                    <div className="h-full bg-white rounded-full" {...todayProgressProps}></div>
                   </div>
                   <span className="text-xs font-black bg-white/20 px-2 py-0.5 rounded-md">{countToday} / 5</span>
                 </div>
@@ -613,7 +616,7 @@ export default async function DashboardPage() {
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-[#C9A84C] to-yellow-300 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: `${progressPercent}%` }}
+                      {...levelProgressProps}
                     />
                   </div>
                   

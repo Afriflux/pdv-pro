@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json({ success: true, verified })
-  } catch (err: unknown) {
+  } catch {
     return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

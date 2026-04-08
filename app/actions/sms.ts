@@ -69,7 +69,7 @@ export async function purchaseSmsCredits(storeId: string, quantity: number) {
 /**
  * Crée un brouillon de campagne
  */
-export async function createSmsCampaign(storeId: string, name: string, message: string, recipients: any[]) {
+export async function createSmsCampaign(storeId: string, name: string, message: string, recipients: { phone: string, name?: string }[]) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error("Non autorisé")

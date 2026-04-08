@@ -5,13 +5,15 @@ import { Send, CreditCard, ChevronRight, CheckCircle2, History, MessageSquare, A
 import { toast } from '@/lib/toast'
 import { purchaseSmsCredits, createSmsCampaign, sendSmsCampaign } from '@/app/actions/sms'
 
+export interface SmsCampaign { id: string; name: string; status: string; created_at: string | Date; total_sent: number; [key: string]: unknown; }
+
 interface SmsClientProps {
   storeId: string
   storeName: string
   initialData: {
     credits: number
     used: number
-    campaigns: any[]
+    campaigns: SmsCampaign[]
   }
 }
 
@@ -56,16 +58,16 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
     setLoading(true)
     try {
       // 1. Create campaign
-      const createRes: any = await createSmsCampaign(storeId, campaignName, message, recipients)
-      if (!createRes.success) throw new Error(createRes.error as string)
+      const createRes = await createSmsCampaign(storeId, campaignName, message, recipients) as { success: boolean; error?: string; campaign: SmsCampaign }
+      if (!createRes.success) throw new Error(createRes.error)
 
       let resultMsg = "Campagne enregistrée en brouillon."
 
       // 2. Send if not draft
       if (!isDraft) {
         toast.loading("Envoi de la campagne en cours...")
-        const sendRes: any = await sendSmsCampaign(createRes.campaign.id)
-        if (!sendRes.success) throw new Error(sendRes.error as string)
+        const sendRes = await sendSmsCampaign(createRes.campaign.id) as { success: boolean; error?: string; campaign: SmsCampaign }
+        if (!sendRes.success) throw new Error(sendRes.error)
         resultMsg = "Campagne envoyée avec succès !"
         setData(prev => ({
           ...prev,
@@ -82,8 +84,9 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
       setMessage('')
       setRecipientPhones('')
 
-    } catch (err: any) {
-      toast.error(err.message || "Erreur réseau")
+    } catch (err: unknown) {
+      console.error(err)
+      toast.error(err instanceof Error ? err.message : "Erreur lors de l'envoi de la campagne")
     } finally {
       setLoading(false)
     }
@@ -192,8 +195,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
             </div>
             <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
               <div 
-                className="bg-emerald-500 h-full rounded-full transition-all duration-1000" 
-                style={{ width: `${Math.round(usagePercent)}%` }} 
+                className={`bg-emerald-500 h-full rounded-full transition-all duration-1000 w-[${Math.round(usagePercent/10)*10}%]`} 
               />
             </div>
             <p className="text-[10px] text-gray-500 font-medium">Vous avez envoyé un total de {data.used} SMS.</p>
@@ -226,7 +228,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
               </div>
             ) : (
               data.campaigns.map(camp => (
-                <div key={camp.id} className="group p-4 border border-gray-100 rounded-2xl hover:border-emerald-100 hover:bg-emerald-50/50 transition-colors">
+                <div key={String(camp.id)} className="group p-4 border border-gray-100 rounded-2xl hover:border-emerald-100 hover:bg-emerald-50/50 transition-colors">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-bold text-sm text-gray-900 group-hover:text-emerald-800 transition-colors">{camp.name}</h4>
                     <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase ${
@@ -239,7 +241,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
                   </div>
                   <div className="flex items-center justify-between text-xs font-medium text-gray-500">
                     <span>{new Date(camp.created_at).toLocaleDateString()}</span>
-                    <span>{camp.total_sent} livrés</span>
+                    <span>{camp.total_sent || 0} livrés</span>
                   </div>
                 </div>
               ))

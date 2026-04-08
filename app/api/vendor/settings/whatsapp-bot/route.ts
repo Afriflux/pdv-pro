@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json({ success: true, botConfig })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[WhatsApp Bot Settings] Error:', error)
     return NextResponse.json({ error: 'Erreur lors de la sauvegarde.' }, { status: 500 })
   }

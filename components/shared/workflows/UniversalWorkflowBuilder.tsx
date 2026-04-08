@@ -17,6 +17,7 @@ import { purchaseAssetAction } from '@/app/dashboard/marketplace/actions'
 
 interface ActionDef {
   type: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: Record<string, any>
 }
 
@@ -41,7 +42,7 @@ export type WorkflowActions = {
   toggleStatus: (id: string, currentStatus: string) => Promise<{success: boolean, error?: string}>
   saveWorkflow: (workflow: WorkflowDef, ownerId: string) => Promise<{success: boolean, error?: string}>
   deleteWorkflow: (id: string) => Promise<{success: boolean, error?: string}>
-  cloneWorkflow?: (templateId: string, ownerId: string, ownerType?: 'vendor' | 'client' | 'affiliate') => Promise<{success: boolean, error?: string}>
+  cloneWorkflow?: (templateId: string, ownerId: string, ownerType?: 'vendor' | 'client' | 'affiliate' | 'closer') => Promise<{success: boolean, error?: string}>
 }
 
 const DEFAULT_DESCRIPTION = "Automatisation personnalisée"
@@ -337,9 +338,9 @@ export function UniversalWorkflowBuilder({
                         <button 
                           disabled={cloneLoading === wf.id}
                           onClick={async () => {
-                             if (!actions.cloneWorkflow || !ownerId) return;
+                           if (!actions.cloneWorkflow || !ownerId) return;
                              setCloneLoading(wf.id)
-                             const res = await actions.cloneWorkflow(wf.id, ownerId, ownerType as any)
+                             const res = await actions.cloneWorkflow(wf.id, ownerId, ownerType)
                              if (res.success) {
                                toast.success("Modèle installé avec succès !")
                                window.location.reload()

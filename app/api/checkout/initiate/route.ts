@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
   try {
     const bodyText = await req.text()
     if (!bodyText) return NextResponse.json({ error: 'Body vide.' }, { status: 400 })
-    const body = JSON.parse(bodyText) as Record<string, any>
+    const body = JSON.parse(bodyText) as Record<string, unknown>
 
     const {
       product_id, store_id, variant_id, quantity = 1,
@@ -81,7 +81,27 @@ export async function POST(req: NextRequest) {
       payment_method, applied_promo_id, affiliate_token, affiliate_subid,
       booking_date, booking_start_time, booking_end_time,
       bump_product_id, loyalty_discount = 0, redeemed_points = 0
-    } = body
+    } = body as {
+      product_id?: string
+      store_id?: string
+      variant_id?: string
+      quantity?: number
+      buyer_name?: string
+      buyer_email?: string
+      buyer_phone?: string
+      delivery_address?: string
+      delivery_zone_id?: string
+      payment_method?: string
+      applied_promo_id?: string
+      affiliate_token?: string
+      affiliate_subid?: string
+      booking_date?: string
+      booking_start_time?: string
+      booking_end_time?: string
+      bump_product_id?: string
+      loyalty_discount?: number
+      redeemed_points?: number
+    }
 
     if (!product_id || !store_id || !buyer_name || !buyer_phone || !payment_method) {
       return NextResponse.json({ error: 'Champs obligatoires manquants.' }, { status: 400 })
@@ -249,7 +269,7 @@ export async function POST(req: NextRequest) {
     let finalVendorAmount = initialVendorAmount
     let affiliateAmount = 0
     let finalAffiliateToken = affiliate_token || null
-    let targetAffiliateData: any = null
+    let targetAffiliateData: { user_id: string; status: string; token: string | null } | null = null
 
     // 1. Vérifier si l'affilié existe via Code Promo (priorité absolue) OU via le Cookie
     if (promoAffiliateId) {
@@ -330,6 +350,7 @@ export async function POST(req: NextRequest) {
     // ── 5. TRANSACTION ATOMIQUE ───────────────────────────────────
     let orderRecord
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const operations: any[] = []
 
       // Baisse de stock atomique (si variante)
@@ -398,7 +419,7 @@ export async function POST(req: NextRequest) {
            const { redeemLoyaltyPoints } = await import('@/app/actions/loyalty')
            await redeemLoyaltyPoints(buyer_phone, store_id, actualLoyaltyDiscount, orderRecord.id)
         }
-      } catch(e) {}
+      } catch { }
 
       // Nettoyer les paniers abandonnés du prospect
       try {
@@ -409,7 +430,7 @@ export async function POST(req: NextRequest) {
         // silent fail
       }
 
-    } catch (dbErr: any) {
+    } catch {
       if (payment_method === 'cod') {
         const commissionDue = Math.round(total * 0.05)
         await supabase.rpc('unfreeze_commission', { p_vendor_id: store_id, p_commission: commissionDue })
@@ -576,7 +597,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ order_id: orderRecord.id, payment_url: paymentUrl })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[CHECKOUT ERROR]:', error)
     return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }

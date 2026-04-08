@@ -85,7 +85,7 @@ export async function sendSMS({
 
     return { success: true, sid }
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[SMS Twilio Error] :', err)
     
     // Logger l'échec même si Twilio a échoué (erreur numéro invalide, etc.)
@@ -100,6 +100,6 @@ export async function sendSMS({
       }
     })
 
-    return { success: false, error: err.message || 'Erreur Twilio' }
+    return { success: false, error: err instanceof Error ? err.message : 'Erreur Twilio' }
   }
 }

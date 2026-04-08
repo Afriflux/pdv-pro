@@ -37,7 +37,7 @@ export default async function SmsMarketingPage() {
         </header>
 
         <main className="w-full relative z-10 px-6 lg:px-10 pb-20">
-          <SmsClient storeId={store.id} storeName={store.name} initialData={dashboardData as any} />
+          <SmsClient storeId={store.id} storeName={store.name} initialData={dashboardData} />
         </main>
       </div>
     </div>

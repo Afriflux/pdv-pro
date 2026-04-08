@@ -165,7 +165,7 @@ export default async function LoyaltyPortalPage() {
             </div>
           ) : (
             <div className="divide-y divide-gray-100">
-              {account.transactions.map((tx: any) => (
+              {account.transactions.map((tx: { id: string, type: string, description: string, created_at: Date, points: number, store: { name: string } | null }) => (
                 <div key={tx.id} className="p-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${

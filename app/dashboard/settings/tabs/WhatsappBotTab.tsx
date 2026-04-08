@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Phone, MessageSquare, Bot, AlertCircle, Loader2 } from 'lucide-react'
 
-export function WhatsappBotTab({ store }: { store: any }) {
+export function WhatsappBotTab({ store }: { store: Record<string, unknown> & { id: string; slug: string; whatsapp_bot?: { active: boolean; welcome_message: string; auto_reply: boolean; ai_enabled: boolean; phone_number?: string } } }) {
   const [saving, setSaving] = useState(false)
 
   const [active, setActive] = useState(false)
