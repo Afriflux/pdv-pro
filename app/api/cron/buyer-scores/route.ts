@@ -41,7 +41,7 @@ export async function GET(request: Request) {
       ])
 
       const totalOrders = buyer._count.id
-      const score = computeBuyerScore({
+      const score = await computeBuyerScore({
         success_orders: delivered,
         refused_orders: cancelled,
         disputed_orders: disputed,
