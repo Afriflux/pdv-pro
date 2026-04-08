@@ -55,6 +55,11 @@ const QUICK_TEMPLATES: Record<string, { label: string, text: string }[]> = {
     { label: 'Demande d\'Avis / VIP', text: 'Bonjour {{client_name}} 🌟, nous espérons que vous adorez votre achat ("{{product_name}") !\n📸 Envoyez-nous une petite photo et obtenez -15% sur votre prochaine commande !' },
     { label: 'Message d\'Absence', text: 'Bonjour {{client_name}} ! L\'équipe {{store_name}} est actuellement fermée 🌙.\nLaissez votre message ou votre commande ici et nous vous répondrons dès demain matin à la première heure !' }
   ],
+  'sms': [
+    { label: '🛒 Relance Panier', text: 'Bonjour {{client_name}}, votre panier de "{{product_name}}" sur {{store_name}} vous attend toujours ! Finalisez vite : {{checkout_link}}' },
+    { label: '🎉 Confirmation', text: 'Merci pour votre commande {{client_name}} ! Votre achat chez {{store_name}} est confirmé. Total encaissé.' },
+    { label: '🚚 Suivi Livraison', text: 'Votre commande {{store_name}} est en route. Le livreur vous contactera très bientôt.' }
+  ],
   'push_notification': [
     { label: '🎉 Vente Réussie', text: 'Nouvelle commande enregistrée pour {{product_name}} par {{client_name}} ! 💰 Préparez le colis.' },
     { label: '🚨 Panier VIP à Relancer', text: 'Alerte ! Un gros panier de "{{product_name}}" vient d\'être abandonné par {{client_name}}. Appelez-le !' },
@@ -645,6 +650,7 @@ export function UniversalWorkflowBuilder({
                   if (value === 'telegram_vip') newActions[i].payload = { message: 'Félicitations {{client_name}} ! Voici votre accès au groupe : {{telegram_link}}' }
                   else if (value === 'telegram_group') newActions[i].payload = { message: '🚀 Nouvelle commande de {{product_name}} par {{client_name}} !' }
                   else if (value === 'whatsapp_message') newActions[i].payload = { message: 'Bonjour {{client_name}}...' }
+                  else if (value === 'sms') newActions[i].payload = { message: 'Bonjour {{client_name}}...' }
                   else if (value === 'webhook') newActions[i].payload = { url: 'https://', method: 'POST' }
                   else if (value === 'create_task') newActions[i].payload = { title: 'Appeler {{client_name}} pour confirmer', priority: 'high' }
                   else newActions[i].payload = { message: '' }
@@ -687,6 +693,7 @@ export function UniversalWorkflowBuilder({
                     >
                       <optgroup label="⚡ Actions (Communications)">
                         <option value="whatsapp_message">💬 Envoyer un message WhatsApp</option>
+                        <option value="sms">📱 Envoyer un SMS textuel</option>
                         <option value="email_customer">📧 Envoyer un Email au client</option>
                         <option value="telegram_vip">🎫 Lien Privé (Bot Telegram Yayyam)</option>
                         <option value="telegram_group">📢 Diffuser dans le Groupe Telegram</option>

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   User, Globe, Palette, Store as StoreIcon, Share2, 
   ShieldCheck, Bell, Wallet, CheckCircle2, 
-  FileText, AlertTriangle, Search
+  FileText, AlertTriangle, Search, Phone, Trophy
 } from 'lucide-react'
 
 // Imports des Tabs
@@ -21,6 +21,8 @@ import { KycTab } from './tabs/KycTab'
 import { ContractTab } from './tabs/ContractTab'
 import { DangerZoneTab } from './tabs/DangerZoneTab'
 import { SeoTab } from './tabs/SeoTab'
+import { WhatsappBotTab } from './tabs/WhatsappBotTab'
+import { LoyaltyTab } from './tabs/LoyaltyTab'
 
 export function SettingsLayout({ store, profile, userId }: any) {
   const [activeSection, setActiveSection] = useState('profil')
@@ -50,6 +52,8 @@ export function SettingsLayout({ store, profile, userId }: any) {
       case 'kyc': return <KycTab store={store} />
       case 'seo': return <SeoTab store={store} />
       case 'contrat': return <ContractTab store={store} />
+      case 'whatsapp-bot': return <WhatsappBotTab store={store} />
+      case 'loyalty': return <LoyaltyTab store={store} />
       case 'danger': return <DangerZoneTab />
       default: return <ProfileTab profile={profile} userId={userId} />
     }
@@ -74,6 +78,15 @@ export function SettingsLayout({ store, profile, userId }: any) {
           <MenuBtn active={activeSection === 'retrait'} icon={<Wallet className="w-5 h-5" />} label="Retraits" onClick={() => setActiveSection('retrait')} />
           <MenuBtn active={activeSection === 'kyc'} icon={<CheckCircle2 className="w-5 h-5" />} label="Vérification KYC" onClick={() => setActiveSection('kyc')} />
           <MenuBtn active={activeSection === 'contrat'} icon={<FileText className="w-5 h-5" />} label="Contrat Partenaire" onClick={() => setActiveSection('contrat')} />
+          
+          {store?.installedApps?.some((a: any) => a.app_id === 'whatsapp-bot' && a.status === 'active') && (
+            <MenuBtn active={activeSection === 'whatsapp-bot'} icon={<Phone className="w-5 h-5" />} label="WhatsApp Bot" onClick={() => setActiveSection('whatsapp-bot')} />
+          )}
+
+          {store?.installedApps?.some((a: any) => a.app_id === 'loyalty-points' && a.status === 'active') && (
+            <MenuBtn active={activeSection === 'loyalty'} icon={<Trophy className="w-5 h-5" />} label="Fidélité (Points)" onClick={() => setActiveSection('loyalty')} />
+          )}
+
           <div className="hidden lg:block h-6" />
           <button 
             onClick={() => setActiveSection('danger')}

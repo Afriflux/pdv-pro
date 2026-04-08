@@ -1,7 +1,7 @@
 // POST /api/reviews/create
 // Body : { store_id, product_id?, order_id?, buyer_name, rating, comment? }
 
-import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
 interface ReviewBody {
@@ -29,24 +29,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'rating doit être entre 1 et 5' }, { status: 400 })
     }
 
-    const supabase = await createClient()
-
     // Vérifier si order_id fourni → marquer comme vérifié
     let verified = false
     if (body.order_id) {
-      const { data: order } = await supabase
-        .from('Order')
-        .select('id')
-        .eq('id', body.order_id)
-        .eq('store_id', body.store_id)
-        .eq('status', 'completed')
-        .single()
+      const order = await prisma.order.findFirst({
+        where: {
+          id: body.order_id,
+          store_id: body.store_id,
+          status: 'completed'
+        },
+        select: { id: true }
+      })
       verified = !!order
     }
 
-    const { error } = await supabase
-      .from('Review')
-      .insert({
+    await prisma.review.create({
+      data: {
         store_id:   body.store_id,
         product_id: body.product_id ?? null,
         order_id:   body.order_id ?? null,
@@ -55,13 +53,11 @@ export async function POST(req: Request) {
         comment:    body.comment?.trim() || null,
         image_url:  body.image_url ?? null,
         verified,
-      })
-
-    if (error) throw error
+      }
+    })
 
     return NextResponse.json({ success: true, verified })
   } catch (err: unknown) {
-
     return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }
 }

@@ -177,9 +177,6 @@ export async function deleteAccount() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Non autorisé')
 
-  // Supabase Auth Admin API serait nécessaire pour supprimer l'utilisateur auth
-  // Mais ici on peut marquer le profil comme "désactivé" ou supprimer les données liées
-  
   // 1. Supprimer la boutique (les cascades devraient gérer le reste)
   const { error: storeErr } = await supabase
     .from('Store')
@@ -188,7 +185,18 @@ export async function deleteAccount() {
 
   if (storeErr) throw new Error(storeErr.message)
 
-  // 2. Déconnexion
+  // 2. Supprimer le profil User
+  await supabase.from('User').delete().eq('id', user.id)
+
+  // 3. Supprimer l'utilisateur Auth via l'admin client (suppression réelle)
+  const { createAdminClient } = await import('@/lib/supabase/admin')
+  const adminClient = createAdminClient()
+  const { error: authDeleteErr } = await adminClient.auth.admin.deleteUser(user.id)
+  if (authDeleteErr) {
+    console.error('[deleteAccount] Erreur suppression Auth:', authDeleteErr.message)
+  }
+
+  // 4. Déconnexion locale
   await supabase.auth.signOut()
 
   return { success: true }

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { OrderActions } from './OrderActions'
 import CallButton from '@/components/orders/CallButton'
+import { BuyerScoreBadge } from '@/components/orders/BuyerScoreBadge'
 import { MessageCircle, Phone, MapPin, Receipt, Clock, ArrowLeft, Check, X } from 'lucide-react'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -200,6 +201,9 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                         />
                       </div>
                     )}
+
+                    {/* Anti-Fraude : Score Acheteur */}
+                    <BuyerScoreBadge phone={order.buyer_phone} storeId={store.id} />
                   </div>
                 </div>
 

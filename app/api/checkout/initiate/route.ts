@@ -12,6 +12,7 @@ import { sendWhatsApp, msgVendorNewOrder, msgOrderConfirmed } from '@/lib/whatsa
 import { sendSaleNotification } from '@/lib/telegram/community-service'
 import { executeWorkflows } from '@/lib/workflows/execution'
 import { sendMetaCAPIPurchaseEvent } from '@/lib/tracking/capi'
+import { checkBuyerForCOD } from '@/lib/anti-fraud/buyer-check'
 
 function roundTo5(amount: number): number {
   return Math.ceil(amount / 5) * 5
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
       buyer_name, buyer_email, buyer_phone, delivery_address, delivery_zone_id,
       payment_method, applied_promo_id, affiliate_token, affiliate_subid,
       booking_date, booking_start_time, booking_end_time,
-      bump_product_id
+      bump_product_id, loyalty_discount = 0, redeemed_points = 0
     } = body
 
     if (!product_id || !store_id || !buyer_name || !buyer_phone || !payment_method) {
@@ -89,7 +90,17 @@ export async function POST(req: NextRequest) {
     // ── 1. VALIDATION SERVEUR DU PRODUIT & STOCK ──────────────────
     const product = await prisma.product.findUnique({ 
       where: { id: product_id },
-      include: { store: { select: { volume_discounts_active: true, volume_discounts_config: true, meta_pixel_id: true, meta_capi_token: true } } }
+      include: { 
+        store: { 
+          select: { 
+            volume_discounts_active: true, 
+            volume_discounts_config: true, 
+            meta_pixel_id: true, 
+            meta_capi_token: true,
+            installedApps: { where: { status: 'active', app_id: 'fraud-cod' } }
+          } 
+        } 
+      }
     })
     if (!product || !product.active || product.store_id !== store_id) {
       return NextResponse.json({ error: 'Produit introuvable ou inactif.' }, { status: 404 })
@@ -212,7 +223,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Le COD est réservé aux produits physiques.' }, { status: 400 })
     }
 
-    const total = subtotal + deliveryFee
+    let actualLoyaltyDiscount = 0
+    if (redeemed_points > 0) {
+      const dbLoyalty = await prisma.loyaltyAccount.findUnique({ where: { phone: buyer_phone } })
+      if (dbLoyalty && dbLoyalty.balance >= redeemed_points) {
+        // En cas de triche cliente, on cap avec ce que le user envoie jusqu'à concurrence du solde
+        actualLoyaltyDiscount = loyalty_discount
+      }
+    }
+
+    const total = Math.max(0, subtotal + deliveryFee - actualLoyaltyDiscount)
 
     // ── 4. COMMISSION PLATEFORME & AFFILIATION ──────────────────────────────────
     const storeRecord = await prisma.store.findUnique({
@@ -275,6 +295,23 @@ export async function POST(req: NextRequest) {
       }
 
     const supabase = await createClient()
+
+    // ── Anti-Fraude COD : Vérification BuyerScore & Blacklist ─────
+    if (payment_method === 'cod') {
+      const isFraudAppInstalled = product.store?.installedApps?.length > 0
+      
+      if (isFraudAppInstalled) {
+        const fraudCheck = await checkBuyerForCOD(buyer_phone)
+        if (!fraudCheck.allowed) {
+          return NextResponse.json({ 
+            error: fraudCheck.message || 'Le paiement à la livraison n\'est pas disponible pour ce numéro.',
+            cod_blocked: true,
+            risk_level: fraudCheck.riskLevel,
+            score: fraudCheck.score,
+          }, { status: 403 })
+        }
+      }
+    }
 
     // Vérification Portefeuille pour COD
     if (payment_method === 'cod') {
@@ -355,12 +392,20 @@ export async function POST(req: NextRequest) {
       const results = await prisma.$transaction(operations)
       orderRecord = results[results.length - 1] // La commande est la dernière op
 
+      // ── Mettre en attente (dépenser) les points de fidélité ──
+      try {
+        if (actualLoyaltyDiscount > 0) {
+           const { redeemLoyaltyPoints } = await import('@/app/actions/loyalty')
+           await redeemLoyaltyPoints(buyer_phone, store_id, actualLoyaltyDiscount, orderRecord.id)
+        }
+      } catch(e) {}
+
       // Nettoyer les paniers abandonnés du prospect
       try {
         await prisma.lead.deleteMany({
           where: { phone: buyer_phone, product_id: product_id, source: 'abandoned_cart' }
         })
-      } catch (e) {
+      } catch {
         // silent fail
       }
 
@@ -455,6 +500,11 @@ export async function POST(req: NextRequest) {
 
     // ── 6. REPONSE FINALE ─────────────────────────────────────────
     if (payment_method === 'cod') {
+      try {
+        const { earnLoyaltyPoints } = await import('@/app/actions/loyalty')
+        await earnLoyaltyPoints(buyer_phone, store_id, total, orderRecord.id)
+      } catch(e) { console.error('[Loyalty COD Error]', e) }
+
       const city = delivery_address?.split(',')[1]?.trim() || null
       notifyNewOrder({
         userId: store_id, productName: product.name, buyerName: buyer_name,

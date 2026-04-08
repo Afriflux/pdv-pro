@@ -175,6 +175,21 @@ export default function MarketingHubClient({ store, products, links, domain }: M
               <h2 className="text-2xl font-black text-[#1A1A1A] mb-2">Automatisations</h2>
               <p className="text-sm text-gray-500 font-medium max-w-2xl">Fidélisez votre clientèle automatiquement. Configurez des séquences de remerciement et de relance sans effort grâce à nos intégrations Email & WhatsApp.</p>
             </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+               <a href="/dashboard/marketing/sms" className="bg-gradient-to-br from-[#0F7A60] to-emerald-800 rounded-3xl p-6 text-white hover:scale-[1.02] transition-transform shadow-lg shadow-emerald-900/10 block group relative overflow-hidden">
+                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors" />
+                 <span className="text-3xl block mb-4">📱</span>
+                 <h3 className="font-black text-xl mb-1">Passer au SMS Marketing</h3>
+                 <p className="text-sm text-emerald-100 font-medium max-w-64">98% de taux d'ouverture. Envoyez vos promos et rappels directement sur le téléphone de vos clients locaux.</p>
+               </a>
+               <a href="/dashboard/workflows" className="bg-white border border-gray-200 rounded-3xl p-6 hover:border-[#0F7A60] transition-colors block group relative overflow-hidden">
+                 <span className="text-3xl block mb-4">🤖</span>
+                 <h3 className="font-black text-xl text-gray-900 mb-1">Gérer les scénarios</h3>
+                 <p className="text-sm text-gray-500 font-medium max-w-64">Construisez vos emails et envois automatiques via l'éditeur visuel (Panier abandonné, Reçu).</p>
+               </a>
+            </div>
+
             <EmailMarketing store={store} />
           </div>
         )}

@@ -19,7 +19,9 @@ export default async function SettingsPage() {
       seo_title, seo_description,
       telegram_chat_id, telegram_notifications,
       withdrawal_method, withdrawal_number, withdrawal_name,
-      contract_accepted, contract_accepted_at, vendor_type
+      contract_accepted, contract_accepted_at, vendor_type,
+      whatsapp_bot (*),
+      installedApps (app_id, status)
     `)
     .eq('user_id', user.id)
     .single()

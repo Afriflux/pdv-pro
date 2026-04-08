@@ -22,7 +22,9 @@ const mono = Space_Mono({
 })
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { SplashScreen } from '@/components/ui/SplashScreen'
 import type { Viewport } from 'next'
+import { unstable_cache } from 'next/cache'
 
 export const viewport: Viewport = {
   themeColor: '#0F7A60',
@@ -30,14 +32,36 @@ export const viewport: Viewport = {
 
 export const revalidate = 60 // Refresh cache every minute to apply admin SEO changes
 
-export async function generateMetadata(): Promise<Metadata> {
-  const supabase = createAdminClient()
-  const { data: configRows } = await supabase
-    .from('PlatformConfig')
-    .select('key, value')
-    .in('key', ['seo_title', 'seo_description', 'seo_keywords', 'seo_og_image', 'platform_name'])
+const getCachedSeoConfig = unstable_cache(
+  async () => {
+    const supabase = createAdminClient()
+    const { data: configRows } = await supabase
+      .from('PlatformConfig')
+      .select('key, value')
+      .in('key', ['seo_title', 'seo_description', 'seo_keywords', 'seo_og_image', 'platform_name'])
+    return configRows || []
+  },
+  ['layout-seo-config'],
+  { revalidate: 60 }
+)
 
-  const kv = (configRows || []).reduce((acc: Record<string, string>, r) => {
+const getCachedMaintenanceConfig = unstable_cache(
+  async () => {
+    const supabase = createAdminClient()
+    const { data: configRows } = await supabase
+      .from('PlatformConfig')
+      .select('key, value')
+      .in('key', ['maintenance_active', 'maintenance_message'])
+    return configRows || []
+  },
+  ['layout-maintenance-config'],
+  { revalidate: 60 }
+)
+
+export async function generateMetadata(): Promise<Metadata> {
+  const configRows = await getCachedSeoConfig()
+
+  const kv = configRows.reduce((acc: Record<string, string>, r) => {
     if (r.key && r.value) acc[r.key] = r.value
     return acc
   }, {})
@@ -45,7 +69,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteTitle = kv['seo_title'] || kv['platform_name'] || "Yayyam — Vendez en ligne en Afrique de l'Ouest"
   const siteDesc  = kv['seo_description'] || "Créez votre boutique en ligne en 10 minutes. Zéro abonnement. Yayyam, la plateforme e-commerce pour l'Afrique de l'Ouest."
   const siteKeys  = kv['seo_keywords'] ? kv['seo_keywords'].split(',').map(k => k.trim()) : ["ecommerce", "afrique", "boutique en ligne"]
-  const siteImage = kv['seo_og_image'] || '/og-image.png'
+  const siteImage = kv['seo_og_image']
+
+  // Note: If siteImage is empty, Next.js will automatically fall back to app/opengraph-image.tsx
 
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'),
@@ -55,10 +81,6 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: siteDesc,
     keywords: siteKeys,
-    icons: {
-      icon: '/icon-192x192.png',
-      apple: '/icon-192x192.png',
-    },
     manifest: '/manifest.json',
     openGraph: {
       type: 'website',
@@ -67,13 +89,13 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: kv['platform_name'] || 'Yayyam',
       title: siteTitle,
       description: siteDesc,
-      images: [{ url: siteImage, width: 1200, height: 630 }],
+      images: siteImage ? [{ url: siteImage, width: 1200, height: 630 }] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
       title: siteTitle,
       description: siteDesc,
-      images: [siteImage],
+      images: siteImage ? [siteImage] : undefined,
     }
   }
 }
@@ -94,14 +116,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Query maintenance mode using the Admin Client
-  const supabase = createAdminClient()
-  const { data: configRows } = await supabase
-    .from('PlatformConfig')
-    .select('key, value')
-    .in('key', ['maintenance_active', 'maintenance_message'])
+  // Query maintenance mode using the Cached Admin Client
+  const configRows = await getCachedMaintenanceConfig()
 
-  const kv = (configRows || []).reduce((acc: Record<string, string>, row) => {
+  const kv = configRows.reduce((acc: Record<string, string>, row) => {
     if (row.key && row.value) acc[row.key] = row.value
     return acc
   }, {})
@@ -114,12 +132,13 @@ export default async function RootLayout({
   const showMaintenance = isMaintenanceActive && !isAdminRoute
 
   return (
-    <html lang="fr" className={`${cormorant.variable} ${dm.variable} ${mono.variable}`}>
-      <body className={`antialiased font-body bg-cream text-ink selection:bg-gold/30 selection:text-ink`}>
+    <html lang="fr" className={`${cormorant.variable} ${dm.variable} ${mono.variable}`} suppressHydrationWarning>
+      <body className={`antialiased font-body bg-cream text-ink selection:bg-gold selection:text-white`} suppressHydrationWarning>
         {showMaintenance ? (
           <MaintenanceScreen message={kv['maintenance_message']} />
         ) : (
           <>
+            <SplashScreen />
             <OrganizationJsonLd />
             <WebSiteJsonLd />
             <Suspense fallback={null}>

@@ -92,7 +92,6 @@ export function CountdownBanner({ config }: { config?: BannerProps }) {
           </div>
           
           <Link 
-            suppressHydrationWarning
             href="/register" 
             className="hidden sm:flex items-center gap-1.5 bg-white text-red-600 font-bold px-4 py-2 rounded-lg text-xs hover:bg-red-50 hover:scale-105 transition-all shadow-lg"
           >

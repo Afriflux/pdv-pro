@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 interface PricingCalculatorProps {
@@ -8,7 +8,10 @@ interface PricingCalculatorProps {
 }
 
 export default function PricingCalculator({ tiers }: PricingCalculatorProps) {
+  const [mounted, setMounted] = useState(false)
   const [monthlySales, setMonthlySales] = useState<number>(250000)
+
+  useEffect(() => setMounted(true), [])
 
   // Commission dégressive dynamique
   const getCommissionRate = (revenue: number) => {
@@ -64,7 +67,7 @@ export default function PricingCalculator({ tiers }: PricingCalculatorProps) {
         {/* Card Votre CA */}
         <div className="bg-pearl rounded-2xl p-6 border border-line flex flex-col justify-center items-center text-center shadow-sm">
           <p className="text-sm font-bold text-slate uppercase tracking-wider mb-2">Votre CA</p>
-          <p className="text-3xl font-black text-ink">{monthlySales.toLocaleString('fr-FR')} FCFA</p>
+          <p className="text-3xl font-black text-ink">{mounted ? monthlySales.toLocaleString('fr-FR') : '250 000'} FCFA</p>
         </div>
 
         {/* Card Commission */}
@@ -74,14 +77,14 @@ export default function PricingCalculator({ tiers }: PricingCalculatorProps) {
             Commission Yayyam
             <span className="bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full text-xs">{(currentRate * 100).toFixed(0)}%</span>
           </p>
-          <p className="text-3xl font-black text-amber-600">{estimatedCommission.toLocaleString('fr-FR')} F</p>
+          <p className="text-3xl font-black text-amber-600">{mounted ? estimatedCommission.toLocaleString('fr-FR') : '20 000'} F</p>
         </div>
 
         {/* Card Vous recevez */}
         <div className="bg-emerald/5 rounded-2xl p-6 border border-emerald/20 flex flex-col justify-center items-center text-center shadow-sm relative overflow-hidden transform hover:scale-105 transition-transform duration-300">
           <div className="absolute top-0 w-full h-1 bg-emerald"></div>
           <p className="text-sm font-bold text-emerald/70 uppercase tracking-wider mb-2">Vous recevez</p>
-          <p className="text-4xl font-black text-emerald">{vendorNet.toLocaleString('fr-FR')} F</p>
+          <p className="text-4xl font-black text-emerald">{mounted ? vendorNet.toLocaleString('fr-FR') : '230 000'} F</p>
           <p className="text-[10px] text-emerald mt-2 font-bold uppercase tracking-widest bg-emerald/10 px-3 py-1 rounded-full text-center">soit {vendorPercent}% de vos ventes</p>
         </div>
       </div>
@@ -112,15 +115,15 @@ export default function PricingCalculator({ tiers }: PricingCalculatorProps) {
         <div className="space-y-3">
           <div className="flex justify-between items-center pb-3 border-b border-gray-100">
             <span>Shopify (2.9% + fix + abonnement)</span>
-            <span className="font-bold text-charcoal">~ {shopifyCost.toLocaleString('fr-FR')} FCFA / mois</span>
+            <span className="font-bold text-charcoal">~ {mounted ? shopifyCost.toLocaleString('fr-FR') : '27 250'} FCFA / mois</span>
           </div>
           <div className="flex justify-between items-center pb-3 border-b border-gray-100">
             <span>Autres plateformes locales (12%)</span>
-            <span className="font-bold text-charcoal">~ {otherPlatformCost.toLocaleString('fr-FR')} FCFA</span>
+            <span className="font-bold text-charcoal">~ {mounted ? otherPlatformCost.toLocaleString('fr-FR') : '30 000'} FCFA</span>
           </div>
           <div className="flex justify-between items-center pt-2">
             <span className="text-emerald font-bold">Yayyam ({(currentRate * 100).toFixed(0)}% tout inclus)</span>
-            <span className="font-bold text-emerald text-lg text-right">{estimatedCommission.toLocaleString('fr-FR')} FCFA</span>
+            <span className="font-bold text-emerald text-lg text-right">{mounted ? estimatedCommission.toLocaleString('fr-FR') : '20 000'} FCFA</span>
           </div>
         </div>
       </div>

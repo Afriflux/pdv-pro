@@ -14,7 +14,7 @@ export default async function ServerSidePixelsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) redirect('/pdvconnexion')
+  if (!user) redirect('/login')
 
   const store = await prisma.store.findUnique({
     where: { user_id: user.id },

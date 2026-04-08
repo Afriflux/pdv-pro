@@ -11,18 +11,22 @@ import {
   Sparkles,
   Users
 } from 'lucide-react'
-import PricingCalculator from './PricingCalculator'
 import { getCommissionTiers } from '@/lib/commission/commission-service'
-import { LandingNav } from '@/components/landing/LandingNav'
+import { LandingHeader } from '@/components/landing/LandingHeader'
+import { Logo } from '@/components/ui/Logo'
 
 import { BentoGrid } from "@/components/landing/BentoGrid";
+import { PricingCards } from "@/components/landing/PricingCards";
+import { TestimonialSlider } from '@/components/landing/TestimonialSlider'
+import { LiveCounters } from '@/components/landing/LiveCounters'
+import PricingCalculator from './PricingCalculator'
+
 import { HeroSection } from "@/components/landing/HeroSection";
 
+import { unstable_cache } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { CountdownBanner } from '@/components/landing/CountdownBanner'
-import { LiveCounters } from '@/components/landing/LiveCounters'
-import { TestimonialSlider } from '@/components/landing/TestimonialSlider'
 import { Share2, TrendingUp, PhoneCall, Phone } from 'lucide-react'
 
 
@@ -75,16 +79,56 @@ import { Share2, TrendingUp, PhoneCall, Phone } from 'lucide-react'
     }
   ]
 
+const getCachedLandingConfig = unstable_cache(
+  async () => {
+    const supabaseAdmin = createAdminClient()
+    const allowedKeys = [
+      'landing_hero_badge', 'landing_hero_h1', 'landing_hero_subtitle', 'landing_hero_cta_primary',
+      'landing_hero_cta_secondary', 'landing_problem_supertitle', 'landing_problem_title',
+      'landing_problem_subtitle', 'landing_solution_supertitle', 'landing_solution_title',
+      'landing_solution_subtitle', 'landing_features_supertitle', 'landing_features_title',
+      'landing_sectors_supertitle', 'landing_sectors_title', 'landing_sectors_subtitle',
+      'landing_telegram_supertitle', 'landing_telegram_title', 'landing_telegram_subtitle',
+      'landing_cod_price', 'landing_cta_title', 'landing_cta_button', 'landing_testimonials',
+      'landing_faq', 'landing_instagram_url', 'landing_whatsapp_support', 'landing_banner_active',
+      'landing_banner_date', 'landing_banner_text'
+    ]
+    const { data: cfgRows } = await supabaseAdmin
+      .from('PlatformConfig')
+      .select('key, value')
+      .in('key', allowedKeys)
+    return cfgRows || []
+  },
+  ['landing-config-v2'],
+  { revalidate: 60 }
+)
+
+const getCachedLiveCounters = unstable_cache(
+  async () => {
+    const supabaseAdmin = createAdminClient()
+    const [
+      { count: vendorsCount },
+      { count: productsCount },
+      { count: ordersCount }
+    ] = await Promise.all([
+      supabaseAdmin.from('User').select('*', { count: 'exact', head: true }).eq('role', 'vendeur'),
+      supabaseAdmin.from('Product').select('*', { count: 'exact', head: true }).eq('active', true),
+      supabaseAdmin.from('Order').select('*', { count: 'exact', head: true })
+    ])
+    return { vendorsCount, productsCount, ordersCount }
+  },
+  ['landing-counters-v2'],
+  { revalidate: 60 }
+)
+
 export default async function LandingPage() {
   const supabaseServer = await createClient()
   const { data: { session } } = await supabaseServer.auth.getSession()
   const isLoggedIn = !!session
 
-  // Chargement config dynamique depuis PlatformConfig
-  const supabaseAdmin = createAdminClient()
-
   let dashboardUrl = '/dashboard'
   if (isLoggedIn && session?.user) {
+    const supabaseAdmin = createAdminClient()
     const { data: userRow } = await supabaseAdmin.from('User').select('role').eq('id', session.user.id).single()
     const role = userRow?.role
     if (role === 'acheteur' || role === 'client') dashboardUrl = '/client'
@@ -93,43 +137,13 @@ export default async function LandingPage() {
   }
 
   const { TIERS: dynamicTiers } = await getCommissionTiers()
-  const allowedKeys = [
-    'landing_hero_badge',
-    'landing_hero_h1',
-    'landing_hero_subtitle',
-    'landing_hero_cta_primary',
-    'landing_hero_cta_secondary',
-    'landing_problem_supertitle',
-    'landing_problem_title',
-    'landing_problem_subtitle',
-    'landing_solution_supertitle',
-    'landing_solution_title',
-    'landing_solution_subtitle',
-    'landing_features_supertitle',
-    'landing_features_title',
-    'landing_sectors_supertitle',
-    'landing_sectors_title',
-    'landing_sectors_subtitle',
-    'landing_telegram_supertitle',
-    'landing_telegram_title',
-    'landing_telegram_subtitle',
-    'landing_cod_price',
-    'landing_cta_title',
-    'landing_cta_button',
-    'landing_testimonials',
-    'landing_faq',
-    'landing_instagram_url',
-    'landing_whatsapp_support',
-    'landing_banner_active',
-    'landing_banner_date',
-    'landing_banner_text'
-  ]
-  const { data: cfgRows } = await supabaseAdmin
-    .from('PlatformConfig')
-    .select('key, value')
-    .in('key', allowedKeys)
-  const cfg = (cfgRows ?? []).reduce<Record<string, string>>(
-    (acc, { key, value }) => ({ ...acc, [key]: value }), {}
+  
+  const cfgRows = await getCachedLandingConfig()
+  const cfg = cfgRows.reduce<Record<string, string>>(
+    (acc, { key, value }) => {
+      if (key && value) acc[key] = value
+      return acc
+    }, {}
   )
   const get = (key: string, fallback: string) => cfg[key] ?? fallback
 
@@ -181,16 +195,8 @@ export default async function LandingPage() {
     ? h1Lines
     : ['Votre Super-App', 'de Croissance.', 'Tout-en-un.']
 
-  // Counts en temps réel
-  const [
-    { count: vendorsCount },
-    { count: productsCount },
-    { count: ordersCount }
-  ] = await Promise.all([
-    supabaseAdmin.from('User').select('*', { count: 'exact', head: true }).eq('role', 'vendeur'),
-    supabaseAdmin.from('Product').select('*', { count: 'exact', head: true }).eq('active', true),
-    supabaseAdmin.from('Order').select('*', { count: 'exact', head: true })
-  ])
+  // Counts en temps réel via cache
+  const { vendorsCount, productsCount, ordersCount } = await getCachedLiveCounters()
 
   return (
     <div className="bg-cream min-h-screen text-ink font-body selection:bg-emerald/20 selection:text-ink">
@@ -199,33 +205,7 @@ export default async function LandingPage() {
         dateStr: get('landing_banner_date', '2026-04-01T00:00:00Z'),
         text: get('landing_banner_text', 'Lancement officiel le 1er Avril 2026')
       }} />
-      {/* ── HEADER NAVIGATION ── */}
-      {/* ── HEADER NAVIGATION ── */}
-      <div className="sticky top-4 z-50 px-4 md:px-0 flex justify-center pointer-events-none">
-        <header className="pointer-events-auto w-full max-w-4xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl shadow-emerald/5 rounded-full h-16 flex items-center justify-between px-6 transition-all duration-300 hover:bg-white/80">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 bg-emerald rounded-[10px] shadow-sm flex items-center justify-center transform -rotate-6 transition-transform group-hover:rotate-0">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.65.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.65.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.65.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.65.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/></svg>
-            </div>
-            <span className="text-xl font-display font-black tracking-tighter text-ink">
-              Yayyam<span className="text-emerald">Pro</span>
-            </span>
-          </Link>
-          
-          <div className="hidden md:flex items-center gap-6 font-bold text-xs uppercase tracking-widest text-charcoal">
-            <a href="#features" className="hover:text-emerald hover:scale-105 transition-all">Atouts</a>
-            <a href="#pricing" className="hover:text-emerald hover:scale-105 transition-all">Tarifs</a>
-            <Link suppressHydrationWarning href="/vendeurs" className="hover:text-emerald hover:scale-105 transition-all flex items-center gap-1">
-               <span suppressHydrationWarning>Marché</span>
-               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <LandingNav isLoggedIn={isLoggedIn} dashboardUrl={dashboardUrl} />
-          </div>
-        </header>
-      </div>
+      <LandingHeader isLoggedIn={isLoggedIn} dashboardUrl={dashboardUrl} />
 
       <main>
         <HeroSection 
@@ -331,92 +311,7 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            <div className="w-full overflow-x-auto pb-8 mb-4 hide-scrollbar">
-              <div className="min-w-[1000px] flex items-stretch gap-4 md:grid md:grid-cols-5 md:min-w-0 px-2 pt-8">
-                
-                {/* Headers */}
-                <div className="w-48 shrink-0 md:w-auto flex flex-col sticky left-0 z-20 bg-pearl/90 backdrop-blur-sm self-stretch pt-[104px] pb-6 pr-4">
-                  <div className="space-y-6">
-                    <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Votre CA mensuel</div>
-                    <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Commission Yayyam</div>
-                    <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start mt-2">Vous recevez</div>
-                    <div className="h-12 flex items-center text-xs font-bold text-slate uppercase tracking-wider justify-start">Frais passerelle</div>
-                  </div>
-                </div>
-
-                {/* Card 1 */}
-                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative group/tooltip overflow-hidden cursor-help">
-                  <div className="absolute inset-0 bg-ink/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
-                    <h4 className="font-bold text-gold mb-3 text-lg">Palier Débutant</h4>
-                    <p className="text-sm text-cream/90 leading-relaxed">Activé par défaut ou si votre chiffre d'affaires mensuel (N-1) est inférieur à 100 000 FCFA. Une commission unique de 8% s'applique. Zéro abonnement.</p>
-                  </div>
-                  <div className="text-center pb-6 border-b border-line mb-6">
-                    <h3 className="font-display font-black text-2xl text-ink">Débutant</h3>
-                  </div>
-                  <div className="space-y-6 flex-1 text-center">
-                    <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">0 - 100K FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">8%</div>
-                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">92%</div>
-                    <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
-                  </div>
-                  </div>
-
-                {/* Card 2 */}
-                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative group/tooltip overflow-hidden cursor-help">
-                  <div className="absolute inset-0 bg-ink/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
-                    <h4 className="font-bold text-gold mb-3 text-lg">Palier Actif</h4>
-                    <p className="text-sm text-cream/90 leading-relaxed">Dès que vous dépassez les 100 000 FCFA de ventes le mois précédent, le système abaisse automatiquement votre commission à 7%. Vous gagnez plus.</p>
-                  </div>
-                  <div className="text-center pb-6 border-b border-line mb-6">
-                    <h3 className="font-display font-black text-2xl text-ink">Actif</h3>
-                  </div>
-                  <div className="space-y-6 flex-1 text-center">
-                    <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">100K - 500K FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">7%</div>
-                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">93%</div>
-                    <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
-                  </div>
-                  </div>
-
-                {/* Card 3 */}
-                <div className="w-64 md:w-auto bg-white rounded-3xl p-6 border border-line flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300 relative group/tooltip overflow-hidden cursor-help">
-                  <div className="absolute inset-0 bg-ink/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
-                    <h4 className="font-bold text-gold mb-3 text-lg">Palier Pro</h4>
-                    <p className="text-sm text-cream/90 leading-relaxed">Réservé aux e-commerçants confirmés avec plus de 500 000 FCFA de volumes mensuels (N-1). Vous passez à 6% et gardez 94% du chiffre d'affaires net.</p>
-                  </div>
-                  <div className="text-center pb-6 border-b border-line mb-6">
-                    <h3 className="font-display font-black text-2xl text-ink">Pro</h3>
-                  </div>
-                  <div className="space-y-6 flex-1 text-center">
-                    <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">500K - 1M FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-ink">6%</div>
-                    <div className="h-12 flex items-center justify-center font-bold text-emerald text-xl mt-2">94%</div>
-                    <div className="h-12 flex items-center justify-center text-sm font-medium text-slate">Inclus</div>
-                  </div>
-                  </div>
-
-                {/* Card 4 (Expert) */}
-                <div className="w-64 md:w-auto bg-pearl rounded-3xl border-2 border-emerald-rich shadow-lg p-6 flex flex-col transform md:scale-105 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald/20 transition-all duration-300 relative group/tooltip z-20 cursor-help">
-                  <div className="absolute inset-0 rounded-3xl bg-emerald-deep/95 backdrop-blur-md text-white p-6 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 delay-300 z-50 flex flex-col justify-center text-center pointer-events-none">
-                    <h4 className="font-bold text-emerald-light mb-3 text-lg">Palier Expert</h4>
-                    <p className="text-sm text-cream/90 leading-relaxed">Le grade d'élite. En dépassant 1 Million FCFA mensuels, vous obtenez notre meilleur taux de 5%. Frais Wave/Orange Money inclus. Zéro plafond de facturation.</p>
-                  </div>
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald text-white text-[10px] uppercase tracking-widest font-black px-4 py-1.5 rounded-full shadow-md whitespace-nowrap pointer-events-none z-10">
-                    Meilleur taux (Populaire)
-                  </div>
-                  <div className="text-center pb-6 border-b border-emerald/20 mb-6 relative z-0">
-                    <h3 className="font-display font-black text-2xl text-emerald-rich">Expert</h3>
-                  </div>
-                  <div className="space-y-6 flex-1 text-center relative z-0">
-                    <div className="h-12 flex items-center justify-center font-mono text-sm font-bold text-charcoal">+ 1M FCFA</div>
-                    <div className="h-12 flex items-center justify-center text-5xl font-display font-black text-emerald scale-110">5%</div>
-                    <div className="h-12 flex items-center justify-center font-bold text-emerald-rich text-2xl mt-2 bg-emerald/10 rounded-full scale-110 px-4">95%</div>
-                    <div className="h-12 flex items-center justify-center text-sm font-bold text-emerald">Inclus</div>
-                  </div>
-                  </div>
-
-              </div>
-            </div>
+            <PricingCards />
 
             <div className="mt-8 text-center mb-16">
               <Link href="/register" className="inline-block px-12 py-5 bg-emerald text-white rounded-xl font-bold text-lg hover:bg-emerald-rich transition shadow-xl shadow-emerald/20">
@@ -757,8 +652,7 @@ export default async function LandingPage() {
         <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 grid grid-cols-1 md:grid-cols-4 gap-12 mt-4">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-6">
-              <Store className="text-gold" size={28} />
-              <span className="text-2xl font-display font-black tracking-tighter text-white">Yayyam<span className="text-emerald-light">Pro</span></span>
+              <Logo textClassName="text-white" />
             </div>
             <p className="font-light max-w-sm leading-relaxed text-sm text-white/60">
               La plateforme e-commerce tout-en-un conçue spécifiquement pour les réalités du commerce en Afrique de l&apos;Ouest.

@@ -201,6 +201,12 @@ model Store {
   assetPurchases                                      AssetPurchase[]
   paymentLinks                                        PaymentLink[]
   quotes                                              Quote[]
+  dailyDigests                                        DailyDigest[]
+  whatsapp_bot                                        WhatsappBot?
+  sms_credits                                         SmsCredit?
+  sms_campaigns                                       SmsCampaign[]
+  loyalty_config                                      LoyaltyConfig?
+  loyalty_transactions                                LoyaltyTransaction[]
 
   @@schema("public")
 }
@@ -910,13 +916,26 @@ model ClosingRequestHistory {
 }
 
 model BuyerScore {
-  id             String   @id @default(uuid())
-  phone          String   @unique
-  total_orders   Int      @default(0)
-  success_orders Int      @default(0)
-  refused_orders Int      @default(0)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  id              String   @id @default(uuid())
+  phone           String   @unique
+  total_orders    Int      @default(0)
+  success_orders  Int      @default(0)
+  refused_orders  Int      @default(0)
+  disputed_orders Int      @default(0)
+  score           Int      @default(50)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@schema("public")
+}
+
+model BuyerBlacklist {
+  id            String   @id @default(uuid())
+  phone         String   @unique
+  reason        String   // "3+ cancelled COD" | "fraud_detected" | "manual"
+  flagged_by    String?  // store_id qui a signalé
+  total_refused Int      @default(0)
+  created_at    DateTime @default(now())
 
   @@schema("public")
 }
@@ -2127,5 +2146,139 @@ model HelpdeskTicket {
   store Store @relation(fields: [store_id], references: [id], onDelete: Cascade)
   
   @@index([store_id])
+  @@schema("public")
+}
+
+model DailyDigest {
+  id          String   @id @default(uuid())
+  store_id    String
+  date        DateTime @db.Date
+  summary     String
+  metrics     Json     // {visitors, orders, revenue, avg_cart, abandoned, top_product}
+  suggestions Json     // [{text, priority, action_url}]
+  score       Int      @default(0)
+  read        Boolean  @default(false)
+  created_at  DateTime @default(now())
+
+  store Store @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@unique([store_id, date])
+  @@index([store_id])
+  @@schema("public")
+}
+
+model WhatsappBot {
+  id                String   @id @default(uuid())
+  store_id          String   @unique
+  active            Boolean  @default(false)
+  welcome_message   String   @default("Bienvenue ! Tapez *catalogue* pour voir nos produits ou *aide* pour les commandes disponibles.")
+  auto_reply        Boolean  @default(true)
+  ai_enabled        Boolean  @default(false)
+  phone_number      String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  store             Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model WhatsappConversation {
+  id           String   @id @default(uuid())
+  store_id     String
+  phone        String
+  client_name  String?
+  last_message String?
+  context      Json?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@unique([store_id, phone])
+  @@schema("public")
+}
+
+model SmsCredit {
+  id          String   @id @default(uuid())
+  store_id    String
+  store       Store    @relation(fields: [store_id], references: [id])
+  credits     Int      @default(0)
+  used        Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@unique([store_id])
+  @@schema("public")
+}
+
+model SmsCampaign {
+  id            String   @id @default(uuid())
+  store_id      String
+  store         Store    @relation(fields: [store_id], references: [id])
+  name          String
+  message       String   // max 160 chars
+  recipients    Json     // [{phone: "+221...", name: "..."}]
+  total_sent    Int      @default(0)
+  total_failed  Int      @default(0)
+  status        String   @default("draft") // draft | sending | completed | failed
+  scheduled_at  DateTime?
+  sent_at       DateTime?
+  created_at    DateTime @default(now())
+
+  @@schema("public")
+}
+
+model SmsLog {
+  id           String   @id @default(uuid())
+  store_id     String
+  phone        String
+  message      String
+  type         String   // campaign | auto_abandoned | auto_confirm | auto_tracking
+  status       String   @default("sent") // sent | delivered | failed
+  twilio_sid   String?
+  campaign_id  String?
+  created_at   DateTime @default(now())
+
+  @@schema("public")
+}
+
+model LoyaltyAccount {
+  id              String   @id @default(uuid())
+  phone           String   @unique // Le numéro de l'acheteur (identifiant universel global)
+  total_earned    Int      @default(0) // Total points gagnés (pour le niveau)
+  balance         Int      @default(0) // Points disponibles à dépenser
+  tier            String   @default("bronze") // bronze | silver | gold | diamond
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  transactions    LoyaltyTransaction[]
+
+  @@schema("public")
+}
+
+model LoyaltyTransaction {
+  id              String   @id @default(uuid())
+  account_id      String
+  account         LoyaltyAccount @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  type            String   // earn | redeem | bonus | expire
+  points          Int      // Positif pour earn/bonus, négatif pour redeem
+  description     String
+  order_id        String?  // Lié à quelle commande
+  store_id        String?  // Chez quel vendeur
+  store           Store?   @relation(fields: [store_id], references: [id], onDelete: SetNull)
+  created_at      DateTime @default(now())
+
+  @@schema("public")
+}
+
+model LoyaltyConfig {
+  id              String   @id @default(uuid())
+  store_id        String   @unique
+  store           Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  enabled         Boolean  @default(false)
+  points_per_100  Int      @default(1)   // 1 point par 100 FCFA dépensé
+  max_redeem_pct  Int      @default(20)  // Max 20% de la commande payable en points
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
   @@schema("public")
 }

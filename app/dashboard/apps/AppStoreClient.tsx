@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { MobileSimulator } from '@/components/shared/simulator/MobileSimulator'
 import { installAppAction, uninstallAppAction } from './actions'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ShieldCheck, Sparkles, Phone, Package } from 'lucide-react'
 
 interface AppItem {
   id: string
@@ -56,19 +56,28 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
       case 'smart-reviews': return <Star className="w-8 h-8 text-yellow-400" />
       case 'helpdesk': return <MessageSquare className="w-8 h-8 text-teal-600" />
       case 'subscriptions': return <CreditCard className="w-8 h-8 text-violet-600" />
+      // Nouvelles Apps
+      case 'fraud-cod': return <ShieldCheck className="w-8 h-8 text-red-500" />
+      case 'coach-ia': return <Sparkles className="w-8 h-8 text-yellow-500" />
+      case 'sms-marketing': return <MessageSquare className="w-8 h-8 text-blue-500" />
+      case 'whatsapp-bot': return <Phone className="w-8 h-8 text-green-500" />
+      case 'loyalty-points': return <Trophy className="w-8 h-8 text-orange-500" />
+      case 'dropshipping': return <Package className="w-8 h-8 text-slate-700" />
       default: return <Blocks className="w-8 h-8 text-gray-500" />
     }
   }
 
-  const STORE_APPS: AppItem[] = dbApps.map(app => ({
-    id: app.id,
-    name: app.name,
-    category: app.category,
-    description: app.description || '',
-    icon: getIcon(app.icon_url || 'blocks', app.id),
-    isPro: app.is_premium,
-    features: app.features as string[]
-  }))
+  const STORE_APPS: AppItem[] = dbApps
+    .filter(app => app.id !== 'dropshipping')
+    .map(app => ({
+      id: app.id,
+      name: app.name,
+      category: app.category,
+      description: app.description || '',
+      icon: getIcon(app.icon_url || 'blocks', app.id),
+      isPro: app.is_premium,
+      features: app.features as string[]
+    }))
 
   const [installedAppIds, setInstalledAppIds] = useState<string[]>(initialInstalled)
   const [simulatedApp, setSimulatedApp] = useState<AppItem | null>(null)
@@ -255,6 +264,13 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                       'cinetpay': '/dashboard/settings',
                       'paytech': '/dashboard/settings',
                       'intouch': '/dashboard/settings',
+                      // Nouvelles apps
+                      'fraud-cod': '/dashboard/settings#anti-fraude',
+                      'coach-ia': '/dashboard',
+                      'sms-marketing': '/dashboard/marketing/sms',
+                      'whatsapp-bot': '/dashboard/marketing/whatsapp',
+                      'loyalty-points': '/dashboard/marketing/fidelity',
+                      'dropshipping': '/dashboard/dropshipping',
                     };
                     const configRoute = routeMap[app.id] || `/dashboard/apps/${app.id}`;
                     return (

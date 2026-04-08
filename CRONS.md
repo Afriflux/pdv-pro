@@ -1,4 +1,4 @@
-# Configuration des Tâches Planifiées (Crons) pour PDV Pro sur Netlify
+# Configuration des Tâches Planifiées (Crons) pour Yayyam sur Netlify
 
 L'hébergement étant sur Netlify, les configurations définies dans le fichier `vercel.json` pour les crons ne s'appliquent pas automatiquement. Il est nécessaire d'utiliser un service de déclenchement externe pour simuler ces tâches automatiques via requêtes HTTP.
 

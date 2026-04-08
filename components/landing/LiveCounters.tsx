@@ -10,9 +10,11 @@ interface AnimatedCounterProps {
 function AnimatedCounter({ value, label }: AnimatedCounterProps) {
   const [count, setCount] = useState(0)
   const [inView, setInView] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    setMounted(true)
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -49,7 +51,7 @@ function AnimatedCounter({ value, label }: AnimatedCounterProps) {
   return (
     <div ref={ref} className="flex flex-col items-center text-center p-6 bg-white rounded-3xl border border-line shadow-sm hover:shadow-lg hover:border-emerald/30 transition-all">
       <div className="text-4xl md:text-5xl font-display font-black text-ink mb-2">
-        {count.toLocaleString('fr-FR')}
+        {mounted ? count.toLocaleString('fr-FR') : '0'}
       </div>
       <div className="text-sm font-bold text-slate uppercase tracking-widest">
         {label}

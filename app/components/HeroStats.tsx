@@ -40,17 +40,17 @@ export function HeroStats() {
   return (
     <div className="pt-16 max-w-4xl mx-auto border-t border-line mt-16 flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16">
       <div className="flex flex-col items-center text-center gap-2 min-w-[140px]">
-        <div className="font-display font-black text-4xl text-dust">J-{stat1}</div>
+        <div className="font-display font-black text-4xl text-charcoal">J-{stat1}</div>
         <div className="text-sm font-bold text-slate uppercase tracking-wider">Votre boutique<br/>est en ligne</div>
       </div>
       <div className="h-10 w-px bg-line hidden md:block"></div>
       <div className="flex flex-col items-center text-center gap-2 min-w-[200px]">
-        <div className="font-display font-black text-4xl text-dust">{stat2} F</div>
+        <div className="font-display font-black text-4xl text-charcoal">{stat2} F</div>
         <div className="text-sm font-bold text-slate uppercase tracking-wider">d&apos;abonnement<br/>pour démarrer</div>
       </div>
       <div className="h-10 w-px bg-line hidden md:block"></div>
       <div className="flex flex-col items-center text-center gap-2 min-w-[200px]">
-        <div className="font-display font-black text-4xl text-dust">{stat3Start}% &rarr; {stat3End}%</div>
+        <div className="font-display font-black text-4xl text-charcoal">{stat3Start}% &rarr; {stat3End}%</div>
         <div className="text-sm font-bold text-slate uppercase tracking-wider">commission<br/>selon votre CA</div>
       </div>
     </div>

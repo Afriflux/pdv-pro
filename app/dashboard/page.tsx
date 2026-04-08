@@ -10,6 +10,8 @@ import { Package, ShoppingBag, ArrowRight, Eye, TrendingUp, Sparkles } from 'luc
 import { Check360Widget } from '@/components/dashboard/Check360Widget'
 import WelcomeGuide from '@/components/dashboard/WelcomeGuide'
 import { GettingStartedChecklist } from '@/components/dashboard/GettingStartedChecklist'
+import { DailyDigestWidget } from '@/components/dashboard/DailyDigestWidget'
+import { prisma } from '@/lib/prisma'
 
 // ── TYPES & HELPERS ──────────────────────────────────────────────────────────
 
@@ -202,6 +204,11 @@ export default async function DashboardPage() {
       .select('id', { count: 'exact', head: true })
       .eq('vendor_id', storeId)
   ])
+
+  // --- App Store : Check installed apps ---
+  const isCoachIaInstalled = await prisma.installedApp.findFirst({
+    where: { store_id: storeId, app_id: 'coach-ia', status: 'active' }
+  })
 
   // --- Calculs KPIs ---
   const ordersToday = ordersTodayData || []
@@ -445,6 +452,8 @@ export default async function DashboardPage() {
           />
         </section>
 
+        {/* ── COACH IA QUOTIDIEN (Daily Digest) ─────────────────────────── */}
+        {isCoachIaInstalled && <DailyDigestWidget storeId={storeId} />}
 
         {/* ── SECTION 3 : GRAPHIQUE 7J + ACTIONS RAPIDES ───────────────────── */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">

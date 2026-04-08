@@ -136,9 +136,74 @@ export function CheckoutForm({
   const [error, setError]         = useState<string | null>(null)
   const [selectedZoneId, setSelectedZoneId] = useState<string>('')
 
+  // ── Anti-Fraude COD ────────────────────────────────────────────
+  const [codBlocked, setCodBlocked] = useState(false)
+  const [codWarning, setCodWarning] = useState<string | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [, setCodChecking] = useState(false)
+
   const showCOD = product.type === 'physical' 
     && product.cash_on_delivery === true 
     && (product.store.vendor_type === 'physical' || product.store.vendor_type === 'hybrid')
+    && !codBlocked
+
+  // Check buyer COD eligibility when phone changes
+  useEffect(() => {
+    if (!phone || phone.trim().length < 8 || !product.cash_on_delivery) return
+    const timer = setTimeout(async () => {
+      setCodChecking(true)
+      try {
+        const res = await fetch('/api/checkout/buyer-check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: phone.trim(), storeId: product.store.id }),
+        })
+        const data = await res.json() as { allowed: boolean; message: string | null; riskLevel: string }
+        if (!data.allowed) {
+          setCodBlocked(true)
+          setUseCOD(false)
+          setCodWarning(data.message)
+        } else {
+          setCodBlocked(false)
+          if (data.riskLevel === 'warning') {
+            setCodWarning(data.message)
+          } else {
+            setCodWarning(null)
+          }
+        }
+      } catch { /* silent */ }
+      setCodChecking(false)
+    }, 800) // debounce
+    return () => clearTimeout(timer)
+  }, [phone, product.cash_on_delivery, product.store.id])
+
+  // ── Fidélité (Points) ─────────────────────────────────────────
+  const [loyaltyData, setLoyaltyData] = useState<{ enabled: boolean, config?: any, account: any | null } | null>(null)
+  const [redeemPoints, setRedeemPoints] = useState<number>(0)
+  const [loyaltyLoading, setLoyaltyLoading] = useState(false)
+
+  useEffect(() => {
+    if (!phone || phone.trim().length < 8) {
+      setLoyaltyData(null)
+      setRedeemPoints(0)
+      return
+    }
+    const timer = setTimeout(async () => {
+      setLoyaltyLoading(true)
+      try {
+        const { checkLoyaltyAccount } = await import('@/app/actions/loyalty')
+        const data = await checkLoyaltyAccount(phone.trim(), product.store.id)
+        if (data && data.enabled) {
+          setLoyaltyData(data as any)
+          setRedeemPoints(0)
+        } else {
+          setLoyaltyData(null)
+        }
+      } catch { /* silent */ }
+      setLoyaltyLoading(false)
+    }, 800)
+    return () => clearTimeout(timer)
+  }, [phone, product.store.id])
 
   // ── États codes promo ─────────────────────────────────────────
   const [promoCodeInput, setPromoCodeInput] = useState('')
@@ -209,7 +274,17 @@ export function CheckoutForm({
   const selectedZone   = deliveryZones?.find(z => z.id === selectedZoneId)
   const deliveryFee    = selectedZone?.fee ?? 0
 
-  const total          = subtotal + deliveryFee
+  const preLoyaltyTotal = subtotal + deliveryFee
+  
+  // Limite de points: on ne peut utiliser que ce qu'on a, et on ne peut pas dépasser config.maxPerc % du total
+  const maxAllowedPoints = loyaltyData?.config?.maxPerc 
+    ? Math.floor((preLoyaltyTotal * loyaltyData.config.maxPerc) / 100) 
+    : 0
+  
+  const finalRedeem = Math.min(redeemPoints, maxAllowedPoints, loyaltyData?.account?.balance || 0, preLoyaltyTotal)
+  const loyaltyDiscount = finalRedeem > 0 ? finalRedeem : 0
+  
+  const total = Math.max(0, preLoyaltyTotal - loyaltyDiscount)
 
   // 🔴 YAYYAM BUSINESS LOGIC : The commission is taken on the full total (Product + Delivery) 
   const commissionRate = vendorPlan === 'pro' ? 0.06 : 0.08
@@ -371,6 +446,8 @@ export function CheckoutForm({
         payment_method:   useCOD ? 'cod' : 'pending',
         subtotal:         grossSubtotal,
         promo_discount:   promoDiscountAmount,
+        loyalty_discount: loyaltyDiscount,
+        redeemed_points:  finalRedeem,
         platform_fee:     platformFee,
         vendor_amount:    vendorAmount,
         total,
@@ -479,11 +556,53 @@ export function CheckoutForm({
               <span>{deliveryFee.toLocaleString('fr-FR')} F</span>
             </div>
           )}
+          {loyaltyDiscount > 0 && (
+            <div className="flex justify-between text-sm font-bold pt-1 text-orange-600">
+              <span>Points Fidélité ({loyaltyDiscount})</span>
+              <span>-{loyaltyDiscount.toLocaleString('fr-FR')} F</span>
+            </div>
+          )}
           <div className="border-t border-gray-100 pt-2 mt-2 flex justify-between font-black">
             <span className="text-gray-700">Total</span>
             <span className="text-[var(--accent)]">{total.toLocaleString('fr-FR')} FCFA</span>
           </div>
         </div>
+
+        {/* Encart Fidélité */}
+        {loyaltyData && loyaltyData.enabled && loyaltyData.account && loyaltyData.account.balance > 0 && (
+          <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 shadow-sm text-sm">
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <p className="font-bold text-orange-900 flex items-center gap-1.5">
+                  <Trophy size={14} className="text-orange-600"/> 
+                  Vos points fidélité
+                </p>
+                <p className="text-orange-800/80 text-[11px] font-medium mt-0.5">
+                  Solde : {loyaltyData.account.balance} points ({loyaltyData.account.tier})
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 mt-3">
+              <input
+                type="number"
+                min="0"
+                max={Math.min(loyaltyData.account.balance, maxAllowedPoints)}
+                value={redeemPoints}
+                onChange={e => setRedeemPoints(Math.min(Number(e.target.value), loyaltyData.account.balance, maxAllowedPoints))}
+                className="w-20 px-2 py-1.5 text-sm font-bold border border-orange-200 outline-none rounded bg-white text-gray-800"
+              />
+              <button 
+                type="button"
+                onClick={() => setRedeemPoints(Math.min(loyaltyData.account.balance, maxAllowedPoints))}
+                className="text-[10px] font-bold text-orange-600 bg-white border border-gray-100 px-2 py-1.5 rounded uppercase tracking-wide shadow-sm hover:bg-orange-600 hover:text-white transition"
+              >
+                Max ({Math.min(loyaltyData.account.balance, maxAllowedPoints)})
+              </button>
+            </div>
+            <p className="text-[10px] text-orange-700 mt-2 font-medium">Vous économisez {loyaltyDiscount} FCFA sur cette commande (Max {loyaltyData.config.maxPerc}%).</p>
+          </div>
+        )}
 
         {/* Titre étape */}
         <div>
@@ -979,6 +1098,21 @@ export function CheckoutForm({
                 <div className={`absolute top-1.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${useCOD ? 'left-7' : 'left-1.5'}`} />
               </div>
             </div>
+            {codWarning && !codBlocked && (
+              <p className="text-[10px] text-orange-600 bg-orange-50 rounded-lg px-3 py-2 mt-2 font-medium border border-orange-100">
+                ⚠️ {codWarning}
+              </p>
+            )}
+          </section>
+        )}
+
+        {/* COD Blocked Warning */}
+        {codBlocked && product.cash_on_delivery && (
+          <section className="rounded-2xl border border-red-200 p-4 bg-red-50">
+            <p className="text-sm font-bold text-red-700">🚫 Paiement à la livraison indisponible</p>
+            <p className="text-[10px] text-red-600 mt-1">
+              {codWarning || 'Le paiement à la livraison n\'est pas disponible pour ce numéro. Veuillez payer en ligne.'}
+            </p>
           </section>
         )}
 

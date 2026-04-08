@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { X, Clock, MessageCircle, Phone, MapPin, Receipt, Check } from 'lucide-react'
 import Image from 'next/image'
 import CallButton from '@/components/orders/CallButton'
+import { BuyerScoreBadge } from '@/components/orders/BuyerScoreBadge'
 import { OrderActions } from './[id]/OrderActions'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -190,6 +191,9 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
                   <CallButton phone={order.buyer_phone} buyerName={order.buyer_name} orderId={order.id} variant="both" />
                 </div>
               )}
+
+              {/* Anti-Fraude : Score Acheteur */}
+              <BuyerScoreBadge phone={order.buyer_phone} storeId={order.store_id} />
             </div>
           </section>
 

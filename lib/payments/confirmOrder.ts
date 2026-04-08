@@ -159,6 +159,12 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
   triggerAmbassadorCommission(orderId, order.affiliate_token, order.affiliate_amount)
     .catch(e => console.error('[Ambassadeur]', e))
 
+  // ── 5.quat Earn Loyalty Points for Online Payment ──────────────────
+  try {
+     const { earnLoyaltyPoints } = await import('@/app/actions/loyalty')
+     await earnLoyaltyPoints(order.buyer_phone, order.store_id, order.total, orderId)
+  } catch (e) { console.error('[Loyalty Points]', e) }
+
   // ── 5.bis Génération automatique de la facture PDF ───────────────────────
   // Fire-and-forget pour ne pas bloquer l'IPN
   ;(async () => {

@@ -1,4 +1,4 @@
-# PDV Pro — SKILLS.md
+# Yayyam — SKILLS.md
 # Guide complet de développement et décisions produit
 # Dernière mise à jour : 13/03/2026 — Version 5.0 FINALE
 # Objectif lancement : 1er avril 2026
@@ -110,7 +110,7 @@ VERCEL_PROJECT_ID=
   - 100K - 500K FCFA/mois   → **6%**
   - 500K - 1M FCFA/mois     → **5%**
   - +1M FCFA/mois           → **4%**
-- **PDV Pro absorbe TOUS les frais** (passerelles + frais de retrait).
+- **Yayyam absorbe TOUS les frais** (passerelles + frais de retrait).
 - **Acheteur paie** : le prix exact affiché (zéro frais caché).
 - **Vendeur reçoit** : (100% - commission) net garanti.
 - **Disponibilité des fonds** : IMMÉDIATE après chaque paiement confirmé.
@@ -506,13 +506,13 @@ QUOTA PAR PLAN :
              Dépassement : 1 000 FCFA/10 GB
 
 UPLOAD FLOW :
-  Vendeur upload vidéo → PDV Pro → Bunny.net
+  Vendeur upload vidéo → Yayyam → Bunny.net
   Encodage automatique (360p, 480p, 720p)
   Thumbnail auto générée
   Prêt en ~2-5 min selon taille
 
 ACCÈS ACHETEUR :
-  Lecteur intégré PDV Pro (Bunny player)
+  Lecteur intégré Yayyam (Bunny player)
   Streaming uniquement (défaut)
   Téléchargement optionnel (vendeur active)
 ```
@@ -560,7 +560,7 @@ Token SHA-256 généré (unique par commande)
         ↓
 WhatsApp acheteur :
 "📥 [Produit] est prêt !
- Accéder → pdvpro.com/dl/[token]
+ Accéder → yayyam.com/dl/[token]
  ⚠️ Valable [X jours]"
         ↓
 Page /dl/[token] vérifie :
@@ -643,10 +643,10 @@ Super Admin peut :
 Après achat digital → PDF généré :
   - Nom produit, acheteur, date, commande
   - Type de licence + droits détaillés
-  - QR Code vérification → pdvpro.com/verify/[id]
+  - QR Code vérification → yayyam.com/verify/[id]
   
 Envoyé avec le lien de téléchargement
-White-label Pro+ : logo boutique au lieu de PDV Pro
+White-label Pro+ : logo boutique au lieu de Yayyam
 ```
 
 ### Affichage page de vente
@@ -845,10 +845,10 @@ Indicateurs de fraude surveillés :
 ## 🌐 DOMAINE PERSONNALISÉ
 
 - Pro+ uniquement — 14j essai gratuit
-- CNAME → cname.pdvpro.com
+- CNAME → cname.yayyam.com
 - SSL Let's Encrypt auto via Vercel API
 - Vérification DNS toutes les 10 min
-- Retour pdvpro.com/[slug] + 301 si essai expiré
+- Retour yayyam.com/[slug] + 301 si essai expiré
 
 ---
 
@@ -1003,7 +1003,7 @@ J+30 Si actif → suggestion Pro+ + calcul économie
 
 ```
 Section /dashboard/tips :
-  - Nouveautés PDV Pro (épinglées)
+  - Nouveautés Yayyam (épinglées)
   - Conseils IA personnalisés
   - 8 guides pratiques
   - Alertes saisonnières (7j avant)
@@ -1085,17 +1085,17 @@ COMPTE
   💡 Infos & Astuces
   ⚙️ P## 🤖 BOT TELEGRAM — SPEC TECHNIQUE COMPLÈTE
 
-Le bot Telegram `@PDVPro_bot` est le pilier de l'automatisation des produits de type "Communauté" et de l'assistance vendeur mobile.
+Le bot Telegram `@Yayyam_bot` est le pilier de l'automatisation des produits de type "Communauté" et de l'assistance vendeur mobile.
 
 ### 1. CONFIGURATION & ENV
 - `TELEGRAM_BOT_TOKEN` : Token BotFather
-- `TELEGRAM_BOT_USERNAME` : `@PDVPro_bot`
+- `TELEGRAM_BOT_USERNAME` : `@Yayyam_bot`
 - Webhook URL : `${APP_URL}/api/notifications/telegram/webhook` (HMAC vérifié)
 
 ### 2. COMMANDES RÉFÉRENCE
 | Commande | Contexte | Action |
 |---|---|---|
-| `/start` | Privé | Lien avec compte PDV Pro + Menu principal |
+| `/start` | Privé | Lien avec compte Yayyam + Menu principal |
 | `/connect [CODE]` | Canal/Groupe | Lie le canal à un produit "Communauté" via son code secret |
 | `/status` | Canal/Groupe | Vérifie les droits du bot et le nombre de membres actifs |
 | `/dashboard` | Privé | Affiche le solde wallet et les dernières ventes |
@@ -1137,12 +1137,12 @@ emplates 1-5 + IA
 
 Variables d'environnement requises :
 - `TELEGRAM_BOT_TOKEN`
-- `TELEGRAM_BOT_USERNAME=@PDVPro_bot`
+- `TELEGRAM_BOT_USERNAME=@Yayyam_bot`
 
 ### 1. COMMUNAUTÉS PAYANTES (PRO)
 - **Flow Vendeur** : 
-  - Ajoute @PDVPro_bot comme administrateur du canal/groupe.
-  - Tape `/connect PDVPRO-[CODE]` dans le canal pour lier à sa boutique.
+  - Ajoute @Yayyam_bot comme administrateur du canal/groupe.
+  - Tape `/connect YAYYAM-[CODE]` dans le canal pour lier à sa boutique.
 - **Flow Acheteur** :
   - Après paiement validé → Reçoit un lien d'invitation unique à usage unique.
   - Le bot gère les admissions automatiques.
@@ -1180,7 +1180,7 @@ Variables d'environnement requises :
 
 ---
 
-*PDV Pro — La plateforme de vente intelligente pour l'Afrique de l'Ouest*
+*Yayyam — La plateforme de vente intelligente pour l'Afrique de l'Ouest*
 *Next.js 14 + Supabase + Prisma + Tailwind + Vercel + Claude AI + Bunny.net*
 *Supabase ID : ncyloylrxmwesngjlagl*
 *🚀 Lancement : 1er avril 2026*

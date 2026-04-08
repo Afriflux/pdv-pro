@@ -1,7 +1,6 @@
 'use client'
 
-import React from 'react'
-import { motion } from 'framer-motion'
+import React, { useRef, useEffect, useState } from 'react'
 import { 
   Store, Sparkles, Globe, MessageCircle, Zap, Repeat, Wallet, 
   LayoutTemplate, Calendar, Truck, Tag, Link, BarChart, 
@@ -11,6 +10,37 @@ import {
 interface BentoGridProps {
   title: React.ReactNode;
   supertitle: string;
+}
+
+/* ─── CSS-only reveal animation via IntersectionObserver ─── */
+function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } },
+      { threshold: 0.05, rootMargin: '-50px' }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(24px)',
+        transition: `opacity 0.5s ease ${delay}s, transform 0.5s ease ${delay}s`,
+      }}
+    >
+      {children}
+    </div>
+  )
 }
 
 const features = [
@@ -59,8 +89,8 @@ const features = [
     theme: "bg-[#0A1F1A] border-white/5",
     textClass: "text-white",
     descClass: "text-emerald-100/60",
-    iconClass: "bg-[#0088cc]/20 text-[#0088cc] border border-[#0088cc]/30",
-    eff: "bg-[#0088cc]/20 blur-3xl -bottom-10 -right-10",
+    iconClass: "bg-turquoise/20 text-turquoise border border-turquoise/30",
+    eff: "bg-turquoise/20 blur-3xl -bottom-10 -right-10",
   },
   {
     title: "Upsell 1-Click",
@@ -104,7 +134,7 @@ const features = [
     theme: "bg-white border-[#0A1F1A]/5",
     textClass: "text-[#0A1F1A]",
     descClass: "text-gray-500 text-sm",
-    iconClass: "bg-blue-50 text-blue-500",
+    iconClass: "bg-turquoise/10 text-turquoise",
   },
   {
     title: "Prise de RDV",
@@ -159,7 +189,7 @@ const features = [
     theme: "bg-[#0A1F1A] border-white/5",
     textClass: "text-white",
     descClass: "text-emerald-100/60 text-sm",
-    iconClass: "bg-[#1877F2]/20 text-[#1877F2]",
+    iconClass: "bg-emerald/20 text-emerald-light border border-emerald/20",
   },
   {
     title: "Helpdesk & SAV",
@@ -205,43 +235,29 @@ export function BentoGrid({ title, supertitle }: BentoGridProps) {
 
       <div className="w-full mx-auto max-w-[1800px] px-6 md:px-12 lg:px-20 relative z-10">
         <div className="text-center mb-24 max-w-4xl mx-auto">
-          <motion.span 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-emerald-700 font-mono tracking-widest uppercase text-sm mb-6 block font-bold"
-          >
-            {supertitle}
-          </motion.span>
-          <motion.h2 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-tight text-[#0A1F1A] leading-[1.1]"
-          >
-            {title}
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="mt-8 text-xl text-gray-500 mx-auto max-w-2xl font-light"
-          >
-            Le premier écosystème e-commerce d'Afrique qui rassemble <strong>absolument tous</strong> les outils de croissance dans un seul espace.
-          </motion.p>
+          <Reveal>
+            <span className="text-emerald-700 font-mono tracking-widest uppercase text-sm mb-6 block font-bold">
+              {supertitle}
+            </span>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-tight text-[#0A1F1A] leading-[1.1]">
+              {title}
+            </h2>
+          </Reveal>
+          <Reveal delay={0.2}>
+            <p className="mt-8 text-xl text-gray-500 mx-auto max-w-2xl font-light">
+              Le premier écosystème e-commerce d'Afrique qui rassemble <strong>absolument tous</strong> les outils de croissance dans un seul espace.
+            </p>
+          </Reveal>
         </div>
 
         {/* Bento Board Start */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-[auto] gap-4 md:gap-6">
           {features.map((f, i) => (
-            <motion.div 
+            <Reveal 
               key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ delay: i * 0.05, duration: 0.5 }}
+              delay={i * 0.05}
               className={`${f.col} ${f.row} ${f.theme} rounded-[2rem] p-6 md:p-8 overflow-hidden relative group transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl border`}
             >
               {f.eff && (
@@ -261,7 +277,7 @@ export function BentoGrid({ title, supertitle }: BentoGridProps) {
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
       </div>
