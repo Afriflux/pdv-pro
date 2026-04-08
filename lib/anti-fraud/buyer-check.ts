@@ -27,11 +27,11 @@ const RISK_LEVELS: Record<BuyerRiskLevel, { label: string; color: string; emoji:
 // ────────────────────────────────────────────────────────────────
 // Score Computation  (deterministic, no side-effects)
 // ────────────────────────────────────────────────────────────────
-export function computeBuyerScore(stats: {
+export async function computeBuyerScore(stats: {
   success_orders: number
   refused_orders: number
   disputed_orders: number
-}): number {
+}): Promise<number> {
   const { success_orders, refused_orders, disputed_orders } = stats
   const raw =
     50 +                          // base score
@@ -42,7 +42,7 @@ export function computeBuyerScore(stats: {
   return Math.max(0, Math.min(100, raw))
 }
 
-export function getRiskLevel(score: number): BuyerRiskLevel {
+export async function getRiskLevel(score: number): Promise<BuyerRiskLevel> {
   if (score >= 80) return 'trusted'
   if (score >= 50) return 'normal'
   if (score >= 30) return 'warning'
@@ -88,8 +88,8 @@ export async function checkBuyerForCOD(phone: string): Promise<BuyerCheckResult>
     }
   }
 
-  const score = computeBuyerScore(buyerScore)
-  const riskLevel = getRiskLevel(score)
+  const score = await computeBuyerScore(buyerScore)
+  const riskLevel = await getRiskLevel(score)
   const meta = RISK_LEVELS[riskLevel]
 
   return {
@@ -145,8 +145,8 @@ export async function getBuyerInfo(phone: string): Promise<{
     }
   }
 
-  const score = computeBuyerScore(buyerScore!)
-  const riskLevel = getRiskLevel(score)
+  const score = await computeBuyerScore(buyerScore!)
+  const riskLevel = await getRiskLevel(score)
   const meta = RISK_LEVELS[riskLevel]
 
   return {
