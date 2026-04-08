@@ -18,7 +18,7 @@ export async function toggleWorkflowStatus(id: string, currentStatus: string) {
   }
 }
 
-export async function saveWorkflow(data: any, ownerId: string, ownerType: 'vendor' | 'client' | 'affiliate' = 'vendor') {
+export async function saveWorkflow(data: any, ownerId: string, ownerType: 'vendor' | 'client' | 'affiliate' | 'closer' = 'vendor') {
   try {
     // Si l'ID est généré coté client (par. ex. avec Math.random()), c'est un nouveau workflow
     const isNew = data.id.includes('.')
@@ -74,7 +74,7 @@ export async function saveClientWorkflow(data: any, ownerId: string) {
   return saveWorkflow(data, ownerId, 'client')
 }
 
-export async function cloneWorkflowTemplate(templateId: string, ownerId: string, ownerType: 'vendor' | 'client' | 'affiliate' = 'vendor') {
+export async function cloneWorkflowTemplate(templateId: string, ownerId: string, ownerType: 'vendor' | 'client' | 'affiliate' | 'closer' = 'vendor') {
   try {
     const template = await prisma.workflow.findUnique({ where: { id: templateId } })
     if (!template) return { success: false, error: 'Modèle introuvable' }
