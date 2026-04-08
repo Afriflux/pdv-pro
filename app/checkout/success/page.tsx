@@ -124,8 +124,9 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
       <div className="bg-white border border-line rounded-2xl shadow-lg p-10 max-w-md w-full text-center">
         
         {/* Icône succès animée */}
+        {/* eslint-disable-next-line */}
         <div className="w-20 h-20 border-2 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce" style={{ backgroundColor: `${accent}11`, borderColor: `${accent}33`, color: accent }}>
-          <CheckCircle2 size={40} strokeWidth={2.5} />
+           <CheckCircle2 size={40} strokeWidth={2.5} />
         </div>
         
         {/* Titre */}
@@ -165,6 +166,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             {isCod ? (
               <span className="text-amber-600 font-medium font-mono text-xs">À LA LIVRAISON</span>
             ) : (
+              {/* eslint-disable-next-line */}
               <span className="font-medium flex items-center gap-1" style={{ color: accent }}>Payé <Check size={14} /></span>
             )}
           </div>
@@ -250,8 +252,8 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             </h3>
             <p className="text-slate mb-4 leading-snug">Partagez ce lien avec vos amis. Pour chaque achat via votre lien, vous gagnez une commission.</p>
             <div className="flex gap-2">
-              <input type="text" readOnly value={`https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} className="flex-1 text-xs px-3 py-2 bg-white border border-line rounded-lg text-dust outline-none truncate" />
-              <a suppressHydrationWarning href={`https://wa.me/?text=Découvre %20${encodeURIComponent(product?.name || '')}%20sur%20Yayyam%20Pro:%20https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-[#25D366] text-white rounded-lg flex items-center justify-center hover:bg-[#20b858] transition">
+              <input type="text" readOnly value={`https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} className="flex-1 text-xs px-3 py-2 bg-white border border-line rounded-lg text-dust outline-none truncate" title="Lien de partage" placeholder="Lien de partage" />
+              <a suppressHydrationWarning href={`https://wa.me/?text=Découvre %20${encodeURIComponent(product?.name || '')}%20sur%20Yayyam%20Pro:%20https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-[#25D366] text-white rounded-lg flex items-center justify-center hover:bg-[#20b858] transition" title="Partager sur WhatsApp" aria-label="Partager sur WhatsApp">
                 <Share2 size={16} />
               </a>
             </div>

@@ -81,6 +81,7 @@ export default async function TipsPage() {
                 </div>
               </div>
               <div className="h-2.5 w-full bg-white/10 rounded-full overflow-hidden">
+                {/* eslint-disable-next-line */}
                 <div className="h-full bg-gradient-to-r from-[#0F7A60] to-emerald-400 rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, userProgress)}%` }}></div>
               </div>
               {userProgress < 100 ? (

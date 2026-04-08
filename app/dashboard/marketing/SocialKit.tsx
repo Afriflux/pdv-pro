@@ -46,6 +46,8 @@ export default function SocialKit({ storeName, storeUrl }: { storeName: string, 
         <textarea
           readOnly
           value={activeTab.text}
+          title="Modèle Prêt-à-poster"
+          aria-label="Modèle Prêt-à-poster"
           className="w-full flex-1 min-h-[160px] bg-[#FAFAF7] border border-gray-200 rounded-2xl p-5 text-sm font-medium text-[#1A1A1A] resize-none outline-none focus:border-blue-300 transition-colors cursor-text"
         />
         

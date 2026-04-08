@@ -307,7 +307,7 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
                  {/* Visual Banner */}
                  <div className="h-44 w-full bg-slate-50 border border-gray-100/50 rounded-[2rem] relative overflow-hidden flex items-center justify-center mb-4 isolate">
                    {template.preview_url ? (
-                     <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${template.preview_url})`}}></div>
+                     <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${template.preview_url})`}} title="Aperçu du thème"></div>
                    ) : (
                      <div className="text-4xl opacity-20"><LayoutTemplate /></div>
                    )}
@@ -378,6 +378,7 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
               <button 
                 onClick={() => setIsModalOpen(false)}
                 className="relative z-10 w-9 h-9 flex items-center justify-center bg-gray-50 hover:bg-red-50 text-gray-500 hover:text-red-500 rounded-xl transition-colors shrink-0"
+                title="Fermer"
               >
                 <X className="w-5 h-5" />
               </button>
