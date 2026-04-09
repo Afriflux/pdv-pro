@@ -30,12 +30,17 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Vérifier si une commande a été passée entre temps par ce téléphone
+    const where: any = {
+      buyer_phone: lead.phone,
+      product_id: lead.product_id
+    }
+    
+    if (lead.created_at) {
+      where.created_at = { gte: lead.created_at }
+    }
+
     const convertedOrder = await prisma.order.findFirst({
-      where: {
-        buyer_phone: lead.phone,
-        product_id: lead.product_id,
-        ...(lead.created_at ? { created_at: { gte: lead.created_at } } : {}),
-      }
+      where
     })
 
     if (convertedOrder) {
