@@ -167,7 +167,6 @@ export default function AnalyticsClient({ data }: { data: AnalyticsData }) {
                 <Tooltip 
                   cursor={{ fill: '#f3f4f6' }}
                   contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}
-                  // @ts-expect-error - third party types
                   formatter={(value: any, name: any) => [`${Number(value).toLocaleString('fr-FR')} FCFA`, 'Gains COD Validés']}
                 />
                 <Bar name="Gains Fixes" dataKey="revenus" fill="#10b981" radius={[4, 4, 0, 0]} />
