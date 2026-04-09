@@ -15,13 +15,13 @@ import { toast } from '@/lib/toast'
 interface MarketplaceAppRecord {
   id: string
   name: string
-  description: string
-  icon_url: string
+  description: string | null
+  icon_url: string | null
   category: string
   is_premium: boolean
   price: number
   allowed_roles: string[]
-  features: string[]
+  features: any
   active: boolean
   [key: string]: unknown
 }
