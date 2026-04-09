@@ -8,21 +8,24 @@ export function SplashScreen() {
   const [show, setShow] = useState(false)
 
   useEffect(() => {
-    // Only show on initial load, never on server
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
     try {
-      const hasSeenSplash = sessionStorage.getItem('yayyam_splash_seen')
-      if (hasSeenSplash) return
-
-      setShow(true)
-      const timer = setTimeout(() => {
-        setShow(false)
-        sessionStorage.setItem('yayyam_splash_seen', 'true')
-      }, 2000)
-
-      return () => clearTimeout(timer)
-    } catch {
-      // sessionStorage not available (SSR or privacy mode)
+      const hasSeenSplash = sessionStorage.getItem('yayyam_splash_seen');
+      if (!hasSeenSplash) {
+        setShow(true);
+        sessionStorage.setItem('yayyam_splash_seen', 'true');
+        timeoutId = setTimeout(() => setShow(false), 2000);
+      }
+    } catch (err) {
+      console.error(err);
     }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [])
 
   return (
