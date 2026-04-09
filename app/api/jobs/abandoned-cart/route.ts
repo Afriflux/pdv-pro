@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       where: {
         buyer_phone: lead.phone,
         product_id: lead.product_id,
-        created_at: { gte: lead.created_at }
+        ...(lead.created_at ? { created_at: { gte: lead.created_at } } : {}),
       }
     })
 
