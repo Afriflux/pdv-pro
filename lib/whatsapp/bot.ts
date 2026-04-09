@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { generateAIResponse } from '@/lib/ai/router'
 
 interface BotParams {
   storeId: string
@@ -7,18 +9,64 @@ interface BotParams {
   message: string
 }
 
-export async function processWhatsAppMessage({ storeId, phone, clientName, message }: BotParams): Promise<string> {
+async function sendWhatsAppText(to: string, text: string) {
+  const supabaseAdmin = createAdminClient()
+  const { data: configRows } = await supabaseAdmin
+    .from('PlatformConfig')
+    .select('key, value')
+    .in('key', ['WHATSAPP_PHONE_NUMBER_ID', 'WHATSAPP_ACCESS_TOKEN'])
+
+  const configMap = Object.fromEntries(configRows?.map(row => [row.key, row.value]) || [])
+  const phoneId = configMap['WHATSAPP_PHONE_NUMBER_ID'] || process.env.WHATSAPP_PHONE_NUMBER_ID
+  const token = configMap['WHATSAPP_ACCESS_TOKEN'] || process.env.WHATSAPP_ACCESS_TOKEN
+
+  if (!phoneId || !token) {
+    console.error('[WhatsApp] Missing credentials for Meta API')
+    return false
+  }
+
+  try {
+    const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: to,
+        type: 'text',
+        text: { preview_url: false, body: text }
+      })
+    })
+
+    if (!res.ok) {
+      console.error('[WhatsApp Cloud API Error]:', await res.text())
+    }
+    return res.ok
+  } catch (err) {
+    console.error('[WhatsApp Cloud API Exception]:', err)
+    return false
+  }
+}
+
+export async function processWhatsAppMessage({ storeId, phone, clientName, message }: BotParams): Promise<void> {
   const botConfig = await prisma.whatsappBot.findUnique({
-    where: { store_id: storeId }
+    where: { store_id: storeId },
+    include: { store: true }
   })
+
+  // Normalize phone number to omit "+" and non digits for the Cloud API
+  const cleanPhone = phone.replace(/\+/g, '').replace(/\s+/g, '')
 
   if (!botConfig || !botConfig.active) {
     // Si le bot n'est pas actif pour cette boutique, on ne répond rien.
-    return `<Response></Response>`
+    return
   }
 
   // 1. Mettre à jour ou créer la conversation
-  await prisma.whatsappConversation.upsert({
+  const conversation = await prisma.whatsappConversation.upsert({
     where: { store_id_phone: { store_id: storeId, phone } },
     update: { last_message: message, client_name: clientName },
     create: { store_id: storeId, phone, client_name: clientName, last_message: message }
@@ -50,24 +98,52 @@ export async function processWhatsAppMessage({ storeId, phone, clientName, messa
     replyText = await handleOrder(storeId, phone, productName)
   } else if (isSuivi) {
     replyText = await handleTracking(storeId, phone)
-  } else {
     // Fallback: Si auto-reply est activé, renvoyer au menu
     if (botConfig.ai_enabled) {
-      // NOTE: L'intégration avec Anthropic viendra ici.
-      replyText = "🤖 L'IA n'est pas encore complètement configurée pour répondre librement.\n\n" + handleHelp()
+      let history: {role: string, content: string}[] = []
+      if (conversation?.context && Array.isArray(conversation.context)) {
+          history = conversation.context as {role: string, content: string}[]
+      }
+      history.push({ role: 'user', content: message })
+
+      const historyText = history.map(msg => `${msg.role === 'user' ? 'CLIENT' : 'BOT'}: ${msg.content}`).join('\n')
+
+      const systemPrompt = `Tu es l'assistant commercial virtuel de la boutique eCommerce "${botConfig.store.name}".
+Tu parles directement au client sur WhatsApp. Tes réponses doivent être courtes, humaines, chaleureuses et utiliser des emojis avec parcimonie.
+Objectif : Rassurer, donner les prix, et conclure la vente.
+Tu ne dois jamais dire que tu es une intelligence artificielle, tu es membre de l'équipe "${botConfig.store.name}".
+Si le client veut passer commande, dis-lui simplement de répondre "commander [nom du produit]".
+Ne rajoute PAS '*BOT:*' ou de formatage système devant tes réponses.`
+
+      const aiRes = await generateAIResponse({
+        taskType: 'reasoning',
+        systemPrompt,
+        prompt: `Historique :\n${historyText}\n\nGénère la réponse de manière fluide :`,
+        temperature: 0.7
+      })
+
+      replyText = aiRes.content.trim()
+
+      history.push({ role: 'assistant', content: replyText })
+      // Keep only last 10 messages
+      if (history.length > 10) history = history.slice(history.length - 10)
+
+      await prisma.whatsappConversation.update({
+        where: { store_id_phone: { store_id: storeId, phone } },
+        data: { context: history as any }
+      })
+
     } else if (botConfig.auto_reply) {
       replyText = "Je n'ai pas compris votre demande.\n\n" + handleHelp()
     } else {
       // Mode silencieux : n'envoie rien si pas de mots clés et auto_reply désactivé
-      return `<Response></Response>`
+      return
     }
   }
 
-  return `
-    <Response>
-      <Message>${escapeXml(replyText)}</Message>
-    </Response>
-  `
+  if (replyText) {
+    await sendWhatsAppText(cleanPhone, replyText)
+  }
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────
@@ -175,18 +251,4 @@ Montant : ${order.total.toLocaleString('fr-FR')} FCFA
 
 Pour la suivre en ligne : 
 🔗 https://yayyam.com/track?ref=${order.id}`
-}
-
-function escapeXml(unsafe: string): string {
-  if (!unsafe) return ''
-  return unsafe.replace(/[<>&'"]/g, function (c) {
-    switch (c) {
-      case '<': return '&lt;'
-      case '>': return '&gt;'
-      case '&': return '&amp;'
-      case '\'': return '&apos;'
-      case '"': return '&quot;'
-      default: return c
-    }
-  })
 }

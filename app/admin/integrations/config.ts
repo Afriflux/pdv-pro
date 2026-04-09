@@ -13,7 +13,7 @@ export interface IntegrationService {
   icon?:       string
   docsUrl?:    string | null
   webhookUrl?: string
-  pingType?:   'wave' | 'cinetpay' | 'paytech' | 'orange_money' | 'bictorys' | 'anthropic' | 'brevo' | 'telegram' | 'twilio' | 'generic'
+  pingType?:   'wave' | 'cinetpay' | 'paytech' | 'orange_money' | 'bictorys' | 'anthropic' | 'openai' | 'gemini' | 'brevo' | 'telegram' | 'twilio' | 'generic'
   fields:      ServiceField[]
 }
 
@@ -29,12 +29,34 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
       {
         id: 'anthropic',
         name: 'Configuration Claude AI',
-        description: 'Générateur IA de fiches produits et d\'assistants conversationnels.',
+        description: 'Moteur IA principal recommandé par Yayyam. Excellent pour la rédaction experte, l\'analyse du contexte et la génération de fiches produits sans hallucinations.',
         icon: '🤖',
         docsUrl: 'https://console.anthropic.com',
         pingType: 'anthropic',
         fields: [
           { key: 'ANTHROPIC_API_KEY', label: 'API Key', type: 'password', placeholder: 'sk-ant-api03-...' }
+        ]
+      },
+      {
+        id: 'openai',
+        name: 'Configuration OpenAI (ChatGPT)',
+        description: 'L\'un des moteurs IA les plus populaires. Idéal pour les assistants conversationnels, la génération d\'images (DALL-E) ou les flux automatisés.',
+        icon: '🧠',
+        docsUrl: 'https://platform.openai.com/api-keys',
+        pingType: 'openai',
+        fields: [
+          { key: 'OPENAI_API_KEY', label: 'API Key', type: 'password', placeholder: 'sk-...' }
+        ]
+      },
+      {
+        id: 'gemini',
+        name: 'Configuration Google Gemini',
+        description: 'Moteur IA multi-modal rapide. Utile comme fallback ou pour des performances agiles liées à  l\'écosystème Google.',
+        icon: '✨',
+        docsUrl: 'https://aistudio.google.com/app/apikey',
+        pingType: 'gemini',
+        fields: [
+          { key: 'GEMINI_API_KEY', label: 'API Key', type: 'password', placeholder: 'AIzaSy...' }
         ]
       }
     ]
@@ -137,16 +159,17 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
         ]
       },
       {
-        id: 'twilio',
-        name: 'Configuration Twilio',
-        description: 'Messagerie WhatsApp Business API.',
+        id: 'whatsapp-meta',
+        name: 'Configuration WhatsApp Business',
+        description: 'Communication Cloud API Meta (Bots, Templates, Relances).',
         icon: '💬',
-        docsUrl: 'https://console.twilio.com',
-        webhookUrl: '/api/webhooks/twilio',
-        pingType: 'twilio',
+        docsUrl: 'https://developers.facebook.com/docs/whatsapp/cloud-api',
+        webhookUrl: '/api/webhooks/whatsapp-bot',
+        pingType: 'generic',
         fields: [
-          { key: 'TWILIO_ACCOUNT_SID', label: 'Account SID', type: 'text' },
-          { key: 'TWILIO_AUTH_TOKEN', label: 'Auth Token', type: 'password' }
+          { key: 'WHATSAPP_PHONE_NUMBER_ID', label: 'Phone Number ID', type: 'text', placeholder: '1023456789...' },
+          { key: 'WHATSAPP_ACCESS_TOKEN', label: 'Access Token (Permanent)', type: 'password' },
+          { key: 'WHATSAPP_VERIFY_TOKEN', label: 'Webhook Verify Token', type: 'password', placeholder: 'MonSecret123...' }
         ]
       }
     ]

@@ -336,6 +336,8 @@ export interface AdminPlatformConfig {
   cod: number
   min_withdrawal: number
   fee_fixed: number
+  tax_vat_enabled: boolean
+  tax_vat_rate: number
 }
 
 export async function getPlatformConfig(): Promise<AdminPlatformConfig> {
@@ -343,7 +345,7 @@ export async function getPlatformConfig(): Promise<AdminPlatformConfig> {
 
   const keys = [
     'commission_tier_1', 'commission_tier_2', 'commission_tier_3', 'commission_tier_4',
-    'commission_cod', 'min_withdrawal', 'fee_fixed'
+    'commission_cod', 'min_withdrawal', 'fee_fixed', 'tax_vat_enabled', 'tax_vat_rate'
   ]
 
   const { data: kvRows } = await supabase
@@ -351,19 +353,21 @@ export async function getPlatformConfig(): Promise<AdminPlatformConfig> {
     .select('key, value')
     .in('key', keys)
 
-  const kv = (kvRows || []).reduce((acc: Record<string, number>, row: { key: string | null, value: string | null }) => {
-    if (row.key && row.value) acc[row.key] = Number(row.value)
+  const kvStr = (kvRows || []).reduce((acc: Record<string, string>, row: { key: string | null, value: string | null }) => {
+    if (row.key && row.value) acc[row.key] = row.value
     return acc
   }, {})
 
   return {
-    tier_1: kv['commission_tier_1'] ?? 8,
-    tier_2: kv['commission_tier_2'] ?? 7,
-    tier_3: kv['commission_tier_3'] ?? 6,
-    tier_4: kv['commission_tier_4'] ?? 5,
-    cod: kv['commission_cod'] ?? 5,
-    min_withdrawal: kv['min_withdrawal'] ?? 5000,
-    fee_fixed: kv['fee_fixed'] ?? 0,
+    tier_1: Number(kvStr['commission_tier_1']) || 8,
+    tier_2: Number(kvStr['commission_tier_2']) || 7,
+    tier_3: Number(kvStr['commission_tier_3']) || 6,
+    tier_4: Number(kvStr['commission_tier_4']) || 5,
+    cod: Number(kvStr['commission_cod']) || 5,
+    min_withdrawal: Number(kvStr['min_withdrawal']) || 5000,
+    fee_fixed: Number(kvStr['fee_fixed']) || 0,
+    tax_vat_enabled: kvStr['tax_vat_enabled'] === 'true',
+    tax_vat_rate: Number(kvStr['tax_vat_rate']) || 18,
   }
 }
 
@@ -378,6 +382,8 @@ export async function updatePlatformConfig(payload: AdminPlatformConfig) {
     { key: 'commission_cod', value: String(payload.cod) },
     { key: 'min_withdrawal', value: String(payload.min_withdrawal) },
     { key: 'fee_fixed', value: String(payload.fee_fixed) },
+    { key: 'tax_vat_enabled', value: payload.tax_vat_enabled ? 'true' : 'false' },
+    { key: 'tax_vat_rate', value: String(payload.tax_vat_rate) },
   ]
 
   // Upsert the kv pairs

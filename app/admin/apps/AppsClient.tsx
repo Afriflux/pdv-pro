@@ -1,16 +1,32 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Plus, Edit2, Trash2, X, Save, Eye, EyeOff, Search, Smartphone, Loader2, Code } from 'lucide-react'
+
+import { Plus, Edit2, Trash2, X, Save, Eye, EyeOff, Search, Smartphone, Loader2, Code, Puzzle } from 'lucide-react'
 import {
   createMarketplaceApp,
   updateMarketplaceApp,
   deleteMarketplaceApp,
-  toggleMarketplaceApp
+  toggleMarketplaceApp,
+  seedRealMarketplaceApps
 } from '@/app/actions/apps'
 import { toast } from '@/lib/toast'
 
-export default function AppsClient({ initialApps }: { initialApps: Record<string, any>[] }) {
+interface MarketplaceAppRecord {
+  id: string
+  name: string
+  description: string
+  icon_url: string
+  category: string
+  is_premium: boolean
+  price: number
+  allowed_roles: string[]
+  features: string[]
+  active: boolean
+  [key: string]: unknown
+}
+
+export default function AppsClient({ initialApps }: { initialApps: MarketplaceAppRecord[] }) {
   const [apps, setApps] = useState(initialApps)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -35,13 +51,25 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
   // Computed data
   const filteredApps = useMemo(() => {
     if (!searchQuery.trim()) return apps
-    return apps.filter((a: Record<string, any>) => 
+    return apps.filter((a: MarketplaceAppRecord) => 
       a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.category.toLowerCase().includes(searchQuery.toLowerCase())
     )
   }, [apps, searchQuery])
 
-  const publishedCount = apps.filter(a => a.active).length
+  const publishedCount = apps.filter((a: MarketplaceAppRecord) => a.active).length
+
+  const handleSeed = async () => {
+    setIsLoading(true);
+    const res = await seedRealMarketplaceApps();
+    if (res.success) {
+      toast.success("✅ Base de données réinitialisée ! Veuillez rafraîchir la page !");
+      setTimeout(() => window.location.reload(), 1500);
+    } else {
+      toast.error(res.error || "Erreur de chargement");
+    }
+    setIsLoading(false);
+  };
 
   // Actions
   const resetForm = () => {
@@ -53,13 +81,13 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
       is_premium: false,
       price: 0,
       allowed_roles: ['vendor'],
-      features: JSON.stringify([{ title: 'Feature 1', desc: 'Description' }], null, 2),
+      features: JSON.stringify(['Nouvelle fonctionnalité majeure', 'Synchronisation Temps Réel'], null, 2),
       active: true
     })
     setEditingId(null)
   }
 
-  const handleOpenEdit = (app: Record<string, any>) => {
+  const handleOpenEdit = (app: MarketplaceAppRecord) => {
     setFormData({
       name: app.name || '',
       description: app.description || '',
@@ -98,7 +126,7 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
       if (editingId) {
         const res = await updateMarketplaceApp(editingId, payload)
         if (res.success && res.app) {
-          setApps(prev => prev.map(a => a.id === editingId ? res.app : a))
+          setApps((prev: MarketplaceAppRecord[]) => prev.map((a: MarketplaceAppRecord) => a.id === editingId ? res.app as MarketplaceAppRecord : a))
           toast.success("App mise à jour !")
           setIsModalOpen(false)
         } else {
@@ -107,7 +135,7 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
       } else {
         const res = await createMarketplaceApp(payload)
         if (res.success && res.app) {
-          setApps(prev => [res.app, ...prev])
+          setApps((prev: MarketplaceAppRecord[]) => [res.app as MarketplaceAppRecord, ...prev])
           toast.success("Nouvelle App publiée !")
           setIsModalOpen(false)
         } else {
@@ -125,7 +153,7 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
   const handleToggleActive = async (id: string, currentStatus: boolean) => {
     const res = await toggleMarketplaceApp(id, !currentStatus)
     if (res.success) {
-      setApps(prev => prev.map(a => a.id === id ? { ...a, active: !currentStatus } : a))
+      setApps((prev: MarketplaceAppRecord[]) => prev.map((a: MarketplaceAppRecord) => a.id === id ? { ...a, active: !currentStatus } : a))
       toast.success(currentStatus ? "App désactivée" : "App activée !")
     } else {
       toast.error('Erreur lors du changement de statut')
@@ -136,7 +164,7 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
     if (!confirm('Voulez-vous vraiment supprimer cette app ?')) return
     const res = await deleteMarketplaceApp(id)
     if (res.success) {
-      setApps(prev => prev.filter(a => a.id !== id))
+      setApps((prev: MarketplaceAppRecord[]) => prev.filter((a: MarketplaceAppRecord) => a.id !== id))
       toast.success('App supprimée')
     }
   }
@@ -156,20 +184,15 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
             <div className="pb-1">
               <h1 className="text-3xl font-black text-white tracking-tight">App Store Manager</h1>
               <p className="text-emerald-100/90 font-medium text-sm mt-1 max-w-lg leading-relaxed">
-                Créez, paramétrez et monétisez les fonctionnalités modulables sous forme d'applications.
+                Gérez les modules d'extension de Yayyam (Affiliation, Closers, SAV, Bots) pour vos fournisseurs.
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl shadow-xl">
              <div className="flex flex-col">
-               <span className="text-[10px] font-black tracking-widest text-emerald-200 uppercase">Actives</span>
+               <span className="text-[10px] font-black tracking-widest text-emerald-200 uppercase">Extensions Actives</span>
                <span className="text-2xl font-black text-white">{publishedCount}</span>
-             </div>
-             <div className="w-[1px] h-8 bg-white/20 mx-2"></div>
-             <div className="flex flex-col">
-               <span className="text-[10px] font-black tracking-widest text-emerald-200 uppercase">Total</span>
-               <span className="text-2xl font-black text-white">{apps.length}</span>
              </div>
           </div>
         </div>
@@ -184,7 +207,7 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
               <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               <input 
                 type="text"
-                placeholder="Rechercher une application..." 
+                placeholder="Rechercher une fonctionnalité (ex: Affiliation)..." 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="w-full bg-gray-50/50 border border-gray-100 focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 transition-all rounded-2xl py-3 pl-10 pr-4 text-sm font-medium text-gray-700 outline-none"
@@ -193,10 +216,16 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
 
            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
              <button 
+               onClick={handleSeed}
+               className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 bg-red-100 hover:bg-red-200 text-red-700 font-black text-sm rounded-2xl transition-all"
+             >
+               Purge & Reset Officiel
+             </button>
+             <button 
                onClick={handleOpenNew}
                className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-[#0F7A60] hover:bg-[#094A3A] text-white font-black text-sm rounded-2xl shadow-[0_4px_14px_rgba(15,122,96,0.3)] transition-all"
              >
-               <Plus className="w-4 h-4" /> Nouvelle App
+               <Plus className="w-4 h-4" /> Activer un Module
              </button>
            </div>
         </div>
@@ -205,28 +234,30 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
         {filteredApps.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
             <div className="w-24 h-24 bg-white shadow-xl rounded-full border border-gray-100 flex items-center justify-center mb-6">
-              <Smartphone className="w-10 h-10 text-gray-300" />
+              <Puzzle className="w-10 h-10 text-gray-300" />
             </div>
-            <h3 className="text-xl font-black text-gray-900 mb-2">Aucune app disponible</h3>
+            <h3 className="text-xl font-black text-gray-900 mb-2">Aucune extension configurée</h3>
             <p className="text-gray-500 font-medium max-w-sm mb-6">
-              Vendez votre première fonctionnalité sous forme d'App Premium !
+              Ajoutez les fonctionnalités platformes pour vos utilisateurs (Vendeurs, Closers, Affiliés).
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-             {filteredApps.map((app: Record<string, any>) => (
-               <div key={app.id} className="bg-white border text-left border-gray-100/80 rounded-[2.5rem] p-3 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/20 transition-all duration-300 flex flex-col group h-full">
+             {filteredApps.map((app: MarketplaceAppRecord) => {
+               const isTextIcon = app.icon_url && app.icon_url.length > 4;
+               return (
+               <div key={app.id} className="bg-white border text-left border-gray-100/80 rounded-[2.5rem] p-3 shadow-md hover:shadow-xl hover:border-[#0F7A60]/30 transition-all duration-300 flex flex-col group h-full">
                  {/* Visual Header */}
                  <div className="h-32 w-full bg-slate-50 border border-gray-100/50 rounded-[2rem] relative overflow-hidden flex items-center justify-center mb-4 isolate">
-                   <div className="text-5xl drop-shadow-sm group-hover:scale-110 transition-transform duration-500 font-emoji">
-                     {app.icon_url ? app.icon_url : '🚀'}
+                   <div className="text-5xl drop-shadow-sm group-hover:scale-110 transition-transform duration-500">
+                     {isTextIcon ? <Puzzle size={48} className="text-[#0F7A60]" /> : (app.icon_url || '🚀')}
                    </div>
                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm border border-black/5">
                      {app.category}
                    </div>
                    {app.is_premium && (
                      <div className="absolute bottom-3 left-3 bg-amber-400 text-amber-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm flex items-center gap-1">
-                       ⭐ {app.price}F
+                       ⭐ Extension PRO
                      </div>
                    )}
                  </div>
@@ -259,7 +290,8 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
                    </div>
                  </div>
                </div>
-             ))}
+               );
+             })}
           </div>
         )}
       </main>
@@ -380,10 +412,10 @@ export default function AppsClient({ initialApps }: { initialApps: Record<string
                   value={formData.features} 
                   onChange={e => setFormData({...formData, features: e.target.value})} 
                   className="w-full bg-slate-950 border border-slate-800/80 rounded-2xl p-4 text-xs font-mono focus:border-indigo-500/50 outline-none resize-y text-indigo-100" 
-                  placeholder='[ { "title": "Feature", "desc": "Desc" } ]'
+                  placeholder='[ "Fonctionnalité 1", "Fonctionnalité 2" ]'
                 />
                 <p className="text-slate-500 text-xs mt-3 font-medium flex items-center gap-2">
-                   Le format doit être un JSON valide (Array of Objects) affiché sur la page détails de l'App.
+                   Le format doit être un JSON valide (Array of Strings) affiché sur la page détails de l'App.
                 </p>
               </div>
             </form>

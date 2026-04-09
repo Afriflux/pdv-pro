@@ -188,15 +188,17 @@ export default async function ClientDashboardOverview() {
           </div>
 
           {/* 🟪 BENTO 3 : RACCOURCI BIBLIOTHÈQUE DIGITALE (Col 12) */}
-          <div className="md:col-span-12 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-[2.5rem] border border-indigo-100/50 p-8 shadow-sm">
-             <div className="flex items-center justify-between mb-6">
+          <div className="md:col-span-12 bg-gradient-to-r from-[#1A1A1A] to-[#0A0A0A] rounded-[2.5rem] border border-white/10 p-8 shadow-sm relative overflow-hidden">
+             <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[100px] -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+             
+             <div className="flex items-center justify-between mb-6 relative z-10">
                 <div>
-                  <h2 className="text-2xl font-black text-indigo-950 flex items-center gap-2">
-                    <BookOpen size={24} className="text-indigo-600" /> Accès Rapide : Bibliothèque
+                  <h2 className="text-2xl font-black text-white flex items-center gap-2">
+                    <BookOpen size={24} className="text-emerald-400" /> Accès Rapide : Bibliothèque
                   </h2>
-                  <p className="text-indigo-900/60 font-medium mt-1">Reprenez la lecture de vos dernières formations ou e-books.</p>
+                  <p className="text-gray-400 font-medium mt-1">Reprenez la lecture de vos dernières formations ou e-books.</p>
                 </div>
-                <Link href="/client/library" className="hidden sm:flex px-6 py-2.5 bg-white text-indigo-600 font-bold rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
+                <Link href="/client/library" className="hidden sm:flex px-6 py-2.5 bg-white text-[#1A1A1A] font-bold rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all">
                   Voir toute la bibliothèque
                 </Link>
              </div>
@@ -207,17 +209,17 @@ export default async function ClientDashboardOverview() {
                     const product = access.product
                     const isVideo = product.digital_link !== null
                     return (
-                      <a href={product.digital_link || product.digital_file_url || '#'} target={product.digital_link ? "_blank" : "_self"} key={access.id} className="group flex items-center gap-4 bg-white/60 hover:bg-white p-3 rounded-[1.5rem] transition-all duration-300 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-xl hover:-translate-y-1 relative overflow-hidden">
-                        <div className="w-20 h-20 rounded-[1rem] bg-gray-100 overflow-hidden relative flex-shrink-0">
+                      <a href={product.digital_link || product.digital_file_url || '#'} target={product.digital_link ? "_blank" : "_self"} key={access.id} className="group flex items-center gap-4 bg-white/5 hover:bg-white/10 p-3 rounded-[1.5rem] transition-all duration-300 border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-xl hover:-translate-y-1 relative overflow-hidden">
+                        <div className="w-20 h-20 rounded-[1rem] bg-[#2A2A2A] overflow-hidden relative flex-shrink-0">
                           {product.images?.[0] ? (
                              <Image src={product.images[0]} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                           ) : (
-                             <div className="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-300"><FileText size={24}/></div>
+                             <div className="w-full h-full flex items-center justify-center bg-[#2A2A2A] text-gray-500"><FileText size={24}/></div>
                           )}
                         </div>
                         <div className="flex-1 pr-2">
-                           <h4 className="font-bold text-gray-900 text-sm line-clamp-2 group-hover:text-indigo-600 transition-colors">{product.name}</h4>
-                           <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase text-indigo-500 mt-2 tracking-wider bg-indigo-50 px-2 py-0.5 rounded-lg">
+                           <h4 className="font-bold text-white text-sm line-clamp-2 group-hover:text-emerald-400 transition-colors">{product.name}</h4>
+                           <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase text-emerald-400 mt-2 tracking-wider bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-lg">
                              {isVideo ? <PlayCircle size={12}/> : <Download size={12}/>}
                              {isVideo ? 'Vidéo' : 'E-Book'}
                            </span>
@@ -226,8 +228,8 @@ export default async function ClientDashboardOverview() {
                     )
                   })
                 ) : (
-                  <div className="col-span-full p-8 text-center bg-white/50 rounded-3xl border border-dashed border-indigo-200">
-                    <p className="text-indigo-900/60 font-medium">Vous ne possédez aucun produit digital actuellement.</p>
+                  <div className="col-span-full p-8 text-center bg-white/5 rounded-3xl border border-dashed border-white/20">
+                    <p className="text-gray-400 font-medium">Vous ne possédez aucun produit digital actuellement.</p>
                   </div>
                 )}
              </div>
@@ -253,7 +255,7 @@ export default async function ClientDashboardOverview() {
                       
                       {/* Left: Info */}
                       <div className="flex items-center gap-5 flex-1">
-                        <div className={`w-14 h-14 shrink-0 rounded-[1.2rem] flex items-center justify-center border ${isDigital ? 'bg-purple-50 border-purple-100 text-purple-600' : 'bg-gray-50 border-gray-200 text-gray-500 group-hover:bg-[#0F7A60]/10 group-hover:text-[#0F7A60] group-hover:border-[#0F7A60]/20'} transition-colors`}>
+                        <div className={`w-14 h-14 shrink-0 rounded-[1.2rem] flex items-center justify-center border ${isDigital ? 'bg-emerald-50 border-emerald-100 text-[#0F7A60]' : 'bg-gray-50 border-gray-200 text-gray-500 group-hover:bg-[#0F7A60]/10 group-hover:text-[#0F7A60] group-hover:border-[#0F7A60]/20'} transition-colors`}>
                           {isDigital ? <Smartphone size={24} /> : <Package size={24} />}
                         </div>
                         <div>
@@ -293,7 +295,7 @@ export default async function ClientDashboardOverview() {
                          </Link>
 
                          {isDigital ? (
-                           <Link href="/client/library" className="px-5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white text-sm font-bold transition-colors border border-indigo-100 hover:border-indigo-600 shadow-sm">
+                           <Link href="/client/library" className="px-5 py-2.5 rounded-xl bg-emerald-50 hover:bg-[#0F7A60] text-[#0F7A60] hover:text-white text-sm font-bold transition-colors border border-emerald-100 hover:border-[#0F7A60] shadow-sm">
                              Bibliothèque
                            </Link>
                          ) : (

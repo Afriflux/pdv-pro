@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { generateAIResponse } from '@/lib/ai/router'
 
 // Rate limiting en mémoire : 1 appel max / 30s par utilisateur
 const rateLimitMap = new Map<string, number>()
@@ -71,12 +72,6 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ error: 'Body JSON invalide' }, { status: 400 })
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-
-  if (!apiKey) {
-    return NextResponse.json(FALLBACK_ACTIONS, { status: 200 })
-  }
-
   const systemPrompt = `Tu es l'assistant IA de Yayyam, plateforme e-commerce africaine.
 Tu analyses les données d'un vendeur et génères EXACTEMENT 3 actions.
 Les actions sont concrètes, actionnables aujourd'hui, adaptées au marché africain (Wave, Orange Money, WhatsApp, COD).
@@ -111,38 +106,14 @@ Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks, avec cette struc
 Génère les 3 actions recommandées au format JSON.`
 
   try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 15000)
+    const response = await generateAIResponse({
+      taskType: 'reasoning',
+      systemPrompt: systemPrompt,
+      prompt: userPrompt,
+      temperature: 0.4
+    })    
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
-      }),
-      signal: controller.signal
-    })
-
-    clearTimeout(timeoutId)
-
-    if (!response.ok) {
-      console.error('[AI/Check360] Anthropic API Error:', await response.text())
-      return NextResponse.json(FALLBACK_ACTIONS, { status: 200 })
-    }
-
-    const data = (await response.json()) as AnthropicResponse
-    let rawText = data.content
-      .filter((c) => c.type === 'text')
-      .map((c) => c.text)
-      .join('')
-      .trim()
+    let rawText = response.content.trim()
 
     // Nettoyage markdown éventuel
     if (rawText.startsWith('```json')) {

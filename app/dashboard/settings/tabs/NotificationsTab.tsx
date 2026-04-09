@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import { TelegramSettings } from '@/components/settings/TelegramSettings'
 import { BellRing, PackageX, CalendarClock } from 'lucide-react'
 import { toast } from '@/lib/toast'
 
@@ -67,20 +66,6 @@ export function NotificationsTab({ store }: { store: any }) {
           colorTheme="indigo"
           checked={notifs.weekly}
           onChange={(val) => handleToggle('weekly', 'notif_weekly_report', val)}
-        />
-      </div>
-
-      {/* Widget Telegram (Refonte Max) */}
-      <div className="relative z-10 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-        <TelegramSettings 
-          storeId={store?.id || ''}
-          initialChatId={store?.telegram_chat_id || null}
-          initialNotifications={(store?.telegram_notifications as any) || {
-            orders: false,
-            payments: false,
-            whatsapp: false,
-            stock: false
-          }}
         />
       </div>
     </div>

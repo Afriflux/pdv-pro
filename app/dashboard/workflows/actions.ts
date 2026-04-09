@@ -1,7 +1,17 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
+
+interface WorkflowData {
+  id: string
+  title: string
+  description?: string
+  status: string
+  triggerType: string
+  config?: Prisma.InputJsonValue
+}
 
 export async function toggleWorkflowStatus(id: string, currentStatus: string) {
   try {
@@ -18,7 +28,7 @@ export async function toggleWorkflowStatus(id: string, currentStatus: string) {
   }
 }
 
-export async function saveWorkflow(data: any, ownerId: string, ownerType: 'vendor' | 'client' | 'affiliate' | 'closer' = 'vendor') {
+export async function saveWorkflow(data: WorkflowData, ownerId: string, ownerType: 'vendor' | 'client' | 'affiliate' | 'closer' = 'vendor') {
   try {
     // Si l'ID est généré coté client (par. ex. avec Math.random()), c'est un nouveau workflow
     const isNew = data.id.includes('.')
@@ -66,11 +76,11 @@ export async function deleteWorkflow(id: string) {
   }
 }
 
-export async function saveAffiliateWorkflow(data: any, ownerId: string) {
+export async function saveAffiliateWorkflow(data: WorkflowData, ownerId: string) {
   return saveWorkflow(data, ownerId, 'affiliate')
 }
 
-export async function saveClientWorkflow(data: any, ownerId: string) {
+export async function saveClientWorkflow(data: WorkflowData, ownerId: string) {
   return saveWorkflow(data, ownerId, 'client')
 }
 

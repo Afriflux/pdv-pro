@@ -13,10 +13,12 @@ import { Store,
   Settings,
   LogOut,
   ShieldCheck,
+  Building2,
   Puzzle,
   Handshake,
   AlertTriangle,
-
+  Calculator,
+  PieChart,
   PhoneCall,
   BookOpen,
   Globe,
@@ -54,16 +56,30 @@ const NAV: NavSection[] = [
       { name: 'Clients', href: '/admin/clients', icon: UserCircle },
       { name: 'Commandes', href: '/admin/orders', icon: ShoppingBag },
       { name: 'Closers (COD)', href: '/admin/closing', icon: PhoneCall },
-      { name: 'Retraits', href: '/admin/retraits', icon: Wallet },
     ]
   },
   {
-    title: 'GOUVERNANCE',
+    title: 'GOUVERNANCE & CONTRÔLE',
     items: [
+      { name: 'Yayyam ERP', href: '/admin/erp', icon: Building2, badge: 'NATIV' },
       { name: 'Plaintes', href: '/admin/complaints', icon: AlertTriangle },
       { name: 'Vérifications KYC', href: '/admin/kyc', icon: ShieldCheck },
       { name: 'Rôles & Admins', href: '/admin/roles', icon: ShieldCheck },
       { name: 'Audit & Historique', href: '/admin/audit', icon: History },
+    ]
+  },
+  {
+    title: 'PLATEFORME & BUSINESS',
+    items: [
+      { name: 'Quotas Freemium', href: '/admin/quotas', icon: Zap },
+      { name: 'Référencement & SEO', href: '/admin/branding', icon: Globe },
+    ]
+  },
+  {
+    title: 'MAINTENANCE & SÉCURITÉ',
+    items: [
+      { name: 'Actions & Crons', href: '/admin/maintenance', icon: Settings },
+      { name: 'Sécurité globale', href: '/admin/security-hub', icon: ShieldCheck },
     ]
   },
   {
@@ -80,7 +96,7 @@ const NAV: NavSection[] = [
   {
     title: 'COMPTE',
     items: [
-      { name: 'Paramètres', href: '/admin/settings', icon: Settings },
+      { name: 'Mon Profil', href: '/admin/settings', icon: UserCircle },
     ]
   }
 ]
@@ -298,6 +314,7 @@ export function AdminSidebar({
   avatarUrl?: string | null
   adminRole: string
 }) {
+  const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [mounted, setMounted] = useState(false)

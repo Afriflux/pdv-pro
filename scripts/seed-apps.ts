@@ -58,16 +58,6 @@ async function main() {
       icon_url: 'loyalty-points'
     },
     {
-      id: 'dropshipping',
-      name: 'Dropshipping Hub',
-      description: 'Proposez vos produits en marque blanche à un réseau de revendeurs ou vendez des produits Yayyam.',
-      category: 'Logistique',
-      features: ['Réseau Revendeurs', 'Synchronisation Stocks', 'Marge Automatique'],
-      is_premium: true,
-      active: true,
-      icon_url: 'dropshipping'
-    },
-    {
       id: 'telegram',
       name: 'Communautés Telegram',
       description: 'Liez vos produits à des groupes privés Telegram. Générez des invitations uniques et automatisez l\'entrée/sortie de vos membres VIP.',

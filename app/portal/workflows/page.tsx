@@ -68,7 +68,7 @@ export default async function PortalWorkflowsPage() {
           ownerId={user.id} 
           ownerType="affiliate"
           actions={{
-            saveWorkflow: saveAffiliateWorkflow,
+            saveWorkflow: saveAffiliateWorkflow as any,
             deleteWorkflow,
             toggleStatus: toggleWorkflowStatus,
             cloneWorkflow: cloneWorkflowTemplate

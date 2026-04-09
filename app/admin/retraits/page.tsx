@@ -101,7 +101,7 @@ export default async function AdminWithdrawalsPage({ searchParams }: PageProps) 
     <div className="min-h-screen bg-[#F0F2F5] pb-0">
       
       {/* ── EN-TÊTE FULL BLEED IMMERSIF (Spans full width) ── */}
-      <div className="relative bg-[#012928] pt-12 pb-24 px-8 lg:px-12 border-b border-white/10 overflow-hidden">
+      <div className="relative bg-gradient-to-r from-[#0D5C4A] via-[#0F7A60] to-teal-700 pt-12 pb-24 px-8 lg:px-12 border-b border-white/10 overflow-hidden shadow-lg">
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] -z-0 pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
         

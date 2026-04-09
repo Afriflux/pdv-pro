@@ -27,6 +27,16 @@ import { LoyaltyTab } from './tabs/LoyaltyTab'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SettingsLayout({ store, profile, userId }: { store: any, profile?: { name?: string; phone?: string; email?: string | null }, userId: string }) {
   const [activeSection, setActiveSection] = useState('profil')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hash = window.location.hash.replace('#', '')
+      if (['profil', 'lien', 'apparence', 'vendor', 'reseaux', 'securite', 'notifications', 'retrait', 'kyc', 'seo', 'contrat', 'whatsapp-bot', 'loyalty', 'anti-fraude'].includes(hash)) {
+        if (hash === 'anti-fraude') setActiveSection('securite')
+        else setActiveSection(hash)
+      }
+    }
+  }, [])
   const [completionPercent, setCompletionPercent] = useState(0)
 
   useEffect(() => {

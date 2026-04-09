@@ -33,6 +33,15 @@ export async function installAppAction(appId: string, settings?: any) {
         settings: settings || {}
       }
     })
+
+    // Synchronisation pour la fusion de l'app Telegram
+    if (appId === 'telegram') {
+      await prisma.installedApp.upsert({
+        where: { store_id_app_id: { store_id: store.id, app_id: 'telegram-alerts' } },
+        update: { status: 'active' },
+        create: { store_id: store.id, app_id: 'telegram-alerts', status: 'active' }
+      }).catch(() => {})
+    }
     
     // On force la mise à jour de la disposition entière (Sidebar)
     revalidatePath('/dashboard', 'layout')
@@ -61,6 +70,14 @@ export async function uninstallAppAction(appId: string) {
         store_id_app_id: { store_id: store.id, app_id: appId }
       }
     })
+
+    // Synchronisation suppression
+    if (appId === 'telegram') {
+      await prisma.installedApp.deleteMany({
+        where: { store_id: store.id, app_id: 'telegram-alerts' }
+      }).catch(() => {})
+    }
+
     revalidatePath('/dashboard', 'layout')
     return { success: true }
   } catch (err: any) {

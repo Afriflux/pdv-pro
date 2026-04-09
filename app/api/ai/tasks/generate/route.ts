@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { generateAIResponse } from '@/lib/ai/router'
 
 export async function POST(req: Request) {
   try {
@@ -16,24 +15,6 @@ export async function POST(req: Request) {
     if (!taskTitle) {
       return NextResponse.json({ error: 'Titre de tâche manquant' }, { status: 400 })
     }
-
-    const supabaseAdmin = createAdminClient()
-    const { data: config } = await supabaseAdmin
-      .from('PlatformConfig')
-      .select('value')
-      .eq('key', 'ANTHROPIC_API_KEY')
-      .single<{ value: string }>()
-
-    const apiKey = config?.value || process.env.ANTHROPIC_API_KEY
-
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: 'Le service IA est indisponible (Clé non configurée).' },
-        { status: 503 }
-      )
-    }
-
-    const client = new Anthropic({ apiKey })
 
     const systemPrompt = `Tu es un Assistant Exécutif IA intégré au CRM d'un e-commerçant/infopreneur.
 Ta mission est d'agir (passer à l'action) directement à partir d'une tâche donnée.
@@ -54,19 +35,14 @@ Type de tâche : "${taskType}"
 
 Génère le livrable final :`
 
-    const response = await client.messages.create({
-      model: 'claude-3-5-haiku-20241022',
-      max_tokens: 400,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
+    const response = await generateAIResponse({
+      taskType: 'reasoning',
+      systemPrompt: systemPrompt,
+      prompt: userPrompt,
+      temperature: 0.7
     })
 
-    const textContent = response.content.find(c => c.type === 'text')
-    if (!textContent || textContent.type !== 'text') {
-      throw new Error('Réponse vide')
-    }
-
-    return NextResponse.json({ generated: textContent.text.trim() })
+    return NextResponse.json({ generated: response.content.trim() })
 
   } catch (err: unknown) {
     console.error('[ai-tasks-generate]', err)

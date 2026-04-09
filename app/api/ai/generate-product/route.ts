@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { chargeForAI, AI_PRICING } from '@/lib/ai/ai-billing'
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-})
+import { generateAIResponse } from '@/lib/ai/router'
 
 export async function POST(req: Request) {
   try {
@@ -27,12 +23,6 @@ export async function POST(req: Request) {
       await chargeForAI('vendor', targetWallet, AI_PRICING.COPYWRITING_LONG, 'Génération Fiche Produit IA')
     } catch (billingError: any) {
       return NextResponse.json({ error: billingError.message }, { status: 402 }) // 402 Payment Required
-    }
-
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json({ 
-        error: 'Clé API Anthropic (Claude) manquante. Veuillez définir ANTHROPIC_API_KEY dans vos variables d\'environnement.' 
-      }, { status: 500 })
     }
 
     const prompt = `Tu es un expert mondial en copywriting, e-commerce et SEO.
@@ -59,17 +49,14 @@ Structure JSON requise :
   "metaDescription": "Une meta description optimisée Google (Entre 120 et 155 caractères avec CTA)"
 }`
 
-    const message = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 1500,
-      temperature: 0.7,
-      system: 'Tu es une IA e-commerce experte. Retourne UNIQUEMENT le JSON valide brut. Ne dis pas "Voici le JSON".',
-      messages: [
-        { role: 'user', content: prompt }
-      ]
+    const response = await generateAIResponse({
+      taskType: 'creative',
+      systemPrompt: 'Tu es une IA e-commerce experte. Retourne UNIQUEMENT le JSON valide brut. Ne dis pas "Voici le JSON".',
+      prompt: prompt,
+      temperature: 0.7
     })
 
-    const generatedText = message.content[0].type === 'text' ? message.content[0].text.trim() : ''
+    const generatedText = response.content.trim()
 
     // Clean potential markdown blocks
     const jsonString = generatedText.replace(/^```json\s*/, '').replace(/\s*```$/, '').trim()

@@ -4,8 +4,9 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Send, Users, MailCheck, Link as LinkIcon, Plus, CheckCircle2,
-  AlertCircle, Copy, Clock, RefreshCw, X, ShieldCheck, ChevronRight, MessageSquare, Trash2, Megaphone
+  AlertCircle, Copy, Clock, RefreshCw, X, ShieldCheck, ChevronRight, MessageSquare, Trash2, Megaphone, BellRing
 } from 'lucide-react'
+import { TelegramSettings } from '@/components/settings/TelegramSettings'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 interface TelegramCommunity {
@@ -33,6 +34,7 @@ interface TelegramDashboardProps {
     name: string
     slug: string
     telegram_chat_id: string | null
+    telegram_notifications?: unknown
   }
   communities: TelegramCommunity[]
   products: StoreProduct[]
@@ -87,6 +89,8 @@ export default function TelegramDashboard({
   recentAccess
 }: TelegramDashboardProps) {
   const router = useRouter()
+
+  const [activeTab, setActiveTab] = useState<'alerts' | 'monetization'>('alerts')
 
   // État local pour le linking de produits et les messages de bienvenue
   const [productLinks, setProductLinks] = useState<Record<string, string>>({})
@@ -266,13 +270,35 @@ export default function TelegramDashboard({
     }
   }
 
+  // Action : Expulser (Bannir) un client
+  const [banningId, setBanningId] = useState<string | null>(null)
+  const handleBan = async (accessId: string) => {
+    if (!confirm("Voulez-vous vraiment expulser ce client du groupe Telegram ?")) return
+    setBanningId(accessId)
+    try {
+      const res = await fetch('/api/telegram/community/ban', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_id: accessId })
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erreur')
+      alert("✅ Utilisateur expulsé avec succès.")
+      router.refresh()
+    } catch (e: any) {
+      alert(`❌ Impossible de bannir : ${e.message}`)
+    } finally {
+      setBanningId(null)
+    }
+  }
+
   return (
     <div className="space-y-8 animate-in fade-in duration-700 pb-12">
       
       {/* ─── HERO AERO ────────────────────────────────────────────────────────── */}
       <div className="relative overflow-hidden bg-gradient-to-br from-[#0D5C4A] to-[#0F7A60] rounded-[2rem] p-6 lg:p-10 shadow-xl border border-teal-800">
         {/* Effets de lumière / Glassmorphism */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0DE0A1]/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/4 pointer-events-none" />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
         
@@ -307,17 +333,66 @@ export default function TelegramDashboard({
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 relative z-10">
-          <StatCard label="Groupes" value={communities.filter(c => c.is_active).length} icon={<MessageSquare size={18} />} glowColor="bg-blue-500" />
+          <StatCard label="Groupes" value={communities.filter(c => c.is_active).length} icon={<MessageSquare size={18} />} glowColor="bg-[#0F7A60]" />
           <StatCard label="Membres" value={communities.reduce((s, c) => s + (c.members_count || 0), 0)} icon={<Users size={18} />} glowColor="bg-purple-500" />
           <StatCard label="Invitations" value={recentAccess.length} icon={<MailCheck size={18} />} glowColor="bg-emerald-500" />
           <StatCard label="Liens Actifs" value={communities.filter(c => c.product_id).length} icon={<LinkIcon size={18} />} glowColor="bg-orange-500" />
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8 items-start">
+      {/* ─── TABS LAYOUT (Sidebar & Contenu) ─── */}
+      <div className="flex flex-col md:flex-row gap-8 items-start mt-8">
         
-        {/* ─── GAUCHE : ASSISTANT DE CONNEXION / LISTE DES GROUPES ─── */}
-        <div className="lg:col-span-2 space-y-8">
+        {/* Barre Latérale des Onglets */}
+        <div className="w-full md:w-64 shrink-0 bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col gap-2 relative z-10 md:sticky md:top-8">
+          <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest pl-2 mb-2">Modules</h3>
+          <button
+            onClick={() => setActiveTab('alerts')}
+            className={`w-full text-left px-4 py-3.5 rounded-xl text-[14px] font-bold transition-all flex items-center gap-3 ${
+              activeTab === 'alerts' ? 'bg-[#0F7A60] text-white shadow-md' : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
+            }`}
+          >
+            <BellRing size={18} />
+            Alertes & Bot
+          </button>
+          <button
+            onClick={() => setActiveTab('monetization')}
+            className={`w-full text-left px-4 py-3.5 rounded-xl text-[14px] font-bold transition-all flex items-center gap-3 ${
+              activeTab === 'monetization' ? 'bg-[#0F7A60] text-white shadow-md' : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
+            }`}
+          >
+            <Users size={18} />
+            Membres VIP
+          </button>
+        </div>
+
+        {/* Contenu Actif */}
+        <div className="flex-1 w-full">
+          
+          {/* TAB 1 : ALERTES & BOT */}
+          {activeTab === 'alerts' && (
+            <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+              <div className="relative z-10 w-full mb-8">
+                <TelegramSettings 
+                  storeId={store?.id || ''}
+                  initialChatId={store?.telegram_chat_id || null}
+                  initialNotifications={(store?.telegram_notifications as any) || {
+                    orders: false,
+                    payments: false,
+                    whatsapp: false,
+                    stock: false
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2 : MONÉTISATION VIP */}
+          {activeTab === 'monetization' && (
+            <div className="grid lg:grid-cols-3 gap-8 items-start w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+              
+              {/* ─── GAUCHE : ASSISTANT DE CONNEXION / LISTE DES GROUPES ─── */}
+              <div className="lg:col-span-2 space-y-8">
           
           {/* ASSISTANT DE CONNEXION (WIZARD) */}
           {(step !== 'idle') && (
@@ -383,22 +458,23 @@ export default function TelegramDashboard({
                             Ouvrez les paramètres administrateur de votre groupe
                           </div>
                           
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-[15px] bg-blue-50 p-5 border-2 border-blue-200 shadow-md rounded-xl justify-between">
-                            <div className="flex items-center gap-4">
-                              <span className="w-8 h-8 rounded-full bg-blue-100 border border-blue-200 text-blue-600 flex items-center justify-center font-black text-sm shrink-0 shadow-inner">2</span>
-                              <div className="font-bold text-blue-900">
-                                Le plus important : Ajoutez le bot <br className="sm:hidden" />
-                                <span className="font-black text-2xl text-blue-600 tracking-tight mt-1 inline-block selection:bg-blue-200">@YayyamProBot</span>
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-[15px] bg-[#1A1A1A] p-5 border-2 border-white/10 shadow-md rounded-xl justify-between">
+                            <div className="flex gap-4 items-center">
+                              <span className="w-8 h-8 rounded-full bg-white/10 border border-white/20 text-emerald-400 flex items-center justify-center font-black text-sm shrink-0 shadow-inner">2</span>
+                              <div className="font-bold text-white">
+                                Envoyez ce message au Bot :<br/>
+                                <span className="font-black text-2xl text-emerald-400 tracking-tight mt-1 inline-block selection:bg-emerald-900">@YayyamProBot</span>
                               </div>
                             </div>
                             <button
+                              title="Copier le label du bot"
                               onClick={() => {
                                 navigator.clipboard.writeText('@YayyamProBot')
                                 setCopiedBot(true)
                                 setTimeout(() => setCopiedBot(false), 2000)
                               }}
-                              className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase flex items-center gap-2 transition-all w-full sm:w-auto justify-center ${
-                                copiedBot ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white'
+                              className={`shrink-0 px-4 py-2 rounded-xl text-sm font-black transition-all flex items-center gap-2 ${
+                                copiedBot ? 'bg-emerald-600 text-white shadow-md' : 'bg-white/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600 hover:text-white'
                               }`}
                             >
                               {copiedBot ? <CheckCircle2 size={16} /> : <Copy size={16} />}
@@ -524,21 +600,21 @@ export default function TelegramDashboard({
                       
                       {/* Info Groupe */}
                       <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 text-white">
-                          <Send size={28} fill="currentColor" />
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#0F7A60] to-emerald-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20 text-white">
+                          <MessageSquare size={24} />
                         </div>
                         <div className="flex-1 w-full min-w-[200px]">
                           <div className="flex items-center justify-between gap-3 mb-2">
                             <h3 className="font-black text-xl text-[#1A1A1A] leading-tight tracking-tight">{c.chat_title}</h3>
                             <button
                               onClick={() => setBroadcastTarget(c.id)}
-                              className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap"
+                              className="text-white bg-[#0F7A60] hover:bg-[#0D5C4A] px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap"
                             >
-                              <Megaphone size={14} /> Diffuser
+                              <Megaphone size={12} /> Diffuser
                             </button>
                           </div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg uppercase tracking-wider">
+                            <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg uppercase tracking-wider">
                               {c.chat_type}
                             </span>
                             <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg">
@@ -602,14 +678,11 @@ export default function TelegramDashboard({
 
                     {/* Message de Bienvenue */}
                     <div className="mt-5 pt-5 border-t border-slate-100">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <MessageSquare size={14} className="text-blue-600" />
-                          <label className="text-xs font-black text-[#1A1A1A] uppercase tracking-widest">
-                            Message de Bienvenue Automatique
-                          </label>
-                        </div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <MessageSquare size={14} className="text-emerald-600" />
+                        <span className="font-bold text-[13px] text-gray-700">Message de bienvenue personnalisé</span>
                       </div>
+                      <p className="text-xs text-gray-500 font-medium mb-3">Ce message sera envoyé en privé par le Bot à chaque nouveau membre rejoignant ce groupe.</p>
                       <div className="relative group/textarea">
                         <textarea
                           title="Message de bienvenue"
@@ -617,22 +690,24 @@ export default function TelegramDashboard({
                           value={welcomeMessages[c.id] || ''}
                           onChange={(e) => setWelcomeMessages(prev => ({ ...prev, [c.id]: e.target.value }))}
                           placeholder="Bonjour {first_name} ! Bienvenue dans le groupe..."
-                          className="w-full text-sm font-medium border border-slate-200 rounded-2xl px-5 py-4 min-h-[100px] resize-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 bg-slate-50 hover:bg-white transition-all text-[#1A1A1A]"
+                          className="w-full text-sm font-medium border border-slate-200 rounded-2xl px-5 py-4 min-h-[100px] resize-none focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 bg-slate-50 hover:bg-white transition-all text-[#1A1A1A]"
                         />
-                        <div className="flex justify-end mt-2">
-                          <button
-                            onClick={() => saveWelcomeMessage(c.id)}
-                            disabled={savingWelcome === c.id || welcomeMessages[c.id] === c.welcome_message}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-                              (welcomeMessages[c.id] || '') !== (c.welcome_message || '')
-                                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
-                                : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                            }`}
-                          >
-                            {savingWelcome === c.id ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                            {(welcomeMessages[c.id] || '') !== (c.welcome_message || '') ? 'Sauvegarder' : 'À jour'}
-                          </button>
-                        </div>
+                        {(welcomeMessages[c.id] !== c.welcome_message) && (
+                          <div className="mt-3 flex justify-end">
+                            <button
+                              onClick={() => saveWelcomeMessage(c.id)}
+                              disabled={savingWelcome === c.id}
+                              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 ${
+                                savingWelcome === c.id 
+                                  ? 'bg-emerald-600 text-white shadow-md opacity-50 cursor-not-allowed'
+                                  : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md'
+                              }`}
+                            >
+                              {savingWelcome === c.id ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                              Sauvegarder
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -643,7 +718,7 @@ export default function TelegramDashboard({
             <div className="relative bg-gradient-to-br from-emerald-50 to-white rounded-[2rem] p-8 md:p-12 overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-700 border border-emerald-100/50">
               {/* Effets d'arrière-plan */}
               <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#0DE0A1]/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#0F7A60]/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4 pointer-events-none" />
               
               <div className="relative z-10 flex flex-col md:flex-row items-center gap-12 lg:gap-20">
                 
@@ -667,20 +742,24 @@ export default function TelegramDashboard({
                   
                   <ul className="space-y-4 pt-2">
                     <li className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 text-[#0F7A60] flex items-center justify-center shrink-0 mt-0.5">
-                        <CheckCircle2 size={14} strokeWidth={3} />
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 size={12} />
                       </div>
-                      <p className="text-sm text-slate-700 font-medium"><b>100% Automatisé</b> : Ne gérez plus les ajouts et suppressions manuellement.</p>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-slate-600 leading-relaxed">
+                          Sélectionnez le groupe via le bouton ci-dessus pour associer un produit.
+                        </p>
+                      </div>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
-                        <ShieldCheck size={14} strokeWidth={3} />
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <ShieldCheck size={12} />
                       </div>
                       <p className="text-sm text-slate-700 font-medium"><b>Anti-Fuite</b> : Chaque invitation générée est à usage unique et liée à l'acheteur.</p>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
-                        <Users size={14} strokeWidth={3} />
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                        <Users size={12} />
                       </div>
                       <p className="text-sm text-slate-700 font-medium"><b>Rétention</b> : Gérez des abonnements hebdomadaires, mensuels ou annuels avec expulsion automatique à expiration.</p>
                     </li>
@@ -702,7 +781,7 @@ export default function TelegramDashboard({
                     <div className="absolute inset-0 bg-white/10 backdrop-blur-3xl rounded-3xl border border-white/20 shadow-2xl p-6 flex flex-col justify-between">
                       {/* En-tête Mockup */}
                       <div className="flex items-center gap-4 border-b border-white/10 pb-4">
-                        <div className="w-12 h-12 bg-gradient-to-tr from-blue-500 to-emerald-400 rounded-full flex items-center justify-center shadow-lg">
+                        <div className="w-12 h-12 bg-gradient-to-tr from-[#0F7A60] to-emerald-400 rounded-full flex items-center justify-center shadow-lg">
                           <Send size={20} fill="white" className="text-white" />
                         </div>
                         <div>
@@ -760,7 +839,9 @@ export default function TelegramDashboard({
               <h2 className="font-black text-sm text-[#1A1A1A] uppercase tracking-widest flex items-center gap-2">
                 <Clock size={16} className="text-[#0F7A60]" /> Derniers Accès
               </h2>
-              <span className="bg-blue-50 text-blue-600 text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider">{recentAccess.length} Pilotes</span>
+              <div className="flex items-center gap-2">
+                <span className="bg-emerald-50 text-emerald-600 text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider">{recentAccess.length} Pilotes</span>
+              </div>
             </div>
             
             {recentAccess.length === 0 ? (
@@ -782,8 +863,17 @@ export default function TelegramDashboard({
                         })}
                       </p>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
-                      <CheckCircle2 size={16} />
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => handleBan(a.id)}
+                        disabled={banningId === a.id}
+                        className="text-[10px] font-bold text-red-500 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg border border-red-100 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1 disabled:opacity-50"
+                      >
+                        {banningId === a.id ? '...' : 'Bannir'}
+                      </button>
+                      <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shrink-0">
+                        <CheckCircle2 size={16} />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -792,31 +882,34 @@ export default function TelegramDashboard({
           </div>
 
           {/* Guide Rapide (HelpCard) */}
-          <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-blue-100 rounded-3xl p-6 relative overflow-hidden">
-            <h2 className="font-black text-sm text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+          <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 relative overflow-hidden">
+            <h2 className="font-black text-sm text-[#0F7A60] uppercase tracking-widest mb-4 flex items-center gap-2">
               <ShieldCheck size={16} /> Comment ça marche ?
             </h2>
             <div className="space-y-4">
               <div className="flex gap-3 items-start">
-                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-blue-600 font-black text-xs shrink-0 shadow-sm">1</div>
-                <p className="text-xs text-blue-800 font-medium leading-relaxed pt-0.5">Le bot agit comme un portier pour générer des liens d'invitation à usage unique pour vos membres VIP.</p>
+                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[#0F7A60] font-black text-xs shrink-0 shadow-sm">1</div>
+                <p className="text-xs text-emerald-900 font-medium leading-relaxed pt-0.5">Le bot agit comme un portier pour générer des liens d'invitation à usage unique pour vos membres VIP.</p>
               </div>
               <div className="flex gap-3 items-start">
-                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-blue-600 font-black text-xs shrink-0 shadow-sm">2</div>
-                <p className="text-xs text-blue-800 font-medium leading-relaxed pt-0.5">Liez un de vos groupes à un produit payant. Lorsqu'un client l'achète, le système déclenche l'invitation.</p>
+                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[#0F7A60] font-black text-xs shrink-0 shadow-sm">2</div>
+                <p className="text-xs text-emerald-900 font-medium leading-relaxed pt-0.5">Liez un de vos groupes à un produit payant. Lorsqu'un client l'achète, le système déclenche l'invitation.</p>
               </div>
               <div className="flex gap-3 items-start">
-                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-blue-600 font-black text-xs shrink-0 shadow-sm">3</div>
-                <p className="text-xs text-blue-800 font-medium leading-relaxed pt-0.5">L'accès est envoyé par WhatsApp automatiquement. Les clics et membres sont tracés ci-dessus.</p>
+                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[#0F7A60] font-black text-xs shrink-0 shadow-sm">3</div>
+                <p className="text-xs text-emerald-900 font-medium leading-relaxed pt-0.5">L'accès est envoyé par WhatsApp automatiquement. Les clics et membres sont tracés ci-dessus.</p>
               </div>
             </div>
             
-            <a href="https://wa.me/221770000000" target="_blank" rel="noopener noreferrer" className="mt-5 flex items-center justify-center gap-2 bg-white text-blue-600 hover:bg-blue-600 hover:text-white text-xs font-black uppercase tracking-wider py-3 rounded-xl transition-all shadow-sm">
+            <a href="https://wa.me/221770000000" target="_blank" rel="noopener noreferrer" className="mt-5 flex items-center justify-center gap-2 bg-white text-[#0F7A60] hover:bg-[#0F7A60] hover:text-white text-xs font-black uppercase tracking-wider py-3 rounded-xl transition-all shadow-sm">
               <MessageSquare size={14} /> Contacter le Support
             </a>
           </div>
 
+          </div>
         </div>
+      )}
+      </div>
       </div>
 
       {/* ─── MODAL DE DIFFUSION (BROADCAST) ────────────────────────────────────────────────────────── */}
@@ -826,7 +919,7 @@ export default function TelegramDashboard({
           <div className="relative bg-white rounded-[2rem] p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
                   <Megaphone size={20} />
                 </div>
                 <h3 className="font-black text-xl text-[#1A1A1A]">Diffuser une Annonce</h3>
@@ -851,7 +944,7 @@ export default function TelegramDashboard({
               value={broadcastMessage}
               onChange={e => setBroadcastMessage(e.target.value)}
               placeholder="Rédigez votre annonce ici... Vous pouvez inclure des liens."
-              className="w-full text-sm font-medium border border-slate-200 rounded-2xl px-5 py-4 min-h-[140px] resize-none focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 bg-slate-50 hover:bg-white transition-all text-[#1A1A1A] mb-6"
+              className="w-full text-sm font-medium border border-slate-200 rounded-2xl px-5 py-4 min-h-[140px] resize-none focus:outline-none focus:ring-4 focus:ring-[#0F7A60]/10 focus:border-[#0F7A60] bg-slate-50 hover:bg-white transition-all text-[#1A1A1A] mb-6"
             />
             
             <button

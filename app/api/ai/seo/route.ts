@@ -1,10 +1,5 @@
 import { NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
-
-// Utilise la clé ANTHROPIC_API_KEY depuis les variables d'environnement
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-})
+import { generateAIResponse } from '@/lib/ai/router'
 
 export async function POST(req: Request) {
   try {
@@ -12,12 +7,6 @@ export async function POST(req: Request) {
 
     if (!context || !type) {
       return NextResponse.json({ error: 'Missing context or type' }, { status: 400 })
-    }
-
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json({ 
-        error: 'Clé API Anthropic (Claude) manquante. Veuillez définir ANTHROPIC_API_KEY.' 
-      }, { status: 500 })
     }
 
     let prompt = ''
@@ -36,21 +25,25 @@ Règles strictes :
 2. Doit inclure un appel à l'action clair (Call To Action).
 3. Doit convaincre l'internaute de cliquer avec un ton professionnel.
 4. Ne fournis AUCUNE introduction, justification ou texte supplémentaire. Uniquement la description brute. Pas de guillemets autour de la réponse.`
+    } else if (type === 'keywords') {
+      prompt = `Tu es un expert mondial en SEO et e-commerce. Ta mission est de générer une liste sémantique de 25 à 30 'Mots-clés pertinents'.
+Contexte de la page : "${context}"
+Règles strictes :
+1. Cible idéalement le marché Africain / Sénégalais (vente en ligne, plateforme, sans abonnement).
+2. Retourne UNIQUEMENT les mots-clés séparés par des virgules.
+3. Ne fournis AUCUNE introduction, ni point final. Exemple: "ecommerce sénégal, vendre en ligne, boutique africaine"`
     } else {
-      return NextResponse.json({ error: 'Invalid type. Use title or description.' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid type. Use title, description or keywords.' }, { status: 400 })
     }
 
-    const message = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 150,
-      temperature: 0.7,
-      system: 'Tu es une IA spécialisée dans le référencement naturel on-page. Tu dois retourner exactement et uniquement le texte demandé, sans fioritures.',
-      messages: [
-        { role: 'user', content: prompt }
-      ]
+    const response = await generateAIResponse({
+      taskType: 'eco',
+      systemPrompt: 'Tu es une IA spécialisée dans le référencement naturel on-page. Tu dois retourner exactement et uniquement le texte demandé, sans fioritures.',
+      prompt: prompt,
+      temperature: 0.7
     })
 
-    const generatedText = message.content[0].type === 'text' ? message.content[0].text.trim() : ''
+    const generatedText = response.content.trim()
 
     // Nettoyer d'éventuels guillemets résiduels
     const cleanedText = generatedText.replace(/^"(.*)"$/, '$1')

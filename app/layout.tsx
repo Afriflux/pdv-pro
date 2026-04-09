@@ -22,7 +22,6 @@ const mono = Space_Mono({
 })
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { SplashScreen } from '@/components/ui/SplashScreen'
 import type { Viewport } from 'next'
 import { unstable_cache } from 'next/cache'
 
@@ -96,6 +95,9 @@ export async function generateMetadata(): Promise<Metadata> {
       title: siteTitle,
       description: siteDesc,
       images: siteImage ? [siteImage] : undefined,
+    },
+    verification: {
+      google: 'BuV3odayhfQipIFEfebOQHI3w2EU8nO7Skjh5s8FI_0',
     }
   }
 }
@@ -109,7 +111,7 @@ import { headers } from 'next/headers'
 
 
 
-import InstallPWA from '@/components/pwa/InstallPWA'
+
 
 export default async function RootLayout({
   children,
@@ -138,7 +140,6 @@ export default async function RootLayout({
           <MaintenanceScreen message={kv['maintenance_message']} />
         ) : (
           <>
-            <SplashScreen />
             <OrganizationJsonLd />
             <WebSiteJsonLd />
             <Suspense fallback={null}>
@@ -146,12 +147,22 @@ export default async function RootLayout({
             </Suspense>
             {children}
             <FooterWrapper />
-            <InstallPWA />
           </>
         )}
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {})
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+              for (var i = 0; i < registrations.length; i++) {
+                registrations[i].unregister();
+              }
+            });
+            if (caches) {
+              caches.keys().then(function(names) {
+                for (var i = 0; i < names.length; i++) {
+                  caches.delete(names[i]);
+                }
+              });
+            }
           }
         ` }} />
       </body>

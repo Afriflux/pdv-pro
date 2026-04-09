@@ -51,7 +51,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
     const recipients = phones.map(p => ({ phone: p, name: '' }))
 
     if (phones.length > data.credits && !isDraft) {
-      toast.error(`Crédits insuffisants. Il vous faut ${phones.length} SMS.`)
+      toast.error(`Crédits insuffisants. Il vous faut ${phones.length} envois.`)
       return
     }
 
@@ -151,7 +151,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium min-h-[120px] resize-y"
               />
               <p className="text-xs text-gray-400 font-medium mt-2">
-                Un SMS standard est limité à 160 caractères. L'utilisation de variables dynamiques peut allonger la taille à l'envoi.
+                Note concernant WhatsApp Meta API : Évitez de spammer et assurez-vous d'avoir l'approbation (Opt-in) de vos clients pour éviter un signalement de votre numéro par Facebook Meta.
               </p>
             </div>
 
@@ -186,7 +186,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
           <h3 className="font-bold text-gray-400 text-sm tracking-uppercase mb-2 flex items-center gap-2">
             <CheckCircle2 size={16} className="text-emerald-400" /> Crédits Disponibles
           </h3>
-          <div className="text-5xl font-black mb-4">{data.credits} <span className="text-xl text-gray-500 font-medium tracking-tight">SMS restants</span></div>
+          <div className="text-5xl font-black mb-4">{data.credits} <span className="text-xl text-gray-500 font-medium tracking-tight">envois restants</span></div>
           
           <div className="space-y-2 mb-8">
             <div className="flex items-center justify-between text-xs font-bold text-gray-400">
@@ -198,7 +198,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
                 className={`bg-emerald-500 h-full rounded-full transition-all duration-1000 w-[${Math.round(usagePercent/10)*10}%]`} 
               />
             </div>
-            <p className="text-[10px] text-gray-500 font-medium">Vous avez envoyé un total de {data.used} SMS.</p>
+            <p className="text-[10px] text-gray-500 font-medium">Vous avez envoyé un total de {data.used} messages WhatsApp.</p>
           </div>
 
           <button 
@@ -209,7 +209,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
             {buyLoading ? (
                <span className="w-5 h-5 border-2 border-emerald-600/30 border-t-emerald-600 rounded-full animate-spin" />
             ) : (
-              <><CreditCard size={18} /> Acheter un Pack SMS <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" /></>
+              <><CreditCard size={18} /> Acheter un Pack de Crédits <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" /></>
             )}
           </button>
         </div>

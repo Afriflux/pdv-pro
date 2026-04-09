@@ -5,15 +5,17 @@ import { Puzzle, Search, Filter } from 'lucide-react'
 import ServiceCard from './ServiceCard'
 import { INTEGRATION_CATEGORIES } from './config'
 import type { ConfigItem, ServiceStats } from './page'
+import AIRoutingManager from './AIRoutingManager'
 
 interface Props {
   configMap: Record<string, ConfigItem>
   statsMap: Record<string, ServiceStats>
   configuredCount: number
   totalCount: number
+  aiRoutingPrefs?: string
 }
 
-export default function IntegrationsClient({ configMap, statsMap, configuredCount, totalCount }: Props) {
+export default function IntegrationsClient({ configMap, statsMap, configuredCount, totalCount, aiRoutingPrefs }: Props) {
   const [activeTab, setActiveTab]   = useState(INTEGRATION_CATEGORIES[0].category)
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -167,16 +169,60 @@ export default function IntegrationsClient({ configMap, statsMap, configuredCoun
           <div className="space-y-6">
             
             {/* NOTE SÉCURITÉ */}
-            <div className="bg-gradient-to-r from-amber-50 to-amber-100/50 border border-amber-200/60 rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-[0_8px_30px_rgba(245,158,11,0.15)] relative overflow-hidden backdrop-blur-md">
-              <div className="absolute bottom-0 right-0 w-48 h-48 bg-amber-200/20 rounded-full blur-2xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
-              <span className="text-2xl flex-shrink-0 p-3 bg-amber-100/80 rounded-2xl shadow-inner border border-amber-200/60 flex items-center justify-center">⚠️</span>
-              <div className="relative z-10 pt-1">
-                <p className="text-sm font-bold text-amber-900 leading-snug">
-                  Les clés affichées ici sont stockées de façon ultra-sécurisée (Table IntegrationKey).
-                  Ne partagez jamais ces accès avec un membre non Super-Admin de votre équipe.
-                </p>
+            {currentGroup?.category !== '📱 Notifications & Messaging' && (
+              <div className="bg-gradient-to-r from-amber-50 to-amber-100/50 border border-amber-200/60 rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-[0_8px_30px_rgba(245,158,11,0.15)] relative overflow-hidden backdrop-blur-md">
+                <div className="absolute bottom-0 right-0 w-48 h-48 bg-amber-200/20 rounded-full blur-2xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+                <span className="text-2xl flex-shrink-0 p-3 bg-amber-100/80 rounded-2xl shadow-inner border border-amber-200/60 flex items-center justify-center">⚠️</span>
+                <div className="relative z-10 pt-1">
+                  <p className="text-sm font-bold text-amber-900 leading-snug">
+                    Les clés affichées ici sont stockées de façon ultra-sécurisée (Table IntegrationKey).
+                    Ne partagez jamais ces accès avec un membre non Super-Admin de votre équipe.
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* CUSTOM HUB : Notifications & Messaging */}
+            {currentGroup?.category === '📱 Notifications & Messaging' && (
+              <div className="bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] rounded-[2rem] p-8 lg:p-10 text-white relative overflow-hidden shadow-2xl mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+                <div className="absolute bottom-[-100px] left-[-100px] w-[300px] h-[300px] bg-teal-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+                
+                <div className="relative z-10 max-w-3xl">
+                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 mb-6 backdrop-blur-md">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span className="text-xs font-black tracking-widest text-emerald-100 uppercase">Hub de Communication IA</span>
+                   </div>
+                   <h2 className="text-3xl lg:text-4xl font-black mb-4 tracking-tight">Le Cœur Battant de <span className="text-emerald-400">Yayyam</span></h2>
+                   <p className="text-gray-400 text-base md:text-lg leading-relaxed font-medium mb-8">
+                     Centralisez l'orchestration des flux vitaux (E-mails Transactionnels, Webhooks Meta, Notifs Telegram). Ces clés permettent au Smart Router d'envoyer des relances intelligentes, de livrer les accès 24/7 et de jouer les alertes Cha-Ching. ⚡️
+                   </p>
+                   
+                   <div className="flex flex-wrap gap-4">
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex-1 min-w-[200px] backdrop-blur-sm">
+                         <span className="text-2xl mb-2 block">💬</span>
+                         <h4 className="font-bold text-white mb-1">Passerelle Meta</h4>
+                         <p className="text-xs text-gray-500 font-medium">Relais des Webhooks WhatsApp Business</p>
+                      </div>
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex-1 min-w-[200px] backdrop-blur-sm">
+                         <span className="text-2xl mb-2 block">💌</span>
+                         <h4 className="font-bold text-white mb-1">Passerelle Brevo</h4>
+                         <p className="text-xs text-gray-500 font-medium">Infrastructure d'envois ultra-rapides</p>
+                      </div>
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex-1 min-w-[200px] backdrop-blur-sm">
+                         <span className="text-2xl mb-2 block">✈️</span>
+                         <h4 className="font-bold text-white mb-1">Passerelle Telegram</h4>
+                         <p className="text-xs text-gray-500 font-medium">Gestion Privée des Communautés Acheteurs</p>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* MANAGER INTELLIGENCE ARTIFICIELLE (Priorités Routeur) */}
+            {currentGroup?.category === '🤖 Intelligence Artificielle' && (
+               <AIRoutingManager initialConfig={aiRoutingPrefs} />
+            )}
 
             {/* VUE KANBAN / GRILLE */}
             {currentGroup && (

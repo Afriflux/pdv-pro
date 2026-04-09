@@ -44,7 +44,7 @@ export default async function ClientWorkflowsPage() {
           ownerId={user.id} 
           ownerType={"client" as any}
           actions={{
-            saveWorkflow: saveClientWorkflow,
+            saveWorkflow: saveClientWorkflow as any,
             deleteWorkflow,
             toggleStatus: toggleWorkflowStatus
           }}

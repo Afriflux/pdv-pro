@@ -45,6 +45,13 @@ export default async function AdminIntegrationsPage() {
     .select('key, value, updated_at, updated_by')
     .in('key', allKeys)
 
+  // Fetch AI_ROUTING_PREFS from PlatformConfig
+  const { data: routingPrefsRow } = await supabaseAdmin
+    .from('PlatformConfig')
+    .select('value')
+    .eq('key', 'AI_ROUTING_PREFS')
+    .single()
+
   const configMap: Record<string, { value: string; updatedAt: string; updatedBy: string | null }> = {}
   if (configRows) {
     for (const row of configRows) {
@@ -117,6 +124,7 @@ export default async function AdminIntegrationsPage() {
       statsMap={statsMap} 
       configuredCount={configuredCount}
       totalCount={allServices.length}
+      aiRoutingPrefs={routingPrefsRow?.value || undefined}
     />
   )
 }

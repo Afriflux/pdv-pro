@@ -30,8 +30,8 @@ export default async function SmsMarketingPage() {
               <span className="text-2xl">📱</span>
             </div>
             <div>
-              <h1 className="text-3xl font-black bg-gradient-to-r from-emerald-900 to-emerald-600 bg-clip-text text-transparent tracking-tight">Marketing SMS</h1>
-              <p className="text-gray-500 text-[15px] font-medium mt-1">Créez des campagnes ciblées et communiquez directement par SMS avec vos clients locaux.</p>
+              <h1 className="text-3xl font-black bg-gradient-to-r from-emerald-900 to-emerald-600 bg-clip-text text-transparent tracking-tight">Campagnes WhatsApp</h1>
+              <p className="text-gray-500 text-[15px] font-medium mt-1">Créez des campagnes ciblées et communiquez directement par WhatsApp avec vos clients.</p>
             </div>
           </div>
         </header>

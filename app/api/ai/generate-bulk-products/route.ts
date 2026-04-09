@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { generateAIResponse } from '@/lib/ai/router'
 
 interface GenerateBulkBody {
   prompt: string
@@ -57,14 +58,6 @@ export async function POST(req: Request): Promise<Response> {
   const { prompt, count = 5, category = 'Général', market = 'Sénégal' } = body
   const numProducts = Math.min(Math.max(count, 1), 20) // Cap entre 1 et 20 produits
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: 'Clé API Claude non configurée.' },
-      { status: 503 }
-    )
-  }
-
   const systemPrompt = `Tu es un expert en e-commerce sur le marché africain francophone (notamment ${market}).
 Ta tâche est de générer un tableau JSON contenant exactement ${numProducts} fiches produits prêtes à être importées dans une boutique.
 Les produits doivent être ultra-persuasifs, pertinents, et répondre au besoin exprimé par le vendeur.
@@ -96,34 +89,14 @@ Demande spécifique du vendeur : ${prompt}
 Renvoie uniquement le tableau JSON valide, sans backticks ni texte additionnel.`
 
   try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 60000)
-
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 3000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
-      }),
-      signal: controller.signal
+    const response = await generateAIResponse({
+      taskType: 'creative',
+      systemPrompt: systemPrompt,
+      prompt: userPrompt,
+      temperature: 0.7
     })
 
-    clearTimeout(timeoutId)
-
-    if (!anthropicRes.ok) {
-      console.error('[AI/GenerateBulk] Erreur Anthropic:', await anthropicRes.text())
-      return NextResponse.json({ error: "Erreur lors de l'appel à l'IA." }, { status: 502 })
-    }
-
-    const anthropicData = (await anthropicRes.json()) as AnthropicResponse
-    let rawText = anthropicData.content.find(c => c.type === 'text')?.text || ''
+    let rawText = response.content || ''
 
     // Nettoyage markdown éventuel
     rawText = rawText.trim()

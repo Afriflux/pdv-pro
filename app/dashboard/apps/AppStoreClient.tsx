@@ -3,12 +3,12 @@
 import React, { useState } from 'react'
 import { 
   Link as LinkIcon, Zap, BookOpen, Trophy, 
-  CheckCircle2, Download, Blocks, Star, Users, Briefcase, Gem,
+  CheckCircle2, Blocks, Star, Users, Briefcase, Gem,
   MessageSquare, ShoppingBag, Truck, Calendar, CreditCard, Banknote
 } from 'lucide-react'
 import { MobileSimulator } from '@/components/shared/simulator/MobileSimulator'
 import { installAppAction, uninstallAppAction } from './actions'
-import { Loader2, ShieldCheck, Sparkles, Phone, Package } from 'lucide-react'
+import { ShieldCheck, Sparkles, Phone, Package, X, ChevronRight } from 'lucide-react'
 
 interface AppItem {
   id: string
@@ -17,6 +17,7 @@ interface AppItem {
   description: string
   icon: React.ReactNode
   isPro?: boolean
+  price?: number
   features: string[]
 }
 
@@ -62,28 +63,46 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
       case 'sms-marketing': return <MessageSquare className="w-8 h-8 text-blue-500" />
       case 'whatsapp-bot': return <Phone className="w-8 h-8 text-green-500" />
       case 'loyalty-points': return <Trophy className="w-8 h-8 text-orange-500" />
-      case 'dropshipping': return <Package className="w-8 h-8 text-slate-700" />
+
       default: return <Blocks className="w-8 h-8 text-gray-500" />
     }
   }
 
   const STORE_APPS: AppItem[] = dbApps
-    .filter(app => app.id !== 'dropshipping')
-    .map(app => ({
-      id: app.id,
-      name: app.name,
-      category: app.category,
-      description: app.description || '',
-      icon: getIcon(app.icon_url || 'blocks', app.id),
-      isPro: app.is_premium,
-      features: app.features as string[]
-    }))
+    .filter(app => app.id !== 'dropshipping' && app.id !== 'telegram-alerts') // Masquer telegram-alerts
+    .map(app => {
+      if (app.id === 'telegram') {
+        return {
+          id: app.id,
+          name: 'Le Hub Telegram',
+          category: app.category,
+          description: 'Votre poste de contrôle pour Telegram : Alertes de ventes temps-réel & Monétisation automatisée pour vos groupes VIP.',
+          icon: getIcon(app.icon_url || 'blocks', app.id),
+          isPro: app.is_premium,
+          price: app.price,
+          features: ['Alertes Commandes & Stock', 'Gestion des groupes VIP', 'Envoi auto de lien WhatsApp', 'Expulsion automatique']
+        }
+      }
+      return {
+        id: app.id,
+        name: app.name,
+        category: app.category,
+        description: app.description || '',
+        icon: getIcon(app.icon_url || 'blocks', app.id),
+        isPro: app.is_premium,
+        price: app.price,
+        features: app.features as string[]
+      }
+    })
 
   const [installedAppIds, setInstalledAppIds] = useState<string[]>(initialInstalled)
   const [simulatedApp, setSimulatedApp] = useState<AppItem | null>(null)
   const [installingId, setInstallingId] = useState<string | null>(null)
+  const [purchaseModalApp, setPurchaseModalApp] = useState<AppItem | null>(null)
+  const [purchasing, setPurchasing] = useState(false)
   
   const [activeCategory, setActiveCategory] = useState<string>('Toutes')
+  const [installFilter, setInstallFilter] = useState<'all' | 'installed' | 'uninstalled'>('all')
   
   const categories = ['Toutes', ...Array.from(new Set(STORE_APPS.map(a => a.category)))]
   const router = useRouter()
@@ -94,6 +113,13 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
 
     const isCurrentlyInstalled = installedAppIds.includes(app.id)
     
+    // Si l'app est Premium, non installée, et coûte de l'argent, on ouvre la modale d'achat
+    if (!isCurrentlyInstalled && app.isPro && app.price && app.price > 0) {
+      setPurchaseModalApp(app)
+      setInstallingId(null)
+      return
+    }
+
     // Optimistic UI update
     if (isCurrentlyInstalled) {
       setInstalledAppIds(prev => prev.filter(id => id !== app.id))
@@ -104,24 +130,55 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
     try {
       if (isCurrentlyInstalled) {
         const res = await uninstallAppAction(app.id)
-          if (!res.success) throw new Error(res.error)
-        } else {
-          // Check if it's a payment gateway to possibly ask for API keys later
-          const res = await installAppAction(app.id)
-          if (!res.success) throw new Error(res.error)
-        }
-        router.refresh()
-      } catch (e) {
-        // Revert on failure
-        console.error("Installation failure", e)
-        alert("Echec de l'installation/désinstallation. Veuillez réessayer.")
-        setInstalledAppIds(initialInstalled)
-      } finally {
-        setInstallingId(null)
+        if (!res.success) throw new Error(res.error)
+      } else {
+        const res = await installAppAction(app.id)
+        if (!res.success) throw new Error(res.error)
       }
+      router.refresh()
+    } catch (e) {
+      console.error("Installation failure", e)
+      alert("Echec de l'installation/désinstallation. Veuillez réessayer.")
+      setInstalledAppIds(initialInstalled)
+    } finally {
+      setInstallingId(null)
+    }
   }
 
-  const filteredApps = STORE_APPS.filter(app => activeCategory === 'Toutes' || app.category === activeCategory)
+  const handlePurchase = async (method: 'wallet' | 'gateway') => {
+    if (!purchaseModalApp || !purchaseModalApp.price) return
+    setPurchasing(true)
+    
+    const { purchaseAssetAction } = await import('@/app/actions/purchases')
+    try {
+      const res = await purchaseAssetAction('app', purchaseModalApp.id, purchaseModalApp.price, method)
+      if (!res.success) throw new Error(res.error)
+      
+      if (res.method === 'gateway' && res.checkoutUrl) {
+         window.location.href = res.checkoutUrl
+         return
+      }
+      
+      // Achat via wallet réussi
+      setInstalledAppIds(prev => [...prev, purchaseModalApp.id])
+      setPurchaseModalApp(null)
+      router.refresh()
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e : new Error('Erreur inconnue')
+      console.error(err)
+      alert(err.message || "Erreur lors de l'achat.")
+    } finally {
+      setPurchasing(false)
+    }
+  }
+
+  const filteredApps = STORE_APPS.filter(app => {
+    const isCatMatch = activeCategory === 'Toutes' || app.category === activeCategory
+    const isInstalled = installedAppIds.includes(app.id)
+    if (installFilter === 'installed' && !isInstalled) return false
+    if (installFilter === 'uninstalled' && isInstalled) return false
+    return isCatMatch
+  })
 
   // Statistiques
   const appsEnVitrine = STORE_APPS.length
@@ -157,131 +214,167 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
             </div>
           </div>
 
-          {/* Categories Pill Menu */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm ${
-                  activeCategory === cat
-                    ? 'bg-ink text-white border-transparent'
-                    : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-ink border border-gray-200'
-                }`}
+          {/* Layout Principal : Sidebar + Contenu */}
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            
+            {/* Sidebar Filtres d'état */}
+            <div className="w-full md:w-56 shrink-0 bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col gap-2 sticky top-4">
+              <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest pl-2 mb-2">Bibliothèque</h3>
+              <button 
+                onClick={() => setInstallFilter('all')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center justify-between ${installFilter === 'all' ? 'bg-ink text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'}`}
               >
-                {cat}
+                <span>Tout parcourir</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full ${installFilter === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{appsEnVitrine}</span>
               </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredApps.map(app => {
-              const isInstalled = installedAppIds.includes(app.id)
-
-              return (
-              <div 
-                key={app.id} 
-                onMouseEnter={() => setSimulatedApp(app)}
-                onMouseLeave={() => setSimulatedApp(null)}
-                className={`bg-white rounded-[24px] p-6 border-2 transition-all duration-300 flex flex-col h-full ${
-                  isInstalled 
-                    ? 'border-[#0F7A60] shadow-xl shadow-[#0F7A60]/10 scale-[1.02] bg-emerald-50/10' 
-                    : 'border-gray-100 hover:border-gray-200 hover:shadow-xl hover:-translate-y-1'
-                }`}
+              <button 
+                onClick={() => setInstallFilter('installed')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center justify-between ${installFilter === 'installed' ? 'bg-[#0F7A60] text-white shadow-md' : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'}`}
               >
-                <div className="flex justify-between items-start mb-5">
-                  <div className={`p-4 rounded-[20px] shadow-inner ${isInstalled ? 'bg-gradient-to-br from-emerald-100 to-teal-50' : 'bg-gray-50'}`}>
-                    {app.icon}
-                  </div>
-                  
-                  <div className="flex flex-col gap-2 items-end">
-                    {app.isPro && (
-                      <span className="flex items-center gap-1 text-[10px] uppercase font-black tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
-                        <Star size={12} className="fill-amber-500" /> Premium
-                      </span>
-                    )}
-                    {isInstalled && (
-                      <span className="flex items-center gap-1 text-[10px] uppercase font-black tracking-wider text-emerald-700 bg-emerald-100 px-2 py-1 rounded-lg">
-                        Actif
-                      </span>
-                    )}
-                  </div>
-                </div>
+                <span>Installées</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full ${installFilter === 'installed' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'}`}>{installCounts}</span>
+              </button>
+              <button 
+                onClick={() => setInstallFilter('uninstalled')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center justify-between ${installFilter === 'uninstalled' ? 'bg-gray-900 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'}`}
+              >
+                <span>Non installées</span>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full ${installFilter === 'uninstalled' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{appsEnVitrine - installCounts}</span>
+              </button>
+            </div>
 
-                <div className="flex-1">
-                  <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{app.category}</div>
-                  <h3 className="font-black text-[#1A1A1A] text-lg mb-2 leading-tight">{app.name}</h3>
-                  <p className="text-[13px] text-gray-500 leading-relaxed font-medium">{app.description}</p>
-                </div>
-                
-                <div className="mt-5 space-y-2 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-                  {app.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-[12px] font-bold text-gray-500">
-                      <CheckCircle2 size={14} className={isInstalled ? 'text-[#0F7A60]' : 'text-gray-300'} />
-                      <span className={isInstalled ? 'text-gray-800' : ''}>{feat}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-auto flex gap-2">
+            {/* Contenu Droite : Catégories et Grille App */}
+            <div className="flex-1 space-y-6 w-full overflow-hidden">
+              {/* Categories Pill Menu */}
+              <div className="flex flex-wrap gap-2">
+                {categories.map(cat => (
                   <button
-                    onClick={() => toggleInstall(app)}
-                    disabled={installingId !== null}
-                    className={`flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
-                      isInstalled 
-                        ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 disabled:opacity-50' 
-                        : 'bg-gradient-to-r from-ink to-slate text-white hover:from-black hover:to-ink shadow-lg shadow-black/10 disabled:opacity-50'
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm ${
+                      activeCategory === cat
+                        ? 'bg-ink text-white border-transparent'
+                        : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-ink border border-gray-200'
                     }`}
                   >
-                    {installingId === app.id ? (
-                      <Loader2 size={16} className="animate-spin" />
-                    ) : isInstalled ? (
-                      'Retirer'
-                    ) : (
-                      <><Download size={16} /> Ajouter à la plateforme</>
-                    )}
+                    {cat}
                   </button>
-                  {isInstalled && (() => {
-                    // Mapping des apps vers leurs vraies routes
-                    const routeMap: Record<string, string> = {
-                      'marketing': '/dashboard/marketing',
-                      'workflows': '/dashboard/workflows',
-                      'affilies': '/dashboard/affilies',
-                      'promotions': '/dashboard/promotions',
-                      'telegram-alerts': '/dashboard/telegram',
-                      'telegram': '/dashboard/telegram',
-                      'ambassadeur': '/dashboard/ambassadeur',
-                      'links': '/dashboard/links',
-                      'ai-generator': '/dashboard/ai-generator',
-                      'webhooks': '/dashboard/webhooks',
-                      'customers': '/dashboard/customers',
-                      'livraisons': '/dashboard/livraisons',
-                      'agenda': '/dashboard/agenda',
-                      'tasks': '/dashboard/tasks',
-                      'communautes': '/dashboard/communautes',
-                      'closers': '/dashboard/closers',
-                      'academy': '/dashboard/tips', // Yayyam Académie
-                      'cinetpay': '/dashboard/settings',
-                      'paytech': '/dashboard/settings',
-                      'intouch': '/dashboard/settings',
-                      // Nouvelles apps
-                      'fraud-cod': '/dashboard/settings#anti-fraude',
-                      'coach-ia': '/dashboard',
-                      'sms-marketing': '/dashboard/marketing/sms',
-                      'whatsapp-bot': '/dashboard/marketing/whatsapp',
-                      'loyalty-points': '/dashboard/marketing/fidelity',
-                      'dropshipping': '/dashboard/dropshipping',
-                    };
-                    const configRoute = routeMap[app.id] || `/dashboard/apps/${app.id}`;
-                    return (
-                      <a href={configRoute} className="flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-[#0F7A60] text-white hover:opacity-90 shadow-lg shadow-emerald-900/10">
-                        Configurer
-                      </a>
-                    );
-                  })()}
-                </div>
+                ))}
               </div>
-            )})}
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredApps.map(app => {
+                  const isInstalled = installedAppIds.includes(app.id)
+
+                  return (
+                  <div 
+                    key={app.id} 
+                    onMouseEnter={() => setSimulatedApp(app)}
+                    onMouseLeave={() => setSimulatedApp(null)}
+                    className={`bg-white rounded-[24px] p-6 border-2 transition-all duration-300 flex flex-col h-full ${
+                      isInstalled 
+                        ? 'border-[#0F7A60] shadow-xl shadow-[#0F7A60]/10 scale-[1.02] bg-emerald-50/10' 
+                        : 'border-gray-100 hover:border-gray-200 hover:shadow-xl hover:-translate-y-1'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-5">
+                      <div className={`p-4 rounded-[20px] shadow-inner ${isInstalled ? 'bg-gradient-to-br from-emerald-100 to-teal-50' : 'bg-gray-50'}`}>
+                        {app.icon}
+                      </div>
+                      
+                      <div className="flex flex-col gap-2 items-end">
+                        {app.isPro && (
+                          <span className="flex items-center gap-1 text-[10px] uppercase font-black tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
+                            <Star size={12} className="fill-amber-500" /> Premium
+                          </span>
+                        )}
+                        {isInstalled && (
+                          <span className="flex items-center gap-1 text-[10px] uppercase font-black tracking-wider text-emerald-700 bg-emerald-100 px-2 py-1 rounded-lg">
+                            Actif
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{app.category}</div>
+                      <h3 className="font-black text-[#1A1A1A] text-lg mb-2 leading-tight">{app.name}</h3>
+                      <p className="text-[13px] text-gray-500 leading-relaxed font-medium">{app.description}</p>
+                    </div>
+                    
+                    <div className="mt-5 space-y-2 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                      {(app.features || []).map((feat: string | Record<string, string>, idx: number) => {
+                        const label = typeof feat === 'string' ? feat : (feat?.title || feat?.desc || JSON.stringify(feat));
+                        return (
+                        <div key={idx} className="flex items-center gap-2 text-[12px] font-bold text-gray-500">
+                          <CheckCircle2 size={14} className={isInstalled ? 'text-[#0F7A60]' : 'text-gray-300'} />
+                          <span className={isInstalled ? 'text-gray-800' : ''}>{label}</span>
+                        </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="mt-auto flex gap-2">
+                      <button onClick={() => {
+                        if (app.isPro && !isInstalled) {
+                          setPurchaseModalApp(app)
+                        } else {
+                          toggleInstall(app)
+                        }
+                      }} disabled={installingId === app.id} className={`flex-1 px-5 py-2.5 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition-all border ${isInstalled ? 'bg-red-50 text-red-600 border-red-100 hover:bg-red-100' : app.isPro ? 'bg-[#0F7A60] text-white border-transparent hover:bg-emerald-700 shadow-md shadow-emerald-900/10' : 'bg-gray-900 text-white border-transparent hover:bg-gray-800 shadow-md'}`}>
+                        {installingId === app.id ? (
+                          <div className="w-5 h-5 rounded-full border-2 border-t-white border-white/20 animate-spin" />
+                        ) : isInstalled ? (
+                          'Désinstaller'
+                        ) : app.isPro ? (
+                          <>Débloquer {app.price ? `(${new Intl.NumberFormat('fr-FR', {style: 'currency', currency: 'XOF', maximumFractionDigits: 0}).format(app.price)})` : ''}</>
+                        ) : (
+                          'Installer'
+                        )}
+                      </button>
+                      {isInstalled && (() => {
+                        // Mapping des apps vers leurs vraies routes
+                        const routeMap: Record<string, string> = {
+                          'marketing': '/dashboard/marketing',
+                          'workflows': '/dashboard/workflows',
+                          'affilies': '/dashboard/affilies',
+                          'promotions': '/dashboard/promotions',
+                          'telegram-alerts': '/dashboard/telegram',
+                          'telegram': '/dashboard/telegram',
+                          'ambassadeur': '/dashboard/ambassadeur',
+                          'links': '/dashboard/links',
+                          'ai-generator': '/dashboard/ai-generator',
+                          'webhooks': '/dashboard/webhooks',
+                          'customers': '/dashboard/customers',
+                          'livraisons': '/dashboard/livraisons',
+                          'agenda': '/dashboard/agenda',
+                          'tasks': '/dashboard/tasks',
+                          'communautes': '/dashboard/communautes',
+                          'closers': '/dashboard/closers',
+                          'academy': '/dashboard/tips', // Yayyam Académie
+                          'cinetpay': '/dashboard/settings',
+                          'paytech': '/dashboard/settings',
+                          'intouch': '/dashboard/settings',
+                          // Nouvelles apps
+                          'fraud-cod': '/dashboard/settings#anti-fraude',
+                          'coach-ia': '/dashboard',
+                          'sms-marketing': '/dashboard/marketing/sms',
+                          'whatsapp-bot': '/dashboard/settings#whatsapp-bot',
+                          'loyalty-points': '/dashboard/settings#loyalty',
+
+                        };
+                        const configRoute = routeMap[app.id] || `/dashboard/apps/${app.id}`;
+                        return (
+                          <a href={configRoute} className="flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-[#0F7A60] text-white hover:opacity-90 shadow-lg shadow-emerald-900/10">
+                            Ouvrir
+                          </a>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )})}
+              </div>
+            </div>
           </div>
 
         </div>
@@ -306,12 +399,15 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                  
                  <div className="w-full space-y-3 mt-10 text-left bg-white/50 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-white">
                    <h5 className="text-xs font-black text-gray-400 uppercase tracking-widest px-2 mb-3">Atouts techniques</h5>
-                   {simulatedApp.features.map((ft, i) => (
+                   {simulatedApp.features.map((ft, i) => {
+                     const label = typeof ft === 'string' ? ft : ((ft as Record<string, string>)?.title || (ft as Record<string, string>)?.desc || JSON.stringify(ft));
+                     return (
                      <div key={i} className="px-4 py-3 bg-white rounded-xl text-sm font-bold text-gray-700 shadow-sm flex items-center gap-3">
                         <CheckCircle2 size={16} className="text-emerald-500" />
-                        {ft}
+                        {label}
                      </div>
-                   ))}
+                     );
+                   })}
                  </div>
                  
                </div>
@@ -331,6 +427,67 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
           </div>
         )}
       </div>
+      {purchaseModalApp && (
+        <div className="fixed inset-0 bg-[#1A1A1A]/60 backdrop-blur-md flex items-center justify-center z-[100] px-4 animate-in fade-in duration-300">
+          <div className="bg-white max-w-md w-full rounded-3xl overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-500">
+             <button onClick={() => setPurchaseModalApp(null)} title="Fermer" aria-label="Fermer la modale" className="absolute top-4 right-4 w-10 h-10 bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-full flex items-center justify-center transition-colors">
+                <X size={20} />
+             </button>
+             
+             <div className="p-8 text-center bg-[#FAFAF7]">
+                <div className="mx-auto w-20 h-20 bg-white rounded-2xl flex items-center justify-center border border-gray-100 shadow-sm mb-6">
+                   {purchaseModalApp.icon}
+                </div>
+                <h2 className="text-2xl font-black text-[#1A1A1A] tracking-tight">{purchaseModalApp.name}</h2>
+                <p className="text-gray-500 font-medium mt-2">Débloquez cette application premium à vie.</p>
+                <div className="mt-6 inline-flex items-center gap-2 bg-[#0F7A60]/10 px-5 py-2 rounded-xl">
+                   <p className="text-[#0F7A60] font-black text-2xl">
+                     {new Intl.NumberFormat('fr-FR', {style: 'currency', currency: 'XOF', maximumFractionDigits: 0}).format(purchaseModalApp.price || 0)}
+                   </p>
+                </div>
+             </div>
+
+             <div className="p-8 pt-6 space-y-4">
+                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest text-center mb-6">Choisir une méthode de paiement</p>
+                
+                <button 
+                  onClick={() => handlePurchase('wallet')}
+                  disabled={purchasing}
+                  className="w-full relative group bg-white border-2 border-gray-100 p-4 rounded-2xl hover:border-[#0F7A60] hover:shadow-xl hover:shadow-[#0F7A60]/10 hover:-translate-y-1 transition-all flex items-center justify-between text-left"
+                >
+                  <div className="flex items-center gap-4">
+                     <div className="w-12 h-12 rounded-xl bg-gray-50 group-hover:bg-[#0F7A60]/10 flex items-center justify-center text-gray-400 group-hover:text-[#0F7A60] transition-colors">
+                        <Banknote size={24} />
+                     </div>
+                     <div>
+                       <p className="font-bold text-[#1A1A1A] text-lg">Payer via mon Wallet</p>
+                       <p className="text-[13px] font-medium text-emerald-600">Instantané • 0% de frais</p>
+                     </div>
+                  </div>
+                  <ChevronRight size={20} className="text-gray-300 group-hover:text-[#0F7A60]" />
+                </button>
+
+                <button 
+                  onClick={() => handlePurchase('gateway')}
+                  disabled={purchasing}
+                  className="w-full relative group bg-white border-2 border-gray-100 p-4 rounded-2xl hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all flex items-center justify-between text-left"
+                >
+                  <div className="flex items-center gap-4">
+                     <div className="w-12 h-12 rounded-xl bg-gray-50 group-hover:bg-indigo-50 flex items-center justify-center text-gray-400 group-hover:text-indigo-600 transition-colors">
+                        <CreditCard size={24} />
+                     </div>
+                     <div>
+                       <p className="font-bold text-[#1A1A1A] text-lg">Mobile Money & Cartes</p>
+                       <p className="text-[13px] font-medium text-gray-500">Recommandé : <strong className="text-blue-500">Wave (1%)</strong></p>
+                     </div>
+                  </div>
+                  <ChevronRight size={20} className="text-gray-300 group-hover:text-indigo-500" />
+                </button>
+             </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

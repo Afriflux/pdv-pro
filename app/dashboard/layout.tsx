@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import ContractBanner from '@/components/vendor/ContractBanner'
 import GlobalCoach from '@/components/dashboard/GlobalCoach'
+import LiveNotificationListener from '@/components/dashboard/LiveNotificationListener'
 import { prisma } from '@/lib/prisma'
 
 export default async function DashboardLayout({
@@ -89,6 +90,9 @@ export default async function DashboardLayout({
 
       {/* Le Coach IA Ultime Omniprésent */}
       <GlobalCoach />
+      
+      {/* L'écouteur Web Push Temps Réel ("Cha-Ching") */}
+      <LiveNotificationListener />
     </div>
   )
 }

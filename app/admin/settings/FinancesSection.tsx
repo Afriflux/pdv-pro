@@ -19,6 +19,9 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
   const [feeFixed, setFeeFixed]       = useState<number>(initialConfig.fee_fixed)
   const [minWithdrawal, setMinWithdrawal] = useState<number>(initialConfig.min_withdrawal)
   
+  const [taxVatEnabled, setTaxVatEnabled] = useState<boolean>(initialConfig.tax_vat_enabled || false)
+  const [taxVatRate, setTaxVatRate] = useState<number>(initialConfig.tax_vat_rate || 18)
+
   const [saving, setSaving] = useState(false)
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -40,7 +43,9 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
         tier_4: tier4,
         cod: cod,
         fee_fixed: feeFixed,
-        min_withdrawal: minWithdrawal
+        min_withdrawal: minWithdrawal,
+        tax_vat_enabled: taxVatEnabled,
+        tax_vat_rate: taxVatRate
       })
       toast.success('Paliers de commission sauvegardés avec succès ✅')
     } catch (err: unknown) {
@@ -112,7 +117,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
           <h3 className="text-sm font-bold text-gray-800">Politiques Paiement à la Livraison & Retraits</h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* COD */}
           <div>
             <label className={labelCls}>Commission COD Fixe</label>
@@ -140,7 +145,23 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
               <input title="Seuil minimal de retrait" placeholder="Montant en FCFA" type="number" value={minWithdrawal} onChange={e => setMinWithdrawal(Number(e.target.value))} className={inputCls} required />
               <ArrowUpRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-red-400" strokeWidth={2.5} />
             </div>
-            <p className="text-[10px] text-gray-400 mt-1 ml-1">Seuil pour débloquer les fonds (FCFA).</p>
+            <p className="text-[10px] text-gray-400 mt-1 ml-1">Seuil minimal (Traitement Auto/48H).</p>
+          </div>
+
+          {/* TVA Optionnelle */}
+          <div>
+            <label className={labelCls}>Taxe / TVA (%)</label>
+            <div className="relative flex items-center gap-2">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" title="Activer la TVA" checked={taxVatEnabled} onChange={(e) => setTaxVatEnabled(e.target.checked)} />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0F7A60]"></div>
+              </label>
+              <div className="relative flex-1">
+                 <input disabled={!taxVatEnabled} title="Taux de TVA" placeholder="%" type="number" step="0.1" value={taxVatRate} onChange={e => setTaxVatRate(Number(e.target.value))} className={`${inputCls} ${!taxVatEnabled && 'opacity-50'}`} required />
+                 <Percent className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0F7A60]" strokeWidth={2.5} />
+              </div>
+            </div>
+            <p className="text-[10px] text-gray-400 mt-1 ml-1">Optionnel. Collecte Taxe Numérique.</p>
           </div>
         </div>
       </div>

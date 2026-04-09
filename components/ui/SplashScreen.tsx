@@ -5,23 +5,24 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Logo } from './Logo'
 
 export function SplashScreen() {
-  const [show, setShow] = useState(true)
+  const [show, setShow] = useState(false)
 
   useEffect(() => {
-    // Only show on initial load
-    const hasSeenSplash = sessionStorage.getItem('yayyam_splash_seen')
-    
-    if (hasSeenSplash) {
-      setShow(false)
-      return
+    // Only show on initial load, never on server
+    try {
+      const hasSeenSplash = sessionStorage.getItem('yayyam_splash_seen')
+      if (hasSeenSplash) return
+
+      setShow(true)
+      const timer = setTimeout(() => {
+        setShow(false)
+        sessionStorage.setItem('yayyam_splash_seen', 'true')
+      }, 2000)
+
+      return () => clearTimeout(timer)
+    } catch {
+      // sessionStorage not available (SSR or privacy mode)
     }
-
-    const timer = setTimeout(() => {
-      setShow(false)
-      sessionStorage.setItem('yayyam_splash_seen', 'true')
-    }, 2000) // Shows for 2 seconds
-
-    return () => clearTimeout(timer)
   }, [])
 
   return (

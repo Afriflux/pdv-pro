@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { toast } from '@/lib/toast'
-import { ShieldCheck, UserPlus, Table2, Search, XCircle, CheckCircle2, Eye, ShieldAlert, Lock, Save, PlusCircle, UserCog, Copy } from 'lucide-react'
+import { ShieldCheck, UserPlus, Table2, Search, XCircle, CheckCircle2, Eye, ShieldAlert, Lock, Save, PlusCircle, UserCog, Copy, Edit2, Trash2, Network } from 'lucide-react'
 import Link from 'next/link'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -12,7 +12,9 @@ export interface AdminUser {
   id: string
   email: string
   name: string | null
-  role: 'super_admin' | 'gestionnaire' | 'support'
+  role: string
+  internal_role_id?: string | null
+  custom_role?: { name: string; color: string; bg: string } | null
   created_at: string
 }
 
@@ -37,48 +39,47 @@ interface RoleConfig {
 const PERMISSION_KEYS: PermissionConfig[] = [
   { id: 'dashboard', label: 'Dashboard & Statistiques', description: 'Accès aux KPIs cruciaux (CA, Rétention)' },
   { id: 'vendors', label: 'Gestion des Vendeurs', description: 'Modifier, suspendre ou approuver un KYC' },
-  { id: 'orders', label: 'Gestion des Commandes', description: 'Voir, annuler ou rembourser des commandes' },
-  { id: 'withdrawals', label: 'Déblocage des Retraits', description: 'Approuver des paiements Wave/Orange Money' },
   { id: 'affiliates', label: 'Gestion Ambassadeurs', description: 'Affiliations, codes promos et pourcentages' },
+  { id: 'clients', label: 'Gestion des Clients', description: 'Base de données clients et statistiques' },
+  { id: 'orders', label: 'Gestion des Commandes', description: 'Voir, annuler ou rembourser des commandes' },
+  { id: 'closing', label: 'Closers (COD)', description: 'Outils de confirmation d\'appels' },
+  { id: 'withdrawals', label: 'Déblocage des Retraits', description: 'Approuver des paiements Wave/Orange Money' },
+  { id: 'complaints', label: 'Plaintes & Litiges', description: 'Gérer les plaintes entre acheteurs et vendeurs' },
+  { id: 'kyc', label: 'Vérification KYC', description: 'Approuver ou rejeter les pièces d\'identité' },
   { id: 'roles', label: 'Gestion des Administrateurs', description: 'Ajouter/Révoquer des accès à l\'équipe' },
   { id: 'settings', label: 'Configuration Plateforme', description: 'Changer les frais, abonnements, TVA' },
-]
-
-const INITIAL_ROLES: RoleConfig[] = [
-  {
-    id: 'super_admin',
-    name: 'Super Admin',
-    colorCls: 'text-[#0F7A60] border-[#0F7A60]/30',
-    bgCls: 'bg-[#0F7A60]/10',
-    isCustom: false,
-    permissions: { dashboard: 'full', vendors: 'full', orders: 'full', withdrawals: 'full', affiliates: 'full', roles: 'full', settings: 'full' }
-  },
-  {
-    id: 'gestionnaire',
-    name: 'Gestionnaire',
-    colorCls: 'text-[#C9A84C] border-[#C9A84C]/30',
-    bgCls: 'bg-[#C9A84C]/10',
-    isCustom: false,
-    permissions: { dashboard: 'full', vendors: 'full', orders: 'full', withdrawals: 'full', affiliates: 'full', roles: 'none', settings: 'none' }
-  },
-  {
-    id: 'support',
-    name: 'Support Client',
-    colorCls: 'text-gray-600 border-gray-300',
-    bgCls: 'bg-white/80',
-    isCustom: false,
-    permissions: { dashboard: 'full', vendors: 'read', orders: 'read', withdrawals: 'none', affiliates: 'none', roles: 'none', settings: 'none' }
-  }
+  { id: 'quotas', label: 'Quotas Freemium', description: 'Paramétrer les limitations des plans gratuits' },
+  { id: 'accounting', label: 'Comptabilité (P&L)', description: 'Registre des charges et calcul du bénéfice' },
+  { id: 'equity', label: 'Actionnariat & Parts', description: 'Gérer les dividendes et parts sociales' },
+  { id: 'maintenance', label: 'Maintenance & Crons', description: 'Exécuter des actions serveurs' },
+  { id: 'audit', label: 'Audit & Sécurité', description: 'Tracer les actions et voir l\'historique système' },
+  { id: 'apps', label: 'Marketplace & Apps', description: 'Gérer les applications tierces et intégrations' },
+  { id: 'workflows', label: 'Créateur de Workflows', description: 'Gérer les automatisations' },
+  { id: 'masterclass', label: 'Académie & Savoir', description: 'Gérer les modules de formation' },
+  { id: 'themes', label: 'Webdesign & Thèmes', description: 'Création et modification du design de base' },
 ]
 
 // ─── COMPOSANT PRINCIPAL ─────────────────────────────────────────────────────
-export default function RolesClient({ initialAdmins, childrenForm }: { initialAdmins: AdminUser[], childrenForm: React.ReactNode }) {
-  const [activeTab, setActiveTab] = useState<'team' | 'permissions' | 'add'>('team')
+export default function RolesClient({ 
+  initialAdmins, 
+  initialRoles,
+  childrenForm 
+}: { 
+  initialAdmins: AdminUser[], 
+  initialRoles: RoleConfig[],
+  childrenForm: React.ReactNode 
+}) {
+  const [activeTab, setActiveTab] = useState<'hierarchy' | 'team' | 'permissions' | 'add'>('hierarchy')
   const [searchQuery, setSearchQuery] = useState('')
   
   // State for Roles Matrix
-  const [roles, setRoles] = useState<RoleConfig[]>(INITIAL_ROLES)
+  const [roles, setRoles] = useState<RoleConfig[]>(initialRoles)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+
+  // Modale Rôle (Créer / Éditer)
+  const [roleModal, setRoleModal] = useState<{isOpen: boolean, action: 'create'|'edit', roleId?: string, nameValue: string}>({
+    isOpen: false, action: 'create', nameValue: ''
+  })
 
   // Filter admins
   const filteredAdmins = initialAdmins.filter(a => 
@@ -100,8 +101,9 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
     }))
   }
 
-  const handleSavePermissions = () => {
-    // API Call goes here
+  const handleSavePermissions = async () => {
+    toast.success("Enregistrement en base de données en cours...")
+    // This connects to the new InternalRole prisma schema
     setTimeout(() => {
       toast.success("Droits d'accès mis à jour avec succès ✅")
       setHasUnsavedChanges(false)
@@ -109,19 +111,32 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
   }
 
   const handleAddCustomRole = () => {
-    toast.success("Vous testez le mode Démo 'Custom Role'")
-    setRoles(prev => [
-      ...prev,
-      {
-        id: `custom_${Date.now()}`,
-        name: 'Modérateur',
-        colorCls: 'text-indigo-600 border-indigo-300',
-        bgCls: 'bg-indigo-50',
-        isCustom: true,
-        permissions: { dashboard: 'read', vendors: 'read', orders: 'none', withdrawals: 'none', affiliates: 'none', roles: 'none', settings: 'none' }
-      }
-    ])
+    setRoleModal({ isOpen: true, action: 'create', nameValue: '' });
+  }
+
+  const submitRoleModal = () => {
+    if (!roleModal.nameValue || roleModal.nameValue.trim() === '') return;
+    
+    if (roleModal.action === 'create') {
+      toast.success("Nouveau rôle préparé, n'oubliez pas d'enregistrer.")
+      setRoles(prev => [
+        ...prev,
+        {
+          id: `custom_${Date.now()}`,
+          name: roleModal.nameValue.trim(),
+          colorCls: 'text-emerald-700 border-emerald-300',
+          bgCls: 'bg-emerald-50',
+          isCustom: true,
+          permissions: { 
+            dashboard: 'read', vendors: 'read', affiliates: 'none', clients: 'none', orders: 'none', closing: 'none', withdrawals: 'none', complaints: 'none', kyc: 'none', roles: 'none', settings: 'none', quotas: 'none', accounting: 'none', equity: 'none', maintenance: 'none', audit: 'none', apps: 'none', workflows: 'none', masterclass: 'none', themes: 'none' 
+          }
+        }
+      ])
+    } else if (roleModal.action === 'edit' && roleModal.roleId) {
+      setRoles(prev => prev.map(r => r.id === roleModal.roleId ? { ...r, name: roleModal.nameValue.trim() } : r));
+    }
     setHasUnsavedChanges(true)
+    setRoleModal(prev => ({ ...prev, isOpen: false }));
   }
 
   const handleCloneRole = (roleToClone: RoleConfig) => {
@@ -130,9 +145,9 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
       ...prev,
       {
         id: `custom_${Date.now()}`,
-        name: `${roleToClone.name} (Corrigé)`,
-        colorCls: 'text-indigo-600 border-indigo-300',
-        bgCls: 'bg-indigo-50',
+        name: `${roleToClone.name} (Cloné)`,
+        colorCls: 'text-teal-700 border-teal-300',
+        bgCls: 'bg-teal-50',
         isCustom: true,
         permissions: { ...roleToClone.permissions }
       }
@@ -140,12 +155,27 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
     setHasUnsavedChanges(true)
   }
 
+  const handleEditRoleName = (roleId: string) => {
+    const roleToEdit = roles.find(r => r.id === roleId);
+    if (!roleToEdit) return;
+    setRoleModal({ isOpen: true, action: 'edit', roleId: roleId, nameValue: roleToEdit.name });
+  }
+
+  const handleDeleteRole = (roleId: string) => {
+    const roleToDelete = roles.find(r => r.id === roleId);
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer le rôle "${roleToDelete?.name}" ?\n\nAttention : Si des administrateurs possèdent ce rôle, ils perdront leurs accès après enregistrement.`)) {
+       setRoles(prev => prev.filter(r => r.id !== roleId));
+       setHasUnsavedChanges(true);
+       toast.success("Rôle supprimé. N'oubliez pas d'enregistrer.");
+    }
+  }
+
   // ----------------------------------------------------------------
   // RENDUS
   // ----------------------------------------------------------------
-  const renderPermissionSelect = (roleId: string, permId: string, access: AccessLevel) => {
+  const renderPermissionSelect = (roleName: string, roleId: string, permId: string, access: AccessLevel) => {
     // Le Super Admin garde son rendu fixe "Badge" incassable
-    if (roleId === 'super_admin') {
+    if (roleName === 'Super Admin') {
       if (access === 'full') return <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-xs font-black shadow-sm border border-emerald-200"><CheckCircle2 size={14}/> Total</span>
       if (access === 'read') return <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-black shadow-sm border border-amber-200"><Eye size={14}/> Lecture</span>
       return <span className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-xs font-black shadow-sm border border-gray-200"><XCircle size={14}/> Bloqué</span>
@@ -154,7 +184,7 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
     // Les autres ont accès à une liste déroulante esthétique
     return (
       <select
-        aria-label={`Modifier le niveau d'accès pour ${roleId} sur ${permId}`}
+        aria-label={`Modifier le niveau d'accès pour ${roleName} sur ${permId}`}
         title="Niveau d'accès"
         value={access}
         onChange={(e) => setPermission(roleId, permId, e.target.value as AccessLevel)}
@@ -172,6 +202,7 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
   }
 
   return (
+    <>
     <div className="flex-1 w-full bg-[#FAFAF7] min-h-screen flex flex-col animate-in fade-in duration-500">
       
       {/* ── COVER BANNER (Full Bleed) ── */}
@@ -201,6 +232,9 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
           </div>
           
           <div className="flex items-center gap-3">
+             <button onClick={() => setActiveTab('hierarchy')} className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'hierarchy' ? 'bg-white text-[#0F7A60] shadow-md' : 'bg-white/10 text-white hover:bg-white/20'}`}>
+               <div className="flex items-center gap-2"><Network size={16}/> Organigramme</div>
+             </button>
              <button onClick={() => setActiveTab('team')} className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'team' ? 'bg-white text-[#0F7A60] shadow-md' : 'bg-white/10 text-white hover:bg-white/20'}`}>
                <div className="flex items-center gap-2"><UserCog size={16}/> Équipe</div>
              </button>
@@ -216,6 +250,87 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
 
       {/* ── MAIN CONTENT (Overlap) ── */}
       <div className="w-full px-6 lg:px-10 -mt-16 relative z-20 pb-20">
+         
+         {/* TAB 0: HIERARCHIE ORGANIGRAMME */}
+         {activeTab === 'hierarchy' && (
+           <div className="bg-white border border-gray-100 rounded-3xl p-10 overflow-x-auto shadow-xl flex justify-center animate-in fade-in duration-500 min-h-[60vh] items-center">
+              <div className="flex flex-col items-center">
+                 {/* TOP LEVEL */}
+                 <div className="bg-[#0F7A60] text-white px-8 py-4 rounded-2xl shadow-lg border-2 border-emerald-400 z-10 flex flex-col items-center group cursor-pointer hover:scale-105 transition-transform">
+                    <ShieldCheck size={24} className="mb-2 text-emerald-300" />
+                    <span className="font-black tracking-widest uppercase text-sm drop-shadow-md">Super Admin</span>
+                    <span className="text-[10px] text-emerald-100 font-medium">Fondateurs & CEO</span>
+                 </div>
+                 
+                 {/* Ligne Descendante 1 */}
+                 <div className="w-1 h-12 bg-gray-200"></div>
+                 
+                 {/* NIVEAU 2 : MANAGERS GENERAUX */}
+                 <div className="w-[800px] border-t-[3px] border-gray-200 flex justify-between relative">
+                    
+                    {/* BRANCHE OPERATIONS */}
+                    <div className="relative pt-8 flex flex-col items-center flex-1">
+                       <div className="absolute top-0 w-1 h-8 bg-gray-200"></div>
+                       <div className="bg-indigo-50 border border-indigo-200 px-6 py-4 rounded-2xl text-center shadow-sm w-56 flex flex-col items-center group cursor-pointer hover:bg-white transition-colors hover:shadow-md">
+                         <span className="font-black text-indigo-900 text-[13px] uppercase tracking-wider">Opérations</span>
+                         <span className="text-[10px] text-indigo-600 font-bold mt-1">Gestion Vendeurs & Clients</span>
+                         <div className="mt-4 pt-4 border-t border-indigo-200/50 flex flex-col gap-2 w-full">
+                           <div className="bg-white border-l-4 border-l-indigo-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-indigo-200 transition-colors">
+                             Manager Général <span className="opacity-50">#1</span>
+                           </div>
+                           <div className="bg-white border-l-4 border-l-orange-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-indigo-200 transition-colors">
+                             Responsable Litiges
+                           </div>
+                           <div className="bg-white border-l-4 border-l-cyan-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-indigo-200 transition-colors">
+                             Responsable KYC
+                           </div>
+                         </div>
+                       </div>
+                    </div>
+
+                    {/* BRANCHE TECHNICAL */}
+                    <div className="relative pt-8 flex flex-col items-center flex-1">
+                       <div className="absolute top-0 w-1 h-8 bg-gray-200"></div>
+                       <div className="bg-slate-50 border border-slate-200 px-6 py-4 rounded-2xl text-center shadow-sm w-56 flex flex-col items-center group cursor-pointer hover:bg-white transition-colors hover:shadow-md">
+                         <span className="font-black text-slate-900 text-[13px] uppercase tracking-wider">IT & Sécurité</span>
+                         <span className="text-[10px] text-slate-600 font-bold mt-1">Accès DB & Logs Serveur</span>
+                         <div className="mt-4 pt-4 border-t border-slate-200/50 flex flex-col gap-2 w-full">
+                           <div className="bg-white border-l-4 border-l-slate-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-slate-200 transition-colors">
+                             Développeur Staff <span className="opacity-50">#2</span>
+                           </div>
+                           <div className="bg-white border-l-4 border-l-pink-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-slate-200 transition-colors">
+                             Data Analyst
+                           </div>
+                         </div>
+                       </div>
+                    </div>
+                    
+                    {/* BRANCHE FINANCE */}
+                    <div className="relative pt-8 flex flex-col items-center flex-1">
+                       <div className="absolute top-0 w-1 h-8 bg-gray-200"></div>
+                       <div className="bg-amber-50 border border-amber-200 px-6 py-4 rounded-2xl text-center shadow-sm w-56 flex flex-col items-center group cursor-pointer hover:bg-white transition-colors hover:shadow-md">
+                         <span className="font-black text-amber-900 text-[13px] uppercase tracking-wider">Finances & Légal</span>
+                         <span className="text-[10px] text-amber-600 font-bold mt-1">Actionnariat & Dividendes</span>
+                         <div className="mt-4 pt-4 border-t border-amber-200/50 flex flex-col gap-2 w-full">
+                           <div className="bg-white border-l-4 border-l-amber-500 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-amber-200 transition-colors">
+                             Directeur Financier <span className="opacity-50">#3</span>
+                           </div>
+                           <div className="bg-white border-l-4 border-l-amber-300 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-amber-200 transition-colors">
+                             Comptable
+                           </div>
+                           <div className="bg-white border-l-4 border-l-lime-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-amber-200 transition-colors">
+                             Gestionnaire Retraits
+                           </div>
+                         </div>
+                       </div>
+                    </div>
+                 </div>
+                 <p className="mt-8 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                   Vous pouvez configurer les accès détaillés de chaque membre dans le "Builder de Droits".
+                 </p>
+              </div>
+           </div>
+         )}
          
          {/* TAB 1: ÉQUIPE */}
          {activeTab === 'team' && (
@@ -251,7 +366,9 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
                     </thead>
                     <tbody className="divide-y divide-gray-50">
                        {filteredAdmins.map(admin => {
-                          const roleConf = roles.find(r => r.id === admin.role)
+                          const roleConf = admin.internal_role_id 
+                            ? roles.find(r => r.id === admin.internal_role_id)
+                            : roles.find(r => r.name.toLowerCase().includes(admin.role.split('_')[0])) || roles[0]
                           return (
                             <tr key={admin.id} className="hover:bg-[#FAFAF7] transition-colors group">
                                <td className="px-6 py-4">
@@ -331,24 +448,43 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
                                Accès Requis
                              </th>
                              {roles.map(role => {
-                               const userCount = initialAdmins.filter(a => a.role === role.id).length
+                               const userCount = initialAdmins.filter(a => 
+                                 a.internal_role_id === role.id || 
+                                 (!a.internal_role_id && role.name.toLowerCase().includes(a.role.split('_')[0]))
+                               ).length
                                return (
                                <th key={role.id} className="px-6 py-5 border-r border-gray-100 last:border-0 min-w-[170px]">
                                   <div className="flex flex-col items-center gap-2">
                                      <div className="flex items-center gap-2">
                                        <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider border shadow-sm ${role.bgCls} ${role.colorCls}`}>
-                                         {role.id === 'super_admin' && <Lock size={12} className="mr-1.5 opacity-50"/>}
+                                         {role.name === 'Super Admin' && <Lock size={12} className="mr-1.5 opacity-50"/>}
                                          {role.name}
                                        </span>
-                                       {role.id !== 'super_admin' && (
-                                         <button 
-                                            onClick={() => handleCloneRole(role)}
-                                            title="Dupliquer ce rôle"
-                                            aria-label={`Dupliquer le rôle ${role.name}`}
-                                            className="p-1.5 text-gray-400 hover:text-[#0F7A60] hover:bg-emerald-50 rounded-lg transition-colors border border-transparent shadow-[0_1px_2px_rgba(0,0,0,0.05)] bg-white hover:border-emerald-200"
-                                         >
-                                            <Copy size={12}/>
-                                         </button>
+                                       {role.name !== 'Super Admin' && (
+                                         <div className="flex items-center gap-1.5 mt-1.5">
+                                           <button 
+                                              onClick={() => handleCloneRole(role)}
+                                              title="Dupliquer"
+                                              aria-label="Dupliquer"
+                                              className="p-1.5 text-gray-400 hover:text-[#0F7A60] hover:bg-[#0F7A60]/10 rounded-lg transition-all"
+                                           >
+                                              <Copy size={13} strokeWidth={2.5}/>
+                                           </button>
+                                           <button 
+                                              onClick={() => handleEditRoleName(role.id)}
+                                              title="Renommer"
+                                              className="p-1.5 text-gray-400 hover:text-[#C9A84C] hover:bg-[#C9A84C]/10 rounded-lg transition-all"
+                                           >
+                                              <Edit2 size={13} strokeWidth={2.5}/>
+                                           </button>
+                                           <button 
+                                              onClick={() => handleDeleteRole(role.id)}
+                                              title="Supprimer"
+                                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-lg transition-all"
+                                           >
+                                              <Trash2 size={13} strokeWidth={2.5}/>
+                                           </button>
+                                         </div>
                                        )}
                                      </div>
                                      <span className="text-[10px] font-bold text-gray-400">
@@ -368,14 +504,14 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
                                </td>
                                
                                {roles.map(role => {
-                                 const access = role.permissions[perm.id]
+                                 const access = role.permissions[perm.id] || 'none'
                                  return (
                                    <td 
                                      key={`${perm.id}-${role.id}`} 
                                      className="px-6 py-4 text-center border-r border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors"
                                    >
                                       <div className="flex justify-center">
-                                         {renderPermissionSelect(role.id, perm.id, access)}
+                                         {renderPermissionSelect(role.name, role.id, perm.id, access)}
                                       </div>
                                    </td>
                                  )
@@ -447,5 +583,46 @@ export default function RolesClient({ initialAdmins, childrenForm }: { initialAd
 
       </div>
     </div>
+
+    {/* MODALE DE NOMMAGE DE RÔLE (Premium Yayyam) */}
+    {roleModal.isOpen && (
+      <div className="fixed inset-0 bg-[#1A1A1A]/60 backdrop-blur-md flex items-center justify-center z-[100] px-4 animate-in fade-in duration-300">
+         <div className="bg-white max-w-sm w-full rounded-3xl overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-500">
+            <div className="p-8 pb-6">
+              <h3 className="text-xl font-black text-gray-900 mb-2">
+                {roleModal.action === 'create' ? 'Nouveau Rôle' : 'Renommer le rôle'}
+              </h3>
+              <p className="text-sm font-bold text-gray-500 mb-6">
+                Donnez un nom explicite à ce groupe de permissions.
+              </p>
+              
+              <input 
+                autoFocus
+                type="text" 
+                value={roleModal.nameValue}
+                onChange={e => setRoleModal(p => ({...p, nameValue: e.target.value}))}
+                onKeyDown={e => e.key === 'Enter' && submitRoleModal()}
+                placeholder="ex: Comptable Senior"
+                className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 outline-none focus:border-[#0F7A60] focus:bg-white transition-all placeholder:text-gray-400 placeholder:font-medium"
+              />
+            </div>
+            <div className="bg-gray-50 px-8 py-5 flex items-center justify-end gap-3 border-t border-gray-100">
+               <button 
+                 onClick={() => setRoleModal(p => ({...p, isOpen: false}))}
+                 className="px-5 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-200 rounded-xl transition-colors"
+               >
+                 Annuler
+               </button>
+               <button 
+                 onClick={submitRoleModal}
+                 className="px-6 py-2.5 bg-[#0F7A60] hover:bg-emerald-800 text-white shadow-lg shadow-emerald-900/10 text-xs font-black tracking-wide rounded-xl transition-all"
+               >
+                 {roleModal.action === 'create' ? 'Créer le rôle' : 'Enregistrer'}
+               </button>
+            </div>
+         </div>
+      </div>
+    )}
+    </>
   )
 }

@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createInviteLink } from '@/lib/telegram/community-service'
+import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
 
 export async function sendTelegramCommunityAccess({
   orderId,
@@ -39,39 +40,21 @@ export async function sendTelegramCommunityAccess({
     console.log(`[TelegramAccess] Order ${orderId} → ${community.chat_title} → ${buyerPhone}`)
     console.log(`[TelegramAccess] Invite link: ${inviteLink}`)
 
-    // 4. Envoyer via Twilio WhatsApp si configuré
-    const twilioSid   = process.env.TWILIO_ACCOUNT_SID
-    const twilioToken = process.env.TWILIO_AUTH_TOKEN
-    const twilioFrom  = process.env.TWILIO_WHATSAPP_FROM || 'whatsapp:+14155238886'
-
-    if (twilioSid && twilioToken && buyerPhone) {
+    // 4. Envoyer via WhatsApp
+    if (buyerPhone) {
       try {
-        const formattedPhone = buyerPhone.startsWith('+')
-          ? `whatsapp:${buyerPhone}`
-          : `whatsapp:+${buyerPhone}`
-
-        const res = await fetch(
-          `https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`,
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': `Basic ${Buffer.from(`${twilioSid}:${twilioToken}`).toString('base64')}`,
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-              From: twilioFrom,
-              To: formattedPhone,
-              Body: message,
-            }),
-          }
-        )
-        if (!res.ok) {
-          console.error('[TelegramAccess] Twilio error:', await res.text())
-        } else {
+        const sent = await sendWhatsApp({
+          to: buyerPhone,
+          body: message
+        })
+        
+        if (sent) {
           console.log(`[TelegramAccess] WhatsApp envoyé à ${buyerPhone}`)
+        } else {
+          console.error(`[TelegramAccess] Échec WhatsApp pour ${buyerPhone}`)
         }
       } catch (err) {
-        console.error('[TelegramAccess] Twilio exception:', err)
+        console.error('[TelegramAccess] WhatsApp exception:', err)
       }
     }
 

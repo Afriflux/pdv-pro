@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
+import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
 
 /**
  * Rétablit ou crée la configuration de fidélité pour une boutique
@@ -111,6 +112,28 @@ export async function earnLoyaltyPoints(phone: string, storeId: string, amountSp
       store_id: storeId
     }
   })
+
+  // Envoi notification WhatsApp
+  try {
+    const store = await prisma.store.findUnique({ where: { id: storeId } })
+    const storeName = store?.name || 'Notre Boutique'
+    
+    let msg = `🎁 *Fidélité récompensée !*\n\n`
+    msg += `Merci pour votre achat sur *${storeName}*.\n`
+    msg += `Vous venez de gagner *${pointsEarned} points* !\n\n`
+    
+    if (newTier !== account.tier) {
+      msg += `🎉 Félicitations, vous passez au niveau *${newTier.toUpperCase()}* !\n`
+      msg += `Vos futurs achats généreront plus de points.\n\n`
+    }
+    
+    msg += `💳 Solde actuel : *${newAccount.balance} points* (${newAccount.balance} FCFA de réduction sur votre prochain achat).\n\n`
+    msg += `À très vite ! 🙏`
+
+    await sendWhatsApp({ to: phone, body: msg })
+  } catch (err) {
+    console.error('[Loyalty WhatsApp Error]:', err)
+  }
 
   return { success: true, points: pointsEarned }
 }

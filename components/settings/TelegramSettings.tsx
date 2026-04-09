@@ -146,9 +146,9 @@ export function TelegramSettings({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-[2.5rem] bg-[#0A0F16] border border-gray-800 shadow-2xl xl:col-span-3">
+    <div className="relative overflow-hidden rounded-[2.5rem] bg-[#1A1A1A] border border-[#2A2A2A] shadow-2xl xl:col-span-3">
       {/* 🌟 Background Effects Héroïques 🌟 */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
       
       {/* Texture Grain Subtile */}
@@ -157,14 +157,14 @@ export function TelegramSettings({
       <div className="relative z-10 flex flex-col md:flex-row">
         
         {/* Colonne de Gauche : Le Pitch */}
-        <div className="p-8 sm:p-12 md:w-5/12 lg:w-1/3 flex flex-col justify-center border-b md:border-b-0 md:border-r border-gray-800/60 bg-white/[0.01]">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 text-blue-400 rounded-full text-[11px] font-black tracking-widest border border-blue-500/20 w-fit mb-6">
+        <div className="p-8 sm:p-12 md:w-5/12 lg:w-1/3 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 bg-white/[0.01]">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-full text-[11px] font-black tracking-widest border border-emerald-500/20 w-fit mb-6">
             <Send size={14} /> TÉLÉGRAM BOT
           </div>
           
           <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tighter leading-[1.1] mb-5">
             Vos alertes,<br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-300">en temps réel.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">en temps réel.</span>
           </h3>
           
           <p className="text-gray-400 text-[14px] font-medium leading-relaxed mb-8">
@@ -189,15 +189,15 @@ export function TelegramSettings({
             <div className="max-w-md mx-auto w-full space-y-8 animate-in fade-in zoom-in-95 duration-500">
               {!token ? (
                 <div className="text-center space-y-8">
-                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500/20 to-emerald-500/20 rounded-full flex items-center justify-center mx-auto shadow-[0_0_40px_rgb(59,130,246,0.15)] border border-white/5 relative">
-                    <div className="absolute inset-2 bg-gradient-to-br from-blue-500/40 to-emerald-500/40 rounded-full animate-ping opacity-20"></div>
-                    <Send size={40} className="text-blue-400" />
+                  <div className="w-24 h-24 bg-gradient-to-br from-[#0F7A60]/20 to-emerald-500/20 rounded-full flex items-center justify-center mx-auto shadow-[0_0_40px_rgb(16,185,129,0.15)] border border-white/5 relative">
+                    <div className="absolute inset-2 bg-gradient-to-br from-[#0F7A60]/40 to-emerald-500/40 rounded-full animate-ping opacity-20"></div>
+                    <Send size={40} className="text-emerald-400" />
                   </div>
                   
                   <button
                     onClick={handleConnect}
                     disabled={isLoading}
-                    className="w-full py-4 bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white rounded-[1.2rem] font-bold text-[15px] shadow-[0_8px_30px_rgb(16,185,129,0.25)] transition-all flex items-center justify-center gap-3 disabled:opacity-50 hover:scale-[1.02]"
+                    className="w-full py-4 bg-gradient-to-r from-[#0F7A60] to-emerald-500 hover:from-[#0D5C4A] hover:to-emerald-600 text-white rounded-[1.2rem] font-bold text-[15px] shadow-[0_8px_30px_rgb(16,185,129,0.25)] transition-all flex items-center justify-center gap-3 disabled:opacity-50 hover:scale-[1.02]"
                   >
                     {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
                     Générer le code de liaison
@@ -206,7 +206,7 @@ export function TelegramSettings({
               ) : (
                 <div className="bg-black/40 border border-gray-700/50 rounded-[2rem] p-8 space-y-8 relative overflow-hidden backdrop-blur-md">
                    <div className="text-center space-y-3 relative z-10">
-                    <p className="text-[11px] font-black text-blue-400 uppercase tracking-widest">Votre code unique</p>
+                    <p className="text-[11px] font-black text-emerald-400 uppercase tracking-widest">Votre code unique</p>
                     <div className="font-mono text-5xl sm:text-6xl font-black text-white tracking-widest py-2">
                       {token}
                     </div>
@@ -223,8 +223,8 @@ export function TelegramSettings({
                   <div className="space-y-6 pt-2 relative z-10">
                     <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
                       <p className="text-[13px] text-gray-300 font-medium leading-loose">
-                        <span className="inline-flex w-5 h-5 items-center justify-center bg-blue-500 text-white rounded-full text-[10px] font-black mr-2">1</span> Ouvrez <b className="text-white">@YayyamProBot</b> sur Telegram<br/>
-                        <span className="inline-flex w-5 h-5 items-center justify-center bg-blue-500 text-white rounded-full text-[10px] font-black mr-2">2</span> Envoyez : <code className="bg-black/50 px-2 py-1 rounded-lg border border-gray-700 text-emerald-400 font-mono shadow-inner select-all">/start {token}</code>
+                        <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-[10px] font-black mr-2">1</span> Ouvrez <b className="text-white">@YayyamProBot</b> sur Telegram<br/>
+                        <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-[10px] font-black mr-2">2</span> Envoyez : <code className="bg-black/50 px-2 py-1 rounded-lg border border-[#2A2A2A] text-emerald-400 font-mono shadow-inner select-all">/start {token}</code>
                       </p>
                     </div>
                     
@@ -327,14 +327,14 @@ function ToggleOptionDark({ icon, label, description, checked, onChange }: Toggl
     <div 
       className={`group flex items-center justify-between p-4 rounded-[1.2rem] transition-all cursor-pointer border ${
         checked 
-          ? 'bg-blue-500/10 border-blue-500/30 shadow-[0_8px_30px_rgb(59,130,246,0.1)]' 
+          ? 'bg-emerald-500/10 border-emerald-500/30 shadow-[0_8px_30px_rgb(16,185,129,0.1)]' 
           : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.05] hover:border-white/10'
       }`} 
       onClick={onChange}
     >
       <div className="flex gap-4 items-center">
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-          checked ? 'bg-blue-500 text-white shadow-[0_0_15px_rgb(59,130,246,0.5)] scale-110' : 'bg-gray-800/80 text-gray-500'
+          checked ? 'bg-emerald-500 text-white shadow-[0_0_15px_rgb(16,185,129,0.5)] scale-110' : 'bg-white/5 text-gray-500'
         }`}>
           {icon}
         </div>
@@ -345,7 +345,7 @@ function ToggleOptionDark({ icon, label, description, checked, onChange }: Toggl
       </div>
       
       <div className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-all duration-500 focus:outline-none ${
-        checked ? 'bg-blue-500' : 'bg-gray-800'
+        checked ? 'bg-emerald-500' : 'bg-white/10'
       }`}>
         <span
           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-500 shadow-sm ${

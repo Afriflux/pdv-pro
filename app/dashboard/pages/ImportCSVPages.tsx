@@ -9,7 +9,7 @@ const CSV_HEADERS = ['Titre de la page', 'URL (slug)', 'Template', 'Actif (oui/n
 
 const TEMPLATE_CSV = `Titre de la page,URL (slug),Template,Actif (oui/non)
 Ma sublime boutique,boutique-officielle,ecommerce,oui
-Formation Dropshipping,formation-dropshipping,formation,oui
+Formation Affiliation,formation-affiliation,formation,oui
 Mon ebook gratuit,ebook-gratuit,ebook,non`
 
 interface PreviewRow {

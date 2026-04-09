@@ -15,7 +15,7 @@ export default async function TelegramPage() {
   // Store du vendeur
   const { data: store } = await admin
     .from('Store')
-    .select('id, name, slug, telegram_chat_id')
+    .select('id, name, slug, telegram_chat_id, telegram_notifications')
     .eq('user_id', user.id)
     .single()
   if (!store) redirect('/dashboard')

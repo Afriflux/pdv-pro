@@ -44,9 +44,9 @@ function emailWrapper(bodyContent: string, preheaderText = ''): string {
 
           <!-- HEADER Yayyam -->
           <tr>
-            <td style="background-color:#0F7A60;padding:28px 32px;text-align:center;">
-              <h1 style="margin:0;font-size:26px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;">Yayyam</h1>
-              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,0.75);letter-spacing:1px;text-transform:uppercase;">Plateforme de vente africaine</p>
+            <td style="background-color:#0F7A60;padding:32px 32px;text-align:center;">
+              <img src="https://yayyam.com/logo.png" alt="Yayyam Logo" width="140" style="display:block;margin:0 auto 12px;height:auto;" />
+              <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.9);letter-spacing:1px;text-transform:uppercase;font-weight:600;">Plateforme de vente africaine</p>
             </td>
           </tr>
 

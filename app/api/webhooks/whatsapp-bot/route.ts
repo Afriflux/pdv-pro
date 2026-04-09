@@ -1,22 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { processWhatsAppMessage } from '@/lib/whatsapp/bot'
+import { createAdminClient } from '@/lib/supabase/admin'
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const mode = searchParams.get('hub.mode')
+  const token = searchParams.get('hub.verify_token')
+  const challenge = searchParams.get('hub.challenge')
+
+  // Récupération dynamique du token de vérification
+  const supabaseAdmin = createAdminClient()
+  const { data: config } = await supabaseAdmin
+    .from('PlatformConfig')
+    .select('value')
+    .eq('key', 'WHATSAPP_VERIFY_TOKEN')
+    .single<{ value: string }>()
+  
+  const verifyToken = config?.value || process.env.WHATSAPP_VERIFY_TOKEN
+
+  if (mode === 'subscribe' && token === verifyToken) {
+    return new NextResponse(challenge, { status: 200 })
+  }
+  return new NextResponse('Forbidden', { status: 403 })
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const textData = await req.text()
-    const searchParams = new URLSearchParams(textData)
+    const body = await req.json()
     
-    const From = searchParams.get('From')
-    const Body = searchParams.get('Body')
-    const ProfileName = searchParams.get('ProfileName') || ''
-
-    if (!From || !Body) {
-      return new NextResponse('Twilio format invalid', { status: 400 })
+    // Meta WhatsApp Cloud API format check
+    if (body.object !== 'whatsapp_business_account') {
+      return new NextResponse('Origin Invalid', { status: 404 })
     }
 
-    const rawMessage = Body.trim()
-    const phone = From.replace('whatsapp:', '')
+    const entry = body.entry?.[0]
+    const change = entry?.changes?.[0]
+    const value = change?.value
+    const messages = value?.messages
+
+    if (!messages || messages.length === 0) {
+      // It might be a status update (read, delivered, sent). We acknowledge immediately.
+      return new NextResponse('EVENT_RECEIVED', { status: 200 })
+    }
+
+    const message = messages[0]
+    const contact = value.contacts?.[0]
+    
+    const phone = message.from
+    const ProfileName = contact?.profile?.name || ''
+
+    if (message.type !== 'text') {
+      // Ignorer les messages audio/images pour l'instant
+      return new NextResponse('Ignored', { status: 200 })
+    }
+
+    const rawMessage = message.text.body.trim()
 
     // Tenter de trouver le store_id à partir de la conversation existante
     const conversation = await prisma.whatsappConversation.findFirst({
@@ -40,28 +79,20 @@ export async function POST(req: NextRequest) {
     }
 
     if (!storeId) {
-      // Message générique si la boutique n'est pas connue
-      const responseTwiML = `
-        <Response>
-          <Message>Bienvenue sur Yayyam WhatsApp. Merci d'utiliser le lien fourni par votre vendeur pour commencer vos achats.</Message>
-        </Response>
-      `
-      return new NextResponse(responseTwiML.trim(), {
-        headers: { 'Content-Type': 'text/xml' }
-      })
+      // Si la boutique n'est pas connue et pas d'intent Join, on ignore simplement pour Meta
+      return new NextResponse('EVENT_RECEIVED', { status: 200 })
     }
 
-    // Process message
-    const twiMLResponse = await processWhatsAppMessage({
+    // Process message (Ceci fera désormais l'appel réseau vers Graph API au lieu de retourner du XML)
+    await processWhatsAppMessage({
       storeId,
       phone,
       clientName: ProfileName,
       message: rawMessage
     })
 
-    return new NextResponse(twiMLResponse, {
-      headers: { 'Content-Type': 'text/xml' }
-    })
+    // Meta exige un retour direct HTTP 200 pour accuser réception du Webhook
+    return new NextResponse('EVENT_RECEIVED', { status: 200 })
   } catch (err: unknown) {
     console.error('[WhatsApp Bot Webhook] Erreur:', err)
     return new NextResponse('Internal error', { status: 500 })

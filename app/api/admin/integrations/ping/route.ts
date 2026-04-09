@@ -49,6 +49,32 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: `Connexion réussie au bot @${tgData.result.username}` })
     }
 
+    if (pingType === 'openai') {
+      const res = await fetch('https://api.openai.com/v1/models', {
+        headers: { 'Authorization': `Bearer ${value}` }
+      })
+      if (!res.ok) throw new Error('Erreur API OpenAI. Veuillez vérifier la clé de configuration.')
+      return NextResponse.json({ message: 'Vérification OpenAI réussie. Clé valide.' })
+    }
+
+    if (pingType === 'gemini') {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${value}`)
+      if (!res.ok) throw new Error('Erreur API Gemini. Veuillez vérifier la clé de configuration.')
+      return NextResponse.json({ message: 'Vérification Gemini réussie. Clé valide.' })
+    }
+
+    if (pingType === 'anthropic') {
+      const res = await fetch('https://api.anthropic.com/v1/models', {
+        headers: {
+          'x-api-key': value,
+          'anthropic-version': '2023-06-01'
+        }
+      })
+      // If 401, key is invalid. 404 might just mean models endpoint isn't fully supported without beta flag but auth is valid if not 401. Let's just check against 401.
+      if (res.status === 401) throw new Error('Erreur API Anthropic. Veuillez vérifier la clé de configuration.')
+      return NextResponse.json({ message: 'Vérification Anthropic Claude réussie. Clé valide.' })
+    }
+
     // Pour les autres, on simule une vérification distante rapide si on n'a pas les URL/payload exacts pour un ping harmless
     await new Promise(resolve => setTimeout(resolve, 800)) // Simulation de latence API
     

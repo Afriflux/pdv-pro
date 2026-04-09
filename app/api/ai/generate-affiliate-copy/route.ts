@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { generateAIResponse } from '@/lib/ai/router'
 
 export async function POST(req: Request) {
   try {
@@ -18,24 +17,6 @@ export async function POST(req: Request) {
     if (!productName || !link || !platform) {
       return NextResponse.json({ error: 'Paramètres manquants' }, { status: 400 })
     }
-
-    const supabaseAdmin = createAdminClient()
-    const { data: config } = await supabaseAdmin
-      .from('PlatformConfig')
-      .select('value')
-      .eq('key', 'ANTHROPIC_API_KEY')
-      .single<{ value: string }>()
-
-    const apiKey = config?.value || process.env.ANTHROPIC_API_KEY
-
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: "Configuration API d'Intelligence Artificielle manquante." },
-        { status: 503 }
-      )
-    }
-
-    const client = new Anthropic({ apiKey })
 
     // Prompt paramétré selon la plateforme choisie
     let platformInstructions = ''
@@ -67,21 +48,14 @@ Description éventuelle : "${productDescription || 'Pas de description suppléme
 Lien à insérer : "${link}"
 Plateforme ciblée : ${platform}`
 
-    const message = await client.messages.create({
-      model: 'claude-3-5-haiku-20241022',
-      max_tokens: 400,
-      system: systemPrompt,
-      messages: [
-        { role: 'user', content: userPrompt }
-      ],
+    const response = await generateAIResponse({
+      taskType: 'creative',
+      systemPrompt: systemPrompt,
+      prompt: userPrompt,
+      temperature: 0.7
     })
 
-    const textContent = message.content.find(c => c.type === 'text')
-    if (!textContent || textContent.type !== 'text') {
-      throw new Error('Réponse Claude invalide')
-    }
-
-    return NextResponse.json({ result: textContent.text.trim() })
+    return NextResponse.json({ result: response.content.trim() })
 
   } catch (err: unknown) {
     console.error('[generate-affiliate-copy]', err)

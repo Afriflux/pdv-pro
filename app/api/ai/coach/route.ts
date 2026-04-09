@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { generateAIResponse } from '@/lib/ai/router'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(req: Request) {
@@ -37,24 +36,6 @@ export async function POST(req: Request) {
     // Logger la génération
     await supabase.from('AIGenerationLog')
       .insert({ user_id: user.id, type: 'coach_ia' })
-
-    const supabaseAdmin = createAdminClient()
-    const { data: config } = await supabaseAdmin
-      .from('PlatformConfig')
-      .select('value')
-      .eq('key', 'ANTHROPIC_API_KEY')
-      .single<{ value: string }>()
-
-    const apiKey = config?.value || process.env.ANTHROPIC_API_KEY
-
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: 'Coach indisponible (Clé API non configurée).' },
-        { status: 503 }
-      )
-    }
-
-    const client = new Anthropic({ apiKey })
 
     // Construction du contexte global avec TOUTES les Masterclasses
     const [allMasterclasses, learnedKnowledge] = await Promise.all([
@@ -105,31 +86,21 @@ Règles impératives :
 5. DANS CE CAS SEULEMENT (quand tu fournis une nouvelle solution qui n'est pas dans le texte fourni), tu DOIS ABSOLUMENT commencer ton message par le mot exact "[NEW_KNOWLEDGE]". 
 6. Ne sors jamais de ton rôle d'expert e-commerce Yayyam.`
 
-    // Construct message history for Claude
-    // we need to format messages as expected by Anthropic, with role 'user' or 'assistant'
-    const formattedHistory = Array.isArray(history) 
-      ? history.map((msg: any) => ({
-          role: msg.role === 'user' ? 'user' : 'assistant',
-          content: msg.content
-        }))
-      : []
+    // Construct message history text context
+    const historyText = Array.isArray(history) 
+      ? history.map((msg: any) => `${msg.role === 'user' ? 'VENDEUR' : 'TOI (COACH)'}: ${msg.content}`).join('\n\n')
+      : ''
 
-    // Append the new question
-    formattedHistory.push({ role: 'user', content: question })
+    const userPrompt = `${historyText ? 'HISTORIQUE DE LA CONVERSATION:\n' + historyText + '\n\n' : ''}VENDEUR: ${question}`
 
-    const response = await client.messages.create({
-      model: 'claude-3-5-haiku-20241022',
-      max_tokens: 400,
-      system: systemPrompt,
-      messages: formattedHistory as any,
+    const response = await generateAIResponse({
+      taskType: 'reasoning',
+      systemPrompt: systemPrompt,
+      prompt: userPrompt,
+      temperature: 0.7
     })
 
-    const textContent = response.content.find(c => c.type === 'text')
-    if (!textContent || textContent.type !== 'text') {
-      throw new Error('Réponse Claude invalide')
-    }
-
-    let finalAnswer = textContent.text.trim()
+    let finalAnswer = response.content.trim()
     let isNewKnowledge = false
 
     if (finalAnswer.includes('[NEW_KNOWLEDGE]')) {

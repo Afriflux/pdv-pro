@@ -4,9 +4,8 @@
 // Réponse : { script, hooks: string[], hashtags: string[] }
 
 import { NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { generateAIResponse } from '@/lib/ai/router'
 
 interface ScriptBody {
   productName: string
@@ -72,26 +71,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'productName requis' }, { status: 400 })
     }
 
-    // ── 3. Lire la clé Claude depuis PlatformConfig (fallback sur .env) ──────
-    const supabaseAdmin = createAdminClient()
-    const { data: config } = await supabaseAdmin
-      .from('PlatformConfig')
-      .select('value')
-      .eq('key', 'ANTHROPIC_API_KEY')
-      .single<{ value: string }>()
-
-    const apiKey = config?.value || process.env.ANTHROPIC_API_KEY
-
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: 'Clé API Claude non configurée. Configurez-la dans /admin/integrations.' },
-        { status: 503 }
-      )
-    }
-
-    // ── 4. Appeler Claude ─────────────────────────────────────────────────────
-    const client = new Anthropic({ apiKey })
-
     const systemPrompt = `Tu es un expert en marketing digital pour l'Afrique francophone (Sénégal, Côte d'Ivoire, Mali, Cameroun, Bénin).
 Tu crées des scripts publicitaires percutants, adaptés aux réalités et à la culture africaine.
 Tu utilises un langage simple, direct, émotionnel et authentique.
@@ -111,23 +90,15 @@ Génère :
 
 Réponds UNIQUEMENT avec le JSON, sans texte autour.`
 
-    const message = await client.messages.create({
-      model:      'claude-3-5-haiku-20241022',
-      max_tokens: 1024,
-      system:     systemPrompt,
-      messages: [
-        { role: 'user', content: userPrompt }
-      ],
+    const response = await generateAIResponse({
+      taskType: 'creative',
+      systemPrompt: systemPrompt,
+      prompt: userPrompt,
+      temperature: 0.7
     })
 
-    // ── 5. Parser la réponse JSON ─────────────────────────────────────────────
-    const textContent = message.content.find(c => c.type === 'text')
-    if (!textContent || textContent.type !== 'text') {
-      throw new Error('Réponse Claude invalide')
-    }
-
     // Nettoyer et parser le JSON (peut contenir des backticks)
-    const rawText = textContent.text.trim()
+    const rawText = response.content.trim()
       .replace(/^```json\s*/i, '')
       .replace(/^```\s*/i, '')
       .replace(/\s*```$/i, '')

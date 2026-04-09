@@ -1,8 +1,4 @@
-import twilio from 'twilio'
-
-const accountSid = process.env.TWILIO_ACCOUNT_SID
-const authToken = process.env.TWILIO_AUTH_TOKEN
-const twilioClient = accountSid && authToken ? twilio(accountSid, authToken) : null
+import { createAdminClient } from '@/lib/supabase/admin'
 
 /**
  * Normalise un numéro de téléphone au format E.164
@@ -16,29 +12,48 @@ export function normalizePhone(phone: string): string {
   return '+' + clean
 }
 
-/**
- * Envoie un message WhatsApp via Twilio réel
- */
 export async function sendWhatsApp({ to, body }: { to: string; body: string }): Promise<boolean> {
-  const fromNumber = process.env.TWILIO_WHATSAPP_FROM || 'whatsapp:+14155238886'
+  const supabaseAdmin = createAdminClient()
+  const { data: configRows } = await supabaseAdmin
+    .from('PlatformConfig')
+    .select('key, value')
+    .in('key', ['WHATSAPP_PHONE_NUMBER_ID', 'WHATSAPP_ACCESS_TOKEN'])
 
-  if (!twilioClient) {
-    console.log('[WhatsApp DEV] Simulé:', body)
-    return true
+  const configMap = Object.fromEntries(configRows?.map(row => [row.key, row.value]) || [])
+  const phoneId = configMap['WHATSAPP_PHONE_NUMBER_ID'] || process.env.WHATSAPP_PHONE_NUMBER_ID
+  const token = configMap['WHATSAPP_ACCESS_TOKEN'] || process.env.WHATSAPP_ACCESS_TOKEN
+
+  if (!phoneId || !token) {
+    console.warn('[WhatsApp Route] Credentials missing for Meta Cloud API.')
+    return false
   }
 
-  const toFormatted = `whatsapp:${normalizePhone(to)}`
-  const fromFormatted = fromNumber.startsWith('whatsapp:') ? fromNumber : `whatsapp:${fromNumber}`
+  const toFormatted = normalizePhone(to)
 
   try {
-    await twilioClient.messages.create({
-      from: fromFormatted,
-      to: toFormatted,
-      body: body
+    const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: toFormatted,
+        type: 'text',
+        text: { preview_url: false, body: body }
+      })
     })
+
+    if (!res.ok) {
+       console.error('[WhatsApp] Meta Send Error:', await res.text())
+       return false
+    }
+    
     return true
   } catch (err) {
-    console.error('[WhatsApp] Erreur Twilio:', err)
+    console.error('[WhatsApp] Runtime Exception:', err)
     return false
   }
 }
@@ -216,4 +231,20 @@ Que ce soit un Ebook, un vêtement, ou une session de coaching, ça prend litté
 ${params.dashboardLink}
 
 Si tu bloques, réponds juste à ce message ! 🙌`
+}
+
+export function msgAbandonedCart(buyerName: string, productName: string, storeName: string, checkoutLink: string) {
+  return `🛒 *Votre panier vous attend !*
+
+Bonjour${buyerName ? ' ' + buyerName : ''},
+
+Vous avez récemment montré de l'intérêt pour *${productName}* sur *${storeName}*, mais vous n'avez pas finalisé votre achat.
+
+Avez-vous rencontré un problème technique ? Si vous êtes toujours intéressé(e), vous pouvez reprendre votre commande exactement là où vous l'avez laissée ici :
+
+👉 ${checkoutLink}
+
+Si vous avez la moindre question, répondez simplement à ce message ! 🙏
+
+L'équipe ${storeName}`
 }

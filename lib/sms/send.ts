@@ -1,20 +1,16 @@
-import twilio from 'twilio'
 import { prisma } from '@/lib/prisma'
-
-const accountSid = process.env.TWILIO_ACCOUNT_SID
-const authToken = process.env.TWILIO_AUTH_TOKEN
-const twilioClient = accountSid && authToken ? twilio(accountSid, authToken) : null
+import { createAdminClient } from '@/lib/supabase/admin'
 
 /**
  * Normalise un numéro de téléphone au format E.164
  */
 export function normalizeSmsPhone(phone: string): string {
   const clean = phone.replace(/\s+/g, '').replace(/[^\d+]/g, '')
-  if (clean.startsWith('+')) return clean
-  if (clean.startsWith('00')) return '+' + clean.slice(2)
-  if (clean.length === 9) return '+221' + clean
-  if (clean.length === 8) return '+221' + clean
-  return '+' + clean
+  if (clean.startsWith('+')) return clean.substring(1)
+  if (clean.startsWith('00')) return clean.slice(2)
+  if (clean.length === 9) return '221' + clean
+  if (clean.length === 8) return '221' + clean
+  return clean
 }
 
 export async function sendSMS({ 
@@ -42,24 +38,49 @@ export async function sendSMS({
   }
 
   // Fallback number si env var absente
-  // On retire le préfixe whatsapp: s'il est présent dans le fallback
-  const rawFrom = process.env.TWILIO_MESSAGING_SERVICE_SID || process.env.TWILIO_WHATSAPP_FROM || '+14155238886'
-  const fromNumber = rawFrom.replace('whatsapp:', '')
   const toFormatted = normalizeSmsPhone(to)
 
-  try {
-    let sid = 'SIMULATED_SMS_SID'
+  // Fetch Meta API Config
+  const supabaseAdmin = createAdminClient()
+  const { data: configRows } = await supabaseAdmin
+    .from('PlatformConfig')
+    .select('key, value')
+    .in('key', ['WHATSAPP_PHONE_NUMBER_ID', 'WHATSAPP_ACCESS_TOKEN'])
 
-    if (twilioClient) {
-      const message = await twilioClient.messages.create({
-        body: body,
-        from: fromNumber,
-        to: toFormatted
+  const configMap = Object.fromEntries(configRows?.map(row => [row.key, row.value]) || [])
+  const phoneId = configMap['WHATSAPP_PHONE_NUMBER_ID'] || process.env.WHATSAPP_PHONE_NUMBER_ID
+  const token = configMap['WHATSAPP_ACCESS_TOKEN'] || process.env.WHATSAPP_ACCESS_TOKEN
+
+  if (!phoneId || !token) {
+    return { success: false, error: 'Configuration WhatsApp API manquante.' }
+  }
+
+  try {
+    let sid = `wa_mock_${Date.now()}`
+
+    const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: toFormatted,
+        type: 'text',
+        text: { preview_url: false, body: body }
       })
-      sid = message.sid
-    } else {
-      console.log('[SMS DEV SIMULATION] to:', toFormatted, 'body:', body)
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+       console.error('[WhatsApp API Send Error]:', data)
+       throw new Error(`Meta API Error: ${data.error?.message || 'Unknown'}`)
     }
+    
+    sid = data.messages?.[0]?.id || sid
 
     // 2. Transaction pour déduire le crédit et logger
     await prisma.$transaction([
@@ -86,9 +107,9 @@ export async function sendSMS({
     return { success: true, sid }
 
   } catch (err: unknown) {
-    console.error('[SMS Twilio Error] :', err)
+    console.error('[WhatsApp Messaging Error] :', err)
     
-    // Logger l'échec même si Twilio a échoué (erreur numéro invalide, etc.)
+    // Logger l'échec
     await prisma.smsLog.create({
       data: {
         store_id: storeId,
@@ -100,6 +121,6 @@ export async function sendSMS({
       }
     })
 
-    return { success: false, error: err instanceof Error ? err.message : 'Erreur Twilio' }
+    return { success: false, error: err instanceof Error ? err.message : 'Erreur Envoi' }
   }
 }
