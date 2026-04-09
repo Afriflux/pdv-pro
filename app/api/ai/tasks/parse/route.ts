@@ -53,8 +53,8 @@ Règle absolue : L'output DOIT être parsable par JSON.parse(). Ne rajoute AUCUN
       if (cleanedText.startsWith('```')) cleanedText = cleanedText.replace('```', '')
       if (cleanedText.endsWith('```')) cleanedText = cleanedText.substring(0, cleanedText.length - 3)
       parsed = JSON.parse(cleanedText)
-    } catch(e) {
-      console.error("Erreur de parsing AI JSON:", textContent.text)
+    } catch(_e) {
+      console.error("Erreur de parsing AI JSON:", response.content)
       throw new Error("L'IA n'a pas pu formater correctement la tâche.")
     }
 
