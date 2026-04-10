@@ -1,7 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
   Users, Search, ShoppingBag, Phone, Mail,
-  TrendingUp, Calendar, Download
+  Calendar
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -94,8 +94,7 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
     }
   }
 
-  // ── Tri ──────────────────────────────────────────────────────────────────
-  let buyersList = Array.from(buyersMap.values())
+  const buyersList = Array.from(buyersMap.values())
   
   if (sortBy === 'orders') {
     buyersList.sort((a, b) => b.totalOrders - a.totalOrders)
