@@ -29,7 +29,7 @@ export async function verifyWaveWebhook(
     // Wave header format: "v1,t=1612...83,s=1b1f...9b"
     const parts = waveSignatureHeader.split(',')
     let timestamp = ''
-    let signatures: string[] = []
+    const signatures: string[] = []
 
     for (const part of parts) {
       if (part.startsWith('t=')) {
