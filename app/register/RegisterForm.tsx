@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { signUp, signInWithGoogle } from '@/app/auth/actions'
 import { PhoneInput } from '@/components/ui/PhoneInput'
-import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, XCircle, Loader2, AlertTriangle, Briefcase, ShoppingBag, ChevronRight, Users, Headset } from 'lucide-react'
 import { PasswordInput } from '@/components/ui/PasswordInput'
 
@@ -76,9 +75,8 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
   const canSubmit = true // Code ambassadeur est toujours optionnel
 
   return (
-    <motion.div 
-      whileHover={{ boxShadow: '0 20px 40px -10px rgba(16, 185, 129, 0.15)' }}
-      className="bg-[#0A1A1F]/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)] relative overflow-hidden"
+    <div 
+      className="bg-[#0A1A1F]/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_40px_-10px_rgba(16,185,129,0.15)] transition-shadow duration-500 relative overflow-hidden animate-[fade-slide-up_0.6s_ease-out_both]"
     >
       {/* Lueur Céleste au top */}
       <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent"></div>
@@ -87,21 +85,14 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
       <div className="absolute -top-32 -left-32 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none z-0"></div>
 
       <div className="relative z-10">
-        <AnimatePresence>
-          {errorMsg && (
-            <motion.div 
-              initial={{ height: 0, opacity: 0 }} 
-              animate={{ height: 'auto', opacity: 1 }} 
-              exit={{ height: 0, opacity: 0 }}
-              className="mb-8 overflow-hidden"
-            >
-              <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-2xl px-4 py-3 flex items-start gap-3 break-words">
-                <AlertTriangle className="shrink-0 mt-0.5 w-4 h-4" />
-                <span className="font-medium">{errorMsg}</span>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {errorMsg && (
+          <div className="mb-8 overflow-hidden animate-[fade-in_0.3s_ease-out]">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-2xl px-4 py-3 flex items-start gap-3 break-words">
+              <AlertTriangle className="shrink-0 mt-0.5 w-4 h-4" />
+              <span className="font-medium">{errorMsg}</span>
+            </div>
+          </div>
+        )}
 
         {/* Bouton Google */}
         <form action={signInWithGoogle} className="mb-6">
@@ -138,11 +129,8 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
               }`}
             >
               {role === 'acheteur' && (
-                <motion.div
-                  layoutId="activeRole"
-                  className="absolute inset-0 bg-white/5 border border-emerald-500/30 rounded-2xl shadow-[0_0_20px_rgba(52,211,153,0.1)]"
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  style={{ borderRadius: '1rem' }}
+                <div
+                  className="absolute inset-0 bg-white/5 border border-emerald-500/30 rounded-[1rem] shadow-[0_0_20px_rgba(52,211,153,0.1)] animate-[fade-in_0.2s_ease-out]"
                 />
               )}
               <ShoppingBag className="w-6 h-6 relative z-10" />
@@ -157,11 +145,8 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
               }`}
             >
               {role === 'vendeur' && (
-                <motion.div
-                  layoutId="activeRole"
-                  className="absolute inset-0 bg-white/5 border border-emerald-500/30 rounded-2xl shadow-[0_0_20px_rgba(52,211,153,0.1)]"
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  style={{ borderRadius: '1rem' }}
+                <div
+                  className="absolute inset-0 bg-white/5 border border-emerald-500/30 rounded-[1rem] shadow-[0_0_20px_rgba(52,211,153,0.1)] animate-[fade-in_0.2s_ease-out]"
                 />
               )}
               <Briefcase className="w-6 h-6 relative z-10" />
@@ -176,11 +161,8 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
               }`}
             >
               {role === 'affilie' && (
-                <motion.div
-                  layoutId="activeRole"
-                  className="absolute inset-0 bg-white/5 border border-emerald-500/30 rounded-2xl shadow-[0_0_20px_rgba(52,211,153,0.1)]"
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  style={{ borderRadius: '1rem' }}
+                <div
+                  className="absolute inset-0 bg-white/5 border border-emerald-500/30 rounded-[1rem] shadow-[0_0_20px_rgba(52,211,153,0.1)] animate-[fade-in_0.2s_ease-out]"
                 />
               )}
               <Users className="w-6 h-6 relative z-10" />
@@ -195,11 +177,8 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
               }`}
             >
               {role === 'closer' && (
-                <motion.div
-                  layoutId="activeRole"
-                  className="absolute inset-0 bg-white/5 border border-emerald-500/30 rounded-2xl shadow-[0_0_20px_rgba(52,211,153,0.1)]"
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  style={{ borderRadius: '1rem' }}
+                <div
+                  className="absolute inset-0 bg-white/5 border border-emerald-500/30 rounded-[1rem] shadow-[0_0_20px_rgba(52,211,153,0.1)] animate-[fade-in_0.2s_ease-out]"
                 />
               )}
               <Headset className="w-6 h-6 relative z-10" />
@@ -266,14 +245,10 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
           </div>
 
           {/* Déploiement conditionnel fluide Code Ambassadeur */}
-          <AnimatePresence>
-            {role === 'vendeur' && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1, transition: { duration: 0.4, ease: "easeOut" } }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
+          {role === 'vendeur' && (
+            <div
+              className="overflow-hidden animate-[fade-slice-down_0.4s_ease-out_both]"
+            >
                 <div className="group/code pt-2">
                   <label htmlFor="ambassadorCodeInput" className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/code:text-emerald-400 transition-colors">
                     Code Référentiel <span className="text-[10px] text-white/30 lowercase tracking-normal font-medium ml-1">(Optionnel)</span>
@@ -301,24 +276,21 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
                     </div>
                   </div>
 
-                  <AnimatePresence>
-                    {codeStatus === 'valid' && ambassadorName && (
-                      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-2 flex items-center gap-2 text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-xl">
-                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                        Accompagnement validé : {ambassadorName}
-                      </motion.div>
-                    )}
-                    {codeStatus === 'invalid' && ambassadorCode.trim() && (
-                      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-2 flex items-center gap-2 text-xs text-red-400 font-bold bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-xl">
-                        <XCircle className="w-3.5 h-3.5 shrink-0" />
-                        Code non reconnu
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {codeStatus === 'valid' && ambassadorName && (
+                    <div className="mt-2 flex items-center gap-2 text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-xl animate-[fade-slide-up_0.3s_ease-out_both]">
+                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                      Accompagnement validé : {ambassadorName}
+                    </div>
+                  )}
+                  {codeStatus === 'invalid' && ambassadorCode.trim() && (
+                    <div className="mt-2 flex items-center gap-2 text-xs text-red-400 font-bold bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-xl animate-[fade-slide-up_0.3s_ease-out_both]">
+                      <XCircle className="w-3.5 h-3.5 shrink-0" />
+                      Code non reconnu
+                    </div>
+                  )}
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div className="group/input">
@@ -372,6 +344,6 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
           </p>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
