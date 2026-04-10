@@ -149,7 +149,11 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
       <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shadow-sm border border-gray-100 group-hover:scale-105 transition-transform duration-300">
-            {service.icon ?? '⚙️'}
+            {service.icon?.startsWith('/') ? (
+              <img src={service.icon} alt={service.name} className="w-7 h-7 object-contain" />
+            ) : (
+              <span>{service.icon ?? '⚙️'}</span>
+            )}
           </div>
           <div>
             <div className="flex items-center gap-3">
