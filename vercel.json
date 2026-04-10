@@ -31,6 +31,50 @@
     {
       "path": "/api/cron/daily-digest",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/subscriptions",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/telegram-kick",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/abandoned-cart",
+      "schedule": "0,30 * * * *"
+    },
+    {
+      "path": "/api/cron/anti-churn",
+      "schedule": "0 10 * * 1"
+    },
+    {
+      "path": "/api/cron/weekly-report",
+      "schedule": "0 8 * * 1"
+    },
+    {
+      "path": "/api/cron/remind-masterclass",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/ambassador-commissions",
+      "schedule": "0 3 1 * *"
+    },
+    {
+      "path": "/api/cron/nettoyage",
+      "schedule": "0 4 * * 0"
+    },
+    {
+      "path": "/api/cron/rappels-commandes",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/retrait-auto",
+      "schedule": "0 */12 * * *"
+    },
+    {
+      "path": "/api/cron/trigger-auto-withdraw",
+      "schedule": "0 1 * * 1"
     }
   ]
 }

@@ -24,7 +24,7 @@ interface KanbanColumn {
 export default function AdminVendorsKanban({ vendors }: { vendors: VendorDisplayRow[] }) {
   
   // Catégorisation des vendeurs
-  const pendingVendors = vendors.filter(v => (v.kyc_status === 'pending' || v.kyc_status === 'submitted') && v.is_active)
+  const pendingVendors = vendors.filter(v => (v.kyc_status === 'pending' || v.kyc_status === 'submitted' || v.kyc_status === 'unverified' || v.kyc_status === null || !v.kyc_status) && v.is_active)
   const verifiedVendors = vendors.filter(v => v.kyc_status === 'verified' && v.is_active)
   const blockedVendors = vendors.filter(v => !v.is_active || v.kyc_status === 'rejected')
 

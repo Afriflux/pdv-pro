@@ -16,6 +16,7 @@
     "noUnusedParameters": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true,
     "plugins": [
       {
         "name": "next"

@@ -2,15 +2,15 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendEmptyStoreEmail, sendMasterclassReminderEmail } from '@/lib/brevo/brevo-service'
 import { sendWhatsApp, msgVendorEmptyStore, msgMasterclassReminder } from '@/lib/whatsapp/sendWhatsApp'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
   try {
-    const authHeader = request.headers.get('authorization')
-    // Vérification du token cron pour sécuriser la route
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}` && process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // Sécurité CRON
+    if (!verifyCronSecret(request)) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'

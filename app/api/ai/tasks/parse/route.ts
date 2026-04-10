@@ -55,7 +55,7 @@ Règle absolue : L'output DOIT être parsable par JSON.parse(). Ne rajoute AUCUN
       parsed = JSON.parse(cleanedText)
     } catch(_e) {
       console.error("Erreur de parsing AI JSON:", response.content)
-      throw new Error("L'IA n'a pas pu formater correctement la tâche.")
+      return NextResponse.json({ error: "L'IA n'a pas pu formater correctement la tâche." }, { status: 500 })
     }
 
     return NextResponse.json({ parsed })

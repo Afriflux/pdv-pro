@@ -6,6 +6,7 @@ import { signUp, signInWithGoogle } from '@/app/auth/actions'
 import { PhoneInput } from '@/components/ui/PhoneInput'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, XCircle, Loader2, AlertTriangle, Briefcase, ShoppingBag, ChevronRight, Users, Headset } from 'lucide-react'
+import { PasswordInput } from '@/components/ui/PasswordInput'
 
 interface RegisterFormProps {
   errorMsg: string | null
@@ -72,9 +73,7 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
     setAmbassadorName(null)
   }
 
-  const canSubmit =
-    role !== 'vendeur' ||
-    (role === 'vendeur' && (codeStatus === 'valid' || codeStatus === 'idle'))
+  const canSubmit = true // Code ambassadeur est toujours optionnel
 
   return (
     <motion.div 
@@ -225,9 +224,10 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
               alert('Veuillez entrer votre numéro WhatsApp.')
               return
             }
-            if (role === 'vendeur' && ambassadorCode.trim() && codeStatus === 'invalid') {
-              e.preventDefault()
-              alert('Veuillez entrer un code ambassadeur valide ou laisser le champ vide.')
+            if (role === 'vendeur' && ambassadorCode.trim() && codeStatus !== 'valid') {
+              // Code invalide ou en cours → on le vide silencieusement avant envoi
+              setAmbassadorCode('')
+              setCodeStatus('idle')
             }
           }}
         >
@@ -323,18 +323,24 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div className="group/input">
               <label htmlFor="password" className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">Mot de passe</label>
-              <input
-                id="password" name="password" type="password"
-                placeholder="••••••••" minLength={8} required
+              <PasswordInput
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                minLength={8}
+                required
                 autoComplete="new-password"
                 className="w-full px-4 py-4 rounded-xl bg-black/40 border border-white/5 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/50 transition-all text-sm shadow-inner hover:border-white/10 hover:bg-black/50"
               />
             </div>
             <div className="group/input">
               <label htmlFor="confirm_password" className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">Confirmation</label>
-              <input
-                id="confirm_password" name="confirm_password" type="password"
-                placeholder="••••••••" minLength={8} required
+              <PasswordInput
+                id="confirm_password"
+                name="confirm_password"
+                placeholder="••••••••"
+                minLength={8}
+                required
                 autoComplete="new-password"
                 className="w-full px-4 py-4 rounded-xl bg-black/40 border border-white/5 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/50 transition-all text-sm shadow-inner hover:border-white/10 hover:bg-black/50"
               />

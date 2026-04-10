@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
   // Vérification de sécurité CRON (Uniquement Vercel en prod)
-  const authHeader = request.headers.get('authorization')
-  if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!verifyCronSecret(request)) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
 
@@ -74,7 +74,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ success: true, processed: storeScores.length })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('CRON SCORES ERROR:', error)
     return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }

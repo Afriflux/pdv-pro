@@ -3,6 +3,7 @@
 // Sécurisé par CRON_SECRET en header Authorization
 
 import { NextRequest, NextResponse } from 'next/server'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendTransactionalEmail } from '@/lib/brevo/brevo-service'
 import { logCronExecution } from '@/lib/cron/cronLogger'
@@ -165,11 +166,8 @@ async function computeWeeklyStats(
 // ─── GET /api/cron/weekly-report ─────────────────────────────────────────────
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  // 1. Authentification par CRON_SECRET
-  const cronSecret = process.env.CRON_SECRET
-  const authHeader = req.headers.get('authorization')
-
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  // 1. Sécurité CRON
+  if (!verifyCronSecret(req)) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 

@@ -1,63 +1,40 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { captureError } from '@/lib/monitoring'
+import { verifyBictorysWebhook, BictorysWebhookPayload } from '@/lib/payments/bictorys/webhook'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { confirmOrder } from '@/lib/payments/confirmOrder'
 
 export async function POST(req: Request) {
   try {
-    const cfg = await prisma.platformConfig.findUnique({ where: { key: 'BICTORYS_WEBHOOK_SECRET' } });
-    const webhookSecret = cfg?.value || process.env.BICTORYS_WEBHOOK_SECRET;
-    const incomingSecret = req.headers.get('X-Secret-Key');
-
-    // 1. Validation de l'origine
-    if (incomingSecret !== webhookSecret) {
-      console.warn("Bictorys Webhook Validation Failed. Secrets mismatch.");
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const rawSecretHeader = req.headers.get('X-Secret-Key')
+    if (!rawSecretHeader) {
+      return NextResponse.json({ error: 'Missing security header' }, { status: 400 })
     }
 
-    const event = await req.json();
-
-    // 2. Vérifications de base (statut et référence)
-    if (!event.status || (!event.paymentReference && !event.id)) {
-       return NextResponse.json({ error: 'Missing Required Fields' }, { status: 400 });
+    const payload = await req.json() as BictorysWebhookPayload
+    const isValid = await verifyBictorysWebhook(rawSecretHeader, 'prod')
+    if (!isValid) {
+      console.error('[Bictorys Webhook] Tentative de fraude ignorée')
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const status = event.status.toLowerCase();
-    
-    // Soit succeeded soit authorized
-    if (status !== 'succeeded' && status !== 'authorized') {
-       return NextResponse.json({ status: 'ignored' });
+    const { paymentReference, status } = payload
+
+    if (status === 'succeeded' || status === 'authorized') {
+      await confirmOrder(paymentReference)
+      console.log(`[Bictorys Webhook] Paiement validé pour la commande: ${paymentReference}`)
+    } else if (status === 'failed' || status === 'canceled') {
+      const supabase = createAdminClient()
+      await supabase.from('Order').update({ status: 'cancelled' }).eq('id', paymentReference)
+      console.log(`[Bictorys Webhook] Paiement annulé/échoué pour la commande: ${paymentReference}`)
     }
 
-    // Reference (On a enregistré ça sous Payload.reference dans BictorysProvider)
-    const transaction_id = event.paymentReference || event.id;
+    return NextResponse.json({ success: true })
 
-    // 3. Trouver la transaction "pending" correspondante dans la DB
-    const pendingTx = await prisma.transaction.findFirst({
-      where: { label: { contains: transaction_id }, status: 'pending' }
-    });
-
-    if (!pendingTx) {
-       return NextResponse.json({ status: 'already processed or not found' });
-    }
-
-    // 4. Validation et Crédit
-    if (pendingTx.type === 'deposit') {
-      // Créditer le Wallet
-      await prisma.wallet.update({
-         where: { id: pendingTx.wallet_id },
-         data: { balance: { increment: event.amount || pendingTx.amount } }
-      });
-      
-      // Marquer Tx comme payée
-      await prisma.transaction.update({
-         where: { id: pendingTx.id },
-         data: { status: 'completed' }
-      });
-    }
-
-    return NextResponse.json({ status: 'success' }, { status: 200 });
-
-  } catch (error: any) {
-    console.error('Bictorys Webhook Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: unknown) {
+    captureError(error, { context: 'webhook-bictorys' }, 'error')
+    console.error('[Bictorys Webhook] Erreur serveur:', error)
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }
+

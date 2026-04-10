@@ -50,10 +50,10 @@ Règles strictes :
 
     return NextResponse.json({ result: cleanedText })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur IA SEO:', error)
     return NextResponse.json(
-      { error: error?.message || 'Erreur lors de la génération IA' }, 
+      { error: error instanceof Error ? error.message : 'Erreur lors de la génération IA' }, 
       { status: 500 }
     )
   }

@@ -39,8 +39,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, message: 'Priorités enregistrées avec succès.' })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[API AI ROUTING ERROR]', error)
-    return NextResponse.json({ error: error.message || 'Erreur interne' }, { status: 500 })
+    return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || 'Erreur interne' }, { status: 500 })
   }
 }

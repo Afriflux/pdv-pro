@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get('authorization')
-  if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!verifyCronSecret(request)) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
 
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       message: 'Vérification DNS traitée'
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('CRON DOMAINS ERROR:', error)
     return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   }

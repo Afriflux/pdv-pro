@@ -3,9 +3,18 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { handleConnectCommand } from '@/lib/telegram/community-service'
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN
+const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET
 
 export async function POST(req: NextRequest) {
   try {
+    // ── Vérification du secret Telegram ────────────────────────────────────
+    // Telegram envoie ce header si configuré via setWebhook({ secret_token })
+    const secretHeader = req.headers.get('x-telegram-bot-api-secret-token')
+    if (TELEGRAM_WEBHOOK_SECRET && secretHeader !== TELEGRAM_WEBHOOK_SECRET) {
+      console.warn('[Webhook Telegram] ⛔ Secret token invalide')
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const update = await req.json()
     const admin = createAdminClient()
 

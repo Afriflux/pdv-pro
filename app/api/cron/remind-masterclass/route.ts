@@ -1,21 +1,14 @@
 import { NextResponse } from 'next/server'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 import { prisma } from '@/lib/prisma'
 import { sendWhatsApp, msgMasterclassReminder } from '@/lib/whatsapp/sendWhatsApp'
 import { sendMessage } from '@/lib/telegram/bot-service'
 
-// Vous pouvez configurer un CRON_SECRET dans Vercel ou Supabase
-const CRON_SECRET = process.env.CRON_SECRET
-
 export async function GET(req: Request) {
   try {
-    const authHeader = req.headers.get('authorization')
-    if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
-      // return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
-      // For testing, we might want to allow it manually or rely on secret. 
-      // Keep it loose if CRON_SECRET is not set for local dev.
-      if (process.env.NODE_ENV === 'production') {
-         return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
-      }
+    // Sécurité CRON
+    if (!verifyCronSecret(req)) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
 
     // 1. Utilisateurs créés il y a plus de 3 jours
@@ -91,8 +84,8 @@ export async function GET(req: Request) {
       sent: sentCount
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[CRON Remind Masterclass]', error)
-    return NextResponse.json({ error: 'Erreur interne', details: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Erreur interne', details: (error instanceof Error ? error.message : String(error)) }, { status: 500 })
   }
 }

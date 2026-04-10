@@ -114,10 +114,11 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
 
   const isDigital = product.type === 'digital'
 
-  // ── 4. Mettre à jour le statut de commande ────────────────────────────────
+  // ── 4. VERROU ATOMIQUE - Mettre à jour le statut de commande ─────────────────
   const newStatus = isDigital ? 'completed' : 'confirmed'
 
-  await supabase
+  // Utilisation de la méthode atomique pour éviter le "Race Condition" de 2 Webhooks simultanés
+  const { data: updatedOrder, error: updateError } = await supabase
     .from('Order')
     .update({
       status:      newStatus,
@@ -125,31 +126,40 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
       updated_at:  new Date().toISOString(),
     })
     .eq('id', orderId)
+    .eq('status', 'pending')
+    .select()
 
-  // ── 5. Créditer le wallet vendeur ─────────────────────────────────────────
-  const { data: wallet } = await supabase
-    .from('Wallet')
-    .select('id, balance, pending, total_earned')
-    .eq('vendor_id', order.store_id)
-    .single<WalletRow>()
+  if (updateError || !updatedOrder || updatedOrder.length === 0) {
+    console.log('[confirmOrder] IPN ignoré (Faille Race Condititon évitée) — déjà traitée ou non-pending:', orderId)
+    return { already_confirmed: true }
+  }
 
-  if (wallet) {
-    await supabase
-      .from('Wallet')
-      .update({
-        // Tous les paiements en ligne confirmés vont directement dans la balance
-        balance:      wallet.balance + order.vendor_amount,
-        total_earned: wallet.total_earned + order.vendor_amount,
-        // pending n'est pas touché ici (réservé au COD)
-      })
-      .eq('id', wallet.id)
-  } else {
-    await supabase.from('Wallet').insert({
-      vendor_id:    order.store_id,
-      balance:      order.vendor_amount,
-      total_earned: order.vendor_amount,
-      pending:      0,
-    })
+  // ── 5. Créditer le wallet vendeur (RPC ATOMIQUE via supabase) ───────────────
+  // Puisque Supabase standard JS n'a pas `{ increment }` comme Prisma pur, on appelle la RPC Supabase
+  // Ou alors on utilise `prisma.wallet.update` vu que Prisma gère l'incrémentation atomique !
+  try {
+     const { prisma } = await import('@/lib/prisma')
+     const wallet = await prisma.wallet.findUnique({ where: { vendor_id: order.store_id } })
+     if (wallet) {
+       await prisma.wallet.update({
+          where: { vendor_id: order.store_id },
+          data: {
+            balance: { increment: order.vendor_amount },
+            total_earned: { increment: order.vendor_amount }
+          }
+       })
+     } else {
+       await prisma.wallet.create({
+          data: {
+            vendor_id: order.store_id,
+            balance: order.vendor_amount,
+            total_earned: order.vendor_amount,
+            pending: 0,
+          }
+       })
+     }
+  } catch (e) {
+     console.error('[confirmOrder] Erreur Crédit Wallet Atomique:', e)
   }
 
   // ── 5.ter Déclenchement commission affiliation B2B & Ambassadeur ──────────────────

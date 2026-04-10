@@ -1,57 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
-
-async function initiateCinetPay(params: { amount: number, orderId: string, customerPhone: string, customerName: string, returnUrl: string, notifyUrl: string }) {
-  const apiKey = process.env.CINETPAY_API_KEY!
-  const siteId = process.env.CINETPAY_SITE_ID!
-  const res = await fetch('https://api-checkout.cinetpay.com/v2/payment', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      apikey: apiKey, site_id: siteId, transaction_id: params.orderId,
-      amount: Math.round(params.amount), currency: 'XOF', description: 'Paiement Facture',
-      return_url: params.returnUrl, notify_url: params.notifyUrl,
-      channels: 'ALL',
-      customer_name: params.customerName.split(' ')[0] || 'Client',
-      customer_surname: params.customerName.split(' ').slice(1).join(' ') || '-',
-      customer_phone_number: params.customerPhone,
-    }),
-  })
-  const data = await res.json()
-  if (data.code !== '201') throw new Error('CinetPay: ' + (data.message ?? 'Erreur inconnue'))
-  return data.data.payment_url as string
-}
-
-async function initiatePayTech(params: { amount: number, orderId: string, productName: string, returnUrl: string, notifyUrl: string }) {
-  const apiKey = process.env.PAYTECH_API_KEY!
-  const apiSecret = process.env.PAYTECH_API_SECRET!
-  const res = await fetch('https://paytech.sn/api/payment/request-payment', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'API_KEY': apiKey, 'API_SECRET': apiSecret },
-    body: JSON.stringify({
-      item_name: params.productName, item_price: String(Math.round(params.amount)),
-      currency: 'XOF', ref_command: params.orderId, ipn_url: params.notifyUrl,
-      success_url: params.returnUrl, cancel_url: params.returnUrl + '&cancelled=true',
-      env: process.env.NODE_ENV === 'production' ? 'prod' : 'test',
-    }),
-  })
-  const data = await res.json()
-  if (data.success !== 1) throw new Error('PayTech: ' + (data.errors?.[0] ?? 'Erreur inconnue'))
-  return data.redirect_url as string
-}
-
-async function initiateWave(params: { amount: number, orderId: string, productName: string, successUrl: string, errorUrl: string }) {
-  const apiKey = process.env.WAVE_API_KEY!
-  const res = await fetch('https://api.wave.com/v1/checkout/sessions', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      amount: String(Math.round(params.amount)), currency: 'XOF',
-      error_url: params.errorUrl, success_url: params.successUrl, client_reference: params.orderId,
-    }),
-  })
-  const data = await res.json()
-  if (!data.wave_launch_url) throw new Error('Wave: ' + (data.message ?? 'Erreur inconnue'))
-  return data.wave_launch_url as string
-}
+import { createPaymentSession } from '@/lib/payments/routing'
+import { resolveOrderCommission } from '@/lib/commission/commission-service'
 
 export async function POST(req: NextRequest) {
   try {
@@ -89,9 +40,15 @@ export async function POST(req: NextRequest) {
 
     const total = quote.total_amount
 
-    const commissionRate = 0.08 
-    const finalPlatformFee = Math.round(total * commissionRate)
-    const finalVendorAmount = total - finalPlatformFee
+    const { platformFee, deliveryCommission, vendorAmount } = await resolveOrderCommission(
+      store_id,
+      total,
+      0, // pas de frais de livraison
+      payment_method
+    )
+
+    const finalPlatformFee = platformFee + deliveryCommission
+    const finalVendorAmount = vendorAmount
 
     const order = await prisma.order.create({
       data: {
@@ -114,44 +71,36 @@ export async function POST(req: NextRequest) {
          where: { id: order.id },
          data: { status: 'paid' }
        })
-       const supabase = await createClient()
-       await supabase.rpc('increment_vendor_wallet', { p_vendor_id: store_id, p_amount: finalVendorAmount })
+       // Appeler confirmOrder à la place de l'ancienne RPC pour avoir l'atomicité
+       const { confirmOrder } = await import('@/lib/payments/confirmOrder')
+       await confirmOrder(order.id, 'QUOTE_FREE')
        return NextResponse.json({ success: true, redirectUrl: `/success/${order.id}` })
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '')
-    let redirectUrl = ''
 
-    if (payment_method === 'paytech') {
-      redirectUrl = await initiatePayTech({
-        amount: total,
-        orderId: order.id,
-        productName: `Facture de ${quote.client_name}`,
-        returnUrl: `${baseUrl}/success/${order.id}`,
-        notifyUrl: `${baseUrl}/api/webhooks/paytech`
-      })
-    } else if (payment_method === 'cinetpay') {
-      redirectUrl = await initiateCinetPay({
-        amount: total,
-        orderId: order.id,
-        customerName: quote.client_name,
-        customerPhone: buyer_phone,
-        returnUrl: `${baseUrl}/success/${order.id}`,
-        notifyUrl: `${baseUrl}/api/webhooks/cinetpay`
-      })
-    } else if (payment_method === 'wave') {
-      redirectUrl = await initiateWave({
-        amount: total,
-        orderId: order.id,
-        productName: `Facture de ${quote.client_name}`,
-        successUrl: `${baseUrl}/success/${order.id}`,
-        errorUrl: `${baseUrl}/quote/${quote.id}?error=canceled`
-      })
-    } else {
-      return NextResponse.json({ error: 'Méthode de paiement non supportée.' }, { status: 400 })
+    // SMART ROUTING via createPaymentSession
+    const paymentResponse = await createPaymentSession({
+      amount: total,
+      currency: 'XOF',
+      orderId: order.id,
+      method: payment_method as any,
+      customer: {
+        name: quote.client_name,
+        phone: buyer_phone,
+        email: quote.client_email || undefined
+      },
+      description: `Facture de ${quote.client_name}`,
+      returnUrl: `${baseUrl}/success/${order.id}`,
+      notifyUrl: `${baseUrl}/api/webhooks/${payment_method}`,
+      env: 'prod'
+    })
+
+    if (!paymentResponse.success) {
+      return NextResponse.json({ error: `La passerelle de paiement a échoué: ${paymentResponse.error}` }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true, redirectUrl })
+    return NextResponse.json({ success: true, redirectUrl: paymentResponse.paymentUrl })
 
   } catch (err: any) {
     console.error('Erreur API Quote Initiate:', err)

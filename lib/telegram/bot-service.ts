@@ -227,8 +227,40 @@ export async function notifyLowStock(storeId: string, productName: string, stock
 }
 
 /**
+ * Notifie le Super Admin d'une alerte système critique (ex: Fallback).
+ */
+export async function notifySystemAlert(title: string, details: string): Promise<void> {
+  try {
+    // Récupérer l'ID de chat du super admin en BDD ou env
+    let chatId = process.env.SUPER_ADMIN_TELEGRAM_CHAT_ID
+    if (!chatId) {
+      const { data } = await supabaseAdmin
+        .from('PlatformConfig')
+        .select('value')
+        .eq('key', 'SUPER_ADMIN_TELEGRAM_CHAT_ID')
+        .single()
+      if (data?.value) chatId = data.value as string
+    }
+
+    if (!chatId) {
+      console.warn('[Telegram] Impossible de notifier le super_admin: SUPER_ADMIN_TELEGRAM_CHAT_ID introuvable')
+      return
+    }
+
+    const message = `🚨 <b>ALERTE SYSTÈME YAYYAM</b> 🚨\n\n` +
+      `<b>${title}</b>\n\n` +
+      `<code>${details}</code>`
+
+    await sendMessage(chatId, message)
+  } catch (error) {
+    console.error('[Telegram] Erreur notifySystemAlert:', error)
+  }
+}
+
+/**
  * Formate un UUID de commande pour l'affichage (tronqué).
  */
 function orderIdToCode(orderId: string): string {
   return orderId.split('-')[0].toUpperCase()
 }
+

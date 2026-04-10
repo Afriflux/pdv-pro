@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, order_id: newOrder.id })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[UPSELL ENDPOINT ERROR]:', error)
     return NextResponse.json({ error: 'Erreur interne lors de la validation Upsell' }, { status: 500 })
   }

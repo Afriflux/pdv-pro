@@ -15,11 +15,14 @@ import { getCommissionTiers } from '@/lib/commission/commission-service'
 import { LandingHeader } from '@/components/landing/LandingHeader'
 import { Logo } from '@/components/ui/Logo'
 
-import { BentoGrid } from "@/components/landing/BentoGrid";
-import { PricingCards } from "@/components/landing/PricingCards";
-import { TestimonialSlider } from '@/components/landing/TestimonialSlider'
-import { LiveCounters } from '@/components/landing/LiveCounters'
-import PricingCalculator from './PricingCalculator'
+import dynamic from 'next/dynamic'
+
+// Lazy-load heavy components (below the fold)
+const BentoGrid = dynamic(() => import('@/components/landing/BentoGrid').then(m => m.BentoGrid))
+const PricingCards = dynamic(() => import('@/components/landing/PricingCards').then(m => m.PricingCards))
+const TestimonialSlider = dynamic(() => import('@/components/landing/TestimonialSlider').then(m => m.TestimonialSlider))
+const LiveCounters = dynamic(() => import('@/components/landing/LiveCounters').then(m => m.LiveCounters))
+const PricingCalculator = dynamic(() => import('./PricingCalculator').then(m => m.default))
 
 import { HeroSection } from "@/components/landing/HeroSection";
 
@@ -193,7 +196,7 @@ export default async function LandingPage() {
   const h1Lines = h1Raw.split('\n').filter(Boolean)
   const [h1L1, h1L2, h1L3] = h1Lines.length >= 3
     ? h1Lines
-    : ['Votre Super-App', 'de Croissance.', 'Tout-en-un.']
+    : ['En Afrique, vendre', "c'est une affaire", 'de confiance.']
 
   // Counts en temps réel via cache
   const { vendorsCount, productsCount, ordersCount } = await getCachedLiveCounters()
@@ -203,19 +206,19 @@ export default async function LandingPage() {
       <CountdownBanner config={{
         active: get('landing_banner_active', 'true') === 'true',
         dateStr: get('landing_banner_date', '2026-04-01T00:00:00Z'),
-        text: get('landing_banner_text', 'Lancement officiel le 1er Avril 2026')
+        text: get('landing_banner_text', '🌍 Yayyam — Du Pulaar au Digital : la confiance en héritage')
       }} />
       <LandingHeader isLoggedIn={isLoggedIn} dashboardUrl={dashboardUrl} />
 
       <main>
         <HeroSection 
-          badge={get("landing_hero_badge", "🚀 Nouvelle Ère : Accès à l\u0027App Store et au Coach IA")}
+          badge={get("landing_hero_badge", "\ud83c\uddf8\ud83c\uddf3 Yayyam — En Pulaar, c\u0027est la confiance qui vend.")}
           h1L1={h1L1}
           h1L2={h1L2}
           h1L3={h1L3}
-          subtitle={get("landing_hero_subtitle", "Un App Store puissant : Coach IA, Link-in-Bio, Gamification. Vendez sur un écosystème premium et encaissez vos gains sur Wave ou Orange Money dès 5 000 FCFA.")}
-          ctaPrimary={get("landing_hero_cta_primary", "Lancer ma boutique")}
-          ctaSecondary={get("landing_hero_cta_secondary", "Voir les boutiques actives →")}
+          subtitle={get("landing_hero_subtitle", "Yayyam, c\u0027est le mot Peulh pour le lien de confiance qui fait vendre. Créez votre boutique en 2 minutes, encaissez via Wave ou Orange Money, et recevez vos gains dès 5 000 FCFA. Zéro abonnement.")}
+          ctaPrimary={get("landing_hero_cta_primary", "Ouvrir ma boutique gratuitement")}
+          ctaSecondary={get("landing_hero_cta_secondary", "Découvrir les boutiques actives →")}
           isLoggedIn={isLoggedIn}
           dashboardUrl={dashboardUrl}
         />
@@ -628,10 +631,10 @@ export default async function LandingPage() {
 
           <div className="max-w-[1800px] mx-auto w-full px-4 md:px-8 text-center relative z-10">
             <h2 className="text-4xl md:text-6xl font-display font-black mb-6 tracking-tight text-white leading-tight whitespace-pre-line">
-              {get('landing_cta_title', 'Prêt à lancer votre business en ligne ?')}
+              {get('landing_cta_title', 'La confiance se construit.\nLe commerce suit.')}
             </h2>
             <div className="text-xl text-cream/80 font-light mb-12 max-w-2xl mx-auto space-y-2 whitespace-pre-line">
-              <p>{get('landing_cta_subtitle', 'Rejoignez Yayyam gratuitement.\nAucun abonnement, vous ne payez que quand vous vendez.')}</p>
+              <p>{get('landing_cta_subtitle', 'Rejoignez Yayyam — la plateforme née de la confiance africaine.\nZéro abonnement. Vous ne payez que quand vous vendez.')}</p>
             </div>
             <Link href={isLoggedIn ? dashboardUrl : "/register"} className="inline-block px-14 py-6 bg-red-600 text-white rounded-2xl font-black text-xl hover:bg-red-700 hover:scale-105 transition-all shadow-2xl shadow-red-600/20 mb-8 animate-pulse">
               {isLoggedIn ? "Mon espace" : get('landing_cta_button', 'Créer ma boutique maintenant')}

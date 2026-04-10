@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { validate, paymentInitiateSchema } from '@/lib/validation'
 import {
   calculateFees,
   calculateVendorAmount,
@@ -54,6 +55,12 @@ export async function POST(req: Request) {
     body = (await req.json()) as Partial<InitiateBody>
   } catch {
     return NextResponse.json({ error: 'Body invalide' }, { status: 400 })
+  }
+
+  // Validation structurée
+  const validationResult = validate(body, paymentInitiateSchema)
+  if (!validationResult.success) {
+    return NextResponse.json({ error: validationResult.error }, { status: 400 })
   }
 
   const { orderId, method, customerPhone, customerEmail } = body
@@ -114,11 +121,16 @@ export async function POST(req: Request) {
   // 7. Construire le PaymentIntent
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
 
-  // Détermine le chemin webhook selon la méthode
-  const webhookPath = method.startsWith('card') ? 'cinetpay' : method
-  // → wave → /api/payments/wave/webhook
-  // → orange_money → /api/payments/orange_money/webhook
-  // → card_cinetpay / card_paytech → /api/payments/cinetpay/webhook
+  // Détermine le chemin webhook selon la méthode (routes canoniques dans /api/webhooks/)
+  const webhookMap: Record<string, string> = {
+    wave: '/api/webhooks/wave',
+    orange_money: '/api/webhooks/wave', // fallback — Orange Money pas encore intégré en webhook
+    card_cinetpay: '/api/webhooks/cinetpay',
+    card_paytech: '/api/webhooks/paytech',
+    bictorys: '/api/webhooks/bictorys',
+    kkiapay: '/api/webhooks/cinetpay', // fallback
+  }
+  const webhookPath = webhookMap[method] ?? '/api/webhooks/wave'
 
   const intent: PaymentIntent = {
     orderId: order.id,
@@ -130,7 +142,7 @@ export async function POST(req: Request) {
     customerPhone: customerPhone ?? order.buyer_phone ?? undefined,
     customerEmail: customerEmail ?? order.buyer_email ?? undefined,
     redirectUrl: `${baseUrl}/checkout/success?order=${order.id}`,
-    webhookUrl: `${baseUrl}/api/payments/${webhookPath}/webhook`,
+    webhookUrl: `${baseUrl}${webhookPath}`,
   }
 
   // 8. Router vers la bonne passerelle et retourner le résultat

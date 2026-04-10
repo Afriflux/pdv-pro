@@ -64,7 +64,7 @@ Structure JSON requise :
 
     return NextResponse.json({ success: true, product: productData })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur API Generate Product (Anthropic):', error)
     return NextResponse.json(
       { success: false, error: 'Désolé, l\'IA a rencontré une erreur ou a renvoyé un format invalide. Réessayez.' }, 

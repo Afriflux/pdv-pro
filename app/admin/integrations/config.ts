@@ -88,20 +88,7 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
         pingType: 'bictorys',
         fields: [
           { key: 'BICTORYS_SECRET_KEY', testKey: 'BICTORYS_SECRET_KEY_TEST', label: 'Secret Key', type: 'password' },
-          { key: 'BICTORYS_WEBHOOK_SECRET', testKey: 'BICTORYS_WEBHOOK_SECRET', label: 'Webhook Secret', type: 'password' }
-        ]
-      },
-      {
-        id: 'orange-money',
-        name: 'Configuration Orange Money',
-        description: 'Encaissement direct via Orange Money Web Pay.',
-        icon: '🟠',
-        docsUrl: 'https://developer.orange.com',
-        webhookUrl: '/api/webhooks/orange-money',
-        pingType: 'orange_money',
-        fields: [
-          { key: 'ORANGE_MONEY_API_KEY', testKey: 'ORANGE_MONEY_API_KEY_TEST', label: 'Authorization (Bearer)', type: 'password' },
-          { key: 'ORANGE_MONEY_MERCHANT_KEY', testKey: 'ORANGE_MONEY_MERCHANT_KEY_TEST', label: 'Merchant Key', type: 'password' }
+          { key: 'BICTORYS_WEBHOOK_SECRET', testKey: 'BICTORYS_WEBHOOK_SECRET_TEST', label: 'Webhook Secret', type: 'password' }
         ]
       },
       {

@@ -55,31 +55,22 @@ export async function PATCH(
     }
 
     // 3. Logique spécifique Approuvé
+    const { prisma } = await import('@/lib/prisma')
+
     if (status === 'approved') {
-      // 3a. Vérifier le solde du Wallet
-      const { data: wallet } = await supabaseAdmin
-        .from('Wallet')
-        .select('balance')
-        .eq('id', withdrawal.wallet_id)
-        .single()
-
-      if (!wallet || wallet.balance < withdrawal.amount) {
-        // Optionnel : marquer comme insufficient_funds automatiquement ?
-        await supabaseAdmin
-          .from('Withdrawal')
-          .update({ status: 'insufficient_funds' })
-          .eq('id', withdrawalId)
-          
-        return NextResponse.json({ error: 'Fonds insuffisants dans le wallet vendeur' }, { status: 400 })
+      // 3b. Débiter le pending (l'argent sort du système) DE FAÇON ATOMIQUE
+      // Note: L'argent a déjà été extrait de 'balance' et mis dans 'pending' lors de la demande par le vendeur
+      try {
+        await prisma.wallet.update({
+          where: { vendor_id: withdrawal.store_id as string },
+          data: {
+            pending: { decrement: withdrawal.amount }
+          }
+        })
+      } catch (e) {
+         console.error('Erreur atomique lors de la déduction du pending', e)
+         return NextResponse.json({ error: 'Erreur transactionnelle' }, { status: 500 })
       }
-
-      // 3b. Débiter le wallet et approuver
-      const { error: debitError } = await supabaseAdmin
-        .from('Wallet')
-        .update({ balance: wallet.balance - withdrawal.amount })
-        .eq('id', withdrawal.wallet_id)
-
-      if (debitError) throw debitError
 
       await supabaseAdmin
         .from('Withdrawal')
@@ -130,17 +121,24 @@ export async function PATCH(
             console.warn('[Admin Withdrawal] Erreur notification:', notifyError)
           }
         } else {
-          // Échec du payout → Rejeter et recréditer
+          // Échec du payout → Rejeter et recréditer ATOMIQUEMENT
           await supabaseAdmin
             .from('Withdrawal')
             .update({ status: 'rejected', processed_at: new Date().toISOString(), notes: payoutResult.error })
             .eq('id', withdrawalId)
 
-          // Recréditer le wallet: On remet l'ancien solde (wallet.balance était l'ancien solde)
-          await supabaseAdmin
-            .from('Wallet')
-            .update({ balance: wallet.balance }) 
-            .eq('id', withdrawal.wallet_id)
+          // Recréditer le wallet atomiquement (pending → balance)
+          try {
+            await prisma.wallet.update({
+              where: { vendor_id: withdrawal.store_id as string },
+              data: {
+                balance: { increment: withdrawal.amount },
+                pending: { decrement: withdrawal.amount }
+              }
+            })
+          } catch (e) {
+            console.error("Erreur lors du recrédit atomique suite à un échec de payout", e)
+          }
         }
 
       } catch (payoutError: unknown) {
@@ -151,11 +149,18 @@ export async function PATCH(
           .update({ status: 'rejected', notes: errMessage })
           .eq('id', withdrawalId)
 
-        // Recréditer le wallet
-        await supabaseAdmin
-          .from('Wallet')
-          .update({ balance: wallet.balance })
-          .eq('id', withdrawal.wallet_id)
+        // Recréditer le wallet atomiquement
+        try {
+          await prisma.wallet.update({
+            where: { vendor_id: withdrawal.store_id as string },
+            data: {
+              balance: { increment: withdrawal.amount },
+              pending: { decrement: withdrawal.amount }
+            }
+          })
+        } catch (e) {
+          console.error("Erreur lors du recrédit atomique suite à un échec de payout", e)
+        }
       }
 
     } else {
@@ -164,6 +169,19 @@ export async function PATCH(
         .from('Withdrawal')
         .update({ status: 'rejected' })
         .eq('id', withdrawalId)
+
+      // Recréditer le wallet vendeur (Atomique)
+      try {
+        await prisma.wallet.update({
+          where: { vendor_id: withdrawal.store_id as string },
+          data: {
+            balance: { increment: withdrawal.amount },
+            pending: { decrement: withdrawal.amount }
+          }
+        })
+      } catch (e) {
+        console.error("Erreur annulation retrait atomique", e)
+      }
 
       try {
         let vendorPhone = withdrawal.phone_or_iban

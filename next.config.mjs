@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
   images: {
     remotePatterns: [
       {
@@ -37,6 +40,7 @@ const nextConfig = {
     ],
   },
   compress: true,
+  poweredByHeader: false,
   eslint: {
     ignoreDuringBuilds: false,
   },
@@ -53,6 +57,21 @@ const nextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'X-XSS-Protection', value: '1; mode=block' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self)' },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://connect.facebook.net https://www.googletagmanager.com https://analytics.tiktok.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "img-src 'self' data: blob: https: http:",
+              "font-src 'self' https://fonts.gstatic.com",
+              "connect-src 'self' https://*.supabase.co https://*.supabase.in https://api.telegram.org https://graph.facebook.com https://api.brevo.com https://*.vercel-storage.com https://*.b-cdn.net wss://*.supabase.co",
+              "frame-src 'self' https://checkout.wave.com https://app.paytech.sn https://checkout.cinetpay.com https://widget.kkiapay.me",
+              "media-src 'self' https://*.b-cdn.net https://iframe.mediadelivery.net",
+              "worker-src 'self' blob:",
+            ].join('; ')
+          },
         ],
       },
     ]

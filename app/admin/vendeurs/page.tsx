@@ -59,7 +59,11 @@ export default async function AdminVendorsPage({ searchParams }: PageProps) {
     .select('id, name, slug, created_at, is_active, kyc_status, vendor_type, whatsapp, user_id', { count: 'exact' })
 
   if (query) storeQuery = storeQuery.ilike('name', `%${query}%`)
-  if (kycFilter !== 'all') storeQuery = storeQuery.eq('kyc_status', kycFilter)
+  if (kycFilter === 'pending') {
+    storeQuery = storeQuery.in('kyc_status', ['pending', 'unverified', 'submitted'])
+  } else if (kycFilter !== 'all') {
+    storeQuery = storeQuery.eq('kyc_status', kycFilter)
+  }
   if (statusFilter !== 'all') storeQuery = storeQuery.eq('is_active', statusFilter === 'active')
 
   const { data: storesRaw, count, error } = await storeQuery
@@ -92,7 +96,7 @@ export default async function AdminVendorsPage({ searchParams }: PageProps) {
     { count: suspendedCount }
   ] = await Promise.all([
     supabase.from('Store').select('id', { count: 'exact', head: true }),
-    supabase.from('Store').select('id', { count: 'exact', head: true }).eq('kyc_status', 'pending'),
+    supabase.from('Store').select('id', { count: 'exact', head: true }).in('kyc_status', ['pending', 'unverified', 'submitted']),
     supabase.from('Store').select('id', { count: 'exact', head: true }).eq('kyc_status', 'verified'),
     supabase.from('Store').select('id', { count: 'exact', head: true }).eq('is_active', false)
   ])

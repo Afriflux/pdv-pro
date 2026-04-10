@@ -4,20 +4,23 @@ import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  style: ['normal', 'italic'],
+  weight: ['600', '700'],
+  style: ['normal'],
+  display: 'swap',
   variable: '--font-display',
 })
 
 const dm = DM_Sans({
   subsets: ['latin'],
   weight: ['400', '500'],
+  display: 'swap',
   variable: '--font-body',
 })
 
 const mono = Space_Mono({
   subsets: ['latin'],
   weight: ['400', '700'],
+  display: 'swap',
   variable: '--font-mono',
 })
 
@@ -31,34 +34,24 @@ export const viewport: Viewport = {
 
 export const revalidate = 60 // Refresh cache every minute to apply admin SEO changes
 
-const getCachedSeoConfig = unstable_cache(
+const getCachedLayoutConfig = unstable_cache(
   async () => {
     const supabase = createAdminClient()
     const { data: configRows } = await supabase
       .from('PlatformConfig')
       .select('key, value')
-      .in('key', ['seo_title', 'seo_description', 'seo_keywords', 'seo_og_image', 'platform_name'])
+      .in('key', [
+        'seo_title', 'seo_description', 'seo_keywords', 'seo_og_image', 'platform_name',
+        'maintenance_active', 'maintenance_message'
+      ])
     return configRows || []
   },
-  ['layout-seo-config'],
-  { revalidate: 60 }
-)
-
-const getCachedMaintenanceConfig = unstable_cache(
-  async () => {
-    const supabase = createAdminClient()
-    const { data: configRows } = await supabase
-      .from('PlatformConfig')
-      .select('key, value')
-      .in('key', ['maintenance_active', 'maintenance_message'])
-    return configRows || []
-  },
-  ['layout-maintenance-config'],
+  ['layout-config-v3'],
   { revalidate: 60 }
 )
 
 export async function generateMetadata(): Promise<Metadata> {
-  const configRows = await getCachedSeoConfig()
+  const configRows = await getCachedLayoutConfig()
 
   const kv = configRows.reduce((acc: Record<string, string>, r) => {
     if (r.key && r.value) acc[r.key] = r.value
@@ -119,7 +112,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Query maintenance mode using the Cached Admin Client
-  const configRows = await getCachedMaintenanceConfig()
+  const configRows = await getCachedLayoutConfig()
 
   const kv = configRows.reduce((acc: Record<string, string>, row) => {
     if (row.key && row.value) acc[row.key] = row.value
@@ -149,22 +142,7 @@ export default async function RootLayout({
             <FooterWrapper />
           </>
         )}
-        <script dangerouslySetInnerHTML={{ __html: `
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-              for (var i = 0; i < registrations.length; i++) {
-                registrations[i].unregister();
-              }
-            });
-            if (caches) {
-              caches.keys().then(function(names) {
-                for (var i = 0; i < names.length; i++) {
-                  caches.delete(names[i]);
-                }
-              });
-            }
-          }
-        ` }} />
+
       </body>
     </html>
   );

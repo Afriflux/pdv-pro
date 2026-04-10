@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 import { prisma } from '@/lib/prisma'
 import Anthropic from '@anthropic-ai/sdk'
 
@@ -6,8 +7,7 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 60 // 60s max for cron
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get('authorization')
-  if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!verifyCronSecret(request)) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
 

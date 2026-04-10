@@ -89,8 +89,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: 'Connexion à la passerelle validée. Statut opérationnel.' })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[API PING ERROR]', error)
-    return NextResponse.json({ error: error.message || 'Erreur interne du serveur' }, { status: 500 })
+    return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || 'Erreur interne du serveur' }, { status: 500 })
   }
 }

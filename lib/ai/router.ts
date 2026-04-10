@@ -203,9 +203,8 @@ export async function generateAIResponse(req: AIGenerationRequest): Promise<AIGe
     plan = ROUTING_PREFERENCES[req.taskType] || ROUTING_PREFERENCES['eco']
   }
 
-  // If force fallback required
   if (req.forceProvider) {
-    plan = plan.filter((p: any) => p.provider === req.forceProvider)
+    plan = plan.filter((p: { provider: string, model: string }) => p.provider === req.forceProvider)
     if (plan.length === 0) {
        throw new Error(`Provider ${req.forceProvider} was forced but isn't available for this task.`)
     }

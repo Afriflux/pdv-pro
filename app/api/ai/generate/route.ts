@@ -59,10 +59,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json(aiResponse)
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[API AI ERROR]', error)
     return NextResponse.json(
-      { error: error.message || 'Erreur interne du serveur lors de la génération IA' }, 
+      { error: error instanceof Error ? error.message : 'Erreur interne du serveur lors de la génération IA' }, 
       { status: 500 }
     )
   }

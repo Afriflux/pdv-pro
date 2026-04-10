@@ -1,10 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 
 // ----------------------------------------------------------------
 // GET /api/cron/status
-// Healthcheck public pour vérifier que les crons sont actifs
+// Healthcheck protégé pour vérifier que les crons sont actifs
 // ----------------------------------------------------------------
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!verifyCronSecret(req)) {
+    return new NextResponse('Unauthorized', { status: 401 })
+  }
+
   return NextResponse.json({
     status: 'ok',
     crons: [

@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json({ success: true, created: true })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[ABANDONED CART ERROR]:', error)
     return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
   }

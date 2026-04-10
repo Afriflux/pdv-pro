@@ -106,10 +106,10 @@ export async function POST(req: Request) {
         }
         failed++
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Timeout / Crash Critique
       console.error(`[CRON] Exception réseau sur ${w.id}:`, error)
-      const alertMsg = 'ALERT: Exception - ' + error.message
+      const alertMsg = 'ALERT: Exception - ' + (error instanceof Error ? error.message : String(error))
       
       await supabase.from('Withdrawal').update({ status: 'pending', notes: alertMsg }).eq('id', w.id)
       

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 import { prisma } from '@/lib/prisma'
 import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
 
 export async function GET(req: NextRequest) {
   // Optionnel : Vérifier un CRON_SECRET pour la sécurité
-  const authHeader = req.headers.get('authorization')
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!verifyCronSecret(req)) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
 

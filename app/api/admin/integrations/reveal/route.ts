@@ -49,7 +49,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ value: configRow.value })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[API REVEAL]', error)
     return NextResponse.json({ error: 'Erreur interne du serveur' }, { status: 500 })
   }

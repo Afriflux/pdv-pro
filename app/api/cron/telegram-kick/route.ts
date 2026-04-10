@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 import { createClient } from '@supabase/supabase-js'
 import { revokeMember } from '@/lib/telegram/community-service'
 
@@ -14,13 +15,8 @@ export async function GET(request: Request) {
   try {
     // Vérification basique d'autorisation (Bearer token ou paramètre secret)
     // Dans le cas de Vercel Cron, le Header "Authorization" contient "Bearer CRON_SECRET"
-    const authHeader = request.headers.get('authorization')
-    if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      // Pour les tests en local ou requêtes manuelle, on peut passer ?secret=XXX
-      const { searchParams } = new URL(request.url)
-      if (searchParams.get('secret') !== process.env.CRON_SECRET) {
-        return new NextResponse('Unauthorized', { status: 401 })
-      }
+    if (!verifyCronSecret(request)) {
+      return new NextResponse('Unauthorized', { status: 401 })
     }
 
     const now = new Date().toISOString()

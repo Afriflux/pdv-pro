@@ -104,3 +104,16 @@ export async function triggerLowStockTelegram(storeId: string, productId: string
     console.error('[Telegram Hook] Erreur LowStock:', error)
   }
 }
+
+/**
+ * Déclenche une alerte système (Smart Routing Fallback, etc.)
+ */
+export async function triggerSystemAlertTelegram(title: string, details: string) {
+  try {
+    const { notifySystemAlert } = await import('./bot-service')
+    await notifySystemAlert(title, details)
+  } catch (error) {
+    console.error('[Telegram Hook] Erreur SystemAlert:', error)
+  }
+}
+

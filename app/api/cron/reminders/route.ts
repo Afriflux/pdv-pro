@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 import { prisma } from '@/lib/prisma'
 import { sendTransactionalEmail } from '@/lib/brevo/brevo-service'
 import { bookingReminderEmail } from '@/lib/brevo/email-templates'
@@ -6,8 +7,7 @@ import { bookingReminderEmail } from '@/lib/brevo/email-templates'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get('authorization')
-  if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!verifyCronSecret(request)) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
 
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
       message: `Rappels COD et Coaching Inactifs envoyés (Simulation). ${sentCount} rappels de RDV envoyés.`
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('CRON REMINDERS ERROR:', error)
     return NextResponse.json({ success: false, error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
   } finally {

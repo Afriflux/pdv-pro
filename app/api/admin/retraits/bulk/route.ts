@@ -156,8 +156,8 @@ export async function POST(request: Request) {
           results.push({ id: withdrawalId, status: 'failed', reason: payoutError.message })
         }
 
-      } catch (error: any) {
-        results.push({ id: withdrawal.id, status: 'failed', reason: error.message })
+      } catch (error: unknown) {
+        results.push({ id: withdrawal.id, status: 'failed', reason: (error instanceof Error ? error.message : String(error)) })
       }
     }
 

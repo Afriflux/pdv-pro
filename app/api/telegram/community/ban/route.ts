@@ -64,8 +64,8 @@ export async function POST(req: NextRequest) {
     await admin.from('TelegramCommunityAccess').delete().eq('id', access_id)
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[Ban API Error]', error)
-    return NextResponse.json({ error: error.message || 'Erreur serveur' }, { status: 500 })
+    return NextResponse.json({ error: (error instanceof Error ? error.message : String(error)) || 'Erreur serveur' }, { status: 500 })
   }
 }

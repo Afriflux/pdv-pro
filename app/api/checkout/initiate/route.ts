@@ -13,67 +13,33 @@ import { sendSaleNotification } from '@/lib/telegram/community-service'
 import { executeWorkflows } from '@/lib/workflows/execution'
 import { sendMetaCAPIPurchaseEvent } from '@/lib/tracking/capi'
 import { checkBuyerForCOD } from '@/lib/anti-fraud/buyer-check'
+import { createPaymentSession } from '@/lib/payments/routing'
+import { validate, checkoutSchema } from '@/lib/validation'
+import { getRateLimitStatus } from '@/lib/rate-limit'
 
 function roundTo5(amount: number): number {
   return Math.ceil(amount / 5) * 5
 }
 
-async function initiateCinetPay(params: { amount: number, orderId: string, buyerName: string, buyerPhone: string, productName: string, returnUrl: string, notifyUrl: string }) {
-  const apiKey = process.env.CINETPAY_API_KEY!
-  const siteId = process.env.CINETPAY_SITE_ID!
-  const res = await fetch('https://api-checkout.cinetpay.com/v2/payment', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      apikey: apiKey, site_id: siteId, transaction_id: params.orderId,
-      amount: roundTo5(params.amount), currency: 'XOF', description: params.productName,
-      return_url: params.returnUrl, notify_url: params.notifyUrl,
-      customer_name: params.buyerName.split(' ')[0],
-      customer_surname: params.buyerName.split(' ').slice(1).join(' ') || '-',
-      customer_phone_number: params.buyerPhone,
-    }),
-  })
-  const data = await res.json()
-  if (data.code !== '201') throw new Error('CinetPay: ' + (data.message ?? 'Erreur inconnue'))
-  return data.data.payment_url as string
-}
 
-async function initiatePayTech(params: { amount: number, orderId: string, productName: string, returnUrl: string, notifyUrl: string }) {
-  const apiKey = process.env.PAYTECH_API_KEY!
-  const apiSecret = process.env.PAYTECH_API_SECRET!
-  const res = await fetch('https://paytech.sn/api/payment/request-payment', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'API_KEY': apiKey, 'API_SECRET': apiSecret },
-    body: JSON.stringify({
-      item_name: params.productName, item_price: String(Math.round(params.amount)),
-      currency: 'XOF', ref_command: params.orderId, ipn_url: params.notifyUrl,
-      success_url: params.returnUrl, cancel_url: params.returnUrl + '&cancelled=true',
-      env: process.env.NODE_ENV === 'production' ? 'prod' : 'test',
-    }),
-  })
-  const data = await res.json()
-  if (data.success !== 1) throw new Error('PayTech: ' + (data.errors?.[0] ?? 'Erreur inconnue'))
-  return data.redirect_url as string
-}
-
-async function initiateWave(params: { amount: number, orderId: string, productName: string, successUrl: string, errorUrl: string }) {
-  const apiKey = process.env.WAVE_API_KEY!
-  const res = await fetch('https://api.wave.com/v1/checkout/sessions', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      amount: String(Math.round(params.amount)), currency: 'XOF',
-      error_url: params.errorUrl, success_url: params.successUrl, client_reference: params.orderId,
-    }),
-  })
-  const data = await res.json()
-  if (!data.wave_launch_url) throw new Error('Wave: ' + (data.message ?? 'Erreur inconnue'))
-  return data.wave_launch_url as string
-}
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || 'unknown';
+    const { success } = await getRateLimitStatus(`checkout_${ip}`, 10, 60000); // 10 reqs per min
+    if (!success) {
+      return NextResponse.json({ error: 'Trop de tentatives, veuillez patienter quelques instants.' }, { status: 429 })
+    }
+
     const bodyText = await req.text()
     if (!bodyText) return NextResponse.json({ error: 'Body vide.' }, { status: 400 })
     const body = JSON.parse(bodyText) as Record<string, unknown>
+
+    // ── Validation structurée des inputs ────────────────────────────────────
+    const validationResult = validate(body, checkoutSchema)
+    if (!validationResult.success) {
+      return NextResponse.json({ error: validationResult.error }, { status: 400 })
+    }
 
     const {
       product_id, store_id, variant_id, quantity = 1,
@@ -247,8 +213,12 @@ export async function POST(req: NextRequest) {
     if (redeemed_points > 0) {
       const dbLoyalty = await prisma.loyaltyAccount.findUnique({ where: { phone: buyer_phone } })
       if (dbLoyalty && dbLoyalty.balance >= redeemed_points) {
-        // En cas de triche cliente, on cap avec ce que le user envoie jusqu'à concurrence du solde
-        actualLoyaltyDiscount = loyalty_discount
+        // Recalcul serveur: 1 point = 1 FCFA, plafonné par le max_redeem_pct de la boutique
+        const loyaltyConfig = await prisma.loyaltyConfig.findUnique({ where: { store_id: store_id } })
+        const maxPct = loyaltyConfig?.max_redeem_pct ?? 20
+        const maxDiscountAllowed = Math.floor((subtotal + deliveryFee) * (maxPct / 100))
+        // Le discount est le min entre les points demandés et le plafond autorisé
+        actualLoyaltyDiscount = Math.min(redeemed_points, maxDiscountAllowed, dbLoyalty.balance)
       }
     }
 
@@ -519,6 +489,9 @@ export async function POST(req: NextRequest) {
       }).catch(err => console.error('[WhatsApp Acheteur COD Error]', err))
     }
 
+    // ── Extraction ville pour tracking ─────────────────────────────
+    const city = delivery_address?.split(',')[1]?.trim() || null
+
     // ── 6. REPONSE FINALE ─────────────────────────────────────────
     if (payment_method === 'cod') {
       try {
@@ -526,7 +499,6 @@ export async function POST(req: NextRequest) {
         await earnLoyaltyPoints(buyer_phone, store_id, total, orderRecord.id)
       } catch(e) { console.error('[Loyalty COD Error]', e) }
 
-      const city = delivery_address?.split(',')[1]?.trim() || null
       notifyNewOrder({
         userId: store_id, productName: product.name, buyerName: buyer_name,
         amount: total, orderId: orderRecord.id, paymentMethod: 'cod', city,
@@ -583,20 +555,40 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = `${req.nextUrl.protocol}//${req.nextUrl.host}`
     const returnUrl = `${baseUrl}/checkout/success?order=${orderRecord.id}`
-    const notifyUrlBase = `${baseUrl}/api/checkout/ipn`
+    const notifyUrlBase = `${baseUrl}/api/webhooks`
 
-    let paymentUrl = ''
-    if (payment_method === 'cinetpay') {
-      paymentUrl = await initiateCinetPay({ amount: total, orderId: orderRecord.id, buyerName: buyer_name, buyerPhone: buyer_phone, productName: product.name, returnUrl, notifyUrl: `${notifyUrlBase}/cinetpay` })
-    } else if (payment_method === 'paytech') {
-      paymentUrl = await initiatePayTech({ amount: total, orderId: orderRecord.id, productName: product.name, returnUrl, notifyUrl: `${notifyUrlBase}/paytech` })
-    } else if (payment_method === 'wave') {
-      paymentUrl = await initiateWave({ amount: total, orderId: orderRecord.id, productName: product.name, successUrl: returnUrl, errorUrl: `${baseUrl}/checkout/${product_id}?error=true` })
-    } else {
+    if (!['wave', 'paytech', 'bictorys', 'cinetpay', 'orange_money'].includes(payment_method)) {
       return NextResponse.json({ error: 'Moyen de paiement invalide.' }, { status: 400 })
     }
 
-    return NextResponse.json({ order_id: orderRecord.id, payment_url: paymentUrl })
+    const payloadMethod = payment_method as 'wave' | 'paytech' | 'bictorys' | 'cinetpay' | 'orange_money'
+
+    // Appel du Smart Router pour générer la session et gérer le fallback
+    const paymentResponse = await createPaymentSession({
+      amount: roundTo5(total),
+      currency: 'XOF',
+      orderId: orderRecord.id,
+      method: payloadMethod,
+      customer: {
+        name: buyer_name,
+        phone: buyer_phone,
+        email: buyer_email || undefined,
+        address: delivery_address || undefined,
+        city: city || undefined,
+      },
+      description: product.name,
+      returnUrl: returnUrl,
+      // On lie le notify_url à la méthode (qui peut avoir été mutée si fallback)
+      notifyUrl: `${notifyUrlBase}/${payloadMethod}`,
+      env: process.env.NODE_ENV === 'production' ? 'prod' : 'test'
+    })
+
+    if (!paymentResponse.success) {
+      console.error('[Smart Router Error]', paymentResponse.error)
+      throw new Error(`Le service de paiement est indisponible (${paymentResponse.error}).`)
+    }
+
+    return NextResponse.json({ order_id: orderRecord.id, payment_url: paymentResponse.paymentUrl })
   } catch (error: unknown) {
     console.error('[CHECKOUT ERROR]:', error)
     return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })

@@ -1,61 +1,44 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { CinetPayProvider } from '@/lib/payments/cinetpay'
+import { captureError } from '@/lib/monitoring'
+import { verifyCinetpayWebhook } from '@/lib/payments/cinetpay/webhook'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { confirmOrder } from '@/lib/payments/confirmOrder'
 
 export async function POST(req: Request) {
   try {
-    // CinetPay envoie les données de notification en form-data ou JSON
-    // Souvent form-data avec cpm_trans_id, cpm_site_id, etc.
-    const bodyText = await req.text()
-    const params = new URLSearchParams(bodyText)
-    
-    const transaction_id = params.get('cpm_trans_id')
-    const site_id = params.get('cpm_site_id')
-
-    if (!transaction_id || !site_id) {
-       return NextResponse.json({ error: 'Paramètres manquants' }, { status: 400 })
-    }
-
-    // 1. Vérifier le statut réel du paiement depuis l'API CinetPay
-    const cinetpay = new CinetPayProvider()
-    const verifyResult = await cinetpay.verifyPayment(transaction_id)
-    
-    if (!verifyResult.success || verifyResult.status !== 'ACCEPTED') {
-      // Paiement échoué ou en attente
-      await prisma.transaction.updateMany({
-        where: { label: { contains: transaction_id }, status: 'pending' },
-        data: { status: 'failed' }
-      })
-      return NextResponse.json({ status: 'failed or unverified' })
-    }
-
-    // 2. Trouver la transaction "pending" correspondante dans la DB
-    const pendingTx = await prisma.transaction.findFirst({
-      where: { label: { contains: transaction_id }, status: 'pending' }
+    const formData = await req.formData()
+    const payload: Record<string, string> = {}
+    formData.forEach((value, key) => {
+      payload[key] = value.toString()
     })
 
-    if (!pendingTx) {
-       return NextResponse.json({ status: 'already processed or not found' })
+    const xToken = req.headers.get('x-token') || ''
+
+    // Validation via Check-Status
+    const isValid = await verifyCinetpayWebhook(xToken, payload, 'prod')
+    if (!isValid) {
+      console.error('[CinetPay Webhook] Tentative de fraude ignorée - Validation échouée.')
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // 3. Valider le rechargement
-    if (pendingTx.type === 'deposit') {
-      // Créditer le Wallet
-      await prisma.wallet.update({
-         where: { id: pendingTx.wallet_id },
-         data: { balance: { increment: verifyResult.amount || pendingTx.amount } }
-      })
-      
-      // Marquer Tx comme payée
-      await prisma.transaction.update({
-         where: { id: pendingTx.id },
-         data: { status: 'completed' }
-      })
+    const transactionId = payload.cpm_trans_id
+
+    // "00" = SUCCESS, anything else is a failure
+    if (payload.cpm_result === '00') {
+      await confirmOrder(transactionId)
+      console.log(`[CinetPay Webhook] Paiement validé pour la commande: ${transactionId}`)
+    } else {
+      const supabase = createAdminClient()
+      await supabase.from('Order').update({ status: 'cancelled' }).eq('id', transactionId)
+      console.log(`[CinetPay Webhook] Paiement échoué pour la commande: ${transactionId}. Message: ${payload.cpm_error_message}`)
     }
 
-    return NextResponse.json({ status: 'success' })
-  } catch (error: any) {
-    console.error('CinetPay Webhook Error:', error)
+    return NextResponse.json({ success: true })
+
+  } catch (error: unknown) {
+    captureError(error, { context: 'webhook-cinetpay' }, 'error')
+    console.error('[CinetPay Webhook] Erreur serveur:', error)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }
+
