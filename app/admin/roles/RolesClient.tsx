@@ -14,6 +14,7 @@ export interface AdminUser {
   name: string | null
   role: string
   internal_role_id?: string | null
+  avatar_url?: string | null
   custom_role?: { name: string; color: string; bg: string } | null
   created_at: string
 }
@@ -49,6 +50,10 @@ const PERMISSION_KEYS: PermissionConfig[] = [
   { id: 'roles', label: 'Gestion des Administrateurs', description: 'Ajouter/Révoquer des accès à l\'équipe' },
   { id: 'settings', label: 'Configuration Plateforme', description: 'Changer les frais, abonnements, TVA' },
   { id: 'quotas', label: 'Quotas Freemium', description: 'Paramétrer les limitations des plans gratuits' },
+  { id: 'marketing', label: 'Marketing Hub', description: 'Campagnes, automations et analytics marketing' },
+  { id: 'notifications', label: 'Notifications & Alertes', description: 'Canaux WhatsApp, Email, Push, Telegram' },
+  { id: 'loyalty', label: 'Fidélité & Récompenses', description: 'Programme de fidélisation et paliers clients' },
+  { id: 'tickets', label: 'Support & Tickets', description: 'Gestion des tickets et réclamations clients' },
   { id: 'accounting', label: 'Comptabilité (P&L)', description: 'Registre des charges et calcul du bénéfice' },
   { id: 'equity', label: 'Actionnariat & Parts', description: 'Gérer les dividendes et parts sociales' },
   { id: 'maintenance', label: 'Maintenance & Crons', description: 'Exécuter des actions serveurs' },
@@ -128,7 +133,7 @@ export default function RolesClient({
           bgCls: 'bg-emerald-50',
           isCustom: true,
           permissions: { 
-            dashboard: 'read', vendors: 'read', affiliates: 'none', clients: 'none', orders: 'none', closing: 'none', withdrawals: 'none', complaints: 'none', kyc: 'none', roles: 'none', settings: 'none', quotas: 'none', accounting: 'none', equity: 'none', maintenance: 'none', audit: 'none', apps: 'none', workflows: 'none', masterclass: 'none', themes: 'none' 
+            dashboard: 'read', vendors: 'read', affiliates: 'none', clients: 'none', orders: 'none', closing: 'none', withdrawals: 'none', complaints: 'none', kyc: 'none', roles: 'none', settings: 'none', quotas: 'none', marketing: 'none', notifications: 'none', loyalty: 'none', tickets: 'none', accounting: 'none', equity: 'none', maintenance: 'none', audit: 'none', apps: 'none', workflows: 'none', masterclass: 'none', themes: 'none' 
           }
         }
       ])
@@ -373,9 +378,15 @@ export default function RolesClient({
                             <tr key={admin.id} className="hover:bg-[#FAFAF7] transition-colors group">
                                <td className="px-6 py-4">
                                   <div className="flex items-center gap-4">
-                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black ${roleConf?.bgCls} ${roleConf?.colorCls} border`}>
-                                        {(admin.name || admin.email).charAt(0).toUpperCase()}
-                                     </div>
+                                     {admin.avatar_url ? (
+                                        <img src={admin.avatar_url} alt={admin.name || 'Admin'} className="w-10 h-10 rounded-xl object-cover border-2 border-gray-100" />
+                                     ) : (
+                                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black ${roleConf?.bgCls} ${roleConf?.colorCls} border`}>
+                                         {(admin.name || admin.email).charAt(0).toUpperCase()}
+                                      </div>
+                                     )}
+
+
                                      <div>
                                         <p className="text-sm font-bold text-gray-900 group-hover:text-[#0F7A60] transition-colors">{admin.name || '—'}</p>
                                         <p className="text-xs text-gray-500 font-medium">{admin.email}</p>

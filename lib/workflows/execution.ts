@@ -117,7 +117,7 @@ export async function executeWorkflows(storeId: string, triggerType: WorkflowTri
                   to: [{ email: String(payload.client_email), name: payload.client_name || 'Client' }],
                   subject: `Message de ${payload.store_name || 'Yayyam'}`,
                   htmlContent: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;"><p>${finalMessage.replace(/\n/g, '<br>')}</p></div>`,
-                  sender: { name: payload.store_name || 'Yayyam', email: 'no-reply@yayyam.sn' } // Envoi depuis l'alias par défaut
+                  sender: { name: payload.store_name || 'Yayyam', email: 'no-reply@yayyam.com' } // Envoi depuis l'alias par défaut
                 });
                 console.log(`[Workflow Engine] Email envoyé avec succès à ${payload.client_email}`);
               }

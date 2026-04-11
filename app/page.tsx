@@ -22,6 +22,7 @@ const BentoGrid = dynamic(() => import('@/components/landing/BentoGrid').then(m 
 const PricingCards = dynamic(() => import('@/components/landing/PricingCards').then(m => m.PricingCards))
 const TestimonialSlider = dynamic(() => import('@/components/landing/TestimonialSlider').then(m => m.TestimonialSlider))
 const LiveCounters = dynamic(() => import('@/components/landing/LiveCounters').then(m => m.LiveCounters))
+const FounderSection = dynamic(() => import('@/components/landing/FounderSection').then(m => m.FounderSection))
 const PricingCalculator = dynamic(() => import('./PricingCalculator').then(m => m.default))
 
 import { HeroSection } from "@/components/landing/HeroSection";
@@ -93,7 +94,7 @@ const getCachedLandingConfig = unstable_cache(
       'landing_sectors_supertitle', 'landing_sectors_title', 'landing_sectors_subtitle',
       'landing_telegram_supertitle', 'landing_telegram_title', 'landing_telegram_subtitle',
       'landing_cod_price', 'landing_cta_title', 'landing_cta_button', 'landing_testimonials',
-      'landing_faq', 'landing_instagram_url', 'landing_whatsapp_support', 'landing_banner_active',
+      'landing_faq', 'landing_instagram_url', 'landing_facebook_url', 'contact_tiktok_url', 'landing_whatsapp_support', 'landing_banner_active',
       'landing_banner_date', 'landing_banner_text'
     ]
     const { data: cfgRows } = await supabaseAdmin
@@ -262,6 +263,14 @@ export default async function LandingPage() {
             <TestimonialSlider testimonials={testimonialData} />
           </div>
         </section>
+
+        {/* 6.25 MOT DU FONDATEUR */}
+        <FounderSection
+          founderName={get('founder_name', '') || undefined}
+          founderTitle={get('founder_title', '') || undefined}
+          founderMessage={get('founder_message', '') || undefined}
+          founderImageUrl={get('founder_image_url', '') || undefined}
+        />
 
         {/* 6.5 PREUVES DE RETRAITS (Mode Cash) */}
         <section className="py-20 px-6 bg-white overflow-hidden relative">
@@ -624,6 +633,105 @@ export default async function LandingPage() {
           </div>
         </section>
 
+        {/* COMPARAISON YAYYAM VS CONCURRENTS */}
+        <section className="py-24 px-6 bg-cream border-b border-line">
+          <div className="max-w-[1800px] mx-auto w-full px-4 md:px-12 lg:px-20 xl:px-32">
+            <div className="text-center mb-12">
+              <span className="inline-block bg-ink/10 text-ink font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 shadow-sm border border-ink/10">Comparatif Objectif</span>
+              <h2 className="text-3xl md:text-5xl font-display font-black mb-4 text-ink">Yayyam vs. <span className="text-emerald">Les autres.</span></h2>
+              <p className="text-xl text-slate font-light max-w-2xl mx-auto">Pas de promesses vagues — voici exactement ce que vous obtenez, comparé aux alternatives.</p>
+            </div>
+            
+            <div className="overflow-x-auto -mx-4 px-4">
+              <table className="w-full min-w-[900px] bg-white rounded-2xl overflow-hidden shadow-lg border border-line">
+                <thead>
+                  <tr className="border-b-2 border-emerald/20">
+                    <th className="text-left p-5 text-sm font-black text-slate uppercase tracking-wider">Fonctionnalité</th>
+                    <th className="p-5 text-center bg-emerald/5">
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-lg font-black text-emerald">Yayyam</span>
+                        <span className="text-[10px] bg-emerald/10 text-emerald px-2 py-0.5 rounded-full font-bold">UEMOA #1</span>
+                      </div>
+                    </th>
+                    <th className="p-5 text-center text-sm font-bold text-slate">WhatsApp</th>
+                    <th className="p-5 text-center text-sm font-bold text-slate">Chariow</th>
+                    <th className="p-5 text-center text-sm font-bold text-slate">Shopify</th>
+                    <th className="p-5 text-center text-sm font-bold text-slate">Systeme.io</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm">
+                  {[
+                    { feat: 'Wave / Orange Money natif',           y: 'green',  wa: 'red',    ch: 'yellow', sh: 'red',    sy: 'red' },
+                    { feat: 'Paiement à la livraison (COD)',       y: 'green',  wa: 'yellow', ch: 'green',  sh: 'red',    sy: 'red' },
+                    { feat: 'Abonnement mensuel',                  y: '0 FCFA', wa: '0 FCFA', ch: '~5 000 F', sh: '39$/mo', sy: '27€/mo' },
+                    { feat: 'Commission dégressive (5-8%)',        y: 'green',  wa: 'red',    ch: 'red',    sh: 'red',    sy: 'red' },
+                    { feat: 'Boutique e-commerce complète',        y: 'green',  wa: 'red',    ch: 'green',  sh: 'green',  sy: 'orange' },
+                    { feat: 'Bot WhatsApp automatisé',             y: 'green',  wa: 'orange', ch: 'red',    sh: 'red',    sy: 'red' },
+                    { feat: 'Communautés Telegram payantes',       y: 'green',  wa: 'red',    ch: 'red',    sh: 'red',    sy: 'red' },
+                    { feat: 'IA Marketing (Check360°)',            y: 'green',  wa: 'red',    ch: 'red',    sh: 'orange', sy: 'red' },
+                    { feat: "Programme d'affiliation intégré",     y: 'green',  wa: 'red',    ch: 'red',    sh: 'orange', sy: 'green' },
+                    { feat: 'Call Center / Closers intégrés',      y: 'green',  wa: 'red',    ch: 'red',    sh: 'red',    sy: 'red' },
+                    { feat: 'Retrait Mobile Money immédiat',       y: 'green',  wa: 'red',    ch: 'yellow', sh: 'red',    sy: 'red' },
+                    { feat: 'Analytics + Export PDF',              y: 'green',  wa: 'red',    ch: 'orange', sh: 'green',  sy: 'orange' },
+                    { feat: 'Support WhatsApp direct',             y: 'green',  wa: 'yellow', ch: 'green',  sh: 'red',    sy: 'red' },
+                    { feat: 'Produits digitaux (formations, PDF)', y: 'green',  wa: 'red',    ch: 'red',    sh: 'green',  sy: 'green' },
+                  ].map((row, i) => {
+                    const renderCell = (val: string, isYayyam = false) => {
+                      if (val === 'green') return (
+                        <span className={`inline-flex w-7 h-7 rounded-full ${isYayyam ? 'bg-emerald-500' : 'bg-emerald-100'} items-center justify-center`}>
+                          <CheckCircle2 size={16} className={isYayyam ? 'text-white' : 'text-emerald-600'} />
+                        </span>
+                      )
+                      if (val === 'yellow') return (
+                        <span className="inline-flex w-7 h-7 rounded-full bg-amber-100 items-center justify-center" title="Partiel">
+                          <AlertCircle size={15} className="text-amber-500" />
+                        </span>
+                      )
+                      if (val === 'orange') return (
+                        <span className="inline-flex w-7 h-7 rounded-full bg-orange-100 items-center justify-center" title="Payant / Limité">
+                          <span className="text-orange-500 font-black text-xs">$$$</span>
+                        </span>
+                      )
+                      if (val === 'red') return (
+                        <span className="inline-flex w-7 h-7 rounded-full bg-red-50 items-center justify-center">
+                          <span className="text-red-400 font-black text-sm">✗</span>
+                        </span>
+                      )
+                      // Text values (prices)
+                      return <span className={`font-black text-xs ${isYayyam ? 'text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full' : 'text-slate'}`}>{val}</span>
+                    }
+
+                    return (
+                      <tr key={i} className={`border-b border-line/50 ${i % 2 === 0 ? 'bg-gray-50/30' : ''} hover:bg-emerald-50/30 transition-colors`}>
+                        <td className="p-4 font-bold text-ink">{row.feat}</td>
+                        <td className="p-4 text-center bg-emerald/[0.02]">{renderCell(row.y, true)}</td>
+                        <td className="p-4 text-center">{renderCell(row.wa)}</td>
+                        <td className="p-4 text-center">{renderCell(row.ch)}</td>
+                        <td className="p-4 text-center">{renderCell(row.sh)}</td>
+                        <td className="p-4 text-center">{renderCell(row.sy)}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Legend */}
+            <div className="mt-6 flex flex-wrap justify-center gap-6 text-xs font-bold text-slate">
+              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500"></span> Inclus nativement</div>
+              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-400"></span> Partiel / Manuel</div>
+              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-orange-400"></span> Payant / Plugin</div>
+              <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-400"></span> Non disponible</div>
+            </div>
+            
+            <div className="mt-8 text-center">
+              <Link href="/register" className="inline-block px-10 py-4 bg-emerald text-white rounded-xl font-bold text-lg hover:bg-emerald-rich transition shadow-xl shadow-emerald/20">
+                Commencer gratuitement →
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* 10. CTA FINAL */}
         <section className="py-32 px-6 bg-ink relative overflow-hidden border-t border-line/10">
           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-600/10 blur-[150px] rounded-full pointer-events-none" />
@@ -667,6 +775,9 @@ export default async function LandingPage() {
                <a suppressHydrationWarning title="Facebook" aria-label="Facebook" href={get('landing_facebook_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition">
                  <svg suppressHydrationWarning xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                </a>
+               <a suppressHydrationWarning title="TikTok" aria-label="TikTok" href={get('contact_tiktok_url', '#')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:border-emerald hover:text-emerald transition">
+                 <svg suppressHydrationWarning xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.88 2.89 2.89 0 012.89-2.89c.28 0 .55.04.81.11V9.02a6.25 6.25 0 00-.81-.05A6.36 6.36 0 003.13 15.3 6.36 6.36 0 009.49 21.7a6.36 6.36 0 006.36-6.36V8.86a8.32 8.32 0 004.87 1.56V7a4.82 4.82 0 01-1.13-.31z"/></svg>
+               </a>
             </div>
           </div>
           
@@ -676,6 +787,8 @@ export default async function LandingPage() {
               <li><a href="#features" className="hover:text-emerald-light transition">Fonctionnalités</a></li>
               <li><a href="#pricing" className="hover:text-emerald-light transition">Tarifs</a></li>
               <li><Link href="/vendeurs" className="hover:text-emerald-light transition font-bold text-emerald-light">Marketplace</Link></li>
+              <li><Link href="/track" className="hover:text-emerald-light transition">Suivre ma commande</Link></li>
+              <li><Link href="/client" className="hover:text-emerald-light transition">Espace Client</Link></li>
               <li><Link href="/dashboard" className="hover:text-emerald-light transition">Dashboard Marchand</Link></li>
             </ul>
           </div>
@@ -683,7 +796,8 @@ export default async function LandingPage() {
           <div>
             <h4 className="text-white/40 font-mono font-bold mb-6 tracking-widest uppercase text-xs">Légal & Support</h4>
             <ul className="space-y-4 text-sm font-light text-white/60">
-              <li><Link href="/conditions-utilisation" className="hover:text-emerald-light transition">Conditions d'utilisation</Link></li>
+              <li><Link href="/contact" className="hover:text-emerald-light transition font-bold text-emerald-light">Nous contacter</Link></li>
+              <li><Link href="/conditions-utilisation" className="hover:text-emerald-light transition">Conditions d&apos;utilisation</Link></li>
               <li><Link href="/politique-confidentialite" className="hover:text-emerald-light transition">Politique de confidentialité</Link></li>
               <li><Link href="/mentions-legales" className="hover:text-emerald-light transition">Mentions légales</Link></li>
               <li><a suppressHydrationWarning href={`https://wa.me/${get('landing_whatsapp_support', '221780476393')}`} target="_blank" className="hover:text-emerald-light transition flex items-center gap-2">

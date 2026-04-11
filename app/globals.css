@@ -1,11 +1,10 @@
+/* noinspection CssUnknownTarget, CssUnknownAtRule */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+
   .bg-legal-paper {
     background-image: linear-gradient(#f0f0f0 1px, transparent 1px);
     background-size: 100% 2em;
@@ -75,7 +74,6 @@
 }
 .scrollbar-hide {
   -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;

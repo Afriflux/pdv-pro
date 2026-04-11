@@ -26,7 +26,7 @@ export default function ExportOrdersCSVButton() {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `Export_Commandes_YayyamPro_${new Date().toISOString().split('T')[0]}.csv`
+      a.download = `Export_Commandes_Yayyam_${new Date().toISOString().split('T')[0]}.csv`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)

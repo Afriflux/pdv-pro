@@ -40,10 +40,15 @@ export default async function AdminIntegrationsPage() {
     )
   )
 
+  // Ajouter les clés d'activation (_ENABLED) pour chaque service
+  const enabledKeys = INTEGRATION_CATEGORIES.flatMap(c =>
+    c.services.map(s => `${s.id.toUpperCase()}_ENABLED`)
+  )
+
   const { data: configRows } = await supabaseAdmin
     .from('IntegrationKey')
     .select('key, value, updated_at, updated_by')
-    .in('key', allKeys)
+    .in('key', [...allKeys, ...enabledKeys])
 
   // Fetch AI_ROUTING_PREFS from PlatformConfig
   const { data: routingPrefsRow } = await supabaseAdmin

@@ -2,6 +2,7 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { CountdownTimer } from './CountdownTimer'
 
 export interface Section {
   type: string
@@ -160,7 +161,7 @@ export function TestimonialsSection({ s, theme = DEFAULT_THEME }: { s: Section; 
             <div className={`text-3xl ${colors.textPrimary} flex mb-2 justify-center md:justify-start gap-1`}>
                ★★★★★
             </div>
-            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-4">Basé sur {items.length * 3 + 12} avis</p>
+            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-4">Basé sur {items.length} avis</p>
           </div>
           
           <div className="flex-1 w-full space-y-4">
@@ -170,7 +171,7 @@ export function TestimonialsSection({ s, theme = DEFAULT_THEME }: { s: Section; 
                 <div key={star} className="flex items-center gap-4 text-sm font-bold text-gray-400">
                   <span className="w-8">{star} ★</span>
                   <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
-                    <div className={`h-full ${star >= 4 ? colors.bgPrimary : 'bg-gray-300'} rounded-full`} style={{ width: `${percentage}%` }} />
+                    <div className={`h-full ${star >= 4 ? colors.bgPrimary : 'bg-gray-300'} rounded-full`} {...{ style: { width: `${percentage}%` } }} />
                   </div>
                   <span className="w-10 text-right opacity-50">{percentage}%</span>
                 </div>
@@ -297,7 +298,7 @@ export function CtaSection({ s, products, theme = DEFAULT_THEME }: { s: Section;
   return (
     <section className="py-24 px-6 md:px-10">
       <div className={`max-w-4xl mx-auto bg-gradient-to-br ${colors.gradient} rounded-[48px] p-12 md:p-20 text-center shadow-2xl relative overflow-hidden`}>
-        <div className="absolute inset-0 bg-white/10" style={{ mixBlendMode: 'overlay' }} />
+        <div className="absolute inset-0 bg-white/10" {...{ style: { mixBlendMode: 'overlay' } }} />
         
         <div className="relative z-10 space-y-8">
           <h2 className="text-4xl md:text-5xl font-black text-white leading-tight tracking-tight">{s.cta || 'Passez à l\'action'}</h2>
@@ -386,22 +387,7 @@ export function CountdownSection({ s, theme: _theme = DEFAULT_THEME }: { s: Sect
         </h2>
         {s.subtitle && <p className="text-red-900/60 font-bold text-lg">{s.subtitle}</p>}
         
-        <div className="flex justify-center gap-3 md:gap-4 pt-4">
-          <div className="bg-white px-5 py-4 rounded-[24px] shadow-sm border border-red-50 min-w-[80px]">
-            <span className="block text-4xl font-black text-red-600">02</span>
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Heures</span>
-          </div>
-          <div className="text-4xl font-black text-red-200 py-4">:</div>
-          <div className="bg-white px-5 py-4 rounded-[24px] shadow-sm border border-red-50 min-w-[80px]">
-            <span className="block text-4xl font-black text-red-600">14</span>
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Minutes</span>
-          </div>
-          <div className="text-4xl font-black text-red-200 py-4">:</div>
-          <div className="bg-white px-5 py-4 rounded-[24px] shadow-sm border border-red-50 min-w-[80px]">
-            <span className="block text-4xl font-black text-red-600 " dangerouslySetInnerHTML={{__html: '59'}} />
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Secondes</span>
-          </div>
-        </div>
+        <CountdownTimer />
       </div>
     </section>
   )
@@ -514,6 +500,109 @@ export function CrossSellSection({ products, theme = DEFAULT_THEME }: { products
                   </Link>
                 </div>
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── Section Garantie ─────────────────────────────────────────────────────────
+export function GuaranteeSection({ s, theme = DEFAULT_THEME }: { s: Section; theme?: Theme }) {
+  const colors = THEME_MAP[theme.color] || THEME_MAP.orange
+  return (
+    <section className="py-16 px-6">
+      <div className="max-w-3xl mx-auto">
+        <div className={`rounded-[40px] p-10 md:p-14 text-center border ${colors.bgPrimary} bg-opacity-5 relative overflow-hidden`}
+             {...{ style: { backgroundColor: `var(--tw-${theme.color}-50, #f0fdf4)`, borderColor: `var(--tw-${theme.color}-100, #dcfce7)` } }}>
+          <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+          <div className="relative z-10">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-white/80 shadow-lg flex items-center justify-center text-4xl">
+              🛡️
+            </div>
+            <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-4 tracking-tight">
+              {s.title || 'Garantie Satisfait ou Remboursé'}
+            </h2>
+            <p className="text-gray-600 font-medium text-lg leading-relaxed max-w-xl mx-auto">
+              {s.subtitle || 'Si pour quelque raison que ce soit vous n\'êtes pas satisfait, contactez-nous sous 7 jours pour un remboursement complet. Aucune question posée.'}
+            </p>
+            <div className="mt-8 flex items-center justify-center gap-8 text-sm font-bold text-gray-500">
+              <span className="flex items-center gap-2">✅ 7 jours</span>
+              <span className="flex items-center gap-2">🔒 Sans risque</span>
+              <span className="flex items-center gap-2">💚 100% confiance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── Section Pricing Table ────────────────────────────────────────────────────
+export function PricingTableSection({ s, theme = DEFAULT_THEME }: { s: Section; theme?: Theme }) {
+  const colors = THEME_MAP[theme.color] || THEME_MAP.orange
+  const items = (s.items as Array<{ name: string; price: string; features: string[]; highlight?: boolean }> | undefined) || []
+  if (items.length === 0) return null
+
+  return (
+    <section className="py-24 px-6 bg-[#FDFDFD]">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-black text-gray-900 text-center mb-4 tracking-tight">
+          {s.title || 'Choisissez votre offre'}
+        </h2>
+        {s.subtitle && <p className="text-center text-gray-500 font-medium mb-16 max-w-xl mx-auto">{s.subtitle}</p>}
+        
+        <div className={`grid gap-6 ${items.length === 2 ? 'md:grid-cols-2 max-w-3xl mx-auto' : 'md:grid-cols-3'}`}>
+          {items.map((item, i) => (
+            <div key={i} className={`rounded-[2rem] p-8 flex flex-col relative overflow-hidden border transition-all ${
+              item.highlight 
+                ? `border-2 shadow-xl scale-[1.02] bg-white`
+                : 'border-gray-100 bg-white/60 shadow-sm'
+            }`} style={item.highlight ? { borderColor: colors.textPrimary.replace('text-', '') } : {}}>
+              {item.highlight && (
+                <div className={`absolute top-0 left-0 right-0 h-1 ${colors.bgPrimary}`} />
+              )}
+              <h3 className="text-xl font-black text-gray-900 mb-2">{item.name}</h3>
+              <p className={`text-3xl font-black mb-6 ${item.highlight ? colors.textPrimary : 'text-gray-900'}`}>
+                {item.price} <span className="text-sm text-gray-400 font-medium">FCFA</span>
+              </p>
+              <ul className="space-y-3 flex-1">
+                {item.features.map((f, j) => (
+                  <li key={j} className="flex items-start gap-2 text-sm text-gray-600">
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5 ${item.highlight ? `${colors.bgPrimary} text-white` : 'bg-gray-100 text-gray-500'}`}>✓</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── Section Social Proof Bar ─────────────────────────────────────────────────
+export function SocialProofBarSection({ s, theme: _theme = DEFAULT_THEME }: { s: Section; theme?: Theme }) {
+  const items = (s.items as Array<{ name: string; logo?: string }> | undefined) || []
+  if (items.length === 0) return null
+
+  return (
+    <section className="py-12 px-6 bg-white/50">
+      <div className="max-w-5xl mx-auto text-center">
+        <p className="text-xs font-black text-gray-400 uppercase tracking-[0.3em] mb-8">
+          {s.title || 'Ils nous font confiance'}
+        </p>
+        <div className="flex items-center justify-center gap-8 md:gap-14 flex-wrap opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
+          {items.map((item, i) => (
+            <div key={i} className="flex items-center gap-2">
+              {item.logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={item.logo} alt={item.name} className="h-8 md:h-10 object-contain" />
+              ) : (
+                <span className="text-lg md:text-xl font-black text-gray-700">{item.name}</span>
+              )}
             </div>
           ))}
         </div>

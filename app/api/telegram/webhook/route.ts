@@ -1,6 +1,6 @@
 /**
  * /app/api/telegram/webhook/route.ts
- * Gestionnaire de Webhook du Bot Telegram @YayyamProBot.
+ * Gestionnaire de Webhook du Bot Telegram @Yayyam_bot.
  * Traite les commandes utilisateurs et fournit des informations en temps réel.
  * 
  * Sécurisé par le header X-Telegram-Bot-Api-Secret-Token.

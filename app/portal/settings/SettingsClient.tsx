@@ -461,7 +461,7 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
                             </p>
                           </div>
                           <a 
-                            href={`https://t.me/YayyamProBot?start=aff_${affiliateId}`}
+                            href={`https://t.me/Yayyam_bot?start=aff_${affiliateId}`}
                             target="_blank" 
                             rel="noreferrer"
                             className="px-8 py-4 bg-[#2AABEE] text-white rounded-[1.2rem] font-black shadow-[0_4px_15px_rgba(42,171,238,0.3)] hover:bg-[#229ED9] transform hover:-translate-y-1 transition-all w-full sm:w-auto text-center"

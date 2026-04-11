@@ -7,18 +7,14 @@ import { signOut } from '@/app/auth/actions'
 import { Store,  
   LayoutDashboard,
   Zap,
-  Users,
+  UsersRound,
   ShoppingBag,
-  Wallet,
   Settings,
   LogOut,
   ShieldCheck,
   Building2,
   Puzzle,
-  Handshake,
   AlertTriangle,
-  Calculator,
-  PieChart,
   PhoneCall,
   BookOpen,
   Globe,
@@ -30,7 +26,12 @@ import { Store,
   History,
   LayoutTemplate,
   Smartphone,
-  UserCircle
+  UserCircle,
+  Megaphone,
+  MessageSquare,
+  Mail,
+  Gift,
+  BellRing
  } from 'lucide-react'
 import { NotificationBell } from '../dashboard/NotificationBell' // On réutilise celle du dashboard
 
@@ -51,9 +52,7 @@ const NAV: NavSection[] = [
     title: 'PRINCIPAL',
     items: [
       { name: 'Vue d\'ensemble', href: '/admin', icon: LayoutDashboard },
-      { name: 'Vendeurs', href: '/admin/vendeurs', icon: Users },
-      { name: 'Ambassadeurs', href: '/admin/ambassadeurs', icon: Handshake },
-      { name: 'Clients', href: '/admin/clients', icon: UserCircle },
+      { name: 'Tous Utilisateurs', href: '/admin/users', icon: UsersRound, badge: 'NEW' },
       { name: 'Commandes', href: '/admin/orders', icon: ShoppingBag },
       { name: 'Closers (COD)', href: '/admin/closing', icon: PhoneCall },
     ]
@@ -73,6 +72,12 @@ const NAV: NavSection[] = [
     items: [
       { name: 'Quotas Freemium', href: '/admin/quotas', icon: Zap },
       { name: 'Référencement & SEO', href: '/admin/branding', icon: Globe },
+      { name: 'Marketing', href: '/admin/marketing', icon: Megaphone, badge: 'NEW' },
+      { name: 'Emails & Campagnes', href: '/admin/email', icon: Mail },
+      { name: 'Notifications', href: '/admin/notifications', icon: BellRing, badge: 'NEW' },
+      { name: 'Chat WhatsApp', href: '/admin/whatsapp', icon: MessageSquare, badge: 'NEW' },
+      { name: 'Fidélité & Récompenses', href: '/admin/loyalty', icon: Gift, badge: 'NEW' },
+      { name: 'Support & Tickets', href: '/admin/tickets', icon: MessageSquare, badge: 'NEW' },
     ]
   },
   {
@@ -198,7 +203,6 @@ function AdminSidebarContent({
           ) : (
             <div className="flex items-center gap-1.5 px-1 py-1 rounded-xl group-hover/logo:bg-white/5 transition-colors">
               <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">Yayyam</span>
-              <span className="text-2xl font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-400 tracking-tight drop-shadow-md">Pro</span>
             </div>
           )}
         </Link>
@@ -314,7 +318,6 @@ export function AdminSidebar({
   avatarUrl?: string | null
   adminRole: string
 }) {
-  const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -375,7 +378,6 @@ export function AdminSidebar({
             </button>
             <Link href="/" className="flex items-center gap-1.5 ml-1" onClick={() => setMobileOpen(false)}>
               <span className="text-lg font-display font-black text-white">Yayyam</span>
-              <span className="text-lg font-display font-black text-gold">Pro</span>
             </Link>
           </div>
           <div className="flex items-center gap-2">

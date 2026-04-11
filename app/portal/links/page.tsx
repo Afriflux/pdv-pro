@@ -38,7 +38,7 @@ export default async function AffiliateLinksPage() {
     where: { user_id: user.id }
   })
 
-  const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'yayyam.sn'
+  const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'yayyam.com'
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-10 animate-fade-in pb-12 pt-8">

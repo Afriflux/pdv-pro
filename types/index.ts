@@ -1,4 +1,4 @@
-// Types globaux Yayyam Pro
+// Types globaux Yayyam
 // Jamais de `any` — TypeScript strict
 
 export type Role = 

@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Mail, Trophy } from 'lucide-react'
+import { Mail, Trophy, Home, Briefcase, MapPinned } from 'lucide-react'
 import { PromotionData } from '@/lib/promotions/promotionType'
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector'
 import LocalPaymentBadges from '@/components/widgets/LocalPaymentBadges'
@@ -134,6 +134,54 @@ export function CheckoutForm({
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string | null>(null)
   const [selectedZoneId, setSelectedZoneId] = useState<string>('')
+
+  // ── Adresses sauvegardées (lookup checkout) ──────────────────────
+  type SavedAddr = { label: string; name: string; phone: string; address: string; city: string | null; delivery_notes: string | null; latitude: number | null; longitude: number | null; is_default: boolean }
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddr[]>([])
+  const [selectedSavedAddr, setSelectedSavedAddr] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (product.type !== 'physical') return
+    if (!email || email.trim().length < 5) {
+      setSavedAddresses([])
+      return
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams()
+        if (email.trim()) params.set('email', email.trim())
+        const res = await fetch(`/api/checkout/addresses?${params.toString()}`)
+        const data = await res.json() as { addresses: SavedAddr[] }
+        setSavedAddresses(data.addresses || [])
+        // Auto-select the default address
+        const defaultAddr = data.addresses?.find((a: SavedAddr) => a.is_default)
+        if (defaultAddr && !address) {
+          setSelectedSavedAddr(defaultAddr.label)
+          setName(defaultAddr.name)
+          setPhone(defaultAddr.phone)
+          setAddress(defaultAddr.address + (defaultAddr.delivery_notes ? ` — ${defaultAddr.delivery_notes}` : ''))
+          setLocationDetected(true)
+        }
+      } catch { /* silent */ }
+    }, 600)
+    return () => clearTimeout(timer)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [email, product.type])
+
+  const handleSelectSavedAddress = (addr: SavedAddr) => {
+    if (selectedSavedAddr === addr.label) {
+      // Désélectionner
+      setSelectedSavedAddr(null)
+      setAddress('')
+      setLocationDetected(false)
+      return
+    }
+    setSelectedSavedAddr(addr.label)
+    setName(addr.name)
+    setPhone(addr.phone)
+    setAddress(addr.address + (addr.delivery_notes ? ` — ${addr.delivery_notes}` : ''))
+    setLocationDetected(true)
+  }
 
   // ── Anti-Fraude COD ────────────────────────────────────────────
   const [codBlocked, setCodBlocked] = useState(false)
@@ -1009,11 +1057,46 @@ export function CheckoutForm({
                 <label className="text-xs text-gray-500 font-medium mb-1 block">
                   Détails de l'adresse (Quartier, Rue...) {!useCOD && <span className="text-red-500">*</span>}
                 </label>
+
+                {/* Sélecteur d'adresses sauvegardées */}
+                {savedAddresses.length > 0 && (
+                  <div className="mb-3">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Vos adresses enregistrées</p>
+                    <div className="flex flex-wrap gap-2">
+                      {savedAddresses.map((sa) => {
+                        const isSelected = selectedSavedAddr === sa.label
+                        const iconMap: Record<string, React.ReactNode> = {
+                          'Domicile': <Home size={13} />,
+                          'Bureau': <Briefcase size={13} />,
+                          'Autre': <MapPinned size={13} />,
+                        }
+                        return (
+                          <button
+                            key={sa.label}
+                            type="button"
+                            onClick={() => handleSelectSavedAddress(sa)}
+                            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border-2 transition-all ${
+                              isSelected
+                                ? 'border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--accent)] shadow-sm'
+                                : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                            }`}
+                          >
+                            {iconMap[sa.label] || <MapPinned size={13} />}
+                            {sa.label}
+                            {sa.is_default && <span className="text-[9px] bg-amber-100 text-amber-700 px-1 py-0.5 rounded font-black">★</span>}
+                            {isSelected && <span className="text-[var(--accent)] ml-0.5">✓</span>}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 <div className="relative">
                 <input
                   type="text"
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  onChange={(e) => { setAddress(e.target.value); setSelectedSavedAddr(null) }}
                   placeholder="Quartier, ville..."
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-28 text-gray-800 placeholder:text-gray-400 focus:ring-2 outline-none text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
                 />

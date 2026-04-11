@@ -24,6 +24,7 @@ const getStoreBySlug = cache(async (slug: string) => {
       primary_color, category, whatsapp, social_links,
       meta_pixel_id, tiktok_pixel_id, google_tag_id,
       seo_title, seo_description,
+      announcement_active, announcement_text, announcement_bg_color,
       is_active, kyc_status, user:User(phone),
       volume_discounts_active, volume_discounts_config,
       smart_reviews_active

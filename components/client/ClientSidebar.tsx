@@ -18,6 +18,7 @@ import { Store,
   GraduationCap,
   CalendarDays,
   Workflow,
+  MapPin,
  } from 'lucide-react'
 
 interface NavItem {
@@ -58,6 +59,7 @@ const NAV: NavSection[] = [
     items: [
       { name: 'Mon Portefeuille', href: '/client/wallet', icon: Wallet },
       { name: 'Points & Récompenses', href: '/client/loyalty', icon: Sparkles },
+      { name: 'Mes Adresses', href: '/client/addresses', icon: MapPin },
       { name: 'Paramètres', href: '/client/settings', icon: Settings },
     ]
   }

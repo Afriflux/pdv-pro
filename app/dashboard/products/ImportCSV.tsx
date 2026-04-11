@@ -44,7 +44,7 @@ export default function ImportCSV() {
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
     a.href     = url
-    a.download = 'modele_produits_yayyampro.csv'
+    a.download = 'modele_produits_yayyam.csv'
     a.click()
     URL.revokeObjectURL(url)
   }

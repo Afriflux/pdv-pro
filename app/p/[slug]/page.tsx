@@ -10,7 +10,8 @@ import {
   HeroSection, BenefitsSection, TestimonialsSection, FaqSection, 
   ProgramSection, CoachProfileSection, ImageGallerySection, CtaSection, 
   ProductCards, GenericSection,
-  CountdownSection, ComparisonSection, VideoGallerySection, CrossSellSection
+  CountdownSection, ComparisonSection, VideoGallerySection, CrossSellSection,
+  GuaranteeSection, PricingTableSection, SocialProofBarSection
 } from '@/components/pages/PageRenderers'
 import { AnnouncementBar, StickyMobileCTA, SalesPops, ExitIntentPopup, ScrollReveal } from '@/components/pages/StorefrontFeatures'
 
@@ -173,6 +174,9 @@ export default async function PublicSalePage({ params }: SalePagePublicProps) {
               s.type === 'countdown'    ? <CountdownSection key={i} s={s} theme={theme} /> :
               s.type === 'comparison'   ? <ComparisonSection key={i} s={s} theme={theme} /> :
               s.type === 'video'        ? <VideoGallerySection key={i} s={s} theme={theme} /> :
+              s.type === 'guarantee'    ? <GuaranteeSection key={i} s={s} theme={theme} /> :
+              s.type === 'pricing_table' ? <PricingTableSection key={i} s={s} theme={theme} /> :
+              s.type === 'social_proof'  ? <SocialProofBarSection key={i} s={s} theme={theme} /> :
               <GenericSection key={i} s={s} />
             )
 

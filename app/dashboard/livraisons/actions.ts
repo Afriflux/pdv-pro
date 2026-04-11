@@ -147,7 +147,7 @@ export async function assignDelivererToOrderAction(orderId: string, delivererId:
     if (delivererId) {
       const deliverer = await prisma.deliverer.findUnique({ where: { id: delivererId } })
       if (deliverer && deliverer.phone) {
-        const link = `${process.env.NEXT_PUBLIC_APP_URL || 'https://yayyam.sn'}/delivery/${deliverer.id}`
+        const link = `${process.env.NEXT_PUBLIC_APP_URL || 'https://yayyam.com'}/delivery/${deliverer.id}`
         const dateStr = format(new Date(), "dd MMM à HH:mm", { locale: fr })
         const message = `🚧 *NOUVELLE COURSE ASSIGNÉE*\n\nSalut ${deliverer.name}, une nouvelle course vient de t'être assignée par ${store.name} le ${dateStr}.\n\n*Client :* ${order.buyer_name}\n*Tél :* ${order.buyer_phone}\n*Adresse :* ${order.delivery_address || 'Non spécifiée'}\n*Produit :* ${order.product?.name}\n\n👉 *Ouvrir ta course ici :*\n${link}`
         

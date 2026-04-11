@@ -505,7 +505,7 @@ export function UniversalAgenda({
                   {/* Footer: Actions */}
                   <div className="flex items-center gap-2">
                     {b.status === 'confirmed' ? (
-                      <a href={b.product?.booking_link || `https://meet.jit.si/YayyamPro_${b.order?.id}`} target="_blank" rel="noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#0F7A60] hover:bg-[#0c624d] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors">
+                      <a href={b.product?.booking_link || `https://meet.jit.si/Yayyam_${b.order?.id}`} target="_blank" rel="noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#0F7A60] hover:bg-[#0c624d] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-colors">
                         <Video size={16} /> Rejoindre {b.product?.booking_link ? '' : '(Jitsi)'}
                       </a>
                     ) : (
@@ -588,7 +588,7 @@ export function UniversalAgenda({
                          <td className="px-6 py-4">
                            <div className="flex justify-end gap-2">
                              {b.status === 'confirmed' && (
-                                <a href={b.product?.booking_link || `https://meet.jit.si/YayyamPro_${b.order?.id}`} target="_blank" rel="noreferrer" className="p-2 bg-[#0F7A60]/10 text-[#0F7A60] rounded-xl hover:bg-[#0F7A60]/20 transition-colors" title={b.product?.booking_link ? "Rejoindre" : "Jitsi Visio"}>
+                                <a href={b.product?.booking_link || `https://meet.jit.si/Yayyam_${b.order?.id}`} target="_blank" rel="noreferrer" className="p-2 bg-[#0F7A60]/10 text-[#0F7A60] rounded-xl hover:bg-[#0F7A60]/20 transition-colors" title={b.product?.booking_link ? "Rejoindre" : "Jitsi Visio"}>
                                   <Video size={18} />
                                 </a>
                              )}

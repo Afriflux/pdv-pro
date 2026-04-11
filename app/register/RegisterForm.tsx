@@ -19,9 +19,17 @@ interface ValidateResponse {
   message?: string
 }
 
+const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
+  acheteur: 'Achetez et suivez vos commandes facilement.',
+  vendeur: 'Créez votre boutique et vendez sans commission fixe.',
+  affilie: 'Gagnez des commissions en partageant des produits.',
+  closer: 'Concluez des ventes pour les vendeurs et soyez rémunéré.',
+}
+
 export function RegisterForm({ errorMsg }: RegisterFormProps) {
   const [phone, setPhone] = useState('')
   const [role, setRole] = useState<UserRole>('vendeur')
+  const [formError, setFormError] = useState<string | null>(null)
 
   // ── États code ambassadeur ────────────────────────────────────
   const [ambassadorCode, setAmbassadorCode] = useState('')
@@ -85,11 +93,11 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
       <div className="absolute -top-32 -left-32 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none z-0"></div>
 
       <div className="relative z-10">
-        {errorMsg && (
+        {(errorMsg || formError) && (
           <div className="mb-8 overflow-hidden animate-[fade-in_0.3s_ease-out]">
             <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-2xl px-4 py-3 flex items-start gap-3 break-words">
               <AlertTriangle className="shrink-0 mt-0.5 w-4 h-4" />
-              <span className="font-medium">{errorMsg}</span>
+              <span className="font-medium">{formError || errorMsg}</span>
             </div>
           </div>
         )}
@@ -185,22 +193,27 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
               <span className="text-[10px] font-black uppercase tracking-widest relative z-10">Closer</span>
             </button>
           </div>
+          {/* Description du rôle sélectionné */}
+          <p className="text-center text-[11px] text-white/40 font-medium mt-1 transition-all">
+            {ROLE_DESCRIPTIONS[role]}
+          </p>
         </div>
 
         <form
           action={signUp}
           className="space-y-4"
           onSubmit={(e) => {
+            setFormError(null)
             const pwd = (e.currentTarget.elements.namedItem('password') as HTMLInputElement).value
             const confirmPwd = (e.currentTarget.elements.namedItem('confirm_password') as HTMLInputElement).value
             if (pwd !== confirmPwd) {
               e.preventDefault()
-              alert('Les mots de passe ne correspondent pas.')
+              setFormError('Les mots de passe ne correspondent pas.')
               return
             }
             if (!phone) {
               e.preventDefault()
-              alert('Veuillez entrer votre numéro WhatsApp.')
+              setFormError('Veuillez entrer votre numéro WhatsApp.')
               return
             }
             if (role === 'vendeur' && ambassadorCode.trim() && codeStatus !== 'valid') {
@@ -239,7 +252,7 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
 
           <div className="group/input">
             <label className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
-              Paiement Mensuel Via Numéro
+              Numéro WhatsApp
             </label>
             <PhoneInput value={phone} onChange={setPhone} placeholder="77 000 00 00" required theme="dark" />
           </div>

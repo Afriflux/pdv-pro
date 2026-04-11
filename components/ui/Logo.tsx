@@ -43,7 +43,7 @@ export const Logo: React.FC<LogoProps> = ({
       currentSize.textSize,
       textClassName
     )}>
-      Yayyam<span className="text-[#0F7A60]">Pro</span>
+      Yayyam
     </span>
   );
 

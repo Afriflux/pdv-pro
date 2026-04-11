@@ -38,7 +38,7 @@ export default function ImportCSVPages({ onImportSuccess }: { onImportSuccess?: 
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
     a.href     = url
-    a.download = 'modele_pages_yayyampro.csv'
+    a.download = 'modele_pages_yayyam.csv'
     a.click()
     URL.revokeObjectURL(url)
   }

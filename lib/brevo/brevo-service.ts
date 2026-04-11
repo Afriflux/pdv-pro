@@ -500,7 +500,7 @@ export async function sendWelcomeEmail(email: string, storeName: string): Promis
           <li style="margin-bottom: 10px;">💰 <strong>Attendez vos premières ventes !</strong> : Encaissez vos revenus directement.</li>
         </ul>
         <p style="margin-top: 30px;">
-          <a href="https://yayyam-sn.netlify.app/dashboard" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">Accéder à mon tableau de bord</a>
+          <a href="https://yayyam.com/dashboard" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">Accéder à mon tableau de bord</a>
         </p>
       </div>
     `
@@ -525,7 +525,7 @@ export async function sendFirstSaleEmail(email: string, productName: string, amo
           <li><strong>Montant :</strong> ${amount.toLocaleString('fr-FR')} F</li>
         </ul>
         <p style="margin-top: 30px;">
-          <a href="https://yayyam-sn.netlify.app/dashboard/orders" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">Gérer mes commandes</a>
+          <a href="https://yayyam.com/dashboard/orders" style="background-color: #0F7A60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">Gérer mes commandes</a>
         </p>
       </div>
     `

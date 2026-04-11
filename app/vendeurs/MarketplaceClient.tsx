@@ -50,7 +50,7 @@ export default function MarketplaceClient({
               <div className="w-10 h-10 bg-emerald-600 rounded-[12px] shadow-lg flex items-center justify-center transform -rotate-6 hover:rotate-0 transition-transform">
                 <Store className="text-white" size={20} />
               </div>
-              <span className="text-2xl font-black tracking-tighter hidden sm:block text-ink">Yayyam<span className="text-emerald-500">Pro</span></span>
+              <span className="text-2xl font-black tracking-tighter hidden sm:block text-ink">Yayyam</span>
             </Link>
           </div>
 

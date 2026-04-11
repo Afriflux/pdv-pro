@@ -64,7 +64,19 @@ export default async function AdminLandingPage() {
     'landing_whatsapp_support',
     'landing_banner_active',
     'landing_banner_date',
-    'landing_banner_text'
+    'landing_banner_text',
+    
+    // CONTACT PAGE
+    'contact_email',
+    'contact_phone',
+    'contact_address',
+    'contact_hours',
+    'contact_hero_title',
+    'contact_hero_subtitle',
+    'contact_form_title',
+    'contact_tiktok_url',
+    'contact_linkedin_url',
+    'contact_maps_url'
   ]
 
   const { data: configs } = await supabaseAdmin
@@ -184,7 +196,19 @@ export default async function AdminLandingPage() {
           landing_banner_active: configMap.landing_banner_active || 'true',
           landing_banner_date: configMap.landing_banner_date || '2026-04-01T00:00:00Z',
           landing_banner_text: configMap.landing_banner_text || 'Lancement officiel le 1er Avril 2026',
-          landing_ticker_text: configMap.landing_ticker_text || '🔒 Paiements sécurisés Wave & Orange Money , 💰 Zéro abonnement — ne payez que sur vos ventes , 🚀 Boutique en ligne en 2 minutes , 📦 Gestion des livraisons intégrée , 🤖 IA marketing incluse , 🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l\'Afrique de l\'Ouest'
+          landing_ticker_text: configMap.landing_ticker_text || '🔒 Paiements sécurisés Wave & Orange Money , 💰 Zéro abonnement — ne payez que sur vos ventes , 🚀 Boutique en ligne en 2 minutes , 📦 Gestion des livraisons intégrée , 🤖 IA marketing incluse , 🇸🇳🇨🇮🇲🇱🇧🇫🇬🇳 Toute l\'Afrique de l\'Ouest',
+          
+          // CONTACT PAGE
+          contact_email: configMap.contact_email || 'contact@yayyam.com',
+          contact_phone: configMap.contact_phone || '',
+          contact_address: configMap.contact_address || 'Dakar, Sénégal',
+          contact_hours: configMap.contact_hours || 'Lun-Sam · 9h-19h (GMT)',
+          contact_hero_title: configMap.contact_hero_title || 'On est là pour vous.',
+          contact_hero_subtitle: configMap.contact_hero_subtitle || 'Une question, un souci technique, ou juste envie de dire bonjour ? Notre équipe répond en moins de 2h sur WhatsApp.',
+          contact_form_title: configMap.contact_form_title || 'Envoyez-nous un message',
+          contact_tiktok_url: configMap.contact_tiktok_url || '',
+          contact_linkedin_url: configMap.contact_linkedin_url || '',
+          contact_maps_url: configMap.contact_maps_url || ''
         }}
       />
     </div>

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from '@/lib/toast'
-import { CheckCircle2, XCircle, Save, ExternalLink, Loader2, Eye, EyeOff, Activity, Clock, Beaker, AlertTriangle, TrendingUp, History } from 'lucide-react'
+import { CheckCircle2, XCircle, Save, ExternalLink, Loader2, Eye, EyeOff, Activity, Clock, Beaker, AlertTriangle, TrendingUp, History, Power } from 'lucide-react'
 import type { IntegrationService } from './config'
 import type { ConfigItem, ServiceStats } from './page'
 import WebhookSetupModal from './WebhookSetupModal'
@@ -34,6 +34,31 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
   const [pinging, setPinging] = useState(false)
   const [isLivePinged, setIsLivePinged] = useState(false)
   const [isModalOpen, setIsModalOpen]   = useState(false)
+  const [togglingEnabled, setTogglingEnabled] = useState(false)
+
+  // ── Master Enable/Disable Toggle ──
+  const enabledKey = `${service.id.toUpperCase()}_ENABLED`
+  const isEnabled = configMap[enabledKey]?.value !== 'false' // Par défaut activé si pas de valeur
+
+  const handleToggleEnabled = async () => {
+    const newValue = isEnabled ? 'false' : 'true'
+    setTogglingEnabled(true)
+    try {
+      const res = await fetch('/api/admin/integrations/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: enabledKey, value: newValue })
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      toast.success(`${service.name} ${newValue === 'true' ? 'activé' : 'désactivé'} !`)
+      router.refresh()
+    } catch (err: any) {
+      toast.error(err.message || 'Erreur lors du basculement')
+    } finally {
+      setTogglingEnabled(false)
+    }
+  }
 
   const hasRecentLogs = stats && stats.recentLogs && stats.recentLogs.length > 0
   const isNetworkLive = hasRecentLogs || isLivePinged
@@ -143,7 +168,7 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-[24px] border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden transition-all duration-300 relative group flex flex-col mb-8">
+    <div className={`rounded-[24px] border shadow-[0_4px_24px_rgba(0,0,0,0.04)] overflow-hidden transition-all duration-300 relative group flex flex-col mb-8 ${isEnabled ? 'bg-white border-gray-100' : 'bg-gray-50/80 border-gray-200/60 opacity-70'}`}>
       
       {/* ── HEADER DE LA CARTE ── */}
       <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50">
@@ -192,7 +217,38 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
 
         <div className="flex items-center gap-2 shrink-0">
           
-          {isPartiallyConfigured && (
+          {/* ── TOGGLE ACTIVATION / DÉSACTIVATION ── */}
+          <label className="flex items-center gap-2 cursor-pointer group/power select-none" title={isEnabled ? 'Désactiver ce service' : 'Activer ce service'}>
+            <div className="relative">
+              <input 
+                type="checkbox" 
+                className="sr-only" 
+                checked={isEnabled} 
+                disabled={togglingEnabled}
+                onChange={handleToggleEnabled} 
+              />
+              <div className={`block w-14 h-8 rounded-full transition-colors duration-300 shadow-inner ${
+                isEnabled 
+                  ? 'bg-emerald-500 group-hover/power:bg-emerald-600' 
+                  : 'bg-gray-300 group-hover/power:bg-gray-400'
+              }`}></div>
+              <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform duration-300 shadow-sm flex items-center justify-center ${
+                isEnabled ? 'translate-x-6' : ''
+              }`}>
+                {togglingEnabled 
+                  ? <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" />
+                  : <Power className={`w-3.5 h-3.5 ${isEnabled ? 'text-emerald-500' : 'text-gray-400'}`} />
+                }
+              </div>
+            </div>
+            <span className={`text-[10px] font-black uppercase tracking-wider hidden sm:block ${
+              isEnabled ? 'text-emerald-600' : 'text-gray-400'
+            }`}>
+              {isEnabled ? 'Actif' : 'Inactif'}
+            </span>
+          </label>
+
+          {isEnabled && isPartiallyConfigured && (
             <div 
               className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border shadow-sm transition-all duration-300 ${
                 isNetworkLive 
@@ -210,29 +266,22 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
               </span>
             </div>
           )}
-
-          {isPartiallyConfigured ? (
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0D5C4A]/5 text-[#0D5C4A] text-xs font-black uppercase tracking-wider border border-[#0D5C4A]/10">
-              <CheckCircle2 className="w-4 h-4" /> Activé
-            </span>
-          ) : (
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100/80 text-gray-500 text-xs font-black uppercase tracking-wider border border-gray-200">
-              <XCircle className="w-4 h-4" /> Config
-            </span>
-          )}
           
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-[#0D5C4A] text-white rounded-xl text-xs font-black shadow-sm hover:bg-[#083D31] hover:shadow-md transition-all disabled:opacity-50 ml-1"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            <span className="hidden sm:inline">Enregistrer</span>
-          </button>
+          {isEnabled && (
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-2 px-4 py-2 bg-[#0D5C4A] text-white rounded-xl text-xs font-black shadow-sm hover:bg-[#083D31] hover:shadow-md transition-all disabled:opacity-50 ml-1"
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              <span className="hidden sm:inline">Enregistrer</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* ── CORPS DE LA CARTE ── */}
+      {/* ── CORPS DE LA CARTE (masqué si désactivé) ── */}
+      {isEnabled ? (
       <div className="p-6 flex flex-col gap-6">
         
         <p className="text-sm text-gray-600 font-medium leading-relaxed max-w-3xl">
@@ -412,6 +461,11 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
         )}
 
       </div>
+      ) : (
+        <div className="px-6 py-4 text-center">
+          <p className="text-sm text-gray-400 font-medium italic">Service désactivé — activez le toggle pour configurer.</p>
+        </div>
+      )}
       
       {/* Modale de Guide d'Intégration Webhook */}
       <WebhookSetupModal 

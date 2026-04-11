@@ -5,7 +5,7 @@ import { toast } from '@/lib/toast'
 import { 
   Loader2, Save, X, Plus, ArrowUp, ArrowDown, 
   MonitorPlay, AlignLeft, MessageSquareQuote, 
-  HelpCircle, Tags, Sparkles, Globe, Timer, ExternalLink 
+  HelpCircle, Tags, Sparkles, Globe, Timer, ExternalLink, Mail 
 } from 'lucide-react'
 
 // ── TYPES ────────────────────────────────────────────────────────────────────
@@ -35,7 +35,7 @@ interface Props {
 }
 
 // ── COMPTEUR D'ONGLETS ───────────────────────────────────────────────────────
-type TabId = 'hero' | 'sections' | 'testimonials' | 'faq' | 'pricing' | 'banner' | 'footer'
+type TabId = 'hero' | 'sections' | 'testimonials' | 'faq' | 'pricing' | 'banner' | 'footer' | 'contact'
 const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: 'hero', label: 'Accueil & Hero', icon: MonitorPlay },
   { id: 'banner', label: 'Bannière Flash', icon: Timer },
@@ -43,6 +43,7 @@ const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
   { id: 'testimonials', label: 'Témoignages', icon: MessageSquareQuote },
   { id: 'faq', label: 'Questions FAQ', icon: HelpCircle },
   { id: 'pricing', label: 'Tarifs & Appels', icon: Tags },
+  { id: 'contact', label: 'Page Contact', icon: Mail },
   { id: 'footer', label: 'Footer & Réseaux', icon: Globe },
 ]
 
@@ -628,6 +629,117 @@ export default function LandingAdminClient(props: Props) {
           </form>
         </div>
       )}
+
+      {/* CONTENU ONGLET CONTACT */}
+      {activeTab === 'contact' && (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <form onSubmit={handleSaveGeneral} className={cardClass}>
+             <div className="mb-10 flex flex-col items-start border-b border-slate-100 pb-8">
+               <div className="flex items-center gap-4 mb-4">
+                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                   <Mail size={26} />
+                 </div>
+                 <div>
+                   <h3 className="text-2xl font-black bg-gradient-to-r from-blue-900 to-indigo-600 bg-clip-text text-transparent">Page Contact</h3>
+                   <p className="text-slate-500 font-medium mt-0.5">Configurez les informations de la page /contact visible par tous.</p>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="space-y-8">
+               {/* Coordonnées principales */}
+               <div className="bg-blue-50/50 p-8 rounded-2xl border border-blue-100">
+                 <h4 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                   <span className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-black">1</span>
+                   Coordonnées Principales
+                 </h4>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="contact_email" className={labelClass}>Email de Contact</label>
+                      <input id="contact_email" type="email" value={general.contact_email || ''} onChange={e => updateGeneral('contact_email', e.target.value)} className={inputClass} placeholder="contact@yayyam.com" title="Email de support" />
+                      <p className="text-xs text-slate-400 mt-2">Les messages du formulaire seront envoyés à cette adresse.</p>
+                    </div>
+                    <div>
+                      <label htmlFor="contact_phone" className={labelClass}>Numéro de Téléphone</label>
+                      <input id="contact_phone" type="tel" value={general.contact_phone || ''} onChange={e => updateGeneral('contact_phone', e.target.value)} className={inputClass} placeholder="+221 78 047 63 93" title="Numéro de téléphone affiché" />
+                    </div>
+                 </div>
+               </div>
+
+               {/* Localisation & horaires */}
+               <div className="bg-slate-50/50 p-8 rounded-2xl border border-slate-100">
+                 <h4 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                   <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 text-xs font-black">2</span>
+                   Localisation & Horaires
+                 </h4>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="contact_address" className={labelClass}>Adresse / Ville</label>
+                      <input id="contact_address" type="text" value={general.contact_address || ''} onChange={e => updateGeneral('contact_address', e.target.value)} className={inputClass} placeholder="Dakar, Sénégal" title="Adresse affichée" />
+                    </div>
+                    <div>
+                      <label htmlFor="contact_hours" className={labelClass}>Horaires d&apos;ouverture</label>
+                      <input id="contact_hours" type="text" value={general.contact_hours || ''} onChange={e => updateGeneral('contact_hours', e.target.value)} className={inputClass} placeholder="Lun-Sam · 9h-19h (GMT)" title="Horaires de disponibilité" />
+                    </div>
+                 </div>
+               </div>
+
+               {/* Textes personnalisables */}
+               <div className="bg-emerald-50/30 p-8 rounded-2xl border border-emerald-100">
+                 <h4 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                   <span className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-xs font-black">3</span>
+                   Textes de la Page
+                 </h4>
+                 <div className="space-y-6">
+                    <div>
+                      <label htmlFor="contact_hero_title" className={labelClass}>Titre Principal</label>
+                      <input id="contact_hero_title" type="text" value={general.contact_hero_title || ''} onChange={e => updateGeneral('contact_hero_title', e.target.value)} className={inputClass} placeholder="On est là pour vous." title="Titre de la page contact" />
+                    </div>
+                    <div>
+                      <label htmlFor="contact_hero_subtitle" className={labelClass}>Sous-titre</label>
+                      <textarea id="contact_hero_subtitle" rows={2} value={general.contact_hero_subtitle || ''} onChange={e => updateGeneral('contact_hero_subtitle', e.target.value)} className={`${inputClass} resize-none`} placeholder="Une question, un souci technique, ou juste envie de dire bonjour ?" title="Sous-titre de la page contact" />
+                    </div>
+                    <div>
+                      <label htmlFor="contact_form_title" className={labelClass}>Titre du Formulaire</label>
+                      <input id="contact_form_title" type="text" value={general.contact_form_title || ''} onChange={e => updateGeneral('contact_form_title', e.target.value)} className={inputClass} placeholder="Envoyez-nous un message" title="Titre section formulaire" />
+                    </div>
+                 </div>
+               </div>
+
+               {/* Liens supplémentaires */}
+               <div className="bg-amber-50/30 p-8 rounded-2xl border border-amber-100">
+                 <h4 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                   <span className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 text-xs font-black">4</span>
+                   Liens Supplémentaires
+                 </h4>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="contact_tiktok_url" className={labelClass}>URL TikTok (optionnel)</label>
+                      <input id="contact_tiktok_url" type="url" value={general.contact_tiktok_url || ''} onChange={e => updateGeneral('contact_tiktok_url', e.target.value)} className={inputClass} placeholder="https://tiktok.com/@yayyam" title="Lien TikTok" />
+                    </div>
+                    <div>
+                      <label htmlFor="contact_linkedin_url" className={labelClass}>URL LinkedIn (optionnel)</label>
+                      <input id="contact_linkedin_url" type="url" value={general.contact_linkedin_url || ''} onChange={e => updateGeneral('contact_linkedin_url', e.target.value)} className={inputClass} placeholder="https://linkedin.com/company/yayyam" title="Lien LinkedIn" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label htmlFor="contact_maps_url" className={labelClass}>URL Google Maps (optionnel)</label>
+                      <input id="contact_maps_url" type="url" value={general.contact_maps_url || ''} onChange={e => updateGeneral('contact_maps_url', e.target.value)} className={inputClass} placeholder="https://maps.google.com/..." title="Lien Google Maps embed" />
+                      <p className="text-xs text-slate-400 mt-2">Si renseigné, une carte interactive sera affichée sur la page contact.</p>
+                    </div>
+                 </div>
+               </div>
+             </div>
+             
+             <div className="flex justify-end pt-8 mt-8 border-t border-slate-100">
+                <button type="submit" disabled={savingGeneral} aria-label="Sauvegarder la page contact" title="Publier la Page Contact" className="group relative inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold rounded-2xl shadow-[0_10px_20px_rgba(37,99,235,0.2)] transition-all hover:-translate-y-0.5">
+                   {savingGeneral ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                   Publier la Page Contact
+                </button>
+             </div>
+          </form>
+        </div>
+      )}
+
       </div>
     </div>
   )

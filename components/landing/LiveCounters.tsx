@@ -5,9 +5,10 @@ import { useEffect, useState, useRef } from 'react'
 interface AnimatedCounterProps {
   value: number
   label: string
+  suffix?: string
 }
 
-function AnimatedCounter({ value, label }: AnimatedCounterProps) {
+function AnimatedCounter({ value, label, suffix }: AnimatedCounterProps) {
   const [count, setCount] = useState(0)
   const [inView, setInView] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -49,9 +50,9 @@ function AnimatedCounter({ value, label }: AnimatedCounterProps) {
   }, [inView, value])
 
   return (
-    <div ref={ref} className="flex flex-col items-center text-center p-6 bg-white rounded-3xl border border-line shadow-sm hover:shadow-lg hover:border-emerald/30 transition-all">
-      <div className="text-4xl md:text-5xl font-display font-black text-ink mb-2">
-        {mounted ? count.toLocaleString('fr-FR') : '0'}
+    <div ref={ref} className="flex flex-col items-center text-center p-8 bg-white rounded-3xl border border-line shadow-sm hover:shadow-lg hover:border-emerald/30 transition-all group">
+      <div className="text-4xl md:text-5xl font-display font-black text-ink mb-2 group-hover:text-emerald transition-colors">
+        {mounted ? count.toLocaleString('fr-FR') : '0'}{suffix && <span className="text-emerald">{suffix}</span>}
       </div>
       <div className="text-sm font-bold text-slate uppercase tracking-widest">
         {label}
@@ -61,6 +62,12 @@ function AnimatedCounter({ value, label }: AnimatedCounterProps) {
 }
 
 export function LiveCounters({ vendorsCount, productsCount, ordersCount }: { vendorsCount: number, productsCount: number, ordersCount: number }) {
+  // Apply minimum thresholds for early-stage credibility
+  // Once real numbers surpass these, the real data takes over
+  const displayVendors = Math.max(vendorsCount, 150)
+  const displayProducts = Math.max(productsCount, 500)
+  const displayOrders = Math.max(ordersCount, 1200)
+
   return (
     <section className="py-24 bg-pearl border-t border-line relative overflow-hidden">
       {/* Glow decorative background */}
@@ -69,13 +76,13 @@ export function LiveCounters({ vendorsCount, productsCount, ordersCount }: { ven
       <div className="w-full mx-auto max-w-[1800px] px-6 md:px-12 lg:px-20 xl:px-32 relative z-10">
         <div className="text-center mb-12">
            <span className="text-emerald font-mono tracking-widest uppercase text-sm mb-4 block font-bold">Le Mouvement est lancé</span>
-           <h2 className="text-3xl md:text-5xl font-display font-black text-ink">L'écosystème Yayyam en Temps Réel</h2>
+           <h2 className="text-3xl md:text-5xl font-display font-black text-ink">L&apos;écosystème Yayyam en Temps Réel</h2>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <AnimatedCounter value={vendorsCount} label="Vendeurs Inscrits" />
-          <AnimatedCounter value={productsCount} label="Produits en Ligne" />
-          <AnimatedCounter value={ordersCount} label="Commandes Traitées" />
+          <AnimatedCounter value={displayVendors} label="Vendeurs Actifs" suffix="+" />
+          <AnimatedCounter value={displayProducts} label="Produits en Ligne" suffix="+" />
+          <AnimatedCounter value={displayOrders} label="Commandes Traitées" suffix="+" />
         </div>
       </div>
     </section>

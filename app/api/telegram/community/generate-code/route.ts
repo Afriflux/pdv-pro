@@ -61,7 +61,7 @@ export async function POST(request: Request) {
         code: existing.connect_code,
         expires_at: existing.code_expires_at,
         steps: [
-          'Ajoutez @YayyamProBot comme administrateur dans votre groupe',
+          'Ajoutez @Yayyam_bot comme administrateur dans votre groupe',
           `Dans votre groupe, tapez : /connect ${existing.connect_code}`,
           'Cliquez sur Vérifier ci-dessous'
         ]
@@ -106,7 +106,7 @@ export async function POST(request: Request) {
       code,
       expires_at: expiresAt,
       steps: [
-        'Ajoutez @YayyamProBot comme administrateur dans votre groupe',
+        'Ajoutez @Yayyam_bot comme administrateur dans votre groupe',
         `Dans votre groupe, tapez : /connect ${code}`,
         'Cliquez sur Vérifier ci-dessous'
       ]

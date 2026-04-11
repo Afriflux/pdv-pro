@@ -38,7 +38,7 @@ export default function PortalClient({ affiliate, recentOrders, thisMonthEarning
     setMounted(true)
   }, [])
 
-  const defaultShopUrl = `https://${affiliate.Store?.slug || 'boutique'}.yayyam.sn?ref=${affiliate.code}`
+  const defaultShopUrl = `https://${affiliate.Store?.slug || 'boutique'}.yayyam.com?ref=${affiliate.code}`
 
   // KPI Calculations
   const conversionRate = affiliate.clicks > 0 

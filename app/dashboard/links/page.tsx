@@ -62,7 +62,7 @@ export default async function VendorLinksPage({ searchParams }: { searchParams: 
     }
   }
 
-  const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'yayyam.sn'
+  const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'yayyam.com'
 
   return (
     <main className="min-h-screen bg-[#FAFAF7] pb-12">

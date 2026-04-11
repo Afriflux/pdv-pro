@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { ClosingView } from './ClosingView'
 
 export const metadata = {
@@ -12,62 +12,85 @@ export default async function ClosingPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const admin = createAdminClient()
 
+  // Fetch closing requests via Supabase instead of Prisma (avoids direct DB connection issues)
+  const { data: closingRequests, error } = await admin
+    .from('ClosingRequest')
+    .select(`
+      id, status, created_at, call_attempts, closing_fee, notes, scheduled_at, locked_by, locked_until,
+      store:Store!store_id(name),
+      order:Order!order_id(id, buyer_name, buyer_phone, total, product:OrderItem(product_title))
+    `)
+    .order('status', { ascending: true })
+    .order('created_at', { ascending: false })
+    .limit(200)
 
-  const closingRequests = await prisma.closingRequest.findMany({
-    orderBy: [
-      { status: 'asc' }, // PENDING then others
-      { created_at: 'desc' }
-    ],
-    include: {
-      store: { select: { name: true } },
-      history: { orderBy: { created_at: 'asc' } },
-      order: {
-        include: {
-          product: { select: { name: true } }
-        }
-      }
-    },
-    take: 200 // More items for a real dashboard
-  })
+  if (error) {
+    console.error('[Closing] Query error:', error.message)
+  }
 
-  // Load Buyer Score for the phones involved
-  const phones = Array.from(new Set(closingRequests.map((r: any) => r.order.buyer_phone)))
-  const buyerScores = await prisma.buyerScore.findMany({
-    where: { phone: { in: phones } }
-  })
+  // Load history for each request
+  const requestIds = (closingRequests ?? []).map((r: any) => r.id) // eslint-disable-line @typescript-eslint/no-explicit-any
+  const { data: allHistory } = await admin
+    .from('ClosingHistory')
+    .select('id, closing_request_id, action, created_at, agent_name, details')
+    .in('closing_request_id', requestIds.length > 0 ? requestIds : ['none'])
+    .order('created_at', { ascending: true })
 
-  const scoresMap = buyerScores.reduce((acc: Record<string, any>, score: any) => {
+  // Load Buyer Scores
+  const phones = Array.from(new Set((closingRequests ?? []).map((r: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const order = r.order as any // eslint-disable-line @typescript-eslint/no-explicit-any
+    return order?.buyer_phone
+  }).filter(Boolean)))
+
+  const { data: buyerScores } = await admin
+    .from('BuyerScore')
+    .select('phone, score, total_orders, confirmed_orders, cancelled_orders')
+    .in('phone', phones.length > 0 ? phones : ['none'])
+
+  const scoresMap = (buyerScores ?? []).reduce((acc: Record<string, any>, score: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     acc[score.phone] = score
     return acc
-  }, {} as Record<string, any>)
+  }, {} as Record<string, any>) // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  // Clean data for the client
-  const formattedRequests = closingRequests.map((req: any) => ({
-    id: req.id,
-    orderId: req.order.id,
-    status: req.status,
-    createdAt: req.created_at.toISOString(),
-    callAttempts: req.call_attempts,
-    closingFee: req.closing_fee,
-    buyerName: req.order.buyer_name,
-    buyerPhone: req.order.buyer_phone,
-    productName: Array.isArray(req.order.product) ? req.order.product[0]?.name : req.order.product?.name,
-    storeName: req.store.name,
-    orderTotal: req.order.total,
-    score: scoresMap[req.order.buyer_phone] || null,
-    notes: req.notes || '',
-    scheduledAt: req.scheduled_at ? req.scheduled_at.toISOString() : null,
-    lockedBy: req.locked_by,
-    lockedUntil: req.locked_until ? req.locked_until.toISOString() : null,
-    history: req.history ? req.history.map((h: any) => ({
+  const historyMap = (allHistory ?? []).reduce((acc: Record<string, any[]>, h: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    if (!acc[h.closing_request_id]) acc[h.closing_request_id] = []
+    acc[h.closing_request_id].push({
       id: h.id,
       action: h.action,
-      createdAt: h.created_at.toISOString(),
+      createdAt: h.created_at,
       agentName: h.agent_name,
       details: h.details
-    })) : []
-  }))
+    })
+    return acc
+  }, {})
+
+  // Format for client
+  const formattedRequests = (closingRequests ?? []).map((req: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const order = req.order as any // eslint-disable-line @typescript-eslint/no-explicit-any
+    const store = req.store as any // eslint-disable-line @typescript-eslint/no-explicit-any
+    const products = order?.product as any[] ?? [] // eslint-disable-line @typescript-eslint/no-explicit-any
+    return {
+      id: req.id,
+      orderId: order?.id ?? '',
+      status: req.status,
+      createdAt: req.created_at,
+      callAttempts: req.call_attempts ?? 0,
+      closingFee: req.closing_fee ?? 0,
+      buyerName: order?.buyer_name ?? 'Inconnu',
+      buyerPhone: order?.buyer_phone ?? '',
+      productName: products[0]?.product_title ?? 'Produit',
+      storeName: store?.name ?? 'Boutique',
+      orderTotal: order?.total ?? 0,
+      score: scoresMap[order?.buyer_phone] || null,
+      notes: req.notes || '',
+      scheduledAt: req.scheduled_at || null,
+      lockedBy: req.locked_by,
+      lockedUntil: req.locked_until || null,
+      history: historyMap[req.id] || []
+    }
+  })
 
   // KPI Calculations
   const pendingCount = formattedRequests.filter(r => r.status === 'PENDING').length

@@ -1,8 +1,9 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Check, X, CheckCircle2, MessageCircle, Star, Share2 } from 'lucide-react'
+import { Check, X, CheckCircle2, MessageCircle, Star, Share2, MapPin } from 'lucide-react'
 import { PromoCopyButton } from './PromoCopyButton'
+import { SaveAddressCTA } from './SaveAddressCTA'
 
 interface SuccessPageProps {
   searchParams: { order?: string; cod?: string; status?: string }
@@ -24,7 +25,7 @@ async function SuccessContent({
   const { data: order } = await supabase
     .from('Order')
     .select(`
-      id, buyer_name, buyer_phone, total, payment_method, status, product_id,
+      id, buyer_name, buyer_phone, buyer_email, total, payment_method, status, product_id, delivery_address,
       product:Product(name, type, images, booking_link),
       store:Store(name, primary_color, slug, whatsapp, closing_enabled),
       booking:Booking(date, start_time, end_time)
@@ -74,11 +75,11 @@ BEGIN:VEVENT
 DTSTART:${dStr}T${st}Z
 DTEND:${dStr}T${et}Z
 SUMMARY:Réservation - ${product?.name}
-DESCRIPTION:Lien Visio: ${product?.booking_link || `https://meet.jit.si/YayyamPro_${orderId}`}
+DESCRIPTION:Lien Visio: ${product?.booking_link || `https://meet.jit.si/Yayyam_${orderId}`}
 END:VEVENT
 END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
     icsDataUrl = `data:text/calendar;charset=utf8,${icsString}`
-    visioLink = product?.booking_link || `https://meet.jit.si/YayyamPro_${orderId}`
+    visioLink = product?.booking_link || `https://meet.jit.si/Yayyam_${orderId}`
   }
 
   if (isFailed) {
@@ -124,7 +125,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
       <div className="bg-white border border-line rounded-2xl shadow-lg p-10 max-w-md w-full text-center">
         
         {/* Icône succès animée */}
-        <div className="w-20 h-20 border-2 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce" style={{ backgroundColor: `${accent}11`, borderColor: `${accent}33`, color: accent }}>
+        <div className="w-20 h-20 border-2 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce" {...{ style: { backgroundColor: `${accent}11`, borderColor: `${accent}33`, color: accent } }}>
            <CheckCircle2 size={40} strokeWidth={2.5} />
         </div>
         
@@ -165,10 +166,49 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             {isCod ? (
               <span className="text-amber-600 font-medium font-mono text-xs">À LA LIVRAISON</span>
             ) : (
-              <span className="font-medium flex items-center gap-1" style={{ color: accent }}>Payé <Check size={14} /></span>
+              <span className="font-medium flex items-center gap-1" {...{ style: { color: accent } }}>Payé <Check size={14} /></span>
             )}
           </div>
         </div>
+
+        {/* Timeline de suivi visuel */}
+        {product?.type === 'physical' && (() => {
+          const steps = [
+            { key: 'confirmed', label: 'Confirmée', icon: '✓' },
+            { key: 'processing', label: 'En préparation', icon: '📦' },
+            { key: 'shipped', label: 'Expédiée', icon: '🚚' },
+            { key: 'delivered', label: 'Livrée', icon: '🏠' },
+          ]
+          const statusMap: Record<string, number> = { pending: 0, confirmed: 0, paid: 0, processing: 1, shipped: 2, delivered: 3 }
+          const currentStep = statusMap[order.status] ?? 0
+          
+          return (
+            <div className="bg-white border border-gray-100 rounded-xl p-5 mb-6">
+              <h3 className="font-bold text-ink text-sm mb-4 flex items-center gap-2">📍 Suivi de commande</h3>
+              <div className="flex items-center justify-between relative">
+                {/* Ligne de connexion */}
+                <div className="absolute top-4 left-[10%] right-[10%] h-0.5 bg-gray-200" />
+                <div className="absolute top-4 left-[10%] h-0.5 bg-emerald-500 transition-all duration-500" 
+                     {...{ style: { width: `${(currentStep / (steps.length - 1)) * 80}%` } }} />
+                
+                {steps.map((step, i) => (
+                  <div key={step.key} className="flex flex-col items-center z-10 relative" {...{ style: { width: '25%' } }}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${
+                      i <= currentStep 
+                        ? 'bg-emerald-500 border-emerald-500 text-white' 
+                        : 'bg-white border-gray-200 text-gray-400'
+                    }`}>
+                      {step.icon}
+                    </div>
+                    <span className={`text-[10px] font-bold mt-2 text-center leading-tight ${
+                      i <= currentStep ? 'text-emerald-700' : 'text-gray-400'
+                    }`}>{step.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })()}
         
         {/* Réservation Booking / Coaching */}
         {booking && (
@@ -186,7 +226,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
               <a href={visioLink} target="_blank" rel="noopener noreferrer" className="flex-1 py-2.5 bg-[#0F7A60] hover:bg-[#0c624d] text-white text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
                 Rejoindre Visio
               </a>
-              <a href={icsDataUrl} download={`YayyamPro_Booking_${formattedOrderId}.ics`} className="flex-1 py-2.5 bg-white border border-line hover:bg-cream text-[#0F7A60] text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
+              <a href={icsDataUrl} download={`Yayyam_Booking_${formattedOrderId}.ics`} className="flex-1 py-2.5 bg-white border border-line hover:bg-cream text-[#0F7A60] text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
                 + Agenda
               </a>
             </div>
@@ -219,7 +259,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             </div>
             
             <a 
-              href={`https://t.me/YayyamProBot?start=${orderId}`}
+              href={`https://t.me/Yayyam_bot?start=${orderId}`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-2 w-full bg-[#0088cc] hover:bg-[#0077b5] text-white py-3 rounded-xl font-bold text-sm text-center flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/30"
@@ -265,6 +305,16 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
           )}
         </div>
 
+        {/* ── SAUVEGARDER CETTE ADRESSE ── */}
+        {product?.type === 'physical' && order.delivery_address && order.buyer_phone && (
+          <SaveAddressCTA 
+            buyerName={order.buyer_name || ''}
+            buyerPhone={order.buyer_phone}
+            buyerEmail={(order as any).buyer_email || ''}
+            deliveryAddress={order.delivery_address}
+          />
+        )}
+
         {/* ── ENCARTS POST-ACHAT ── */}
         <div className="mt-8 space-y-4 pt-8 border-t border-line text-left">
           
@@ -289,11 +339,13 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             </div>
           </div>
 
-          {/* 3. Promo code */}
+          {/* 3. Encourager le retour */}
           <div className="bg-emerald/5 border border-emerald/20 rounded-xl p-5 text-center">
-             <h4 className="font-bold text-emerald-rich mb-1">Cadeau pour votre prochaine commande</h4>
-             <p className="text-xs text-emerald/80 mb-3">Profitez de -5% sur tous les produits de la boutique.</p>
-             <PromoCopyButton code="MERCI5" />
+             <h4 className="font-bold text-emerald-rich mb-1">Revenez nous voir bientôt ! 💚</h4>
+             <p className="text-xs text-emerald/80 mb-3">Explorez les autres produits de la boutique et profitez d&apos;offres exclusives.</p>
+             <Link href={`/${(store as any)?.slug || ''}`} className="inline-block px-6 py-2.5 bg-[#0F7A60] text-white font-bold text-sm rounded-xl hover:bg-[#0c624d] transition shadow-md">
+               Découvrir la boutique
+             </Link>
           </div>
 
         </div>

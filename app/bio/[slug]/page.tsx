@@ -63,9 +63,9 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
         
         {/* Banner Section */}
         {bioLink.banner_url ? (
-          <div className="w-full h-40 md:h-48 bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${bioLink.banner_url})` }}></div>
+          <div className="w-full h-40 md:h-48 bg-cover bg-center shrink-0" {...{ style: { backgroundImage: `url(${bioLink.banner_url})` } }}></div>
         ) : (
-          <div className="w-full h-32 md:h-40 shrink-0" style={{ backgroundColor: brandColor, opacity: 0.8 }}></div>
+          <div className="w-full h-32 md:h-40 shrink-0" {...{ style: { backgroundColor: brandColor, opacity: 0.8 } }}></div>
         )}
 
         {/* Sticky Profile Header */}
@@ -86,7 +86,7 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span style={{ color: brandColor }}>
+              <span {...{ style: { color: brandColor } }}>
                 {bioLink.title ? bioLink.title.charAt(0).toUpperCase() : bioLink.user?.name?.charAt(0).toUpperCase()}
               </span>
             )}
@@ -112,6 +112,28 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
               const delay = `${(idx * 75) + 200}ms`
               
               const isPrimary = link.isPrimary;
+
+              // Auto-détection d'icône sociale depuis l'URL
+              const detectIcon = (url: string): string | null => {
+                if (!url) return null
+                const u = url.toLowerCase()
+                if (u.includes('facebook.com') || u.includes('fb.com')) return '📘'
+                if (u.includes('instagram.com')) return '📸'
+                if (u.includes('youtube.com') || u.includes('youtu.be')) return '▶️'
+                if (u.includes('tiktok.com')) return '🎵'
+                if (u.includes('twitter.com') || u.includes('x.com')) return '🐦'
+                if (u.includes('linkedin.com')) return '💼'
+                if (u.includes('wa.me') || u.includes('whatsapp.com')) return '💬'
+                if (u.includes('t.me') || u.includes('telegram')) return '✈️'
+                if (u.includes('github.com')) return '🐙'
+                if (u.includes('snapchat.com')) return '👻'
+                if (u.includes('pinterest.com')) return '📌'
+                if (u.includes('spotify.com')) return '🎧'
+                if (u.includes('apple.com/music') || u.includes('music.apple')) return '🎶'
+                return null
+              }
+              
+              const autoIcon = link.icon || detectIcon(link.url)
               
               return (
                 <TrackedLink 
@@ -121,7 +143,7 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
                   className={`w-full rounded-2xl py-4 px-4 shadow-sm hover:shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold text-sm text-center flex items-center justify-center gap-2 ${
                     isPrimary ? 'shadow-lg' : ''
                   } ${link.animation === 'pulse' ? 'animate-pulse' : link.animation === 'bounce' ? 'animate-bounce' : ''}`}
-                  style={{
+                  {...{ style: {
                     animationDelay: delay, 
                     animationFillMode: 'both',
                     ...(isPrimary ? {
@@ -133,9 +155,9 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
                       color: link.textColor ? link.textColor : (theme === 'dark' || theme === 'glass' ? '#FFFFFF' : '#1A1A1A'),
                       border: link.bgColor ? 'none' : (theme === 'glass' ? '1px solid rgba(255,255,255,0.2)' : theme === 'light' ? '1px solid #E5E7EB' : '1px solid transparent')
                     })
-                  }}
+                  } }}
                 >
-                  {link.icon && <span>{link.icon}</span>}
+                  {autoIcon && <span>{autoIcon}</span>}
                   {link.title}
                 </TrackedLink>
               )
@@ -157,9 +179,9 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
             phoneText={bioLink.phone_text ?? undefined}
           />
 
-          <div className="mt-auto pt-16 text-center animate-in fade-in" style={{ animationDelay: '800ms', animationFillMode: 'both' }}>
+          <div className="mt-auto pt-16 text-center animate-in fade-in" {...{ style: { animationDelay: '800ms', animationFillMode: 'both' } }}>
             <a 
-              href={`https://${process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'yayyam.sn'}?ref=biolink`} 
+              href={`https://${process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'yayyam.com'}?ref=biolink`} 
               target="_blank" 
               rel="noreferrer"
               className={`inline-flex items-center gap-2 text-xs font-bold transition-colors ${

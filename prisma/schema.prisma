@@ -84,17 +84,20 @@ model User {
 }
 
 model DeliveryAddress {
-  id         String   @id @default(uuid())
-  user_id    String
-  label      String   @default("Domicile")
-  name       String
-  phone      String
-  address    String
-  city       String?
-  is_default Boolean  @default(false)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  user_id        String
+  label          String   @default("Domicile")
+  name           String
+  phone          String
+  address        String
+  city           String?
+  latitude       Float?
+  longitude      Float?
+  delivery_notes String?
+  is_default     Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
   @@schema("public")

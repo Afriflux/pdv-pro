@@ -174,7 +174,7 @@ export function msgWithdrawalApproved(params: {
 Votre demande de retrait de *${params.amount.toLocaleString('fr-FR')} FCFA* vers ${params.method} a été traitée avec succès !
 Les fonds seront disponibles sur votre compte d'ici peu.
 
-_L'équipe Yayyam Pro_ 💰`
+_L'équipe Yayyam_ 💰`
 }
 
 export function msgWithdrawalFailed(params: {
@@ -185,7 +185,7 @@ export function msgWithdrawalFailed(params: {
 Le transfert de *${params.amount.toLocaleString('fr-FR')} FCFA* a échoué (problème opérateur).
 Le montant a été recrédité sur votre solde Yayyam.
 
-_Support Yayyam Pro_`
+_Support Yayyam_`
 }
 
 export function msgWithdrawalRejected(params: {
@@ -198,7 +198,7 @@ Votre demande de retrait de *${params.amount.toLocaleString('fr-FR')} FCFA* a é
 Raison : ${params.reason}
 
 Le montant est de nouveau disponible sur votre solde.
-_Support Yayyam Pro_`
+_Support Yayyam_`
 }
 
 export function msgMasterclassReminder(params: {

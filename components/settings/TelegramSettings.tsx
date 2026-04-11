@@ -223,14 +223,14 @@ export function TelegramSettings({
                   <div className="space-y-6 pt-2 relative z-10">
                     <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
                       <p className="text-[13px] text-gray-300 font-medium leading-loose">
-                        <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-[10px] font-black mr-2">1</span> Ouvrez <b className="text-white">@YayyamProBot</b> sur Telegram<br/>
+                        <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-[10px] font-black mr-2">1</span> Ouvrez <b className="text-white">@Yayyam_bot</b> sur Telegram<br/>
                         <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-[10px] font-black mr-2">2</span> Envoyez : <code className="bg-black/50 px-2 py-1 rounded-lg border border-[#2A2A2A] text-emerald-400 font-mono shadow-inner select-all">/start {token}</code>
                       </p>
                     </div>
                     
                     {timeLeft > 0 ? (
                       <a
-                        href={botUrl || 'https://t.me/YayyamProBot'}
+                        href={botUrl || 'https://t.me/Yayyam_bot'}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-full py-4 bg-white text-black rounded-2xl font-black text-[15px] text-center flex items-center justify-center gap-2 shadow-[0_0_20px_rgb(255,255,255,0.15)] hover:scale-[1.02] hover:bg-gray-100 transition-all"

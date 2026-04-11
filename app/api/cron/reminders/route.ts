@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     let sentCount = 0
     for (const b of upcomingBookings) {
       if (b.order?.buyer_email) {
-        const link = b.order.product.booking_link || `https://meet.jit.si/YayyamPro_${b.order.id}`
+        const link = b.order.product.booking_link || `https://meet.jit.si/Yayyam_${b.order.id}`
         const dateStr = new Date(b.booking_date).toLocaleDateString('fr-FR')
         const html = bookingReminderEmail(
           b.order.buyer_name || 'Client',

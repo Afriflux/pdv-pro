@@ -431,7 +431,7 @@ export default function TelegramDashboard({
                       
                       <p className="text-slate-500 font-medium text-[15px] leading-relaxed">
                         {wizardStep === 1 
-                          ? "@YayyamProBot agit comme le gardien exclusif de votre groupe Telegram. Il gérera de façon autonome les entrées de vos clients (génération de liens uniques) et les expulsions à la fin de leurs abonnements ou au remboursement."
+                          ? "@Yayyam_bot agit comme le gardien exclusif de votre groupe Telegram. Il gérera de façon autonome les entrées de vos clients (génération de liens uniques) et les expulsions à la fin de leurs abonnements ou au remboursement."
                           : "Afin de s'assurer que vous êtes bien le propriétaire légitime du groupe, le bot doit recevoir une 'commande secrète'. Notre système est actuellement branché et scrute vos messages pour valider l'appairage en direct."}
                       </p>
                     </div>
@@ -449,7 +449,7 @@ export default function TelegramDashboard({
                           <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600 flex-shrink-0 mt-0.5">
                             <ShieldCheck size={24} />
                           </div>
-                          <p className="font-bold text-[15px] leading-snug">Ajoutez le compte <span className="font-mono bg-white px-2 py-0.5 rounded shadow-sm text-[#1A1A1A]">@YayyamProBot</span> à votre groupe et nommez-le <b>Administrateur</b>.</p>
+                          <p className="font-bold text-[15px] leading-snug">Ajoutez le compte <span className="font-mono bg-white px-2 py-0.5 rounded shadow-sm text-[#1A1A1A]">@Yayyam_bot</span> à votre groupe et nommez-le <b>Administrateur</b>.</p>
                         </div>
                         
                         <div className="space-y-4">
@@ -463,13 +463,13 @@ export default function TelegramDashboard({
                               <span className="w-8 h-8 rounded-full bg-white/10 border border-white/20 text-emerald-400 flex items-center justify-center font-black text-sm shrink-0 shadow-inner">2</span>
                               <div className="font-bold text-white">
                                 Envoyez ce message au Bot :<br/>
-                                <span className="font-black text-2xl text-emerald-400 tracking-tight mt-1 inline-block selection:bg-emerald-900">@YayyamProBot</span>
+                                <span className="font-black text-2xl text-emerald-400 tracking-tight mt-1 inline-block selection:bg-emerald-900">@Yayyam_bot</span>
                               </div>
                             </div>
                             <button
                               title="Copier le label du bot"
                               onClick={() => {
-                                navigator.clipboard.writeText('@YayyamProBot')
+                                navigator.clipboard.writeText('@Yayyam_bot')
                                 setCopiedBot(true)
                                 setTimeout(() => setCopiedBot(false), 2000)
                               }}
@@ -935,7 +935,7 @@ export default function TelegramDashboard({
             </div>
             
             <p className="text-sm text-slate-500 font-medium mb-6">
-              Ce message sera envoyé immédiatement dans le groupe Telegram en tant que @YayyamProBot.
+              Ce message sera envoyé immédiatement dans le groupe Telegram en tant que @Yayyam_bot.
             </p>
 
             <textarea

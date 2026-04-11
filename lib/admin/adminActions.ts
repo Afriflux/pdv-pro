@@ -307,7 +307,7 @@ export async function resolveReport(reportId: string, status: string, notes: str
        if (reporterObj?.phone) {
          await sendWhatsApp({
            to: reporterObj.phone,
-           body: `📢 *Mise à jour de votre signalement*\n\nVotre réclamation concernant "${complaint.type}" vient d'être traitée et son statut est passé à : *${status === 'resolved' ? '✅ Résolu' : '❌ Rejeté'}*.\n\nMerci pour votre vigilance.\n_Support Yayyam Pro_`
+           body: `📢 *Mise à jour de votre signalement*\n\nVotre réclamation concernant "${complaint.type}" vient d'être traitée et son statut est passé à : *${status === 'resolved' ? '✅ Résolu' : '❌ Rejeté'}*.\n\nMerci pour votre vigilance.\n_Support Yayyam_`
          })
        }
      }

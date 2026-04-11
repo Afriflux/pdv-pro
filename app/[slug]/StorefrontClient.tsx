@@ -4,7 +4,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { BadgeCheck, Star, ShoppingBag, ExternalLink, Activity, Compass, Home, Store } from 'lucide-react'
+import { BadgeCheck, Star, ShoppingBag, ExternalLink, Activity, Compass, Home, Store, Sun, Moon } from 'lucide-react'
 import { ProductGrid } from '@/components/storefront/ProductGrid'
 import { PoweredByBadge } from '@/components/branding/PoweredByBadge'
 import NewsletterWidget from '@/components/brevo/NewsletterWidget'
@@ -13,7 +13,7 @@ import StoreSocialLinks from '@/components/storefront/StoreSocialLinks'
 import { PixelTracker } from '@/components/tracking/PixelTracker'
 import { SocialProofWidget } from '@/components/shared/storefront/SocialProofWidget'
 import { HelpdeskWidget } from '@/components/shared/storefront/HelpdeskWidget'
-import { ReactNode } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 
 interface StorefrontClientProps {
   store: any
@@ -58,8 +58,30 @@ export function StorefrontClient({
     show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100 } }
   }
 
+  // Dark mode
+  const [isDark, setIsDark] = useState(false)
+  useEffect(() => {
+    const saved = localStorage.getItem('yayyam_dark_mode')
+    if (saved === 'true') setIsDark(true)
+  }, [])
+  const toggleDark = () => {
+    setIsDark(prev => {
+      localStorage.setItem('yayyam_dark_mode', String(!prev))
+      return !prev
+    })
+  }
+
   return (
-    <div className="min-h-screen bg-[#FDFDFD] text-gray-900 relative overflow-hidden font-body">
+    <div className={`min-h-screen relative overflow-hidden font-body transition-colors duration-300 ${isDark ? 'bg-gray-950 text-gray-100' : 'bg-[#FDFDFD] text-gray-900'}`}>
+      {/* Bandeau d'annonce configurable par le vendeur */}
+      {store.announcement_active && store.announcement_text && (
+        <div 
+          className="w-full py-2.5 px-4 text-center text-xs sm:text-sm font-bold text-white flex items-center justify-center gap-2"
+          {...{ style: { backgroundColor: store.announcement_bg_color || accent } }}
+        >
+          <span>{store.announcement_text}</span>
+        </div>
+      )}
       {/* FLOATING NAVIGATION */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:top-6 md:bottom-auto md:left-6 md:translate-x-0 z-[100]">
         <motion.div 
@@ -86,6 +108,15 @@ export function StorefrontClient({
             </span>
           </div>
 
+          <div className="relative group">
+            <Link href="/track" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-blue-600 transition-all font-bold" aria-label="Suivre ma commande">
+               <ShoppingBag size={20} strokeWidth={2.5} />
+            </Link>
+            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+              Suivi commande
+            </span>
+          </div>
+
           <div className="w-px h-6 bg-gray-200 mx-1.5"></div>
 
           <div className="relative group">
@@ -94,6 +125,22 @@ export function StorefrontClient({
             </Link>
             <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
               Espace Yayyam
+            </span>
+          </div>
+
+          <div className="w-px h-6 bg-gray-200 mx-1.5"></div>
+
+          {/* Dark Mode Toggle */}
+          <div className="relative group">
+            <button 
+              onClick={toggleDark}
+              className={`w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center transition-all font-bold ${isDark ? 'text-yellow-400 hover:bg-yellow-400/10' : 'text-gray-500 hover:bg-white hover:shadow-md hover:text-gray-900'}`}
+              aria-label={isDark ? 'Mode clair' : 'Mode sombre'}
+            >
+              {isDark ? <Sun size={20} strokeWidth={2.5} /> : <Moon size={20} strokeWidth={2.5} />}
+            </button>
+            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+              {isDark ? 'Mode clair' : 'Mode sombre'}
             </span>
           </div>
         </motion.div>
@@ -120,7 +167,7 @@ export function StorefrontClient({
           
           {/* Main Info Box */}
           <motion.div variants={itemVariants} className="lg:col-span-2 bg-white/60 backdrop-blur-3xl rounded-[32px] p-8 md:p-10 shadow-2xl shadow-[rgba(0,0,0,0.03)] border border-white relative overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-32 md:h-40 opacity-80 bg-cover bg-center" style={{ backgroundImage: store.banner_url ? `url(${store.banner_url})` : `linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 50%, transparent))` }} />
+             <div className="absolute top-0 left-0 w-full h-32 md:h-40 opacity-80 bg-cover bg-center" {...{ style: { backgroundImage: store.banner_url ? `url(${store.banner_url})` : `linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 50%, transparent))` } }} />
              <div className="absolute top-0 left-0 w-full h-32 md:h-40 bg-gradient-to-b from-transparent to-white/60 backdrop-blur-[2px]" />
              
              <div className="relative pt-12 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">

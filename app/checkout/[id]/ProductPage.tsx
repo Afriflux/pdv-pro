@@ -13,6 +13,9 @@ import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Mi
 import { CheckoutForm } from './CheckoutForm'
 import { EleganceTemplate } from './templates/EleganceTemplate'
 import { SalesLetterTemplate } from './templates/SalesLetterTemplate'
+import { MinimalTemplate } from './templates/MinimalTemplate'
+import { VideoFirstTemplate } from './templates/VideoFirstTemplate'
+import { PortfolioTemplate } from './templates/PortfolioTemplate'
 import StockCountdown from '@/components/widgets/StockCountdown'
 import VisitorCounter from '@/components/widgets/VisitorCounter'
 import LocalPaymentBadges from '@/components/widgets/LocalPaymentBadges'
@@ -118,6 +121,47 @@ interface ProductPageProps {
 
 // ─── Composant Galerie ────────────────────────────────────────────────────────
 
+// ─── Sticky Desktop Bar ───────────────────────────────────────────────────────
+function StickyDesktopBar({ productName, price, accent, hasDiscount, originalPrice, onBuy, showForm }: {
+  productName: string; price: number; accent: string; hasDiscount: boolean; originalPrice: number; onBuy: () => void; showForm: boolean
+}) {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => setVisible(window.scrollY > 700)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  if (!visible || showForm) return null
+
+  return (
+    <div className="hidden lg:block fixed top-0 left-0 right-0 z-50 transform transition-all duration-300 animate-in slide-in-from-top-6 fade-in">
+      <div className="bg-white/80 backdrop-blur-xl border-b border-gray-100/50 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+          <h2 className="font-black text-gray-900 text-sm truncate max-w-md">{productName}</h2>
+          <div className="flex items-center gap-4">
+            <div className="flex items-baseline gap-2">
+              {hasDiscount && (
+                <span className="text-xs text-gray-400 line-through font-medium">{originalPrice.toLocaleString('fr-FR')} F</span>
+              )}
+              <span className="font-black text-lg" {...{ style: { color: accent } }}>{price.toLocaleString('fr-FR')} <span className="text-xs opacity-70">FCFA</span></span>
+            </div>
+            <button
+              onClick={onBuy}
+              className="text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-md transition-all hover:scale-[1.02] active:scale-95"
+              {...{ style: { backgroundColor: accent } }}
+            >
+              Commander
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Galerie d'Images avec Zoom et Touch Swipe ────────────────────────────────
 function ImageGallery({
   images,
   productName,
@@ -130,6 +174,25 @@ function ImageGallery({
   const [activeIndex, setActiveIndex] = useState(0)
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({})
   const [isHovering, setIsHovering] = useState(false)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
+
+  // Swipe mobile minimum distance
+  const minSwipeDistance = 50
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+  const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX)
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    if (Math.abs(distance) > minSwipeDistance) {
+      if (distance > 0) next()  // Swipe left → next
+      else prev()               // Swipe right → prev
+    }
+  }
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect()
@@ -149,9 +212,9 @@ function ImageGallery({
     return (
       <div
         className="w-full aspect-square rounded-2xl flex items-center justify-center"
-        style={{ backgroundColor: `${accent}11` }}
+        {...{ style: { backgroundColor: `${accent}11` } }}
       >
-        <ShoppingBag className="w-20 h-20 opacity-20" style={{ color: accent }} />
+        <ShoppingBag className="w-20 h-20 opacity-20" {...{ style: { color: accent } }} />
       </div>
     )
   }
@@ -164,6 +227,9 @@ function ImageGallery({
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => { setIsHovering(false); setZoomStyle({}) }}
         onMouseMove={handleMouseMove}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -376,7 +442,7 @@ export default function ProductPage({
   }, {})
 
   const floatingNavNode = (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:top-6 md:bottom-auto md:left-6 md:translate-x-0 z-[100] animate-in fade-in slide-in-from-bottom-4 md:slide-in-from-top-4 duration-500 fill-mode-both" style={{ animationDelay: '0.2s' }}>
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:top-6 md:bottom-auto md:left-6 md:translate-x-0 z-[100] animate-in fade-in slide-in-from-bottom-4 md:slide-in-from-top-4 duration-500 fill-mode-both" {...{ style: { animationDelay: '0.2s' } }}>
       <div className="bg-white/80 backdrop-blur-3xl border border-white p-1.5 rounded-[100px] shadow-[0_8px_30px_rgb(0,0,0,0.1)] flex items-center gap-1.5">
         <div className="relative group">
           <Link href="/" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-emerald-600 transition-all font-bold" aria-label="Accueil">
@@ -484,6 +550,77 @@ export default function ProductPage({
     )
   }
 
+  if (product.template === 'minimal') {
+    return (
+      <>
+        {floatingNavNode}
+        <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
+        <MinimalTemplate 
+          product={product} 
+          accent={accent}
+          basePrice={computedPrice.finalPrice}
+          handleOpenForm={handleOpenForm}
+          showForm={showForm}
+          checkoutFormNode={checkoutFormNode}
+          imageGalleryNode={imageGalleryNode}
+        />
+        <FortuneWheelPopup
+          storeId={product.store.id}
+          active={product.store.gamification_active ?? false}
+          config={product.store.gamification_config}
+        />
+      </>
+    )
+  }
+
+  if (product.template === 'video_first') {
+    return (
+      <>
+        {floatingNavNode}
+        <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
+        <VideoFirstTemplate 
+          product={product} 
+          accent={accent}
+          bunnyVideoId={bunnyVideoId}
+          bunnyLibraryId={bunnyLibraryId}
+          basePrice={computedPrice.finalPrice}
+          handleOpenForm={handleOpenForm}
+          showForm={showForm}
+          checkoutFormNode={checkoutFormNode}
+          imageGalleryNode={imageGalleryNode}
+        />
+        <FortuneWheelPopup
+          storeId={product.store.id}
+          active={product.store.gamification_active ?? false}
+          config={product.store.gamification_config}
+        />
+      </>
+    )
+  }
+
+  if (product.template === 'portfolio') {
+    return (
+      <>
+        {floatingNavNode}
+        <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
+        <PortfolioTemplate 
+          product={product} 
+          accent={accent}
+          basePrice={computedPrice.finalPrice}
+          handleOpenForm={handleOpenForm}
+          showForm={showForm}
+          checkoutFormNode={checkoutFormNode}
+          imageGalleryNode={imageGalleryNode}
+        />
+        <FortuneWheelPopup
+          storeId={product.store.id}
+          active={product.store.gamification_active ?? false}
+          config={product.store.gamification_config}
+        />
+      </>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#FAFAF7]">
       {floatingNavNode}
@@ -504,7 +641,7 @@ export default function ProductPage({
             ) : (
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white font-black text-sm"
-                style={{ backgroundColor: accent }}
+                {...{ style: { backgroundColor: accent } }}
               >
                 {product.store.name[0]}
               </div>
@@ -603,7 +740,7 @@ export default function ProductPage({
                   {product.price.toLocaleString('fr-FR')} FCFA
                 </span>
               )}
-              <span className="text-3xl font-black" style={{ color: accent }}>
+              <span className="text-3xl font-black" {...{ style: { color: accent } }}>
                 {finalPrice.toLocaleString('fr-FR')}{' '}
                 <span className="text-base font-medium opacity-60">
                   FCFA{product.payment_type === 'recurring' ? getIntervalSuffix(product.recurring_interval) : ''}
@@ -612,7 +749,7 @@ export default function ProductPage({
               {discountBadge() && (
                 <span
                   className="text-sm font-black px-3 py-1 rounded-full text-white shadow-sm flex items-center gap-1.5 animate-pulse"
-                  style={{ backgroundColor: accent }}
+                  {...{ style: { backgroundColor: accent } }}
                 >
                   <Tags className="w-4 h-4" /> {discountBadge()}
                 </span>
@@ -730,7 +867,7 @@ export default function ProductPage({
                       <div className="h-2.5 w-full bg-gray-200 rounded-full overflow-hidden">
                         <div 
                           className={`h-full transition-all duration-500 ${isFree ? 'bg-emerald-500' : 'bg-orange-400'}`}
-                          style={{ width: `${progress}%` }}
+                          {...{ style: { width: `${progress}%` } }}
                         />
                       </div>
                       <p className={`text-[11px] font-bold text-center mt-1 ${isFree ? 'text-emerald-600' : 'text-gray-500'}`}>
@@ -765,17 +902,24 @@ export default function ProductPage({
 
                 <div className="space-y-3">
                   
-                  {/* BANNERE CONVERSION (Mode Cash) */}
-                  <div className="bg-emerald-50 text-emerald-800 text-xs font-bold px-4 py-2.5 rounded-xl mb-4 flex items-center justify-center gap-2 border border-emerald-100 shadow-sm leading-tight text-center">
-                    <span className="flex-shrink-0 text-base">✅</span>
-                    Paiement à la livraison disponible + Mobile Money
-                  </div>
+                  {/* BANNERE CONVERSION (Mode Cash) — conditionnel */}
+                  {showCOD ? (
+                    <div className="bg-emerald-50 text-emerald-800 text-xs font-bold px-4 py-2.5 rounded-xl mb-4 flex items-center justify-center gap-2 border border-emerald-100 shadow-sm leading-tight text-center">
+                      <span className="flex-shrink-0 text-base">✅</span>
+                      Paiement à la livraison disponible + Mobile Money
+                    </div>
+                  ) : (
+                    <div className="bg-emerald-50 text-emerald-800 text-xs font-bold px-4 py-2.5 rounded-xl mb-4 flex items-center justify-center gap-2 border border-emerald-100 shadow-sm leading-tight text-center">
+                      <span className="flex-shrink-0 text-base">📱</span>
+                      Paiement sécurisé via Mobile Money
+                    </div>
+                  )}
 
                   <button
                     type="button"
                     onClick={() => handleOpenForm('online')}
                     className="w-full text-white font-black py-4 rounded-2xl text-base transition-all shadow-xl hover:shadow-2xl hover:scale-[1.01] active:scale-[0.99] flex justify-center items-center gap-2"
-                    style={{ backgroundColor: accent }}
+                    {...{ style: { backgroundColor: accent } }}
                   >
                     <ShoppingBag className="w-5 h-5" />
                     Commander maintenant
@@ -798,7 +942,7 @@ export default function ProductPage({
                       type="button"
                       onClick={() => handleOpenForm('cod')}
                       className="w-full font-bold py-3.5 rounded-2xl text-sm border-2 transition-all hover:opacity-80"
-                      style={{ borderColor: accent, color: accent }}
+                      {...{ style: { borderColor: accent, color: accent } }}
                     >
                       💵 Payer à la livraison
                     </button>
@@ -843,7 +987,7 @@ export default function ProductPage({
               {product.store.logo_url ? (
                 <img src={product.store.logo_url} alt={product.store.name} className="w-16 h-16 rounded-full object-cover border-2 border-gray-100 shadow-sm" />
               ) : (
-                <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-black text-2xl shadow-sm" style={{ backgroundColor: accent }}>
+                <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-black text-2xl shadow-sm" {...{ style: { backgroundColor: accent } }}>
                   {product.store.name[0]}
                 </div>
               )}
@@ -864,7 +1008,7 @@ export default function ProductPage({
                 <Link href={`/${product.store.slug}`} className="px-5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-100 hover:text-gray-900 text-center transition-colors">
                   Voir la boutique
                 </Link>
-                <a href={product.store.social_links?.whatsapp || `https://wa.me/`} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-xl text-xs font-bold text-white text-center transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2" style={{ backgroundColor: accent }}>
+                <a href={product.store.social_links?.whatsapp || `https://wa.me/`} target="_blank" rel="noopener noreferrer" className="px-5 py-2.5 rounded-xl text-xs font-bold text-white text-center transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2" {...{ style: { backgroundColor: accent } }}>
                   <MessageCircle className="w-4 h-4" />
                   Contacter
                 </a>
@@ -935,8 +1079,32 @@ export default function ProductPage({
               </div>
             </details>
 
-            {/* ── Avis clients (Optionnel) ────────────────────────────── */}
-            <details className="bg-white rounded-2xl border border-gray-100 shadow-sm [&_summary::-webkit-details-marker]:hidden group mt-2">
+            {/* ── Volume Discounts — Tableau visuel ──────────────────── */}
+            {(product.store as any).volume_discounts_active && (product.store as any).volume_discounts_config && (() => {
+              const config = typeof (product.store as any).volume_discounts_config === 'string'
+                ? JSON.parse((product.store as any).volume_discounts_config)
+                : (product.store as any).volume_discounts_config
+              const tiers = Array.isArray(config?.tiers) ? config.tiers : []
+              if (tiers.length === 0) return null
+              return (
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 rounded-2xl p-5 mt-2 mb-2">
+                  <h3 className="font-black text-gray-900 text-sm flex items-center gap-2 mb-3">
+                    <Tags className="w-4 h-4" {...{ style: { color: accent } }} /> Remises quantité
+                  </h3>
+                  <div className="grid gap-2">
+                    {tiers.map((tier: { min_qty: number; discount_percent: number }, i: number) => (
+                      <div key={i} className="flex items-center justify-between bg-white/80 rounded-xl px-4 py-2.5 border border-amber-100/50">
+                        <span className="text-sm font-bold text-gray-700">Achetez {tier.min_qty}+</span>
+                        <span className="text-sm font-black px-3 py-1 rounded-lg" {...{ style: { color: accent, backgroundColor: accent + '15' } }}>-{tier.discount_percent}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* ── Avis clients — Ouvert par défaut ─────────────────────── */}
+            <details open className="bg-white rounded-2xl border border-gray-100 shadow-sm [&_summary::-webkit-details-marker]:hidden group mt-2">
               <summary className="flex items-center justify-between p-5 cursor-pointer list-none font-bold text-gray-800 select-none">
                 <span className="flex items-center gap-2">⭐ Avis Clients</span>
                 <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
@@ -1035,7 +1203,7 @@ export default function ProductPage({
                     <div className="p-4">
                       <h3 className="text-sm font-bold text-gray-800 line-clamp-2 leading-snug group-hover:opacity-80 transition-opacity">{p.name}</h3>
                       <div className="mt-3 flex items-center flex-wrap gap-2">
-                         <p className="font-black text-base sm:text-lg" style={{ color: accent }}>
+                         <p className="font-black text-base sm:text-lg" {...{ style: { color: accent } }}>
                            {p.computedPrice.finalPrice.toLocaleString('fr-FR')} <span className="text-[10px] sm:text-xs opacity-70">FCFA</span>
                          </p>
                          {p.computedPrice.hasDiscount && (
@@ -1054,8 +1222,41 @@ export default function ProductPage({
 
       </div>
 
+      {/* ── Trust & Protection Badges ─────────────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-3">
+        {/* Yayyamtect */}
+        <div className="flex items-center justify-center gap-3 bg-emerald-50 border border-emerald-100 rounded-2xl py-3 px-5">
+          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <div>
+            <p className="text-xs font-black text-emerald-800">Yayyamtect</p>
+            <p className="text-[10px] text-emerald-600">Transaction sécurisée · Données chiffrées · Achat garanti</p>
+          </div>
+        </div>
+
+        {/* KYC Verified Badge */}
+        {product.store.kyc_status === 'verified' && (
+          <div className="flex items-center justify-center gap-2 text-[11px] text-gray-500 font-bold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
+            Vendeur vérifié par Yayyam
+          </div>
+        )}
+      </div>
+
       {/* Badge Yayyam */}
       <PoweredByBadge />
+
+      {/* ── Sticky bar DESKTOP — au scroll ────────────────────────────── */}
+      <StickyDesktopBar 
+        productName={product.name}
+        price={finalPrice}
+        accent={accent}
+        hasDiscount={computedPrice.hasDiscount}
+        originalPrice={product.price}
+        onBuy={() => handleOpenForm('online')}
+        showForm={showForm}
+      />
 
       {/* ── Sticky bar mobile ──────────────────────────────────────────────── */}
       {!showForm && (
@@ -1080,7 +1281,7 @@ export default function ProductPage({
                   {product.price.toLocaleString('fr-FR')} F
                 </p>
               )}
-              <p className="font-black text-lg leading-none" style={{ color: accent }}>
+              <p className="font-black text-lg leading-none" {...{ style: { color: accent } }}>
                 {finalPrice.toLocaleString('fr-FR')}{' '}
                 <span className="text-xs font-medium opacity-60">FCFA</span>
               </p>
@@ -1091,7 +1292,7 @@ export default function ProductPage({
               type="button"
               onClick={() => handleOpenForm('online')}
               className="flex-1 text-white font-black py-3.5 rounded-xl text-sm transition-all shadow-lg active:scale-95"
-              style={{ backgroundColor: accent }}
+              {...{ style: { backgroundColor: accent } }}
             >
               🛒 Commander maintenant
             </button>

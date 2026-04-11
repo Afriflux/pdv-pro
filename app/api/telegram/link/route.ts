@@ -102,7 +102,7 @@ export async function POST() {
     }
 
     // 6. Retour des infos
-    const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'YayyamProBot'
+    const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'Yayyam_bot'
     const botUrl = `https://t.me/${botUsername}?start=${token}`
 
     return NextResponse.json({

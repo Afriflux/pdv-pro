@@ -291,8 +291,36 @@ export default async function DashboardPage() {
 
   // --- Check si le vendeur est nouveau (a configuré tous les éléments essentiels) ---
   const isNewVendor = safeProductCount === 0 || safeZoneCount === 0 || safePromoCount === 0 || safeDelivererCount === 0 || safeWalletSettingCount === 0 || !hasSettingsChecked
+
+  // --- Défi dynamique basé sur les perf du vendeur ---
+  const avgDailyOrders = caWeek > 0 ? Math.round(weekOrders.length / 7) : 0
+  const challengeGoal = avgDailyOrders >= 8 ? 10 : avgDailyOrders >= 3 ? 5 : 3
+  const challengeReward = challengeGoal === 10 ? 1500 : challengeGoal === 5 ? 500 : 250
+  const challengeCompleted = countToday >= challengeGoal
+
+  // --- Sparklines 7j réelles ---
+  const sparklineValues = chartData.map(d => d.total)
+  const sparkMax = Math.max(...sparklineValues, 1)
+  const toSparklinePath = (values: number[], maxVal: number) => {
+    const points = values.map((v, i) => {
+      const x = (i / (values.length - 1)) * 100
+      const y = 50 - (v / maxVal) * 45
+      return `${x},${y}`
+    })
+    const areaPath = `M0,50 L0,${50 - (values[0] / maxVal) * 45} ${points.map((p, i) => i === 0 ? `L${p}` : `L${p}`).join(' ')} L100,50 Z`
+    const linePath = `M${points.join(' L')}`
+    return { areaPath, linePath }
+  }
+  const sparkCA = toSparklinePath(sparklineValues, sparkMax)
+  const sparkOrders = toSparklinePath(chartData.map(d => weekOrders.filter(o => {
+    const orderDay = `${new Date(o.created_at).getDate().toString().padStart(2, '0')}/${(new Date(o.created_at).getMonth() + 1).toString().padStart(2, '0')}`
+    return orderDay === d.date
+  }).length), Math.max(...chartData.map(d => weekOrders.filter(o => {
+    const orderDay = `${new Date(o.created_at).getDate().toString().padStart(2, '0')}/${(new Date(o.created_at).getMonth() + 1).toString().padStart(2, '0')}`
+    return orderDay === d.date
+  }).length), 1))
   
-  const todayProgressProps = { style: { width: `${Math.min(100, (countToday / 5) * 100)}%` } };
+  const todayProgressProps = { style: { width: `${Math.min(100, (countToday / challengeGoal) * 100)}%` } };
   const levelProgressProps = { style: { width: `${progressPercent}%` } };
 
   return (
@@ -332,28 +360,35 @@ export default async function DashboardPage() {
 
       <div className="w-full p-6 lg:p-10 space-y-8">
 
-        {/* ── GAMIFICATION BANNER (BOUCLE DE CROISSANCE) ───────────────────────── */}
-        <div className="w-full bg-gradient-to-r from-orange-400 via-orange-500 to-amber-500 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-xl shadow-orange-500/20 text-white overflow-hidden relative">
+        {/* ── GAMIFICATION BANNER (BOUCLE DE CROISSANCE) ───────────────────── */}
+        <div className={`w-full rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-xl text-white overflow-hidden relative ${challengeCompleted ? 'bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-500 shadow-emerald-500/20' : 'bg-gradient-to-r from-orange-400 via-orange-500 to-amber-500 shadow-orange-500/20'}`}>
            <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
            <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-amber-300/30 blur-2xl rounded-full translate-y-1/3 pointer-events-none"></div>
            <div className="relative z-10 flex items-center gap-5">
               <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 text-3xl shrink-0">
-                🎯
+                {challengeCompleted ? '🏆' : '🎯'}
               </div>
               <div>
-                <h3 className="text-2xl font-black tracking-tight mb-1">Défi du jour : Gagnez 500 FCFA !</h3>
-                <p className="font-medium text-white/90">Réalisez <strong className="text-white">5 ventes aujourd'hui</strong> pour débloquer votre prime, qui sera créditée directement sur votre Wallet Yayyam.</p>
+                <h3 className="text-2xl font-black tracking-tight mb-1">
+                  {challengeCompleted ? 'Défi réussi ! 🎉' : `Défi du jour : Gagnez ${challengeReward.toLocaleString('fr-FR')} FCFA !`}
+                </h3>
+                <p className="font-medium text-white/90">
+                  {challengeCompleted 
+                    ? `Félicitations ! Vous avez réalisé ${countToday} ventes. Votre prime de ${challengeReward.toLocaleString('fr-FR')} FCFA sera créditée.`
+                    : <>Réalisez <strong className="text-white">{challengeGoal} ventes aujourd&apos;hui</strong> pour débloquer votre prime Wallet Yayyam.</>
+                  }
+                </p>
                 <div className="mt-3 flex items-center gap-3">
                   <div className="flex-1 h-2.5 bg-black/10 rounded-full overflow-hidden max-w-[200px] border border-white/10 shadow-inner">
-                    <div className="h-full bg-white rounded-full" {...todayProgressProps}></div>
+                    <div className="h-full bg-white rounded-full transition-all duration-500" {...todayProgressProps}></div>
                   </div>
-                  <span className="text-xs font-black bg-white/20 px-2 py-0.5 rounded-md">{countToday} / 5</span>
+                  <span className="text-xs font-black bg-white/20 px-2 py-0.5 rounded-md">{countToday} / {challengeGoal}</span>
                 </div>
               </div>
            </div>
-           <Link href="/dashboard/apps" className="relative z-10 mt-6 md:mt-0 bg-white text-orange-600 px-6 py-3.5 rounded-2xl font-bold hover:bg-orange-50 hover:scale-[1.02] transition-all shadow-lg shrink-0 flex flex-col items-center leading-tight">
-             <span>Voir la boutique</span>
-             <span className="text-[10px] font-medium text-orange-400">Pour échanger vos primes</span>
+           <Link href={`/${storeSlug}`} className="relative z-10 mt-6 md:mt-0 bg-white text-orange-600 px-6 py-3.5 rounded-2xl font-bold hover:bg-orange-50 hover:scale-[1.02] transition-all shadow-lg shrink-0 flex flex-col items-center leading-tight">
+             <span>Voir ma boutique</span>
+             <span className="text-[10px] font-medium text-orange-400">Partager pour vendre</span>
            </Link>
         </div>
 
@@ -378,11 +413,11 @@ export default async function DashboardPage() {
             <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] truncate relative z-10 tracking-tighter group-hover:text-[#0F7A60] transition-colors duration-500">
               {caToday.toLocaleString('fr-FR')} <span className="text-sm text-gray-400 font-bold ml-1">F</span>
             </p>
-            {/* Fake Sparkline (Area Chart) */}
+            {/* Sparkline réelle 7j */}
             <div className="absolute bottom-0 left-0 w-full h-1/2 opacity-20 group-hover:opacity-40 group-hover:text-[#0F7A60] transition-all duration-500 pointer-events-none">
               <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full text-gray-400 group-hover:text-[#0F7A60]">
-                <path d="M0,50 L0,30 C20,40 40,10 60,20 C80,30 90,5 100,10 L100,50 Z" fill="currentColor" />
-                <path d="M0,30 C20,40 40,10 60,20 C80,30 90,5 100,10" fill="none" stroke="currentColor" strokeWidth="2" />
+                <path d={sparkCA.areaPath} fill="currentColor" />
+                <path d={sparkCA.linePath} fill="none" stroke="currentColor" strokeWidth="2" />
               </svg>
             </div>
           </div>
@@ -395,11 +430,11 @@ export default async function DashboardPage() {
             <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] relative z-10 tracking-tighter">
               {countToday}
             </p>
-            {/* Fake Sparkline (Area Chart) */}
+            {/* Sparkline réelle 7j */}
             <div className="absolute bottom-0 left-0 w-full h-1/2 opacity-20 group-hover:opacity-30 transition-all duration-500 pointer-events-none">
               <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full text-gray-400 group-hover:text-gray-600">
-                <path d="M0,50 L0,40 C20,45 40,25 60,35 C80,45 90,20 100,25 L100,50 Z" fill="currentColor" />
-                <path d="M0,40 C20,45 40,25 60,35 C80,45 90,20 100,25" fill="none" stroke="currentColor" strokeWidth="2" />
+                <path d={sparkOrders.areaPath} fill="currentColor" />
+                <path d={sparkOrders.linePath} fill="none" stroke="currentColor" strokeWidth="2" />
               </svg>
             </div>
           </div>
@@ -407,13 +442,12 @@ export default async function DashboardPage() {
           <div className="bg-white/80 backdrop-blur-xl border border-white hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 rounded-[32px] p-6 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 relative z-10">
-              Taux Conversion (Est.)
+              Commandes en attente
             </p>
             <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] relative z-10 tracking-tighter group-hover:text-blue-600 transition-colors duration-500">
-              {countToday > 0 ? ((countToday / (countToday * 3)) * 100).toFixed(1) : '0'} <span className="text-sm font-bold opacity-40 ml-1 group-hover:opacity-100">%</span>
+              {pendingCount} <span className="text-sm font-bold opacity-40 ml-1 group-hover:opacity-100">à traiter</span>
             </p>
-            {/* Fake Sparkline (Area Chart) */}
-             <div className="absolute bottom-0 left-0 w-full h-1/2 opacity-[0.05] group-hover:opacity-[0.15] transition-all duration-500 pointer-events-none">
+            <div className="absolute bottom-0 left-0 w-full h-1/2 opacity-[0.05] group-hover:opacity-[0.15] transition-all duration-500 pointer-events-none">
               <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full text-[#1A1A1A] group-hover:text-blue-600">
                 <path d="M0,50 L0,20 C30,30 50,5 70,15 C85,25 95,10 100,5 L100,50 Z" fill="currentColor" />
                 <path d="M0,20 C30,30 50,5 70,15 C85,25 95,10 100,5" fill="none" stroke="currentColor" strokeWidth="2" />

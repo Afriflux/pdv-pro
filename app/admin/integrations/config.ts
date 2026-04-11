@@ -116,6 +116,19 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
           { key: 'CINETPAY_SITE_ID', testKey: 'CINETPAY_SITE_ID_TEST', label: 'Site ID', type: 'text', placeholder: 'Ex: 123456' },
           { key: 'CINETPAY_API_KEY', testKey: 'CINETPAY_API_KEY_TEST', label: 'API Key', type: 'password' }
         ]
+      },
+      {
+        id: 'moneroo',
+        name: 'Configuration Moneroo',
+        description: 'Orchestrateur de paiement africain. Agrège tous vos PSPs (Wave, Orange Money, Visa, MC) en une seule API unifiée.',
+        icon: '🔀',
+        docsUrl: 'https://moneroo.io',
+        webhookUrl: '/api/webhooks/moneroo',
+        pingType: 'generic' as const,
+        fields: [
+          { key: 'MONEROO_SECRET_KEY', testKey: 'MONEROO_SECRET_KEY_TEST', label: 'Secret Key', type: 'password' as const, placeholder: 'sk_live_...' },
+          { key: 'MONEROO_PUBLIC_KEY', testKey: 'MONEROO_PUBLIC_KEY_TEST', label: 'Public Key', type: 'password' as const, placeholder: 'pk_live_...' }
+        ]
       }
     ]
   },
@@ -125,7 +138,7 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
       {
         id: 'telegram',
         name: 'Configuration Telegram Bot',
-        description: 'Notifications automatiques des commandes via @YayyamProBot.',
+        description: 'Notifications automatiques des commandes via @Yayyam_bot.',
         icon: '✈️',
         docsUrl: 'https://t.me/BotFather',
         webhookUrl: '/api/webhooks/telegram',

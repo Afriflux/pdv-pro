@@ -20,7 +20,7 @@ export function PasswordInput({
   placeholder = '••••••••',
   required = true,
   minLength,
-  autoComplete,
+  autoComplete: _autoComplete,
   className = '',
   iconLeft,
 }: PasswordInputProps) {
@@ -40,7 +40,7 @@ export function PasswordInput({
         placeholder={placeholder}
         required={required}
         minLength={minLength}
-        autoComplete={autoComplete || 'current-password'}
+        autoComplete="off"
         className={`${className} ${iconLeft ? 'pl-11' : ''} pr-12`}
       />
       <button

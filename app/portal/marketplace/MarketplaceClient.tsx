@@ -33,8 +33,8 @@ function LinkModal({ item, affiliation, onClose }: { item: MarketplaceItem, affi
   const [qrBase64, setQrBase64] = useState('')
 
   const baseUrl = item.type === 'product' 
-    ? `https://${item.storeSlug}.yayyam.sn/p/${item.slug}`
-    : `https://${item.storeSlug}.yayyam.sn/${item.slug}`
+    ? `https://${item.storeSlug}.yayyam.com/p/${item.slug}`
+    : `https://${item.storeSlug}.yayyam.com/${item.slug}`
 
   const trackedUrl = `${baseUrl}?ref=${affiliation.token}`
 

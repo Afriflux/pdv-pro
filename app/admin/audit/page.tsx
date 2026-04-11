@@ -84,7 +84,7 @@ export default async function AuditCenterPage({
         target_id: 'VEND-089',
         details: { reason: "Suspension temporaire immédiate pour fraude répétée et litiges non-résolus." },
         created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-        admin: { email: 'support@yayyam.sn', role: 'gestionnaire' }
+        admin: { email: 'support@yayyam.com', role: 'gestionnaire' }
       },
       {
         id: 'demo-3',
@@ -104,7 +104,7 @@ export default async function AuditCenterPage({
         target_id: 'VEND-002',
         details: { reason: "La pièce d'identité est illisible et floue (photo abîmée)." },
         created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-        admin: { email: 'kyc@yayyam.sn', role: 'support' }
+        admin: { email: 'kyc@yayyam.com', role: 'support' }
       },
       {
         id: 'demo-5',
