@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: SalePagePublicProps): Promise
   // On cherche d'abord la SalePage
   const { data: page } = await supabase
     .from('SalePage')
-    .select('*, store:Store(name, slug)')
+    .select('*, store:Store(name, store_name, slug)')
     .eq('slug', params.slug)
     .single()
 
@@ -39,13 +39,13 @@ export async function generateMetadata({ params }: SalePagePublicProps): Promise
     // Si pas de SalePage, on vérifie si c'est une boutique
     const { data: store } = await supabase
       .from('Store')
-      .select('name, description')
+      .select('name, store_name, description')
       .eq('slug', params.slug)
       .single()
     
     if (store) {
       return { 
-        title: `${store.name} | Yayyam`,
+        title: `${store.store_name || store.name} | Yayyam`,
         description: store.description 
       }
     }
@@ -55,8 +55,8 @@ export async function generateMetadata({ params }: SalePagePublicProps): Promise
   const sections = (page.sections as Section[]) ?? []
   const desc = sections.find(s => s.type === 'hero')?.subtitle ?? page.title
 
-  const storeData = page.store as unknown as { name: string } | { name: string }[]
-  const storeName = Array.isArray(storeData) ? storeData[0]?.name : storeData?.name
+  const storeData = page.store as unknown as { name: string; store_name?: string } | { name: string; store_name?: string }[]
+  const storeName = Array.isArray(storeData) ? (storeData[0]?.store_name || storeData[0]?.name) : (storeData?.store_name || storeData?.name)
 
   return {
     title: `${page.title} | ${storeName || 'Espace'}`,
@@ -93,7 +93,7 @@ export default async function PublicSalePage({ params }: SalePagePublicProps) {
   // On cherche d'abord la SalePage
   const { data: page } = await supabase
     .from('SalePage')
-    .select('*, store:Store(name)')
+    .select('*, store:Store(name, store_name)')
     .eq('slug', params.slug)
     .single()
 
@@ -207,7 +207,7 @@ export default async function PublicSalePage({ params }: SalePagePublicProps) {
             pageId={page.id} 
             products={[...linkedProducts, ...crossSellProducts]} // Support checkout for cross-sell as well
             theme={theme}
-            storeName={page.store?.name}
+            storeName={page.store?.store_name || page.store?.name}
           />
 
           {/* Fonctions de Conversion Ultra (Global) */}
@@ -221,7 +221,7 @@ export default async function PublicSalePage({ params }: SalePagePublicProps) {
           <footer className="py-10 px-6 bg-gray-900 text-center">
             <p className="text-gray-400 text-sm">
               Propulsé par <span className="text-white font-bold tracking-wide">Yayyam</span>
-              {page.store?.name && <span className="opacity-50"> · {page.store.name}</span>}
+              {(page.store?.store_name || page.store?.name) && <span className="opacity-50"> · {page.store?.store_name || page.store?.name}</span>}
             </p>
           </footer>
       </main>

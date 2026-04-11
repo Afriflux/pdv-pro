@@ -10,7 +10,7 @@ export default async function SettingsPage() {
   const { data: store, error: storeError } = await supabase
     .from('Store')
     .select(`
-      id, name, slug, logo_url, primary_color, description, category,
+      id, name, store_name, slug, logo_url, primary_color, description, category,
       kyc_status, kyc_document_type, kyc_documents, id_card_url, security_pin,
       updated_at, banner_url,
       notif_new_order, notif_weekly_report, notif_stock_alert,

@@ -4,14 +4,15 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { PhoneInput } from '@/components/ui/PhoneInput'
-import { User, Camera, CheckCircle2, Mail, Phone, Loader2, ShieldCheck, Trash2 } from 'lucide-react'
+import { User, Camera, CheckCircle2, Mail, Phone, Loader2, ShieldCheck, Trash2, Store } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import * as Actions from '@/app/actions/settings'
 import { toast } from '@/lib/toast'
 
-export function ProfileTab({ profile, userId }: { profile: any; userId: string }) {
+export function ProfileTab({ profile, userId, store }: { profile: any; userId: string; store?: any }) {
   const [userName, setUserName] = useState(profile?.name || '')
   const [userPhone, setUserPhone] = useState(profile?.phone || '')
+  const [storeName, setStoreName] = useState(store?.store_name || '')
   const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url || null)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [serverError, setServerError] = useState('')
@@ -45,11 +46,16 @@ export function ProfileTab({ profile, userId }: { profile: any; userId: string }
       }
       const res = await Actions.updateProfile({ name: userName, phone: userPhone, avatarUrl: finalAvatar || null })
       
+      // Sauvegarder le nom de boutique en parallèle
+      if (store?.id) {
+        await Actions.updateStoreName(storeName)
+      }
+
       if (res?.error) {
         setServerError(res.error)
         toast.error(res.error)
       } else {
-        toast.success('Profil mis à jour avec succès')
+        toast.success('Profil et boutique mis à jour avec succès')
       }
     } catch (err: any) {
       setServerError(err.message || 'Erreur lors de la mise à jour')
@@ -168,6 +174,28 @@ export function ProfileTab({ profile, userId }: { profile: any; userId: string }
                   onChange={(e) => setUserName(e.target.value)} 
                   placeholder="Ex: Sultan AlQalifa" 
                   className="relative w-full px-5 py-4 bg-white/80 border border-gray-200/80 rounded-[1rem] focus:ring-0 focus:border-[#0F7A60] outline-none transition-all text-[15px] font-bold text-gray-900 placeholder:text-gray-400 shadow-sm" 
+                 />
+              </div>
+            </div>
+
+            {/* Carte Nom de la Boutique */}
+            <div className="bg-white/40 backdrop-blur-md rounded-[2rem] border border-gray-200/50 p-6 sm:p-8 flex flex-col gap-6 hover:shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:border-teal-200/60 hover:bg-white/60 transition-all duration-500 group">
+              <div>
+                <div className="w-12 h-12 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500 shadow-sm border border-teal-100">
+                  <Store size={20} />
+                </div>
+                <h4 className="text-[16px] font-black text-gray-900 tracking-tight">Nom de la boutique</h4>
+                <p className="text-[13px] text-gray-500 font-medium mt-1 leading-relaxed">Nom public affiché sur la marketplace. Protège votre identité personnelle.</p>
+              </div>
+              <div className="relative mt-auto">
+                 <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-500 to-emerald-400 rounded-[1.2rem] blur opacity-0 focus-within:opacity-20 transition duration-500"></div>
+                 <input 
+                  title="Nom de la boutique"
+                  aria-label="Nom de la boutique"
+                  value={storeName} 
+                  onChange={(e) => setStoreName(e.target.value)} 
+                  placeholder="Ex: Ma Boutique Sénégal" 
+                  className="relative w-full px-5 py-4 bg-white/80 border border-gray-200/80 rounded-[1rem] focus:ring-0 focus:border-teal-500 outline-none transition-all text-[15px] font-bold text-gray-900 placeholder:text-gray-400 shadow-sm" 
                  />
               </div>
             </div>

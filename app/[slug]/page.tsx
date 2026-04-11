@@ -20,7 +20,7 @@ const getStoreBySlug = cache(async (slug: string) => {
   const { data } = await supabase
     .from('Store')
     .select(`
-      id, name, slug, description, logo_url, banner_url, created_at,
+      id, name, store_name, slug, description, logo_url, banner_url, created_at,
       primary_color, category, whatsapp, social_links,
       meta_pixel_id, tiktok_pixel_id, google_tag_id,
       seo_title, seo_description,
@@ -41,10 +41,10 @@ export async function generateMetadata({ params }: StorePageProps): Promise<Meta
   if (!store) return { title: 'Espace introuvable' }
 
   return {
-    title: store.seo_title || `${store.name} — Yayyam`,
-    description: store.seo_description || store.description || `Découvrez l'espace de vente de ${store.name}`,
+    title: store.seo_title || `${store.store_name || store.name} — Yayyam`,
+    description: store.seo_description || store.description || `Découvrez l'espace de vente de ${store.store_name || store.name}`,
     openGraph: {
-      title: store.seo_title || store.name,
+      title: store.seo_title || (store.store_name || store.name),
       description: store.seo_description || store.description || '',
       images: store.logo_url ? [store.logo_url] : [],
     },
@@ -68,7 +68,7 @@ export default async function StorePage({ params }: StorePageProps) {
           <div>
             <h1 className="text-2xl font-display font-black text-ink mb-2">Boutique indisponible</h1>
             <p className="text-dust leading-relaxed font-medium">
-              L&apos;espace de vente <strong className="text-ink">{store.name}</strong> est temporairement fermé.
+              L&apos;espace de vente <strong className="text-ink">{store.store_name || store.name}</strong> est temporairement fermé.
               Merci de votre compréhension et à très bientôt.
             </p>
           </div>

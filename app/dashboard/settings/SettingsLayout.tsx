@@ -52,7 +52,7 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
 
   const renderActiveSection = () => {
     switch (activeSection) {
-      case 'profil': return <ProfileTab profile={profile} userId={userId!} />
+      case 'profil': return <ProfileTab profile={profile} userId={userId!} store={store} />
       case 'lien': return <StoreLinkTab store={store} />
       case 'apparence': return <AppearanceTab store={store} />
       case 'vendor': return <VendorTypeTab store={store} />
@@ -66,7 +66,7 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
       case 'whatsapp-bot': return <WhatsappBotTab store={store} />
       case 'loyalty': return <LoyaltyTab store={store} />
       case 'danger': return <DangerZoneTab />
-      default: return <ProfileTab profile={profile} userId={userId!} />
+      default: return <ProfileTab profile={profile} userId={userId!} store={store} />
     }
   }
 

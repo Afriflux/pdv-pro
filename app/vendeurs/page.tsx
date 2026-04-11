@@ -45,6 +45,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
     .select(`
       id, 
       name, 
+      store_name,
       slug, 
       logo_url, 
       category,
@@ -61,7 +62,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
     
     return {
       id: s.id,
-      name: s.name,
+      name: s.store_name || s.name,
       slug: s.slug,
       logoUrl: s.logo_url,
       category: s.category || 'Vente générale',

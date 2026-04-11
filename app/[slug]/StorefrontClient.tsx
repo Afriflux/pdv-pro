@@ -147,7 +147,7 @@ export function StorefrontClient({
       </div>
 
       {/* Tracker Pixel */}
-      <PixelTracker metaId={store.meta_pixel_id} tiktokId={store.tiktok_pixel_id} googleId={store.google_tag_id} storeName={store.name} />
+      <PixelTracker metaId={store.meta_pixel_id} tiktokId={store.tiktok_pixel_id} googleId={store.google_tag_id} storeName={store.store_name || store.name} />
 
       {/* Arrière-plan "Aurora / Glow" dynamique */}
       <div className="fixed top-0 inset-x-0 h-[600px] pointer-events-none z-0 bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_12%,transparent)] to-transparent" />
@@ -173,14 +173,14 @@ export function StorefrontClient({
              <div className="relative pt-12 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
                 <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-[6px] border-white shadow-xl bg-white overflow-hidden flex-shrink-0 flex items-center justify-center">
                   {store.logo_url ? (
-                    <Image src={store.logo_url} alt={store.name} width={144} height={144} className="object-cover w-full h-full" />
+                    <Image src={store.logo_url} alt={store.store_name || store.name} width={144} height={144} className="object-cover w-full h-full" />
                   ) : (
-                    <span className="text-4xl font-black text-[var(--accent)]">{store.name[0]}</span>
+                    <span className="text-4xl font-black text-[var(--accent)]">{(store.store_name || store.name)[0]}</span>
                   )}
                 </div>
                 <div className="flex-1 pb-2">
                    <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight flex flex-col md:flex-row items-center md:justify-start gap-3">
-                     {store.name}
+                     {store.store_name || store.name}
                      {store.kyc_status === 'verified' && (
                        <span className="flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-black uppercase tracking-widest mt-2 md:mt-0 shadow-sm border border-green-100">
                          <BadgeCheck className="w-4 h-4 shrink-0" /> Vérifié

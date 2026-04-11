@@ -107,6 +107,7 @@ model Store {
   id                                                  String                 @id @default(uuid())
   user_id                                             String                 @unique
   name                                                String
+  store_name                                          String?
   slug                                                String                 @unique
   logo_url                                            String?
   primary_color                                       String?

@@ -99,6 +99,29 @@ export async function updateAppearance(formData: {
 }
 
 /**
+ * Met à jour le nom public de la boutique (affiché sur la marketplace)
+ */
+export async function updateStoreName(storeName: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Non autorisé')
+
+  const { error } = await supabase
+    .from('Store')
+    .update({
+      store_name: storeName.trim() || null,
+      updated_at: new Date().toISOString()
+    })
+    .eq('user_id', user.id)
+
+  if (error) throw new Error(error.message)
+
+  revalidatePath('/dashboard/settings')
+  revalidatePath('/vendeurs')
+  return { success: true }
+}
+
+/**
  * Met à jour le mot de passe de l'utilisateur
  */
 export async function updatePassword(password: string) {
