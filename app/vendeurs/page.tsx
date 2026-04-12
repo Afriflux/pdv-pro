@@ -62,7 +62,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
     
     return {
       id: s.id,
-      name: s.store_name || s.name,
+      name: s.store_name?.trim() ? s.store_name : (s.slug ? `Boutique ${s.slug}` : 'Boutique Anonyme'),
       slug: s.slug,
       logoUrl: s.logo_url,
       category: s.category || 'Vente générale',
