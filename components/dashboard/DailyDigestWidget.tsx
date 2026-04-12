@@ -40,7 +40,7 @@ export function DailyDigestWidget({ storeId }: { storeId: string }) {
       .then((data: DigestData | null) => {
         if (data) setDigest(data)
       })
-      .catch(() => { /* silent */ })
+      .catch((e) => { console.warn('[DailyDigest] Fetch failed:', e) })
       .finally(() => setLoading(false))
   }, [storeId])
 
@@ -55,7 +55,7 @@ export function DailyDigestWidget({ storeId }: { storeId: string }) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ digestId: digest.id }),
-      }).catch(() => { /* silent */ })
+      }).catch((e) => { console.warn('[DailyDigest] Mark as read failed:', e) })
     }
   }
 

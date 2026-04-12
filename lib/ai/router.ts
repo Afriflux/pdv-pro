@@ -34,7 +34,7 @@ async function getAIConfig(): Promise<AIRouterConfig> {
   if (routingPrefsRow?.value) {
     try {
        config.routingPrefs = JSON.parse(routingPrefsRow.value)
-    } catch {}
+    } catch(e) { console.warn('[AI Router] Failed to parse routing prefs:', e) }
   }
 
   return config

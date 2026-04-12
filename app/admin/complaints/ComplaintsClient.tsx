@@ -86,7 +86,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
     toast.promise(promise, { loading: 'Sauvegarde...', success: 'Note sauvegardée', error: 'Erreur lors de la sauvegarde' })
     promise.then(() => {
       setLocalComplaints(prev => prev.map(c => c.id === selectedComplaint.id ? { ...c, admin_notes: adminNotes } : c))
-    }).catch(() => {})
+    }).catch((e) => { console.error('[Complaints] Save notes failed:', e) })
   }
 
   const handleStatusChange = async (newStatus: ComplaintRow['status']) => {
@@ -107,7 +107,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
     promise.then(() => {
       setLocalComplaints(prev => prev.map(c => c.id === selectedComplaint.id ? { ...c, status: newStatus } : c))
       setSelectedComplaint(prev => prev ? { ...prev, status: newStatus } : null)
-    }).catch(() => {})
+    }).catch((e) => { console.error('[Complaints] Status change failed:', e) })
   }
   
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')

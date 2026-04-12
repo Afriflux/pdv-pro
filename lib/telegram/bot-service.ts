@@ -42,8 +42,8 @@ export async function getTelegramToken(): Promise<string | null> {
       _cachedTokenAt = Date.now()
       return _cachedToken
     }
-  } catch {
-    // fallback env
+  } catch(e) {
+    console.warn('[Telegram] PlatformConfig lookup failed, falling back to env:', e)
   }
   const envToken = process.env.TELEGRAM_BOT_TOKEN || null
   if (envToken) {

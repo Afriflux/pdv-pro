@@ -144,7 +144,8 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
         webhookUrl: '/api/webhooks/telegram',
         pingType: 'telegram',
         fields: [
-          { key: 'TELEGRAM_BOT_TOKEN', label: 'Bot Token', type: 'password', placeholder: '123456:ABC-DEF1234...'}
+          { key: 'TELEGRAM_BOT_TOKEN', label: 'Bot Token', type: 'password', placeholder: '123456:ABC-DEF1234...'},
+          { key: 'TELEGRAM_ADMIN_CHAT_ID', label: 'Chat ID Admin (alertes KYC, plaintes)', type: 'text', placeholder: '-1001234567890' }
         ]
       },
       {

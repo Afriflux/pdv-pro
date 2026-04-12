@@ -116,7 +116,7 @@ export default function KYCClient({
       // Remove from UI since it's no longer in the current status tab
       setLocalStores(prev => prev.filter(s => s.id !== selectedStore.id))
       setSelectedStore(null)
-    }).catch(() => {})
+    }).catch((e) => { console.error('[KYC Client] Action failed:', e) })
 
     return undefined;
   }

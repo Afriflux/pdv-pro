@@ -270,7 +270,7 @@ export async function PATCH(
           to:          [{ email: vendorEmail, name: vendorName }],
           subject:     '✅ Votre identité a été vérifiée sur Yayyam !',
           htmlContent: buildApprovalEmail(vendorName, storeData.name as string),
-        }).catch(() => {})
+        }).catch((e) => { console.error('[KYC] Email validation failed to send:', e) })
       }
 
       // ── Audit Log ────────────────────────────────────────────────────────
@@ -311,7 +311,7 @@ export async function PATCH(
           to:          [{ email: vendorEmail, name: vendorName }],
           subject:     action === 'correction' ? '⚠️ Action requise sur votre dossier KYC — Yayyam' : '❌ Votre dossier KYC a été refusé — Yayyam',
           htmlContent: buildRejectionEmail(vendorName, storeData.name as string, reason!.trim()),
-        }).catch(() => {})
+        }).catch((e) => { console.error('[KYC] Email rejection failed to send:', e) })
       }
 
       // ── Audit Log ────────────────────────────────────────────────────────

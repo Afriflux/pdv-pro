@@ -104,8 +104,8 @@ export async function POST(req: NextRequest) {
           text:       message,
           parse_mode: 'Markdown',
         }),
-      }).catch(() => {
-        // Notification Telegram non critique — on ignore l'erreur
+      }).catch((e) => {
+        console.warn('[Complaints Create] Telegram notification failed:', e)
       })
     }
 

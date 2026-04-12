@@ -105,8 +105,22 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     // 7. Notifier le super_admin via Telegram (fire-and-forget)
-    const telegramToken = process.env.TELEGRAM_BOT_TOKEN
-    const chatId        = process.env.TELEGRAM_ADMIN_CHAT_ID
+    // Lire depuis PlatformConfig (dashboard /admin/integrations) avec fallback env
+    const supabaseForConfig = await createClient()
+    const { data: botTokenConfig } = await supabaseForConfig
+      .from('PlatformConfig')
+      .select('value')
+      .eq('key', 'TELEGRAM_BOT_TOKEN')
+      .single<{ value: string }>()
+
+    const { data: chatIdConfig } = await supabaseForConfig
+      .from('PlatformConfig')
+      .select('value')
+      .eq('key', 'TELEGRAM_ADMIN_CHAT_ID')
+      .single<{ value: string }>()
+
+    const telegramToken = botTokenConfig?.value || process.env.TELEGRAM_BOT_TOKEN
+    const chatId        = chatIdConfig?.value || process.env.TELEGRAM_ADMIN_CHAT_ID
 
     if (telegramToken && chatId) {
       fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
@@ -121,8 +135,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                       `🔗 Valider : https://yayyam.com/admin/kyc`,
           parse_mode: 'Markdown',
         }),
-      }).catch(() => {
-        // Silencieux — Telegram ne doit jamais bloquer la soumission KYC
+      }).catch((e) => {
+        console.warn('[KYC /submit] Telegram notification failed:', e)
       })
     }
 

@@ -389,18 +389,19 @@ export async function POST(req: NextRequest) {
            const { redeemLoyaltyPoints } = await import('@/app/actions/loyalty')
            await redeemLoyaltyPoints(buyer_phone, store_id, actualLoyaltyDiscount, orderRecord.id)
         }
-      } catch { }
+      } catch(e) { console.error('[Checkout] Loyalty redemption failed:', e) }
 
       // Nettoyer les paniers abandonnés du prospect
       try {
         await prisma.lead.deleteMany({
           where: { phone: buyer_phone, product_id: product_id, source: 'abandoned_cart' }
         })
-      } catch {
-        // silent fail
+      } catch(e) {
+        console.error('[Checkout] Lead cleanup failed:', e)
       }
 
-    } catch {
+    } catch(txError) {
+      console.error('[Checkout] Transaction atomique failed:', txError)
       if (payment_method === 'cod') {
         const commissionDue = Math.round(total * 0.05)
         await supabase.rpc('unfreeze_commission', { p_vendor_id: store_id, p_commission: commissionDue })

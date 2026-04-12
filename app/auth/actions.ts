@@ -194,8 +194,8 @@ export async function signUp(formData: FormData): Promise<void> {
       name,
       storeName: role === 'vendeur' ? name : undefined,
     }),
-  }).catch(() => {
-    // Silencieux — Brevo ne doit jamais bloquer l'inscription
+  }).catch((e) => {
+    console.warn('[Signup] Welcome email failed to send:', e)
   })
 
   revalidatePath('/', 'layout')

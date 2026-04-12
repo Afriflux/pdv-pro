@@ -150,8 +150,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             `⏱️ Délai estimé : 24–48h`,
           parse_mode: 'Markdown',
         }),
-      }).catch(() => {
-        // Silencieux — Telegram ne bloque jamais le retrait
+      }).catch((e) => {
+        console.warn('[Withdraw] Telegram notification failed:', e)
       })
     }
 

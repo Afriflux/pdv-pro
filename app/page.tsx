@@ -169,7 +169,7 @@ export default async function LandingPage() {
             ? t.country_flag + ' ' + t.city : ''),
         }))
       }
-    } catch {}
+    } catch(e) { console.warn('[Landing] Failed to parse landing_testimonials:', e) }
     return DEFAULT_TESTIMONIALS
   })()
 
@@ -188,7 +188,7 @@ export default async function LandingPage() {
           q: f.question, r: f.answer
         }))
       }
-    } catch {}
+    } catch(e) { console.warn('[Landing] Failed to parse landing_faq:', e) }
     return DEFAULT_FAQS
   })()
 

@@ -18,6 +18,79 @@ export async function POST(req: NextRequest) {
     const update = await req.json()
     const admin = createAdminClient()
 
+    // 0. Handle /start — message d'accueil
+    if (update.message?.text === '/start') {
+      const chatId = String(update.message.chat.id)
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: `👋 Bienvenue sur *Yayyam Bot* !\n\n` +
+                `🛒 Je vous envoie vos notifications de commandes en temps réel.\n\n` +
+                `📌 Commandes disponibles :\n` +
+                `/admin — Configurer ce chat comme destinataire des alertes admin (KYC, plaintes)\n` +
+                `/connect [code] — Lier un groupe à votre boutique\n` +
+                `/lier — Lier un produit à ce groupe`,
+          parse_mode: 'Markdown'
+        })
+      })
+      return NextResponse.json({ ok: true })
+    }
+
+    // 0b. Handle /admin — Enregistrer ce chat comme ADMIN pour les alertes KYC/plaintes
+    if (update.message?.text === '/admin') {
+      const chatId = String(update.message.chat.id)
+      const userName = update.message.from?.first_name || 'Admin'
+
+      // Sauvegarder dans PlatformConfig (upsert)
+      const { error: upsertError } = await admin
+        .from('IntegrationKey')
+        .upsert({
+          provider: 'telegram',
+          key_name: 'TELEGRAM_ADMIN_CHAT_ID',
+          key_value: chatId,
+          is_active: true,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'provider,key_name' })
+
+      if (upsertError) {
+        console.error('[Webhook Telegram] Erreur sauvegarde ADMIN_CHAT_ID:', upsertError)
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: chatId, text: '❌ Erreur lors de la configuration. Réessayez.' })
+        })
+      } else {
+        // Aussi sauvegarder dans PlatformConfig pour les routes qui lisent depuis là
+        await admin
+          .from('PlatformConfig')
+          .upsert({
+            key: 'TELEGRAM_ADMIN_CHAT_ID',
+            value: chatId,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'key' })
+          .then(() => {})
+          .catch((e) => console.warn('[Webhook Telegram] PlatformConfig upsert warning:', e))
+
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            chat_id: chatId, 
+            text: `✅ *Configuration réussie !*\n\n` +
+                  `Salut ${userName} 👋\n` +
+                  `Ce chat (ID: \`${chatId}\`) recevra désormais :\n` +
+                  `• 🛡️ Les soumissions KYC\n` +
+                  `• 🚨 Les signalements clients\n` +
+                  `• 📊 Les alertes admin importantes`,
+            parse_mode: 'Markdown'
+          })
+        })
+      }
+      return NextResponse.json({ ok: true })
+    }
+
     // 1. Handle command /connect
     if (update.message?.text?.startsWith('/connect ')) {
       const code = update.message.text.split(' ')[1]

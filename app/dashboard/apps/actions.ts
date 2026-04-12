@@ -40,7 +40,7 @@ export async function installAppAction(appId: string, settings?: any) {
         where: { store_id_app_id: { store_id: store.id, app_id: 'telegram-alerts' } },
         update: { status: 'active' },
         create: { store_id: store.id, app_id: 'telegram-alerts', status: 'active' }
-      }).catch(() => {})
+      }).catch((e) => { console.error('[Apps] Telegram sync install failed:', e) })
     }
     
     // On force la mise à jour de la disposition entière (Sidebar)
@@ -75,7 +75,7 @@ export async function uninstallAppAction(appId: string) {
     if (appId === 'telegram') {
       await prisma.installedApp.deleteMany({
         where: { store_id: store.id, app_id: 'telegram-alerts' }
-      }).catch(() => {})
+      }).catch((e) => { console.error('[Apps] Telegram sync uninstall failed:', e) })
     }
 
     revalidatePath('/dashboard', 'layout')

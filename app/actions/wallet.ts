@@ -78,7 +78,8 @@ export async function handleUniversalWithdraw(
             phone,
             status: 'pending'
           }
-        }).catch(async () => {
+        }).catch(async (err) => {
+          console.error('[Wallet] AffiliateWithdrawal create failed, trying fallback:', err)
           // Fallback if model structure is slightly different
            await prisma.affiliateTransaction.create({
               data: {
@@ -88,7 +89,7 @@ export async function handleUniversalWithdraw(
                 status: 'pending',
                 description: `Retrait vers ${method}`
               }
-           }).catch(() => {})
+           }).catch((e) => { console.error('[Wallet] AffiliateTransaction fallback also failed:', e) })
         })
         
         revalidatePath('/portal/wallet')
@@ -115,7 +116,7 @@ export async function handleUniversalWithdraw(
             phone,
             status: 'pending'
           }
-        }).catch(() => {})
+        }).catch((e) => { console.error('[Wallet] CloserWithdrawal create failed:', e) })
         
         revalidatePath('/closer/wallet')
         break
