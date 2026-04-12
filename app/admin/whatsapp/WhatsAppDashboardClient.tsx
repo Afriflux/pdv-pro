@@ -185,6 +185,8 @@ export default function WhatsAppDashboardClient({ initialAgents }: { initialAgen
                       <div className="flex-1">
                         <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Couleur du profil</label>
                         <select 
+                          title="Couleur du profil"
+                          aria-label="Couleur du profil"
                           value={agent.color}
                           onChange={(e) => handleChange(agent.id, 'color', e.target.value)}
                           className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 max-h-10 text-xs font-bold text-gray-900 outline-none"
@@ -195,6 +197,8 @@ export default function WhatsAppDashboardClient({ initialAgents }: { initialAgen
                       <div className="flex-1">
                         <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Icône</label>
                         <select 
+                          title="Icône du profil"
+                          aria-label="Icône du profil"
                           value={agent.iconName}
                           onChange={(e) => handleChange(agent.id, 'iconName', e.target.value)}
                           className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2 max-h-10 text-xs font-bold text-gray-900 outline-none"
