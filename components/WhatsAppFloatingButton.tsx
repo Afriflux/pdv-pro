@@ -5,13 +5,13 @@ import { X, HelpCircle, Store, Briefcase } from 'lucide-react'
 
 // Configuration des Agents WhatsApp
 // Tu peux facilement changer les numéros de téléphone ici plus tard (format international sans le +)
-const AGENTS = [
+const DEFAULT_AGENTS = [
   { 
     id: 'support', 
     name: 'Support Clients', 
     desc: 'Assistance, commandes & plaintes.', 
-    icon: HelpCircle, 
-    phone: '221776581741', // Numéro de secours actuel
+    iconName: 'help', 
+    phone: '221776581741',
     color: 'bg-[#0F7A60]/10 text-[#0F7A60]', 
     prefix: 'Bonjour Yayyam 👋 J\'ai besoin d\'aide avec une commande.' 
   },
@@ -19,8 +19,8 @@ const AGENTS = [
     id: 'vendors', 
     name: 'Service Vendeurs', 
     desc: 'Ouvrir ou paramétrer une boutique.', 
-    icon: Store, 
-    phone: '221776581741', // À modifier par le numéro du gestionnaire vendeur
+    iconName: 'store', 
+    phone: '221776581741',
     color: 'bg-indigo-50 text-indigo-600', 
     prefix: 'Bonjour Yayyam 👋 Je souhaite des informations pour vendre sur la plateforme.' 
   },
@@ -28,14 +28,15 @@ const AGENTS = [
     id: 'admin', 
     name: 'Direction & Admin', 
     desc: 'Partenariats, B2B et réclamations expertes.', 
-    icon: Briefcase, 
-    phone: '221776581741', // À modifier par le numéro direction
+    iconName: 'briefcase', 
+    phone: '221776581741',
     color: 'bg-amber-50 text-amber-600', 
     prefix: 'Bonjour Yayyam 👋 Je vous contacte pour un sujet administratif/partenariat.' 
   },
 ]
 
-export function WhatsAppFloatingButton({ defaultPhone = '221776581741' }: { defaultPhone?: string }) {
+export function WhatsAppFloatingButton({ defaultPhone = '221776581741', dynamicAgents }: { defaultPhone?: string, dynamicAgents?: any[] }) {
+  const agentsToDisplay = dynamicAgents && dynamicAgents.length > 0 ? dynamicAgents : DEFAULT_AGENTS
   const [isVisible, setIsVisible] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
@@ -83,28 +84,30 @@ export function WhatsAppFloatingButton({ defaultPhone = '221776581741' }: { defa
             </button>
           </div>
 
-          {/* Liste des agents */}
           <div className="p-2 space-y-1 bg-[#FAFAF7] max-h-[400px] overflow-y-auto">
-            {AGENTS.map(agent => (
-              <button
-                key={agent.id}
-                onClick={() => handleOpenWhatsApp(agent.phone, agent.prefix)}
-                className="w-full bg-white hover:bg-gray-50 flex items-center gap-4 p-4 rounded-2xl transition-all border border-transparent hover:border-gray-100 shadow-sm hover:shadow-md group text-left"
-              >
-                <div className={\`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 \${agent.color}\`}>
-                  <agent.icon size={24} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-black text-gray-900 group-hover:text-[#0F7A60] transition-colors">{agent.name}</h4>
-                  <p className="text-xs text-gray-500 font-medium leading-relaxed mt-0.5">{agent.desc}</p>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                    <path d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z" />
-                  </svg>
-                </div>
-              </button>
-            ))}
+            {agentsToDisplay.map(agent => {
+              const IconComp = agent.iconName === 'store' ? Store : agent.iconName === 'briefcase' ? Briefcase : agent.iconName === 'zap' ? Zap : agent.iconName === 'phone' ? Phone : HelpCircle
+              return (
+                <button
+                  key={agent.id}
+                  onClick={() => handleOpenWhatsApp(agent.phone, agent.prefix)}
+                  className="w-full bg-white hover:bg-gray-50 flex items-center gap-4 p-4 rounded-2xl transition-all border border-transparent hover:border-gray-100 shadow-sm hover:shadow-md group text-left"
+                >
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${agent.color}`}>
+                    <IconComp size={24} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-black text-gray-900 group-hover:text-[#0F7A60] transition-colors">{agent.name}</h4>
+                    <p className="text-xs text-gray-500 font-medium leading-relaxed mt-0.5">{agent.desc}</p>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                      <path d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z" />
+                    </svg>
+                  </div>
+                </button>
+              )
+            })}
           </div>
           
           {/* Footer ultra minimaliste */}

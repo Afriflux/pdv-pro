@@ -45,7 +45,7 @@ const getCachedLayoutConfig = unstable_cache(
       .select('key, value')
       .in('key', [
         'seo_title', 'seo_description', 'seo_keywords', 'seo_og_image', 'platform_name',
-        'maintenance_active', 'maintenance_message'
+        'maintenance_active', 'maintenance_message', 'whatsapp_agents'
       ])
     return configRows || []
   },
@@ -138,6 +138,11 @@ export default async function RootLayout({
   // By-pass maintenance for any /admin... route
   const isAdminRoute = pathname.startsWith('/admin')
   const showMaintenance = isMaintenanceActive && !isAdminRoute
+  
+  let dynamicAgents = undefined
+  if (kv['whatsapp_agents']) {
+    try { dynamicAgents = JSON.parse(kv['whatsapp_agents']) } catch(e) {}
+  }
 
   return (
     <html lang="fr" className={`${cormorant.variable} ${dm.variable} ${mono.variable}`} suppressHydrationWarning>
@@ -153,7 +158,7 @@ export default async function RootLayout({
             </Suspense>
             {children}
             <FooterWrapper />
-            <WhatsAppFloatingButton />
+            <WhatsAppFloatingButton dynamicAgents={dynamicAgents} />
           </>
         )}
 
