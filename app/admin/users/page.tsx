@@ -68,14 +68,14 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
 
   if (error) console.error('[AdminUsers] Error:', error.message)
 
-  // ── Charger les stores pour les vendeurs (pour le lien "Voir espace") ──
-  const vendeurIds = (users ?? []).filter((u: any) => u.role === 'vendeur').map((u: any) => u.id) // eslint-disable-line @typescript-eslint/no-explicit-any
+  // ── Charger les stores (pour le lien "Voir espace") ──
+  const targetUserIds = (users ?? []).map((u: any) => u.id) // eslint-disable-line @typescript-eslint/no-explicit-any
   let storesByUserId: Record<string, string> = {}
-  if (vendeurIds.length > 0) {
+  if (targetUserIds.length > 0) {
     const { data: stores } = await supabase
       .from('Store')
       .select('id, user_id')
-      .in('user_id', vendeurIds)
+      .in('user_id', targetUserIds)
     if (stores) {
       storesByUserId = Object.fromEntries(stores.map((s: any) => [s.user_id, s.id])) // eslint-disable-line @typescript-eslint/no-explicit-any
     }
@@ -210,14 +210,15 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
                     const roleInfo = ROLE_LABELS[user.role] ?? { label: user.role, color: 'text-gray-700', bg: 'bg-gray-50 border-gray-200' }
                     const kycLabel = user.kyc_status === 'verified' ? '✅ Vérifié' : user.kyc_status === 'pending' || user.kyc_status === 'submitted' ? '⏳ En attente' : user.kyc_status === 'rejected' ? '❌ Rejeté' : '—'
 
-                    // Determine navigation link based on role
+                    // Determine navigation link based on role and store existence
                     let detailLink = '#'
-                    if (user.role === 'vendeur') {
-                      const storeId = storesByUserId[user.id]
-                      detailLink = storeId ? `/admin/vendeurs/${storeId}` : `/admin/vendeurs`
+                    const storeId = storesByUserId[user.id]
+
+                    if (storeId) {
+                      detailLink = `/admin/vendeurs/${storeId}`
                     }
+                    else if (user.role === 'vendeur' || user.role === 'affilie') detailLink = `/admin/vendeurs`
                     else if (user.role === 'acheteur' || user.role === 'client') detailLink = `/admin/clients?q=${encodeURIComponent(user.phone || user.email || user.name)}`
-                    else if (user.role === 'affilie') detailLink = `/admin/vendeurs`
                     else if (user.role === 'ambassadeur') detailLink = `/admin/ambassadeurs`
                     else if (user.role === 'closer') detailLink = `/admin/closing`
                     else if (user.role === 'super_admin' || user.role === 'gestionnaire' || user.role === 'support') detailLink = `/admin/roles`

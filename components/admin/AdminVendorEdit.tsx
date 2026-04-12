@@ -175,6 +175,8 @@ export default function AdminVendorEdit({ storeId, userId, initialData }: AdminV
                     >
                       <option value="vendeur">Vendeur (Standard)</option>
                       <option value="acheteur">Acheteur</option>
+                      <option value="affilie">Affilié</option>
+                      <option value="closer">Closer</option>
                       <option value="gestionnaire">Gestionnaire (Staff)</option>
                       <option value="support">Support (Staff)</option>
                       <option value="super_admin">Super Admin (Privilégié)</option>
