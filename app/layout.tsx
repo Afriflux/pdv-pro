@@ -30,6 +30,9 @@ import { unstable_cache } from 'next/cache'
 
 export const viewport: Viewport = {
   themeColor: '#0F7A60',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 }
 
 export const revalidate = 60 // Refresh cache every minute to apply admin SEO changes
@@ -138,7 +141,7 @@ export default async function RootLayout({
 
   return (
     <html lang="fr" className={`${cormorant.variable} ${dm.variable} ${mono.variable}`} suppressHydrationWarning>
-      <body className={`antialiased font-body bg-cream text-ink selection:bg-gold selection:text-white`} suppressHydrationWarning>
+      <body className={`antialiased font-body bg-cream text-ink selection:bg-gold selection:text-white overflow-x-hidden w-full max-w-full relative`} suppressHydrationWarning>
         {showMaintenance ? (
           <MaintenanceScreen message={kv['maintenance_message']} />
         ) : (
