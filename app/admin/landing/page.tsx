@@ -169,7 +169,7 @@ export default async function AdminLandingPage() {
           landing_cta_button: configMap.landing_cta_button ?? ''
         }}
         initialGeneral={{
-          landing_hero_badge: configMap.landing_hero_badge || '🚀 Launch Week — Commission à 5% pour les 100 premiers vendeurs',
+          landing_hero_badge: configMap.landing_hero_badge || '🇸🇳 Yayyam — En Pulaar, c\'est la confiance qui vend.',
           landing_hero_h1: configMap.landing_hero_h1 || 'Commencez à vendre\naujourd\'hui.\nEncaissez sur Wave/OM.',
           landing_hero_subtitle: configMap.landing_hero_subtitle || 'Yayyam est la seule plateforme qui synchronise votre WhatsApp avec les paiements mobile money locaux. Sans code, sans friction.',
           landing_hero_cta_primary: configMap.landing_hero_cta_primary || 'Lancer ma boutique',

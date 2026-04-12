@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { toast } from '@/lib/toast'
-import { ShieldCheck, UserPlus, Table2, Search, XCircle, CheckCircle2, Eye, ShieldAlert, Lock, Save, PlusCircle, UserCog, Copy, Edit2, Trash2, Network } from 'lucide-react'
+import { ShieldCheck, UserPlus, Table2, Search, XCircle, CheckCircle2, Eye, ShieldAlert, Lock, Save, PlusCircle, UserCog, Copy, Edit2, Trash2, Network, Plus, X, UserMinus } from 'lucide-react'
 import Link from 'next/link'
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
@@ -36,6 +36,65 @@ interface RoleConfig {
   permissions: Record<string, AccessLevel>;
 }
 
+// ─── ORG DEPARTMENT TYPE (RECURSIVE TREE) ─────────────────────────────────────
+export interface OrgDepartment {
+  id: string
+  name: string
+  subtitle: string
+  color: string
+  memberIds: string[]
+  children: OrgDepartment[]
+}
+
+const DEPT_COLORS: Record<string, { bgCls: string; borderCls: string; textCls: string; subtextCls: string; accentCls: string }> = {
+  indigo:  { bgCls: 'bg-indigo-50',  borderCls: 'border-indigo-200',  textCls: 'text-indigo-900',  subtextCls: 'text-indigo-600',  accentCls: 'border-l-indigo-400' },
+  slate:   { bgCls: 'bg-slate-50',   borderCls: 'border-slate-200',   textCls: 'text-slate-900',   subtextCls: 'text-slate-600',   accentCls: 'border-l-slate-400' },
+  amber:   { bgCls: 'bg-amber-50',   borderCls: 'border-amber-200',   textCls: 'text-amber-900',   subtextCls: 'text-amber-600',   accentCls: 'border-l-amber-500' },
+  rose:    { bgCls: 'bg-rose-50',    borderCls: 'border-rose-200',    textCls: 'text-rose-900',    subtextCls: 'text-rose-600',    accentCls: 'border-l-rose-400' },
+  cyan:    { bgCls: 'bg-cyan-50',    borderCls: 'border-cyan-200',    textCls: 'text-cyan-900',    subtextCls: 'text-cyan-600',    accentCls: 'border-l-cyan-400' },
+  violet:  { bgCls: 'bg-violet-50',  borderCls: 'border-violet-200',  textCls: 'text-violet-900',  subtextCls: 'text-violet-600',  accentCls: 'border-l-violet-400' },
+  emerald: { bgCls: 'bg-emerald-50', borderCls: 'border-emerald-200', textCls: 'text-emerald-900', subtextCls: 'text-emerald-600', accentCls: 'border-l-emerald-400' },
+  orange:  { bgCls: 'bg-orange-50',  borderCls: 'border-orange-200',  textCls: 'text-orange-900',  subtextCls: 'text-orange-600',  accentCls: 'border-l-orange-400' },
+  pink:    { bgCls: 'bg-pink-50',    borderCls: 'border-pink-200',    textCls: 'text-pink-900',    subtextCls: 'text-pink-600',    accentCls: 'border-l-pink-400' },
+  teal:    { bgCls: 'bg-teal-50',    borderCls: 'border-teal-200',    textCls: 'text-teal-900',    subtextCls: 'text-teal-600',    accentCls: 'border-l-teal-400' },
+}
+
+const COLOR_KEYS = Object.keys(DEPT_COLORS)
+
+const DEFAULT_DEPARTMENTS: OrgDepartment[] = [
+  { id: 'dept_ops', name: 'Opérations', subtitle: 'Gestion Vendeurs & Clients', color: 'indigo', memberIds: [], children: [] },
+  { id: 'dept_it', name: 'IT & Sécurité', subtitle: 'Accès DB & Logs Serveur', color: 'slate', memberIds: [], children: [] },
+  { id: 'dept_fin', name: 'Finances & Légal', subtitle: 'Actionnariat & Dividendes', color: 'amber', memberIds: [], children: [] },
+]
+
+// ─── RECURSIVE TREE HELPERS ───────────────────────────────────────────────────
+function treeUpdate(nodes: OrgDepartment[], id: string, updater: (d: OrgDepartment) => OrgDepartment): OrgDepartment[] {
+  return nodes.map(n => n.id === id ? updater(n) : { ...n, children: treeUpdate(n.children, id, updater) })
+}
+function treeDelete(nodes: OrgDepartment[], id: string): OrgDepartment[] {
+  return nodes.filter(n => n.id !== id).map(n => ({ ...n, children: treeDelete(n.children, id) }))
+}
+function treeAddChild(nodes: OrgDepartment[], parentId: string, child: OrgDepartment): OrgDepartment[] {
+  return nodes.map(n => n.id === parentId ? { ...n, children: [...n.children, child] } : { ...n, children: treeAddChild(n.children, parentId, child) })
+}
+function treeRemoveMember(nodes: OrgDepartment[], userId: string): OrgDepartment[] {
+  return nodes.map(n => ({ ...n, memberIds: n.memberIds.filter(id => id !== userId), children: treeRemoveMember(n.children, userId) }))
+}
+function treeAllMemberIds(nodes: OrgDepartment[]): string[] {
+  return nodes.flatMap(n => [...n.memberIds, ...treeAllMemberIds(n.children)])
+}
+function treeFind(nodes: OrgDepartment[], id: string): OrgDepartment | undefined {
+  for (const n of nodes) {
+    if (n.id === id) return n
+    const found = treeFind(n.children, id)
+    if (found) return found
+  }
+  return undefined
+}
+function treeCount(nodes: OrgDepartment[]): number {
+  return nodes.reduce((s, n) => s + 1 + treeCount(n.children), 0)
+}
+
 // ─── CONFIGURATION DE BASE ────────────────────────────────────────────────────
 const PERMISSION_KEYS: PermissionConfig[] = [
   { id: 'dashboard', label: 'Dashboard & Statistiques', description: 'Accès aux KPIs cruciaux (CA, Rétention)' },
@@ -62,6 +121,10 @@ const PERMISSION_KEYS: PermissionConfig[] = [
   { id: 'workflows', label: 'Créateur de Workflows', description: 'Gérer les automatisations' },
   { id: 'masterclass', label: 'Académie & Savoir', description: 'Gérer les modules de formation' },
   { id: 'themes', label: 'Webdesign & Thèmes', description: 'Création et modification du design de base' },
+  { id: 'vendor_edit', label: 'Édition Profils Vendeurs', description: 'Modifier nom, boutique, coordonnées d\'un vendeur' },
+  { id: 'wallets', label: 'Portefeuilles Vendeurs', description: '🔒 Créditer/débiter les wallets manuellement' },
+  { id: 'password_reset', label: 'Réinitialisation MdP', description: 'Envoyer des liens de réinitialisation de mot de passe' },
+  { id: 'refunds', label: 'Remboursements', description: '🔒 Rembourser intégralement une commande (restitution totale)' },
 ]
 
 // ─── COMPOSANT PRINCIPAL ─────────────────────────────────────────────────────
@@ -80,6 +143,86 @@ export default function RolesClient({
   // State for Roles Matrix
   const [roles, setRoles] = useState<RoleConfig[]>(initialRoles)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+
+  // ── Org Departments State (recursive tree) ──
+  const [orgDepts, setOrgDepts] = useState<OrgDepartment[]>(DEFAULT_DEPARTMENTS)
+  const [orgSaving, setOrgSaving] = useState(false)
+  const [deptModal, setDeptModal] = useState<{ isOpen: boolean; dept?: OrgDepartment; parentId?: string }>({ isOpen: false })
+  const [assignModal, setAssignModal] = useState<{ isOpen: boolean; deptId: string } | null>(null)
+
+  // Load org departments from API
+  useEffect(() => {
+    fetch('/api/admin/org-departments')
+      .then(r => r.json())
+      .then(data => {
+        if (data.departments && data.departments.length > 0) {
+          // Migrate flat data: add children:[] if missing
+          const migrate = (nodes: OrgDepartment[]): OrgDepartment[] =>
+            nodes.map(n => ({ ...n, children: migrate(n.children || []) }))
+          setOrgDepts(migrate(data.departments))
+        }
+      })
+      .catch(() => { /* silently fail, use defaults */ })
+  }, [])
+
+  const saveOrgDepts = useCallback(async (depts: OrgDepartment[]) => {
+    setOrgSaving(true)
+    try {
+      const res = await fetch('/api/admin/org-departments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ departments: depts }),
+      })
+      if (res.ok) toast.success('Organigramme sauvegardé ✅')
+      else toast.error('Erreur lors de la sauvegarde')
+    } catch { toast.error('Erreur réseau') }
+    finally { setOrgSaving(false) }
+  }, [])
+
+  const addDepartment = (name: string, subtitle: string, color: string, parentId?: string) => {
+    const newDept: OrgDepartment = { id: `dept_${Date.now()}`, name, subtitle, color, memberIds: [], children: [] }
+    let updated: OrgDepartment[]
+    if (parentId) {
+      updated = treeAddChild(orgDepts, parentId, newDept)
+    } else {
+      updated = [...orgDepts, newDept]
+    }
+    setOrgDepts(updated)
+    saveOrgDepts(updated)
+  }
+
+  const updateDepartment = (id: string, updates: Partial<OrgDepartment>) => {
+    const updated = treeUpdate(orgDepts, id, d => ({ ...d, ...updates }))
+    setOrgDepts(updated)
+    saveOrgDepts(updated)
+  }
+
+  const deleteDepartment = (id: string) => {
+    if (!window.confirm('Supprimer ce nœud et tous ses sous-éléments ?')) return
+    const updated = treeDelete(orgDepts, id)
+    setOrgDepts(updated)
+    saveOrgDepts(updated)
+  }
+
+  const assignMember = (deptId: string, userId: string) => {
+    // Remove from entire tree first, then add to target
+    let updated = treeRemoveMember(orgDepts, userId)
+    updated = treeUpdate(updated, deptId, d => ({ ...d, memberIds: [...d.memberIds, userId] }))
+    setOrgDepts(updated)
+    saveOrgDepts(updated)
+  }
+
+  const removeMember = (deptId: string, userId: string) => {
+    const updated = treeUpdate(orgDepts, deptId, d => ({ ...d, memberIds: d.memberIds.filter(id => id !== userId) }))
+    setOrgDepts(updated)
+    saveOrgDepts(updated)
+  }
+
+  // Get non-super-admin members
+  const nonCeoAdmins = initialAdmins.filter(a => a.role !== 'super_admin')
+  const allAssignedIds = new Set(treeAllMemberIds(orgDepts))
+  const unassignedMembers = nonCeoAdmins.filter(a => !allAssignedIds.has(a.id))
+  const totalDeptCount = treeCount(orgDepts)
 
   // Modale Rôle (Créer / Éditer)
   const [roleModal, setRoleModal] = useState<{isOpen: boolean, action: 'create'|'edit', roleId?: string, nameValue: string}>({
@@ -258,82 +401,125 @@ export default function RolesClient({
          
          {/* TAB 0: HIERARCHIE ORGANIGRAMME */}
          {activeTab === 'hierarchy' && (
-           <div className="bg-white border border-gray-100 rounded-3xl p-10 overflow-x-auto shadow-xl flex justify-center animate-in fade-in duration-500 min-h-[60vh] items-center">
-              <div className="flex flex-col items-center">
-                 {/* TOP LEVEL */}
-                 <div className="bg-[#0F7A60] text-white px-8 py-4 rounded-2xl shadow-lg border-2 border-emerald-400 z-10 flex flex-col items-center group cursor-pointer hover:scale-105 transition-transform">
-                    <ShieldCheck size={24} className="mb-2 text-emerald-300" />
-                    <span className="font-black tracking-widest uppercase text-sm drop-shadow-md">Super Admin</span>
-                    <span className="text-[10px] text-emerald-100 font-medium">Fondateurs & CEO</span>
-                 </div>
-                 
-                 {/* Ligne Descendante 1 */}
-                 <div className="w-1 h-12 bg-gray-200"></div>
-                 
-                 {/* NIVEAU 2 : MANAGERS GENERAUX */}
-                 <div className="w-[800px] border-t-[3px] border-gray-200 flex justify-between relative">
-                    
-                    {/* BRANCHE OPERATIONS */}
-                    <div className="relative pt-8 flex flex-col items-center flex-1">
-                       <div className="absolute top-0 w-1 h-8 bg-gray-200"></div>
-                       <div className="bg-indigo-50 border border-indigo-200 px-6 py-4 rounded-2xl text-center shadow-sm w-56 flex flex-col items-center group cursor-pointer hover:bg-white transition-colors hover:shadow-md">
-                         <span className="font-black text-indigo-900 text-[13px] uppercase tracking-wider">Opérations</span>
-                         <span className="text-[10px] text-indigo-600 font-bold mt-1">Gestion Vendeurs & Clients</span>
-                         <div className="mt-4 pt-4 border-t border-indigo-200/50 flex flex-col gap-2 w-full">
-                           <div className="bg-white border-l-4 border-l-indigo-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-indigo-200 transition-colors">
-                             Manager Général <span className="opacity-50">#1</span>
-                           </div>
-                           <div className="bg-white border-l-4 border-l-orange-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-indigo-200 transition-colors">
-                             Responsable Litiges
-                           </div>
-                           <div className="bg-white border-l-4 border-l-cyan-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-indigo-200 transition-colors">
-                             Responsable KYC
-                           </div>
-                         </div>
-                       </div>
-                    </div>
+           <div className="space-y-6 animate-in fade-in duration-500">
 
-                    {/* BRANCHE TECHNICAL */}
-                    <div className="relative pt-8 flex flex-col items-center flex-1">
-                       <div className="absolute top-0 w-1 h-8 bg-gray-200"></div>
-                       <div className="bg-slate-50 border border-slate-200 px-6 py-4 rounded-2xl text-center shadow-sm w-56 flex flex-col items-center group cursor-pointer hover:bg-white transition-colors hover:shadow-md">
-                         <span className="font-black text-slate-900 text-[13px] uppercase tracking-wider">IT & Sécurité</span>
-                         <span className="text-[10px] text-slate-600 font-bold mt-1">Accès DB & Logs Serveur</span>
-                         <div className="mt-4 pt-4 border-t border-slate-200/50 flex flex-col gap-2 w-full">
-                           <div className="bg-white border-l-4 border-l-slate-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-slate-200 transition-colors">
-                             Développeur Staff <span className="opacity-50">#2</span>
-                           </div>
-                           <div className="bg-white border-l-4 border-l-pink-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-slate-200 transition-colors">
-                             Data Analyst
-                           </div>
-                         </div>
-                       </div>
-                    </div>
-                    
-                    {/* BRANCHE FINANCE */}
-                    <div className="relative pt-8 flex flex-col items-center flex-1">
-                       <div className="absolute top-0 w-1 h-8 bg-gray-200"></div>
-                       <div className="bg-amber-50 border border-amber-200 px-6 py-4 rounded-2xl text-center shadow-sm w-56 flex flex-col items-center group cursor-pointer hover:bg-white transition-colors hover:shadow-md">
-                         <span className="font-black text-amber-900 text-[13px] uppercase tracking-wider">Finances & Légal</span>
-                         <span className="text-[10px] text-amber-600 font-bold mt-1">Actionnariat & Dividendes</span>
-                         <div className="mt-4 pt-4 border-t border-amber-200/50 flex flex-col gap-2 w-full">
-                           <div className="bg-white border-l-4 border-l-amber-500 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-amber-200 transition-colors">
-                             Directeur Financier <span className="opacity-50">#3</span>
-                           </div>
-                           <div className="bg-white border-l-4 border-l-amber-300 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-amber-200 transition-colors">
-                             Comptable
-                           </div>
-                           <div className="bg-white border-l-4 border-l-lime-400 rounded-lg px-3 py-2 text-xs font-bold text-gray-700 shadow-sm border border-gray-100/50 flex justify-between items-center group-hover:border-amber-200 transition-colors">
-                             Gestionnaire Retraits
-                           </div>
-                         </div>
-                       </div>
-                    </div>
+             {/* ── Controls Bar ── */}
+             <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+               <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center border border-emerald-100">
+                   <Network size={20} />
                  </div>
-                 <p className="mt-8 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                   Vous pouvez configurer les accès détaillés de chaque membre dans le "Builder de Droits".
+                 <div>
+                   <h2 className="text-sm font-black text-gray-900">Organigramme Dynamique</h2>
+                   <p className="text-[11px] text-gray-400 font-bold">{totalDeptCount} nœud{totalDeptCount > 1 ? 's' : ''} · {initialAdmins.length} membre{initialAdmins.length > 1 ? 's' : ''}</p>
+                 </div>
+               </div>
+               <button
+                 onClick={() => setDeptModal({ isOpen: true })}
+                 className="px-5 py-2.5 bg-[#0F7A60] hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition-all shadow-lg flex items-center gap-2"
+               >
+                 <Plus size={14} /> Ajouter un département
+               </button>
+             </div>
+
+             {/* ── Org Chart ── */}
+             <div className="bg-white border border-gray-100 rounded-3xl p-8 lg:p-10 overflow-x-auto shadow-xl min-h-[50vh]">
+               <div className="flex flex-col items-center w-full">
+
+                 {/* ── CEO Card ── */}
+                 {(() => {
+                   const ceo = initialAdmins.find(a => a.role === 'super_admin')
+                   return ceo ? (
+                     <div className="bg-gradient-to-br from-[#0D5C4A] to-[#0F7A60] text-white px-10 py-6 rounded-3xl shadow-2xl border-2 border-emerald-400 z-10 flex items-center gap-5 hover:scale-[1.02] transition-transform relative overflow-hidden">
+                       <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none" />
+                       <div className="relative z-10 flex items-center gap-5">
+                         {ceo.avatar_url ? (
+                           <img src={ceo.avatar_url} alt={ceo.name || 'CEO'} className="w-16 h-16 rounded-2xl object-cover ring-4 ring-white/30 shadow-lg" />
+                         ) : (
+                           <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center font-black text-2xl ring-4 ring-white/20 shadow-lg backdrop-blur-md">
+                             {(ceo.name || ceo.email).charAt(0).toUpperCase()}
+                           </div>
+                         )}
+                         <div>
+                           <p className="font-black text-lg tracking-tight">{ceo.name || ceo.email}</p>
+                           <p className="text-emerald-200 text-xs font-bold">{ceo.email}</p>
+                           <div className="flex items-center gap-2 mt-2">
+                             <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-white/20">👑 Fondateur & CEO</span>
+                             <span className="bg-emerald-500/30 px-2 py-1 rounded-md text-[10px] font-black flex items-center gap-1">
+                               <span className="w-1.5 h-1.5 bg-emerald-300 rounded-full animate-pulse" /> Super Admin
+                             </span>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   ) : (
+                     <div className="bg-[#0F7A60] text-white px-8 py-4 rounded-2xl shadow-lg border-2 border-emerald-400 flex flex-col items-center">
+                       <ShieldCheck size={24} className="mb-2 text-emerald-300" />
+                       <span className="font-black tracking-widest uppercase text-sm">Super Admin</span>
+                       <span className="text-[10px] text-emerald-100">Aucun CEO assigné</span>
+                     </div>
+                   )
+                 })()}
+
+                 {/* Connector line */}
+                 {orgDepts.length > 0 && <div className="w-1 h-12 bg-gray-200" />}
+
+                 {/* ── Departments Tree (recursive) ── */}
+                 {orgDepts.length > 0 && (
+                   <div className="w-full border-t-[3px] border-gray-200">
+                     <div className={`grid gap-6 ${orgDepts.length >= 4 ? 'grid-cols-4' : orgDepts.length === 3 ? 'grid-cols-3' : orgDepts.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                       {orgDepts.map(dept => (
+                         <OrgNode
+                           key={dept.id}
+                           dept={dept}
+                           depth={0}
+                           admins={initialAdmins}
+                           roles={roles}
+                           onEdit={(d) => setDeptModal({ isOpen: true, dept: d })}
+                           onDelete={deleteDepartment}
+                           onAddChild={(parentId) => setDeptModal({ isOpen: true, parentId })}
+                           onAssign={(deptId) => setAssignModal({ isOpen: true, deptId })}
+                           onRemoveMember={removeMember}
+                         />
+                       ))}
+                     </div>
+                   </div>
+                 )}
+
+                 {orgDepts.length === 0 && (
+                   <div className="py-16 text-center">
+                     <Network size={48} className="mx-auto text-gray-200 mb-4" />
+                     <p className="text-gray-400 font-bold">Aucun département créé</p>
+                     <p className="text-sm text-gray-300 mt-1">Cliquez sur &quot;Ajouter un département&quot; pour commencer.</p>
+                   </div>
+                 )}
+
+                 {/* Unassigned members */}
+                 {unassignedMembers.length > 0 && (
+                   <div className="mt-8 w-full max-w-md">
+                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 text-center">⚠️ Membres non assignés ({unassignedMembers.length})</p>
+                     <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-wrap gap-2 justify-center">
+                       {unassignedMembers.map(m => (
+                         <div key={m.id} className="bg-white border border-gray-100 rounded-xl px-3 py-2 flex items-center gap-2 shadow-sm">
+                           {m.avatar_url ? (
+                             <img src={m.avatar_url} alt={m.name || ''} className="w-7 h-7 rounded-lg object-cover border border-gray-100" />
+                           ) : (
+                             <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center font-black text-xs text-gray-500">
+                               {(m.name || m.email).charAt(0).toUpperCase()}
+                             </div>
+                           )}
+                           <span className="text-xs font-bold text-gray-700">{m.name || m.email.split('@')[0]}</span>
+                         </div>
+                       ))}
+                     </div>
+                   </div>
+                 )}
+
+                 <p className="mt-8 text-xs font-bold text-gray-400 uppercase tracking-widest text-center">
+                   {orgSaving ? '💾 Sauvegarde en cours...' : `Organigramme · ${initialAdmins.length} membre${initialAdmins.length > 1 ? 's' : ''}`}
                  </p>
-              </div>
+               </div>
+             </div>
            </div>
          )}
          
@@ -634,6 +820,266 @@ export default function RolesClient({
          </div>
       </div>
     )}
+    {/* MODALE DÉPARTEMENT (Créer / Éditer / Sous-département) */}
+    {deptModal.isOpen && (
+      <DeptModalContent
+        dept={deptModal.dept}
+        parentId={deptModal.parentId}
+        onClose={() => setDeptModal({ isOpen: false })}
+        onSubmit={(name, subtitle, color) => {
+          if (deptModal.dept) {
+            updateDepartment(deptModal.dept.id, { name, subtitle, color })
+          } else {
+            addDepartment(name, subtitle, color, deptModal.parentId)
+          }
+          setDeptModal({ isOpen: false })
+        }}
+      />
+    )}
+
+    {/* MODALE ASSIGNER MEMBRE */}
+    {assignModal?.isOpen && (() => {
+      const dept = treeFind(orgDepts, assignModal.deptId)
+      if (!dept) return null
+      const colors = DEPT_COLORS[dept.color] || DEPT_COLORS.indigo
+      
+      // Get available members (non-CEO, not already in this dept)
+      const availableMembers = nonCeoAdmins.filter(a => !dept.memberIds.includes(a.id))
+
+      return (
+        <div className="fixed inset-0 bg-[#1A1A1A]/60 backdrop-blur-md flex items-center justify-center z-[100] px-4 animate-in fade-in duration-300">
+          <div className="bg-white max-w-md w-full rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500 max-h-[80vh] flex flex-col">
+            <div className="p-8 pb-4">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-black text-gray-900">Assigner un membre</h3>
+                  <p className="text-sm font-bold text-gray-400 mt-0.5">→ <span className={`${colors.textCls} font-black`}>{dept.name}</span></p>
+                </div>
+                <button onClick={() => setAssignModal(null)} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Fermer">
+                  <X size={16} className="text-gray-400" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto px-8 pb-8">
+              {availableMembers.length > 0 ? (
+                <div className="space-y-2">
+                  {availableMembers.map(member => {
+                    const roleConf = member.internal_role_id 
+                      ? roles.find(r => r.id === member.internal_role_id)
+                      : roles.find(r => r.name.toLowerCase().includes(member.role.split('_')[0])) || roles[0]
+                    return (
+                      <button
+                        key={member.id}
+                        onClick={() => { assignMember(dept.id, member.id); setAssignModal(null) }}
+                        className="w-full bg-gray-50 hover:bg-emerald-50 border border-gray-100 hover:border-emerald-200 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all group text-left"
+                      >
+                        {member.avatar_url ? (
+                          <img src={member.avatar_url} alt={member.name || ''} className="w-10 h-10 rounded-xl object-cover border border-gray-100" />
+                        ) : (
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm ${roleConf?.bgCls || 'bg-gray-100'} ${roleConf?.colorCls || 'text-gray-600'} border border-gray-100`}>
+                            {(member.name || member.email).charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-gray-900 group-hover:text-emerald-700 truncate transition-colors">{member.name || member.email.split('@')[0]}</p>
+                          <p className="text-xs text-gray-400 font-medium truncate">{member.email}</p>
+                        </div>
+                        <span className="text-[10px] font-black text-gray-300 group-hover:text-emerald-600 uppercase transition-colors">+ Ajouter</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div className="py-12 text-center">
+                  <UserCog size={36} className="mx-auto text-gray-200 mb-3" />
+                  <p className="text-sm font-bold text-gray-400">Tous les membres sont déjà assignés</p>
+                  <p className="text-xs text-gray-300 mt-1">Invitez de nouveaux collaborateurs via l'onglet &quot;Inviter&quot;.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    })()}
     </>
   )
 }
+
+// ─── Sous-composant : Modale Département ──────────────────────────────────────
+function DeptModalContent({ dept, parentId, onClose, onSubmit }: {
+  dept?: OrgDepartment
+  parentId?: string
+  onClose: () => void
+  onSubmit: (name: string, subtitle: string, color: string) => void
+}) {
+  const isEdit = !!dept
+  const isSubDept = !!parentId
+  const [dName, setDName] = useState(dept?.name || '')
+  const [dSub, setDSub] = useState(dept?.subtitle || '')
+  const [dColor, setDColor] = useState(dept?.color || 'indigo')
+
+  const handleSubmit = () => {
+    if (!dName.trim()) return
+    onSubmit(dName.trim(), dSub.trim(), dColor)
+  }
+
+  const title = isEdit ? 'Modifier' : isSubDept ? 'Nouveau sous-département' : 'Nouveau Département'
+  const btnLabel = isEdit ? 'Enregistrer' : isSubDept ? 'Créer le sous-département' : 'Créer le département'
+  const placeholder = isSubDept ? 'ex: Équipe Front-end, Pôle Ventes...' : 'ex: Marketing, RH, Logistique...'
+
+  return (
+    <div className="fixed inset-0 bg-[#1A1A1A]/60 backdrop-blur-md flex items-center justify-center z-[100] px-4 animate-in fade-in duration-300">
+      <div className="bg-white max-w-md w-full rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500">
+        <div className="p-8 pb-6">
+          <h3 className="text-xl font-black text-gray-900 mb-1">{title}</h3>
+          <p className="text-sm font-bold text-gray-500 mb-6">
+            {isSubDept ? 'Ajoutez une équipe ou un sous-département.' : 'Définissez le nom, la description et la couleur.'}
+          </p>
+          <div className="space-y-4">
+            <div>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5">Nom</label>
+              <input autoFocus type="text" value={dName} onChange={e => setDName(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                placeholder={placeholder} className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 outline-none focus:border-[#0F7A60] focus:bg-white transition-all" />
+            </div>
+            <div>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5">Sous-titre / Description</label>
+              <input type="text" value={dSub} onChange={e => setDSub(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                placeholder="ex: Campagnes & Réseaux sociaux" className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 outline-none focus:border-[#0F7A60] focus:bg-white transition-all" />
+            </div>
+            <div>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Couleur</label>
+              <div className="flex flex-wrap gap-2">
+                {COLOR_KEYS.map(c => {
+                  const col = DEPT_COLORS[c]
+                  return (
+                    <button key={c} onClick={() => setDColor(c)}
+                      className={`w-10 h-10 rounded-xl border-2 transition-all flex items-center justify-center ${col.bgCls} ${dColor === c ? `${col.borderCls} scale-110 ring-2 ring-offset-1` : 'border-transparent hover:scale-105'}`}
+                    >
+                      <span className={`text-[10px] font-black ${col.textCls} uppercase`}>{c.charAt(0)}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-gray-50 px-8 py-5 flex items-center justify-end gap-3 border-t border-gray-100">
+          <button onClick={onClose} className="px-5 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-200 rounded-xl transition-colors">Annuler</button>
+          <button onClick={handleSubmit} className="px-6 py-2.5 bg-[#0F7A60] hover:bg-emerald-800 text-white shadow-lg text-xs font-black rounded-xl transition-all">
+            {btnLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Sous-composant : Nœud Organigramme Récursif ─────────────────────────────
+function OrgNode({ dept, depth, admins, roles, onEdit, onDelete, onAddChild, onAssign, onRemoveMember }: {
+  dept: OrgDepartment
+  depth: number
+  admins: AdminUser[]
+  roles: RoleConfig[]
+  onEdit: (d: OrgDepartment) => void
+  onDelete: (id: string) => void
+  onAddChild: (parentId: string) => void
+  onAssign: (deptId: string) => void
+  onRemoveMember: (deptId: string, userId: string) => void
+}) {
+  const colors = DEPT_COLORS[dept.color] || DEPT_COLORS.indigo
+  const members = dept.memberIds
+    .map(id => admins.find(a => a.id === id))
+    .filter(Boolean) as AdminUser[]
+
+  const depthLabels = ['Département', 'Division', 'Équipe', 'Unité', 'Groupe']
+  const nodeLabel = depthLabels[Math.min(depth, depthLabels.length - 1)]
+
+  return (
+    <div className="relative pt-8 flex flex-col items-center">
+      {/* Vertical connector from parent */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-8 bg-gray-200" />
+
+      {/* This node card */}
+      <div className={`${colors.bgCls} border ${colors.borderCls} px-5 py-4 rounded-2xl shadow-sm w-full max-w-[280px] flex flex-col items-center hover:shadow-md transition-all relative group`}>
+        {/* Node type badge */}
+        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white border border-gray-200 px-2.5 py-0.5 rounded-lg text-[8px] font-black text-gray-400 uppercase tracking-widest shadow-sm">
+          {nodeLabel}
+        </span>
+
+        {/* Actions */}
+        <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={() => onAddChild(dept.id)} className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Ajouter sous-département">
+            <Plus size={11} />
+          </button>
+          <button onClick={() => onEdit(dept)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Modifier">
+            <Edit2 size={11} />
+          </button>
+          <button onClick={() => onDelete(dept.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Supprimer">
+            <Trash2 size={11} />
+          </button>
+        </div>
+
+        <span className={`font-black ${colors.textCls} text-[13px] uppercase tracking-wider mt-1`}>{dept.name}</span>
+        {dept.subtitle && <span className={`text-[10px] ${colors.subtextCls} font-bold mt-0.5`}>{dept.subtitle}</span>}
+
+        {/* Members */}
+        <div className="mt-3 pt-3 border-t border-gray-200/50 flex flex-col gap-1.5 w-full">
+          {members.length > 0 ? members.map(member => {
+            const roleConf = member.internal_role_id
+              ? roles.find(r => r.id === member.internal_role_id)
+              : roles.find(r => r.name.toLowerCase().includes(member.role.split('_')[0])) || roles[0]
+            return (
+              <div key={member.id} className={`bg-white border-l-4 ${colors.accentCls} rounded-xl px-2.5 py-2 shadow-sm border border-gray-100/50 flex items-center gap-2 group/member`}>
+                {member.avatar_url ? (
+                  <img src={member.avatar_url} alt={member.name || ''} className="w-7 h-7 rounded-lg object-cover border border-gray-100 flex-shrink-0" />
+                ) : (
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-[10px] flex-shrink-0 ${roleConf?.bgCls || 'bg-gray-50'} ${roleConf?.colorCls || 'text-gray-600'} border border-gray-100`}>
+                    {(member.name || member.email).charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="min-w-0 text-left flex-1">
+                  <p className="text-[11px] font-black text-gray-900 truncate">{member.name || member.email.split('@')[0]}</p>
+                  <p className="text-[9px] text-gray-400 font-bold truncate">{roleConf?.name || member.role}</p>
+                </div>
+                <button onClick={() => onRemoveMember(dept.id, member.id)} className="opacity-0 group-hover/member:opacity-100 p-0.5 text-gray-300 hover:text-red-500 transition-all flex-shrink-0" title="Retirer"><UserMinus size={10} /></button>
+              </div>
+            )
+          }) : (
+            <div className="bg-gray-50/80 rounded-lg px-2 py-2.5 text-center border border-dashed border-gray-200">
+              <p className="text-[9px] text-gray-400 font-bold italic">Aucun membre</p>
+            </div>
+          )}
+          <button onClick={() => onAssign(dept.id)} className="w-full bg-white hover:bg-gray-50 border border-dashed border-gray-200 hover:border-gray-300 rounded-lg px-2 py-1.5 text-[10px] font-bold text-gray-400 hover:text-gray-600 transition-all flex items-center justify-center gap-1">
+            <Plus size={10} /> Membre
+          </button>
+        </div>
+      </div>
+
+      {/* Children */}
+      {dept.children.length > 0 && (
+        <>
+          <div className="w-1 h-6 bg-gray-200" />
+          <div className="w-full border-t-2 border-gray-200">
+            <div className={`grid gap-4 ${dept.children.length >= 3 ? 'grid-cols-3' : dept.children.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+              {dept.children.map(child => (
+                <OrgNode
+                  key={child.id}
+                  dept={child}
+                  depth={depth + 1}
+                  admins={admins}
+                  roles={roles}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  onAddChild={onAddChild}
+                  onAssign={onAssign}
+                  onRemoveMember={onRemoveMember}
+                />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+

@@ -27,7 +27,6 @@ export async function GET() {
       db: 'connected',
       latency_ms: latency,
       recent_errors: errors.length,
-      last_errors: errors.slice(-5),
       timestamp: new Date().toISOString(),
     }, {
       status: 200,

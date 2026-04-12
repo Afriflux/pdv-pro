@@ -92,7 +92,16 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
             )}
           </div>
           
-          <h1 className="text-xl md:text-2xl font-black tracking-tight text-center">{bioLink.title || bioLink.user?.name}</h1>
+          <h1 className="text-xl md:text-2xl font-black tracking-tight text-center">{bioLink.user?.name || bioLink.title}</h1>
+          {bioLink.title && bioLink.user?.name && (
+            <p className={`text-xs md:text-sm font-bold mt-1 tracking-wide ${
+              theme === 'dark' ? 'text-gray-500' :
+              theme === 'glass' ? 'text-white/60' :
+              'text-gray-400'
+            }`}>
+              {bioLink.title}
+            </p>
+          )}
         </div>
 
         <div className="px-6 md:px-10 pb-16 flex flex-col items-center w-full relative z-10 flex-1">

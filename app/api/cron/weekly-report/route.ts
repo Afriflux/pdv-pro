@@ -53,7 +53,7 @@ function buildWeeklyReportEmail(
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
         <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#0D5C4A,#0F7A60);padding:40px 48px;">
-          <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;">Yayyam<span style="color:#C9A84C;">Pro</span></h1>
+          <h1 style="margin:0;font-size:28px;font-weight:900;color:#ffffff;">Yayyam</h1>
           <p style="margin:8px 0 0;color:rgba(255,255,255,0.75);font-size:14px;">Rapport hebdomadaire · ${weekLabel}</p>
         </td></tr>
         <!-- Corps -->

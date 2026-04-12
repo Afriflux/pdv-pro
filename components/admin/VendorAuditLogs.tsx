@@ -17,11 +17,11 @@ interface AuditLog {
   id: string
   action: string
   created_at: string
-  details: { reason?: string } | any
+  details: { reason?: string } | Record<string, unknown> | null
   admin: {
     email: string
     role: string
-  }
+  } | null
 }
 
 interface VendorAuditLogsProps {
@@ -88,16 +88,16 @@ export default function VendorAuditLogs({ logs }: VendorAuditLogsProps) {
                     </time>
                   </div>
                   
-                  {log.details?.reason && (
+                  {(log.details as { reason?: string })?.reason && (
                     <div className="mt-3 bg-white p-3 rounded-xl border border-gray-100 flex items-start gap-2 relative">
                       <MessageSquare className="w-4 h-4 text-gray-300 mt-0.5 shrink-0" />
-                      <p className="text-sm font-medium text-gray-700 italic">"{log.details.reason}"</p>
+                      <p className="text-sm font-medium text-gray-700 italic">&quot;{(log.details as { reason?: string }).reason}&quot;</p>
                     </div>
                   )}
 
                   <div className="mt-3 flex items-center justify-end gap-1.5 text-[10px] text-gray-400 font-medium">
                     <span>Par:</span>
-                    <span className="text-gray-600 font-bold truncate max-w-[150px]">{log.admin.email}</span>
+                    <span className="text-gray-600 font-bold truncate max-w-[150px]">{log.admin?.email ?? 'Système'}</span>
                   </div>
                 </div>
               </div>

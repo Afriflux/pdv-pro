@@ -63,7 +63,7 @@ function AmbassadorContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (codeStatus !== 'valid' || !userId) return
+    if ((ambassadorCode.trim() !== '' && codeStatus !== 'valid') || !userId) return
 
     setIsSubmitting(true)
     setErrorMsg(null)
@@ -116,8 +116,8 @@ function AmbassadorContent() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="ambassadorCodeInput" className="block text-sm font-medium text-charcoal mb-1.5">
-                  Code Ambassadeur <span className="text-red-500">*</span>
-                  <span className="ml-1 text-[10px] text-gray-400 font-normal">(obligatoire pour vendre)</span>
+                  Code Ambassadeur 
+                  <span className="ml-1 text-[10px] text-gray-400 font-normal">(optionnel)</span>
                 </label>
                 <div className="relative">
                   <input
@@ -161,9 +161,9 @@ function AmbassadorContent() {
 
               <button
                 type="submit"
-                disabled={codeStatus !== 'valid' || isSubmitting}
+                disabled={(ambassadorCode.trim() !== '' && codeStatus !== 'valid') || isSubmitting}
                 className={`w-full font-bold py-4 rounded-xl transition-all shadow-md mt-4 transform active:scale-[0.98] text-white flex items-center justify-center gap-2 ${
-                  codeStatus === 'valid' && !isSubmitting
+                  (ambassadorCode.trim() === '' || codeStatus === 'valid') && !isSubmitting
                     ? 'bg-emerald hover:bg-emerald-rich shadow-emerald/20'
                     : 'bg-gray-300 cursor-not-allowed shadow-none'
                 }`}

@@ -21,7 +21,7 @@ const GENERAL_FIELDS = [
   { key: 'support_email',      label: 'Email support',         placeholder: 'support@yayyam.com', type: 'email' },
   { key: 'support_whatsapp',   label: 'WhatsApp support',      placeholder: '+221 00 000 00 00',  type: 'tel' },
   { key: 'app_url',            label: 'URL publique',          placeholder: 'https://yayyam.com', type: 'url' },
-  { key: 'landing_hero_badge', label: 'Badge Héro Promotionnel (Accueil)', placeholder: '🚀 Launch Week...', type: 'text', helper: 'Le petit badge textuel sous le titre principal de l\'accueil' },
+  { key: 'landing_hero_badge', label: 'Badge Héro Promotionnel (Accueil)', placeholder: '🇸🇳 Yayyam — En Pulaar...', type: 'text', helper: 'Le petit badge textuel sous le titre principal de l\'accueil' },
 ]
 
 const MEDIA_FIELDS = [

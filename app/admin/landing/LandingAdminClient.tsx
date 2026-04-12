@@ -227,7 +227,7 @@ export default function LandingAdminClient(props: Props) {
              <div className="space-y-6">
                 <div className="group">
                   <label htmlFor="landing_hero_badge" className={labelClass}>Badge Promotionnel (Le Tag de lancement)</label>
-                  <input id="landing_hero_badge" type="text" value={general.landing_hero_badge || ''} onChange={e => updateGeneral('landing_hero_badge', e.target.value)} className={inputClass} placeholder="🚀 Launch Week — Commission à 5%..." title="Le badge en haut du hero" />
+                  <input id="landing_hero_badge" type="text" value={general.landing_hero_badge || ''} onChange={e => updateGeneral('landing_hero_badge', e.target.value)} className={inputClass} placeholder="🇸🇳 Yayyam — En Pulaar, c'est la confiance..." title="Le badge en haut du hero" />
                   <p className="text-xs text-slate-400 mt-2 font-medium">S'affiche tout en haut, laissez vide pour masquer.</p>
                 </div>
                 <div>

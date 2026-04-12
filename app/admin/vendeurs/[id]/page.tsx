@@ -9,6 +9,8 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import VendorActions from './VendorActions'
 import AdminVendorEdit from '@/components/admin/AdminVendorEdit'
 import VendorAuditLogs from '@/components/admin/VendorAuditLogs'
+import WalletActions from './WalletActions'
+import RefundButton from './RefundButton'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -163,11 +165,19 @@ export default async function VendeurDetailPage({
   const orders  = (ordersRes.data ?? []) as OrderRow[]
   const vendor  = userRes.data    as UserRow | null
   
-  const rawLogs = logsRes.data as any[]
-  const auditLogs = rawLogs?.map(log => ({
+  interface RawLogRow {
+    id: string
+    action: string
+    created_at: string
+    details: { reason?: string } | Record<string, unknown> | null
+    admin: { email: string; role: string } | { email: string; role: string }[] | null
+  }
+
+  const rawLogs = (logsRes.data ?? []) as RawLogRow[]
+  const auditLogs = rawLogs.map(log => ({
     ...log,
     admin: Array.isArray(log.admin) ? log.admin[0] : log.admin
-  })) || []
+  }))
 
   // 5. Stats 30 jours
   const totalOrders  = orders.length
@@ -309,6 +319,9 @@ export default async function VendeurDetailPage({
                   </div>
                 </div>
               )}
+
+              {/* Actions Wallet Admin */}
+              <WalletActions storeId={store.id} currentBalance={Number(wallet?.balance ?? 0)} />
             </div>
 
             {/* Commandes récentes */}
@@ -335,18 +348,26 @@ export default async function VendeurDetailPage({
                          <p className="text-[10px] text-gray-400 mt-0.5">{formatDate(order.created_at)}</p>
                        </div>
                     </div>
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-3">
                        <span className={`text-[10px] font-black px-2.5 py-1 rounded-full ${
                          order.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
                          order.status === 'paid' ? 'bg-blue-100 text-blue-700' :
+                         order.status === 'refunded' ? 'bg-purple-100 text-purple-700' :
                          order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
                          'bg-gray-100 text-gray-600'
                        }`}>
-                         {order.status}
+                         {order.status === 'refunded' ? 'Remboursé' : order.status}
                        </span>
                        <span className="text-sm font-black text-[#1A1A1A] w-24 text-right">
                          {formatAmount(Number(order.vendor_amount))}
                        </span>
+                       {['paid', 'completed', 'delivered'].includes(order.status) && (
+                         <RefundButton 
+                           storeId={store.id}
+                           orderId={order.id}
+                           totalAmount={Number(order.total_amount)}
+                         />
+                       )}
                     </div>
                   </Link>
                 )) : (
@@ -468,8 +489,13 @@ export default async function VendeurDetailPage({
                     storeId={store.id} 
                     userId={vendor?.id || store.user_id} 
                     initialData={{
-                      role: vendor?.role || 'vendeur',
+                      name: vendor?.name || '',
                       email: vendor?.email || '',
+                      phone: vendor?.phone || null,
+                      role: vendor?.role || 'vendeur',
+                      store_name: store.name,
+                      slug: store.slug,
+                      description: store.description,
                       whatsapp: store.whatsapp,
                       onboarding_completed: store.onboarding_completed,
                       kyc_status: store.kyc_status

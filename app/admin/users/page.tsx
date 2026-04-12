@@ -1,7 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import Link from 'next/link'
 import {
-  Search, Users, Shield, UserCircle, Store as StoreIcon,
+  Search, Users, UserCircle,
   Phone, Mail, Calendar, Filter, ChevronLeft, ChevronRight
 } from 'lucide-react'
 
@@ -67,6 +67,19 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
     .range(offset, offset + pageSize - 1)
 
   if (error) console.error('[AdminUsers] Error:', error.message)
+
+  // ── Charger les stores pour les vendeurs (pour le lien "Voir espace") ──
+  const vendeurIds = (users ?? []).filter((u: any) => u.role === 'vendeur').map((u: any) => u.id) // eslint-disable-line @typescript-eslint/no-explicit-any
+  let storesByUserId: Record<string, string> = {}
+  if (vendeurIds.length > 0) {
+    const { data: stores } = await supabase
+      .from('Store')
+      .select('id, user_id')
+      .in('user_id', vendeurIds)
+    if (stores) {
+      storesByUserId = Object.fromEntries(stores.map((s: any) => [s.user_id, s.id])) // eslint-disable-line @typescript-eslint/no-explicit-any
+    }
+  }
 
   // ── KPI Stats ──
   const roleCountPromises = ['vendeur', 'acheteur', 'affilie', 'ambassadeur', 'closer', 'super_admin', 'gestionnaire', 'support'].map(
@@ -199,10 +212,13 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
 
                     // Determine navigation link based on role
                     let detailLink = '#'
-                    if (user.role === 'vendeur') detailLink = `/admin/users?role=vendeur`
-                    else if (user.role === 'acheteur' || user.role === 'client') detailLink = `/admin/users?role=acheteur`
-                    else if (user.role === 'affilie') detailLink = `/admin/users?role=affilie`
-                    else if (user.role === 'ambassadeur') detailLink = `/admin/users?role=ambassadeur`
+                    if (user.role === 'vendeur') {
+                      const storeId = storesByUserId[user.id]
+                      detailLink = storeId ? `/admin/vendeurs/${storeId}` : `/admin/vendeurs`
+                    }
+                    else if (user.role === 'acheteur' || user.role === 'client') detailLink = `/admin/clients?q=${encodeURIComponent(user.phone || user.email || user.name)}`
+                    else if (user.role === 'affilie') detailLink = `/admin/vendeurs`
+                    else if (user.role === 'ambassadeur') detailLink = `/admin/ambassadeurs`
                     else if (user.role === 'closer') detailLink = `/admin/closing`
                     else if (user.role === 'super_admin' || user.role === 'gestionnaire' || user.role === 'support') detailLink = `/admin/roles`
 

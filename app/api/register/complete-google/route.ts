@@ -19,22 +19,21 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { ambassadorCode } = body
 
-    if (!ambassadorCode || !ambassadorCode.trim()) {
-      return NextResponse.json(
-        { success: false, error: 'Code ambassadeur manquant' },
-        { status: 400 }
-      )
-    }
+    let code = ''
+    let isValidCode = false
 
-    const code = ambassadorCode.trim().toUpperCase()
+    if (ambassadorCode && ambassadorCode.trim()) {
+      code = ambassadorCode.trim().toUpperCase()
 
-    // 1. Valider le code ambassadeur
-    const ambassador = await validateAmbassadorCode(code)
-    if (!ambassador) {
-      return NextResponse.json(
-        { success: false, error: 'Code ambassadeur invalide ou inactif' },
-        { status: 400 }
-      )
+      // 1. Valider le code ambassadeur
+      const ambassador = await validateAmbassadorCode(code)
+      if (!ambassador) {
+        return NextResponse.json(
+          { success: false, error: 'Code ambassadeur invalide ou inactif' },
+          { status: 400 }
+        )
+      }
+      isValidCode = true
     }
 
     // Client Admin — SERVICE_ROLE_KEY — bypass RLS pour la création DB
@@ -119,12 +118,14 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Lier le vendeur à l'ambassadeur
-    const registrationMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
-    try {
-      await linkVendorToAmbassador(code, storeId, registrationMonth)
-    } catch (ambassadorError: unknown) {
-      console.error('[OAUTH GOOGLE] Erreur linkVendorToAmbassador:', ambassadorError)
-      // Ne pas throw l'erreur, la boutique est créée
+    if (isValidCode) {
+      const registrationMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
+      try {
+        await linkVendorToAmbassador(code, storeId, registrationMonth)
+      } catch (ambassadorError: unknown) {
+        console.error('[OAUTH GOOGLE] Erreur linkVendorToAmbassador:', ambassadorError)
+        // Ne pas throw l'erreur, la boutique est créée
+      }
     }
 
     return NextResponse.json({ success: true, redirectTo: '/dashboard' })

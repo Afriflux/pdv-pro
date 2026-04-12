@@ -24,15 +24,15 @@ export async function signUp(formData: FormData): Promise<void> {
     redirect('/register?error=champs_requis')
   }
 
-  // ── Validation du code ambassadeur (obligatoire pour vendeur) ──
-  if (role === 'vendeur') {
-    if (!ambassadorCode || !ambassadorCode.trim()) {
-      redirect(`/register?error=code_requis&msg=${encodeURIComponent('Le code ambassadeur est obligatoire pour créer une boutique.')}`)
-    }
-
+  // ── Validation du code ambassadeur (OPTIONNEL pour vendeur) ──
+  let validAmbassadorCode: string | null = null
+  if (role === 'vendeur' && ambassadorCode && ambassadorCode.trim()) {
     const ambassador = await validateAmbassadorCode(ambassadorCode.trim())
-    if (!ambassador) {
-      redirect(`/register?error=code_invalide&msg=${encodeURIComponent('Code ambassadeur invalide ou inactif. Vérifiez votre code.')}`)
+    if (ambassador) {
+      validAmbassadorCode = ambassadorCode.trim()
+    } else {
+      // Code invalide → on laisse passer mais on prévient
+      console.warn('[SIGNUP] Code ambassadeur invalide ignoré:', ambassadorCode)
     }
   }
 
@@ -155,11 +155,11 @@ export async function signUp(formData: FormData): Promise<void> {
         throw new Error('Wallet insert: ' + walletError.message)
       }
 
-      // ── Lier le vendeur à l'ambassadeur ───────────────────────
-      if (ambassadorCode && ambassadorCode.trim()) {
+      // ── Lier le vendeur à l'ambassadeur (si code valide) ────────
+      if (validAmbassadorCode) {
         const registrationMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
         try {
-          await linkVendorToAmbassador(ambassadorCode.trim(), storeId, registrationMonth)
+          await linkVendorToAmbassador(validAmbassadorCode, storeId, registrationMonth)
         } catch (ambassadorError: unknown) {
           // Non bloquant : l'inscription réussit même si le lien ambassadeur échoue
           const msg = ambassadorError instanceof Error ? ambassadorError.message : 'Erreur lien ambassadeur'
