@@ -141,7 +141,7 @@ export default async function RootLayout({
   
   let dynamicAgents = undefined
   if (kv['whatsapp_agents']) {
-    try { dynamicAgents = JSON.parse(kv['whatsapp_agents']) } catch(e) {}
+    try { dynamicAgents = JSON.parse(kv['whatsapp_agents']) } catch {}
   }
 
   return (

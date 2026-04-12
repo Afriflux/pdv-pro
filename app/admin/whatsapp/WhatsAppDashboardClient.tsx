@@ -77,7 +77,7 @@ export default function WhatsAppDashboardClient({ initialAgents }: { initialAgen
       } else {
         toast.error("Échec de la sauvegarde : " + error)
       }
-    } catch (e) {
+    } catch {
       toast.error("Erreur serveur.")
     }
     setIsSaving(false)
@@ -115,7 +115,7 @@ export default function WhatsAppDashboardClient({ initialAgents }: { initialAgen
                 <p className="text-xs text-gray-400 mt-1">Le widget sera invisible sur le site.</p>
               </div>
             ) : (
-              agents.map((agent, index) => (
+              agents.map((agent) => (
                 <div key={agent.id} className="relative bg-gray-50 border border-gray-100 p-6 rounded-2xl group hover:border-[#0F7A60]/30 transition-all">
                   <div className="absolute top-6 left-4 text-gray-300 cursor-move opacity-50 hidden md:block">
                     <GripVertical size={20} />
