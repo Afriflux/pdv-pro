@@ -56,13 +56,17 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
     .order('name', { ascending: true })
     .limit(100)
  
+  const TEMP_NAMES = ['Baobab', 'Panthère', 'Léopard', 'Hibiscus', 'Flamant', 'Gazelle', 'Guépard', 'Éléphant', 'Zèbre', 'Colibri', 'Acacia']
+  const hashStr = (str: string) => str.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0)
+
   // Nettoyage et typage manuel des données.
   const validatedStores = (storesData || []).map((s: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     const scoreData = Array.isArray(s.score) ? s.score[0] : s.score
+    const fallbackName = `Boutique ${TEMP_NAMES[Math.abs(hashStr(s.id || 'a')) % TEMP_NAMES.length]}`
     
     return {
       id: s.id,
-      name: s.store_name?.trim() ? s.store_name : (s.slug ? `Boutique ${s.slug}` : 'Boutique Anonyme'),
+      name: s.store_name?.trim() ? s.store_name : fallbackName,
       slug: s.slug,
       logoUrl: s.logo_url,
       category: s.category || 'Vente générale',
