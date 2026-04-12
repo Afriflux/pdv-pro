@@ -34,7 +34,7 @@ const DEFAULT_AGENTS = [
   },
 ]
 
-export function WhatsAppFloatingButton({ defaultPhone = '221776581741', dynamicAgents }: { defaultPhone?: string, dynamicAgents?: any[] }) {
+export function WhatsAppFloatingButton({ defaultPhone = '221776581741', dynamicAgents }: { defaultPhone?: string, dynamicAgents?: Record<string, string>[] }) {
   const agentsToDisplay = dynamicAgents && dynamicAgents.length > 0 ? dynamicAgents : DEFAULT_AGENTS
   const [isVisible, setIsVisible] = useState(false)
   const [isOpen, setIsOpen] = useState(false)

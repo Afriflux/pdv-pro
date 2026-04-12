@@ -31,8 +31,8 @@ export async function saveWhatsAppAgents(agentsJsonStr: string) {
     revalidatePath('/', 'layout')
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error saving WhatsApp Config:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
   }
 }
