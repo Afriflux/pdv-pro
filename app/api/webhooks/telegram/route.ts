@@ -43,16 +43,14 @@ export async function POST(req: NextRequest) {
       const chatId = String(update.message.chat.id)
       const userName = update.message.from?.first_name || 'Admin'
 
-      // Sauvegarder dans PlatformConfig (upsert)
+      // Sauvegarder dans IntegrationKey
       const { error: upsertError } = await admin
         .from('IntegrationKey')
         .upsert({
-          provider: 'telegram',
-          key_name: 'TELEGRAM_ADMIN_CHAT_ID',
-          key_value: chatId,
-          is_active: true,
+          key: 'TELEGRAM_ADMIN_CHAT_ID',
+          value: chatId,
           updated_at: new Date().toISOString(),
-        }, { onConflict: 'provider,key_name' })
+        }, { onConflict: 'key' })
 
       if (upsertError) {
         console.error('[Webhook Telegram] Erreur sauvegarde ADMIN_CHAT_ID:', upsertError)
