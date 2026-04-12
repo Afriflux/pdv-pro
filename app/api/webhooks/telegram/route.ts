@@ -63,15 +63,17 @@ export async function POST(req: NextRequest) {
         })
       } else {
         // Aussi sauvegarder dans PlatformConfig pour les routes qui lisent depuis là
-        await admin
+        const { error: pConfigError } = await admin
           .from('PlatformConfig')
           .upsert({
             key: 'TELEGRAM_ADMIN_CHAT_ID',
             value: chatId,
             updated_at: new Date().toISOString(),
           }, { onConflict: 'key' })
-          .then(() => {})
-          .catch((e) => console.warn('[Webhook Telegram] PlatformConfig upsert warning:', e))
+
+        if (pConfigError) {
+          console.warn('[Webhook Telegram] PlatformConfig upsert warning:', pConfigError)
+        }
 
         await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           method: 'POST',
