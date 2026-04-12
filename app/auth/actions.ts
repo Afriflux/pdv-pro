@@ -10,7 +10,7 @@ import { validateAmbassadorCode, linkVendorToAmbassador } from '@/lib/ambassador
 // ----------------------------------------------------------------
 // INSCRIPTION
 // ----------------------------------------------------------------
-export async function signUp(formData: FormData): Promise<void> {
+export async function signUp(formData: FormData): Promise<{ success?: boolean; error?: string; msg?: string; url?: string }> {
   const supabase = await createClient()
 
   const email          = formData.get('email') as string
@@ -21,7 +21,7 @@ export async function signUp(formData: FormData): Promise<void> {
   const ambassadorCode = (formData.get('ambassadorCode') as string) || null
 
   if (!email || !name || !password) {
-    redirect('/register?error=champs_requis')
+    return { error: 'champs_requis', msg: 'Veuillez remplir tous les champs.' }
   }
 
   // ── Validation du code ambassadeur (OPTIONNEL pour vendeur) ──
@@ -52,7 +52,7 @@ export async function signUp(formData: FormData): Promise<void> {
     .maybeSingle()
 
   if (existingEmail) {
-    redirect(`/register?error=email_taken&msg=${encodeURIComponent('Cette adresse email est déjà liée à un compte.')}`)
+    return { error: 'email_taken', msg: 'Cette adresse email est déjà liée à un compte.' }
   }
 
   // B. Vérifier téléphone (si fourni)
@@ -64,7 +64,7 @@ export async function signUp(formData: FormData): Promise<void> {
       .maybeSingle()
 
     if (existingPhone) {
-      redirect(`/register?error=phone_taken&msg=${encodeURIComponent('Ce numéro de téléphone est déjà lié à un compte.')}`)
+      return { error: 'phone_taken', msg: 'Ce numéro de téléphone est déjà lié à un compte.' }
     }
   }
 
@@ -80,8 +80,7 @@ export async function signUp(formData: FormData): Promise<void> {
 
   if (authError || !authData.user) {
     console.error('[SIGNUP ERROR] Auth Supabase:', authError)
-    const msg = encodeURIComponent(authError?.message || 'Erreur lors de la création Auth.')
-    redirect(`/register?error=auth_error&msg=${msg}`)
+    return { error: 'auth_error', msg: authError?.message || 'Erreur lors de la création du compte.' }
   }
 
   // Connecter directement l'utilisateur
@@ -178,7 +177,7 @@ export async function signUp(formData: FormData): Promise<void> {
     await supabaseAdmin.auth.admin.deleteUser(userId)
 
     const msg = dbError instanceof Error ? dbError.message : 'Une erreur interne est survenue.'
-    redirect(`/register?error=db_error&msg=${encodeURIComponent(msg)}`)
+    return { error: 'db_error', msg }
   }
 
   // ── Email de bienvenue Brevo ─────────────────────────────────────────
@@ -199,15 +198,13 @@ export async function signUp(formData: FormData): Promise<void> {
   })
 
   revalidatePath('/', 'layout')
-  if (role === 'acheteur' || role === 'client') {
-    redirect('/client')
-  } else if (role === 'affilie') {
-    redirect('/portal')
-  } else if (role === 'closer') {
-    redirect('/closer')
-  } else {
-    redirect('/dashboard')
-  }
+  
+  let targetUrl = '/dashboard'
+  if (role === 'acheteur' || role === 'client') targetUrl = '/client'
+  else if (role === 'affilie') targetUrl = '/portal'
+  else if (role === 'closer') targetUrl = '/closer'
+
+  return { success: true, url: targetUrl }
 }
 
 // ----------------------------------------------------------------

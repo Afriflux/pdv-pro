@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useTransition } from 'react'
+import Swal from 'sweetalert2'
 import Link from 'next/link'
 import { signUp, signInWithGoogle } from '@/app/auth/actions'
 import { PhoneInput } from '@/components/ui/PhoneInput'
@@ -30,6 +31,7 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
   const [phone, setPhone] = useState('')
   const [role, setRole] = useState<UserRole>('vendeur')
   const [formError, setFormError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
 
   // ── États code ambassadeur ────────────────────────────────────
   const [ambassadorCode, setAmbassadorCode] = useState('')
@@ -200,19 +202,19 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
         </div>
 
         <form
-          action={signUp}
           className="space-y-4"
           onSubmit={(e) => {
+            e.preventDefault()
             setFormError(null)
-            const pwd = (e.currentTarget.elements.namedItem('password') as HTMLInputElement).value
-            const confirmPwd = (e.currentTarget.elements.namedItem('confirm_password') as HTMLInputElement).value
+            const formElement = e.currentTarget
+            
+            const pwd = (formElement.elements.namedItem('password') as HTMLInputElement).value
+            const confirmPwd = (formElement.elements.namedItem('confirm_password') as HTMLInputElement).value
             if (pwd !== confirmPwd) {
-              e.preventDefault()
               setFormError('Les mots de passe ne correspondent pas.')
               return
             }
             if (!phone) {
-              e.preventDefault()
               setFormError('Veuillez entrer votre numéro WhatsApp.')
               return
             }
@@ -221,13 +223,44 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
               setAmbassadorCode('')
               setCodeStatus('idle')
             }
+
+            const formData = new FormData(formElement)
+            formData.set('role', role)
+            formData.set('phone', phone)
+            if (role === 'vendeur') formData.set('ambassadorCode', ambassadorCode.trim().toUpperCase())
+
+            startTransition(async () => {
+              try {
+                const res = await signUp(formData)
+                if (res?.error) {
+                  setFormError(res.msg || 'Erreur lors de l\'inscription.')
+                  return
+                }
+                if (res?.success) {
+                  await Swal.fire({
+                    title: 'Inscription Réussie ! 🎉',
+                    text: 'Votre compte a bien été créé. Redirection en cours...',
+                    icon: 'success',
+                    timer: 3500,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    background: '#0A1A1F',
+                    color: '#fff',
+                    iconColor: '#34D399',
+                    customClass: {
+                       popup: 'border border-emerald-500/20 rounded-3xl'
+                    }
+                  })
+                  window.location.href = res.url || '/dashboard'
+                }
+              } catch (err: unknown) {
+                console.error(err)
+                setFormError('Une erreur inattendue est survenue.')
+              }
+            })
           }}
         >
-          <input type="hidden" name="role" value={role} />
-          <input type="hidden" name="phone" value={phone} />
-          {role === 'vendeur' && (
-            <input type="hidden" name="ambassadorCode" value={ambassadorCode.trim().toUpperCase()} />
-          )}
+          {/* inputs are now explicitly collected via FormData */}
 
           <div className="group/input">
             <label htmlFor="name" className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
@@ -334,17 +367,26 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
 
           <button
             type="submit"
-            disabled={!canSubmit}
+            disabled={!canSubmit || isPending}
             className={`w-full flex items-center justify-center gap-2 font-black uppercase tracking-widest py-4 rounded-xl transition-all mt-6 transform group/btn ${
-              canSubmit
+              canSubmit && !isPending
                 ? 'bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-[#021f15] shadow-[0_0_20px_rgba(52,211,153,0.3)] hover:shadow-[0_0_40px_rgba(52,211,153,0.5)] active:scale-[0.98]'
                 : 'bg-white/5 text-white/30 cursor-not-allowed shadow-none border border-white/5'
             }`}
           >
-            {role === 'vendeur' ? 'Déployer Cloud Store' : 
-             role === 'affilie' ? 'Rejoindre l\'affiliation' :
-             role === 'closer' ? 'Devenir Closer' : 'Accéder à mon espace'}
-            {canSubmit && <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />}
+            {isPending ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Création en cours...
+              </>
+            ) : (
+              <>
+                {role === 'vendeur' ? 'Déployer Cloud Store' : 
+                 role === 'affilie' ? 'Rejoindre l\'affiliation' :
+                 role === 'closer' ? 'Devenir Closer' : 'Accéder à mon espace'}
+                {canSubmit && <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />}
+              </>
+            )}
           </button>
         </form>
 
