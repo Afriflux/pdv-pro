@@ -83,7 +83,7 @@ export default async function DashboardLayout({
           />
         )}
 
-        <div className="pt-12 lg:pt-0 pb-24 lg:pb-12 w-full max-w-[2000px] mx-auto px-3 lg:px-8 xl:px-10 min-h-full">
+        <div className="pt-14 lg:pt-4 pb-24 lg:pb-12 w-full max-w-[2000px] mx-auto px-3 lg:px-8 xl:px-10 min-h-full">
           {children}
         </div>
         </div>

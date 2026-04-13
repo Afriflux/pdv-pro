@@ -22,6 +22,7 @@ import {
   LogOut,
   X,
   ChevronRight,
+  Menu,
 } from 'lucide-react'
 
 // ----------------------------------------------------------------
@@ -172,7 +173,7 @@ export function MobileBottomNav({ storeName, userName, avatarUrl }: MobileBottom
               )
             })}
 
-            {/* Profile Tab */}
+            {/* Menu Tab */}
             <button
               onClick={() => setProfileOpen(true)}
               {...({ 'aria-expanded': profileOpen, 'aria-haspopup': 'dialog' } as any)}
@@ -180,15 +181,10 @@ export function MobileBottomNav({ storeName, userName, avatarUrl }: MobileBottom
                 profileOpen ? 'text-[#0F7A60]' : 'text-gray-400'
               }`}
             >
-              <div className="relative w-[24px] h-[24px] rounded-full overflow-hidden border-2 border-current flex items-center justify-center bg-gray-100">
-                {avatarUrl ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-[10px] font-black">{initial}</span>
-                )}
+              <div className="relative w-[24px] h-[24px] flex items-center justify-center">
+                <Menu strokeWidth={profileOpen ? 2.5 : 1.8} className="w-[22px] h-[22px]" />
               </div>
-              <span className="text-[10px] font-semibold leading-tight">Profil</span>
+              <span className={`text-[10px] font-semibold leading-tight ${profileOpen ? 'font-bold' : ''}`}>Menu</span>
             </button>
           </div>
         </div>
@@ -223,26 +219,36 @@ export function MobileBottomNav({ storeName, userName, avatarUrl }: MobileBottom
               {/* Header */}
               <div className="flex items-center justify-between px-5 pt-2 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-100 bg-emerald-50 flex items-center justify-center shadow-sm">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-100 bg-emerald-50 flex items-center justify-center shadow-sm">
                     {avatarUrl ? (
                       /* eslint-disable-next-line @next/next/no-img-element */
                       <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-lg font-black text-emerald-700">{initial}</span>
+                      <span className="text-base font-black text-emerald-700">{initial}</span>
                     )}
                   </div>
                   <div>
-                    <p className="text-base font-black text-gray-900 leading-tight">{userName}</p>
-                    <p className="text-xs text-gray-500 font-medium">{storeName}</p>
+                    <p className="text-sm font-black text-gray-900 leading-tight">{userName}</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{storeName}</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setProfileOpen(false)}
-                  title="Fermer"
-                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-3">
+                  <form action={signOut}>
+                    <button
+                      type="submit"
+                      className="px-3 py-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 text-xs font-bold transition-colors flex items-center gap-1.5"
+                    >
+                      <LogOut className="w-3.5 h-3.5" /> Quitter
+                    </button>
+                  </form>
+                  <button
+                    onClick={() => setProfileOpen(false)}
+                    title="Fermer"
+                    className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
               {/* Links */}
@@ -271,20 +277,7 @@ export function MobileBottomNav({ storeName, userName, avatarUrl }: MobileBottom
                 })}
               </div>
 
-              {/* Logout */}
-              <div className="px-3 pt-2 pb-4 border-t border-gray-100 mt-1">
-                <form action={signOut}>
-                  <button
-                    type="submit"
-                    className="flex items-center gap-3.5 px-3 py-3.5 rounded-2xl w-full text-red-500 hover:bg-red-50 transition-all active:scale-[0.98]"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center">
-                      <LogOut className="w-[18px] h-[18px] text-red-500" />
-                    </div>
-                    <span className="text-sm font-medium">Déconnexion</span>
-                  </button>
-                </form>
-              </div>
+
             </div>
           </div>
         </>

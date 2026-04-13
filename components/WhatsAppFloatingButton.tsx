@@ -61,7 +61,7 @@ export function WhatsAppFloatingButton({ defaultPhone = '221776581741', dynamicA
   }
 
   return (
-    <div className="fixed bottom-[72px] right-3 lg:bottom-6 lg:right-6 z-40 flex flex-col items-end gap-3 font-sans">
+    <div className="fixed bottom-[85px] right-3 lg:bottom-6 lg:right-6 z-40 flex flex-col items-end gap-3 font-sans">
       
       {/* Menu Multi-Agents */}
       {isOpen && (

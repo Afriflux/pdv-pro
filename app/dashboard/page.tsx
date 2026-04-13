@@ -335,15 +335,15 @@ export default async function DashboardPage() {
   const capitalizedDate = dateFormatted.charAt(0).toUpperCase() + dateFormatted.slice(1)
 
   return (
-    <main className="min-h-screen bg-gray-50 font-sans pb-20 relative">
+    <div className="w-full font-sans relative">
       <WelcomeGuide />
       
       {/* HEADER */}
-      <header className="bg-white border-b border-gray-200 px-6 lg:px-10 py-5 relative z-10">
-        <div className="w-full flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <header className="bg-white border border-gray-100 rounded-3xl px-4 lg:px-10 py-4 lg:py-5 relative z-10 mb-4 shadow-sm">
+        <div className="w-full flex flex-col md:flex-row md:items-end justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight">Bonjour, {userName} ! 👋</h1>
-            <p className="text-xs font-medium text-gray-500 mt-1">{capitalizedDate}</p>
+            <h1 className="text-xl lg:text-2xl font-black text-gray-900 tracking-tight">Bonjour, {userName} ! 👋</h1>
+            <p className="text-[10px] lg:text-xs font-medium text-gray-500 mt-1">{capitalizedDate}</p>
           </div>
           {!storeRaw.contract_accepted && (
             <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl flex items-center gap-3">
@@ -357,12 +357,12 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <div className="w-full p-6 lg:p-10">
+      <div className="w-full p-2 lg:p-0">
         <Suspense fallback={<ChecklistSkeleton />}><ChecklistServer storeId={storeRaw.id} /></Suspense>
         <Suspense fallback={<KPISkeleton />}><DashboardKPIs storeId={storeRaw.id} storeRaw={storeRaw} /></Suspense>
         <Suspense fallback={<ChartSkeleton />}><DashboardChartServer storeId={storeRaw.id} storeSlug={storeRaw.slug} /></Suspense>
         <Suspense fallback={<OrdersSkeleton />}><RecentOrdersServer storeId={storeRaw.id} /></Suspense>
       </div>
-    </main>
+    </div>
   )
 }

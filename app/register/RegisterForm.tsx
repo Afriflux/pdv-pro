@@ -33,56 +33,11 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
   const [formError, setFormError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  // ── États code ambassadeur ────────────────────────────────────
-  const [ambassadorCode, setAmbassadorCode] = useState('')
-  const [codeStatus, setCodeStatus] = useState<'idle' | 'loading' | 'valid' | 'invalid'>('idle')
-  const [ambassadorName, setAmbassadorName] = useState<string | null>(null)
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  // Validation du code
-  useEffect(() => {
-    if (role !== 'vendeur') return
-    if (!ambassadorCode.trim()) {
-      setCodeStatus('idle')
-      setAmbassadorName(null)
-      return
-    }
-
-    setCodeStatus('loading')
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `/api/ambassador/validate?code=${encodeURIComponent(ambassadorCode.trim().toUpperCase())}`
-        )
-        const data = (await res.json()) as ValidateResponse
-        if (data.valid) {
-          setCodeStatus('valid')
-          setAmbassadorName(data.ambassadorName ?? null)
-        } else {
-          setCodeStatus('invalid')
-          setAmbassadorName(null)
-        }
-      } catch {
-        setCodeStatus('invalid')
-        setAmbassadorName(null)
-      }
-    }, 500)
-
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-    }
-  }, [ambassadorCode, role])
-
   const handleRoleChange = (newRole: UserRole) => {
     setRole(newRole)
-    setAmbassadorCode('')
-    setCodeStatus('idle')
-    setAmbassadorName(null)
   }
 
-  const canSubmit = true // Code ambassadeur est toujours optionnel
+  const canSubmit = true
 
   return (
     <div 
@@ -212,16 +167,9 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
               setFormError('Veuillez entrer votre numéro WhatsApp.')
               return
             }
-            if (role === 'vendeur' && ambassadorCode.trim() && codeStatus !== 'valid') {
-              // Code invalide ou en cours → on le vide silencieusement avant envoi
-              setAmbassadorCode('')
-              setCodeStatus('idle')
-            }
-
             const formData = new FormData(formElement)
             formData.set('role', role)
             formData.set('phone', phone)
-            if (role === 'vendeur') formData.set('ambassadorCode', ambassadorCode.trim().toUpperCase())
 
             startTransition(async () => {
               try {
@@ -285,54 +233,6 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
             </label>
             <PhoneInput value={phone} onChange={setPhone} placeholder="77 000 00 00" required theme="dark" />
           </div>
-
-          {/* Déploiement conditionnel fluide Code Ambassadeur */}
-          {role === 'vendeur' && (
-            <div
-              className="overflow-hidden animate-[fade-slice-down_0.4s_ease-out_both]"
-            >
-                <div className="group/code pt-2">
-                  <label htmlFor="ambassadorCodeInput" className="block text-xs font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/code:text-emerald-400 transition-colors">
-                    Code Référentiel <span className="text-xs text-white/30 lowercase tracking-normal font-medium ml-1">(Optionnel)</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="ambassadorCodeInput"
-                      type="text"
-                      value={ambassadorCode}
-                      onChange={(e) => setAmbassadorCode(e.target.value)}
-                      placeholder="Ex: AFRIKA-CONNECT"
-                      maxLength={30}
-                      className={`w-full px-4 py-4 pr-10 rounded-xl bg-black/40 border text-white placeholder:text-white/20 focus:outline-none focus:ring-1 transition-all text-sm uppercase font-mono tracking-widest shadow-inner ${
-                        codeStatus === 'valid'
-                          ? 'border-emerald-400 focus:border-emerald-400 focus:ring-emerald-400/50'
-                          : codeStatus === 'invalid'
-                            ? 'border-red-400 focus:border-red-400 focus:ring-red-400/50'
-                            : 'border-white/5 focus:border-emerald-400/50 focus:ring-emerald-400/50 hover:border-white/10 hover:bg-black/50'
-                      }`}
-                    />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      {codeStatus === 'loading' && <Loader2 className="w-5 h-5 animate-spin text-white/40" />}
-                      {codeStatus === 'valid'   && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
-                      {codeStatus === 'invalid' && <XCircle className="w-5 h-5 text-red-500" />}
-                    </div>
-                  </div>
-
-                  {codeStatus === 'valid' && ambassadorName && (
-                    <div className="mt-2 flex items-center gap-2 text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-xl animate-[fade-slide-up_0.3s_ease-out_both]">
-                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                      Accompagnement validé : {ambassadorName}
-                    </div>
-                  )}
-                  {codeStatus === 'invalid' && ambassadorCode.trim() && (
-                    <div className="mt-2 flex items-center gap-2 text-xs text-red-400 font-bold bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-xl animate-[fade-slide-up_0.3s_ease-out_both]">
-                      <XCircle className="w-3.5 h-3.5 shrink-0" />
-                      Code non reconnu
-                    </div>
-                  )}
-                </div>
-            </div>
-          )}
 
           <div className="group/input pt-2">
             <label htmlFor="password" className="block text-xs font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">Mot de passe</label>

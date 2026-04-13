@@ -107,30 +107,30 @@ export function GettingStartedChecklist({
 
   if (!isVisible) return null
 
-  // SVGs properties for Circular Progress (Apple Fitness style)
-  const size = 100
+  // SVGs properties for Circular Progress
   const strokeWidth = 8
-  const radius = (size - strokeWidth) / 2
+  const baseSize = 70 // reduced from 100 for compactness
+  const radius = (baseSize - strokeWidth) / 2
   const circumference = radius * 2 * Math.PI
   const strokeDashoffset = circumference - (animatedProgress / 100) * circumference
 
   return (
-    <div className="bg-white/70 backdrop-blur-3xl border border-white max-w-7xl mx-auto rounded-[24px] lg:rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-6 lg:mb-8 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-700 relative">
+    <div className="bg-white/70 backdrop-blur-3xl border border-white max-w-7xl mx-auto rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-6 lg:mb-8 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-700 relative">
       <div 
-        className="absolute top-6 right-6 cursor-pointer text-gray-400 hover:text-ink hover:bg-gray-100 p-2 rounded-full transition-all" 
+        className="absolute top-4 right-4 cursor-pointer text-gray-400 hover:text-ink hover:bg-gray-100 p-2 rounded-full transition-all z-20" 
         onClick={hideGuide} 
         title="Masquer définitivement"
       >
         <X size={20} />
       </div>
 
-      <div className="p-5 lg:p-10 flex flex-col lg:flex-row gap-6 lg:gap-10">
+      <div className="p-4 lg:p-6 flex flex-col lg:flex-row gap-4 lg:gap-8">
         
         {/* Left Side: Progress & Intro */}
-        <div className="flex flex-col items-center lg:items-start lg:w-1/3 shrink-0">
-          <div className="mb-6 relative flex items-center justify-center">
+        <div className="flex flex-row lg:flex-col items-center lg:items-start lg:w-1/3 shrink-0 gap-4 lg:gap-0">
+          <div className="relative flex items-center justify-center shrink-0">
             {/* Apple Fitness style circular progress */}
-            <svg width={size} height={size} className="-rotate-90 drop-shadow-sm">
+            <svg width={baseSize} height={baseSize} className="-rotate-90 drop-shadow-sm">
               <defs>
                 <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#C9A84C" />
@@ -142,12 +142,12 @@ export function GettingStartedChecklist({
                 </filter>
               </defs>
               <circle
-                cx={size / 2} cy={size / 2} r={radius}
+                cx={baseSize / 2} cy={baseSize / 2} r={radius}
                 stroke="#f3f4f6" strokeWidth={strokeWidth}
                 fill="none"
               />
               <circle
-                cx={size / 2} cy={size / 2} r={radius}
+                cx={baseSize / 2} cy={baseSize / 2} r={radius}
                 stroke="url(#goldGradient)" strokeWidth={strokeWidth} strokeLinecap="round"
                 fill="none"
                 style={{
@@ -159,25 +159,27 @@ export function GettingStartedChecklist({
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-2xl font-black text-ink">{animatedProgress}%</span>
+              <span className="text-xl font-black text-ink">{animatedProgress}%</span>
             </div>
           </div>
           
-          <h2 className="text-xl lg:text-3xl font-black text-ink mb-2 lg:mb-3 text-center lg:text-left tracking-tight">Checklist de<br />Succès 🚀</h2>
-          <p className="text-gray-500 text-sm font-medium text-center lg:text-left leading-relaxed">
-            Complétez ces étapes pour lancer votre business et encaisser vos premiers paiements sur Yayyam.
-          </p>
+          <div className="flex-1 lg:mt-6">
+            <h2 className="text-lg lg:text-3xl font-black text-ink mb-1 lg:mb-3 text-left tracking-tight">Checklist de<br className="hidden lg:block"/> Succès 🚀</h2>
+            <p className="text-gray-500 text-xs lg:text-sm font-medium text-left leading-relaxed">
+              Complétez ces étapes pour lancer votre business et encaisser vos paiements.
+            </p>
+          </div>
         </div>
 
-        {/* Right Side: Steps Grid */}
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-5">
+        {/* Right Side: Steps Grid / Carousel */}
+        <div className="flex-1 flex overflow-x-auto lg:grid lg:grid-cols-2 gap-3 lg:gap-5 pb-2 snap-x snap-mandatory hide-scrollbar">
           {steps.map((step) => (
             <div 
               key={step.id} 
-              className={`relative overflow-hidden border rounded-2xl transition-all duration-300 group
+              className={`relative overflow-hidden border rounded-2xl transition-all duration-300 group snap-start shrink-0 w-[240px] sm:w-[280px] lg:w-auto
                 ${step.done 
                   ? 'border-gray-200 bg-gray-50/50' 
-                  : 'border-gray-100 bg-white hover:border-[#C9A84C]/40 hover:shadow-[0_4px_20px_rgb(201,168,76,0.1)] hover:-translate-y-0.5'
+                  : 'border-gray-100 bg-white hover:border-[#C9A84C]/40 hover:shadow-[0_4px_20px_rgb(201,168,76,0.1)]'
                 }
               `}
             >
@@ -186,10 +188,10 @@ export function GettingStartedChecklist({
 
               {step.href ? (
                 <Link href={step.href} className="relative z-10 p-5 flex items-start gap-4 h-full">
-                  <div className={`mt-0.5 w-7 h-7 shrink-0 rounded-full flex items-center justify-center shadow-sm transition-colors border
+                  <div className={`mt-0.5 w-6 h-6 shrink-0 rounded-full flex items-center justify-center shadow-sm transition-colors border
                     ${step.done ? 'bg-[#1A1A1A] border-[#1A1A1A] text-white' : 'bg-white border-gray-200 text-gray-400 group-hover:border-[#C9A84C] group-hover:text-[#C9A84C]'}
                   `}>
-                    {step.done ? <Check size={14} strokeWidth={4} /> : step.icon}
+                    {step.done ? <Check size={12} strokeWidth={4} /> : step.icon}
                   </div>
                   
                   <div className="flex-1 min-w-0 pr-4">
@@ -209,10 +211,10 @@ export function GettingStartedChecklist({
                 </Link>
               ) : (
                 <div className="relative z-10 p-5 flex items-start gap-4 h-full">
-                  <div className={`mt-0.5 w-7 h-7 shrink-0 rounded-full flex items-center justify-center shadow-sm transition-colors border
+                  <div className={`mt-0.5 w-6 h-6 shrink-0 rounded-full flex items-center justify-center shadow-sm transition-colors border
                     ${step.done ? 'bg-[#1A1A1A] border-[#1A1A1A] text-white' : 'bg-white border-gray-200 text-gray-400'}
                   `}>
-                    {step.done ? <Check size={14} strokeWidth={4} /> : step.icon}
+                    {step.done ? <Check size={12} strokeWidth={4} /> : step.icon}
                   </div>
                   
                   <div className="flex-1 min-w-0">
