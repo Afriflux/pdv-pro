@@ -82,7 +82,7 @@ export async function deleteTemplate(templateId: string, storeId: string) {
     
     revalidatePath('/dashboard/apps/templates')
     return { success: true }
-  } catch (error: any) {
+  } catch (_error: any) {
     return { success: false, error: 'Cannot delete template' }
   }
 }

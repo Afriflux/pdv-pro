@@ -23,7 +23,7 @@ export async function getActivePaymentGateway(): Promise<PaymentGatewayProvider>
   try {
      const cfg = await prisma.platformConfig.findUnique({ where: { key: 'ACTIVE_PAYMENT_GATEWAY' }});
      if (cfg?.value) activeName = cfg.value;
-  } catch(e) {}
+  } catch(_e) {}
   
   if (activeName.toUpperCase() === 'BICTORYS') {
      return new BictorysProvider();

@@ -394,7 +394,7 @@ export function Sidebar({
   vendorType: 'digital' | 'physical' | 'hybrid'
   installedApps?: string[]
 }) {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [_mobileOpen, _setMobileOpen] = useState(false)
   
   // States exist outside rendering loop for persistence
   const [collapsed, setCollapsed] = useState(false)
@@ -456,14 +456,27 @@ export function Sidebar({
         </div>
       </aside>
 
-      {/* ── MOBILE : top bar compacte (pas de hamburger, nav = BottomTabBar) ── */}
+      {/* ── MOBILE : top bar compacte ── */}
       <div className="lg:hidden">
-        <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-4 h-12">
-          <Link href="/" className="flex items-center gap-1.5">
+        <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-3 h-14">
+          <Link href="/" className="flex items-center gap-2 focus:outline-none ml-1">
+            <div className="w-8 h-8 rounded-xl bg-[#0F7A60] flex items-center justify-center shadow-sm">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-white">
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 9.5L12 3l9 6.5V20a2 2 0 01-2 2H5a2 2 0 01-2-2V9.5z" />
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 22V12h6v10" />
+               </svg>
+            </div>
             <Logo variant="text" size="sm" textClassName="text-gray-900" />
           </Link>
-          <div className="flex items-center gap-2">
-            <NotificationBell />
+          <div className="flex items-center gap-2 mr-1">
+            <Link href="/dashboard/settings#profil" className="w-9 h-9 rounded-full overflow-hidden border-2 border-emerald-100 bg-emerald-50 flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all">
+              {avatarUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-sm font-black text-emerald-700">{userName?.[0]?.toUpperCase() ?? 'Y'}</span>
+              )}
+            </Link>
           </div>
         </div>
       </div>

@@ -92,14 +92,14 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
 
     try {
       const { error } = await supabase.storage
-        .from('yayyam-products')
+        .from('products')
         .upload(path, file, { upsert: false })
 
       if (error) {
         toast.error(`Erreur d'upload: ${error.message}`)
         setMessage({ text: `Erreur d'upload: ${error.message}`, type: 'error' })
       } else {
-        const { data: urlData } = supabase.storage.from('yayyam-products').getPublicUrl(path)
+        const { data: urlData } = supabase.storage.from('products').getPublicUrl(path)
         setFormData(prev => ({ ...prev, [field]: urlData.publicUrl }))
         toast.success(`Image ${field === 'avatar_url' ? 'de profil' : 'de couverture'} uploadée !`)
         setMessage({ text: 'Image uploadée avec succès ! N\'oubliez pas de Sauvegarder.', type: 'success' })

@@ -86,30 +86,30 @@ export default async function ContactPage() {
   const mapsUrl = cfg['contact_maps_url'] || ''
 
   return (
-    <div className="bg-[#FAFAF7] min-h-screen text-[#0A1F1A] font-body selection:bg-[#1A9E7A]/20 selection:text-[#0A1F1A]">
+    <div className="bg-cream min-h-screen text-ink font-body selection:bg-emerald-light/20 selection:text-ink">
       <LandingHeader isLoggedIn={isLoggedIn} dashboardUrl={dashboardUrl} />
 
       <main>
         {/* ── HERO DARK PREMIUM ────────────────────────────────────────────── */}
-        <section className="pt-40 pb-48 px-6 relative overflow-hidden bg-[#0A1F1A] text-white">
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#0D5C4A]/40 via-[#C9A84C]/10 to-transparent blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#0ABFAA]/20 via-transparent to-transparent blur-[100px] pointer-events-none" />
+        <section className="pt-40 pb-48 px-6 relative overflow-hidden bg-ink text-white">
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald/40 via-gold/10 to-transparent blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-turquoise/20 via-transparent to-transparent blur-[100px] pointer-events-none" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
 
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-5 py-2 mb-8 shadow-sm">
               <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1A9E7A] opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-[#1A9E7A]" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-light opacity-75" />
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-light" />
               </span>
-              <span className="text-sm font-bold text-[#1A9E7A] tracking-widest uppercase">
+              <span className="text-sm font-bold text-emerald-light tracking-widest uppercase">
                 Support Yayyam 24/7
               </span>
             </div>
             
             <h1 className="text-5xl md:text-7xl font-display font-black tracking-tighter mb-8 leading-[1.05]">
               {heroTitle.split('.').length > 1 ? (
-                <>{heroTitle.split('.')[0]}.<span className="text-[#1A9E7A] inline-block relative ml-2">{heroTitle.split('.').slice(1).join('.')}</span></>
+                <>{heroTitle.split('.')[0]}.<span className="text-emerald-light inline-block relative ml-2">{heroTitle.split('.').slice(1).join('.')}</span></>
               ) : heroTitle}
             </h1>
             <p className="text-xl md:text-2xl text-white/60 font-light max-w-2xl mx-auto leading-relaxed">
@@ -148,28 +148,28 @@ export default async function ContactPage() {
             {/* Email — Light */}
             <a
               href={`mailto:${email}`}
-              className="bg-white rounded-[2.5rem] p-10 relative overflow-hidden group hover:shadow-[0_20px_40px_rgba(10,31,26,0.06)] transition-all duration-500 hover:-translate-y-2 border border-[#0A1F1A]/5 flex flex-col justify-between"
+              className="bg-white rounded-[2.5rem] p-10 relative overflow-hidden group hover:shadow-[0_20px_40px_rgba(10,31,26,0.06)] transition-all duration-500 hover:-translate-y-2 border border-ink/5 flex flex-col justify-between"
             >
               <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700 pointer-events-none" />
               <div className="relative z-10">
-                <div className="w-16 h-16 bg-[#FAFAF7] rounded-2xl flex items-center justify-center mb-8 text-[#0D5C4A] group-hover:scale-110 group-hover:-rotate-6 transition-transform border border-[#0A1F1A]/5 shadow-sm">
+                <div className="w-16 h-16 bg-cream rounded-2xl flex items-center justify-center mb-8 text-emerald group-hover:scale-110 group-hover:-rotate-6 transition-transform border border-ink/5 shadow-sm">
                   <Mail size={32} />
                 </div>
-                <h3 className="text-3xl font-display font-black text-[#0A1F1A] mb-3">Email</h3>
-                <p className="text-[#0A1F1A]/60 font-medium mb-8 text-[15px] leading-relaxed">Privilégié pour les opportunités de partenariats, de presse, et pour les requêtes administratives complexes.</p>
+                <h3 className="text-3xl font-display font-black text-ink mb-3">Email</h3>
+                <p className="text-ink/60 font-medium mb-8 text-[15px] leading-relaxed">Privilégié pour les opportunités de partenariats, de presse, et pour les requêtes administratives complexes.</p>
               </div>
               <div className="relative z-10">
-                <span className="text-sm font-bold text-[#0D5C4A] bg-[#FAFAF7] border border-[#0A1F1A]/5 px-5 py-3 rounded-full inline-block group-hover:bg-[#0D5C4A] group-hover:text-white transition-colors">{email}</span>
+                <span className="text-sm font-bold text-emerald bg-cream border border-ink/5 px-5 py-3 rounded-full inline-block group-hover:bg-emerald group-hover:text-white transition-colors">{email}</span>
               </div>
             </a>
 
             {/* Localisation — Dark Mode Glass */}
-            <div className="bg-[#0A1F1A] rounded-[2.5rem] p-10 text-white relative overflow-hidden group border border-white/10 hover:shadow-[0_20px_40px_rgba(10,31,26,0.3)] transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between">
+            <div className="bg-ink rounded-[2.5rem] p-10 text-white relative overflow-hidden group border border-white/10 hover:shadow-[0_20px_40px_rgba(10,31,26,0.3)] transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between">
               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
-              <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-[#C9A84C]/20 blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-1000" />
+              <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-gold/20 blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-1000" />
               
               <div className="relative z-10">
-                <div className="w-16 h-16 bg-white/5 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 border border-white/10 text-[#C9A84C] group-hover:scale-110 transition-transform shadow-lg">
+                <div className="w-16 h-16 bg-white/5 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-8 border border-white/10 text-gold group-hover:scale-110 transition-transform shadow-lg">
                   <Clock size={32} />
                 </div>
                 <h3 className="text-2xl font-display font-black mb-2">Support Actif</h3>
@@ -177,7 +177,7 @@ export default async function ContactPage() {
               </div>
               
               <div className="relative z-10 pt-8 border-t border-white/10 mt-8">
-                <div className="flex items-center gap-2 text-[#C9A84C] mb-2">
+                <div className="flex items-center gap-2 text-gold mb-2">
                   <MapPin size={16} />
                   <span className="text-xs font-bold uppercase tracking-widest">Opérations</span>
                 </div>
@@ -191,16 +191,16 @@ export default async function ContactPage() {
         {/* ── FORMULAIRE PREMIUM ──────────────────────────── */}
         <section className="pb-32 px-6">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-[3rem] p-8 md:p-16 shadow-[0_20px_80px_-15px_rgba(10,31,26,0.06)] border border-[#0A1F1A]/5 relative overflow-hidden group/card">
-              <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#0ABFAA]/5 blur-[120px] rounded-full pointer-events-none transition-transform duration-[2s] group-hover/card:scale-110" />
+            <div className="bg-white rounded-[3rem] p-8 md:p-16 shadow-[0_20px_80px_-15px_rgba(10,31,26,0.06)] border border-ink/5 relative overflow-hidden group/card">
+              <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-turquoise/5 blur-[120px] rounded-full pointer-events-none transition-transform duration-[2s] group-hover/card:scale-110" />
               
               <div className="relative z-10">
                 <div className="text-center mb-16">
-                  <div className="w-20 h-20 bg-[#FAFAF7] rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-[#1A9E7A] border border-[#0A1F1A]/5 shadow-sm transform -rotate-3 group-hover/card:rotate-0 transition-transform duration-500">
+                  <div className="w-20 h-20 bg-cream rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-emerald-light border border-ink/5 shadow-sm transform -rotate-3 group-hover/card:rotate-0 transition-transform duration-500">
                     <Send size={36} />
                   </div>
-                  <h2 className="text-3xl md:text-5xl font-display font-black text-[#0A1F1A] mb-4 tracking-tighter">{formTitle}</h2>
-                  <p className="text-lg text-[#0A1F1A]/60 font-medium">Une demande très précise ? Remplissez ce formulaire et obtenez une réponse claire dans votre boite mail.</p>
+                  <h2 className="text-3xl md:text-5xl font-display font-black text-ink mb-4 tracking-tighter">{formTitle}</h2>
+                  <p className="text-lg text-ink/60 font-medium">Une demande très précise ? Remplissez ce formulaire et obtenez une réponse claire dans votre boite mail.</p>
                 </div>
 
                 <form action={`https://formsubmit.co/${email}`} method="POST" className="space-y-6">
@@ -212,7 +212,7 @@ export default async function ContactPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="group/input">
-                      <label htmlFor="contact-name" className="block text-xs font-black text-[#0A1F1A]/40 mb-2 uppercase tracking-widest group-focus-within/input:text-[#1A9E7A] transition-colors">
+                      <label htmlFor="contact-name" className="block text-xs font-black text-ink/40 mb-2 uppercase tracking-widest group-focus-within/input:text-emerald-light transition-colors">
                         Nom complet
                       </label>
                       <input
@@ -221,11 +221,11 @@ export default async function ContactPage() {
                         type="text"
                         required
                         placeholder="Ex: Aida Ndiaye"
-                        className="w-full px-5 py-4 rounded-2xl bg-[#FAFAF7] border border-[#0A1F1A]/10 text-[#0A1F1A] placeholder:text-[#0A1F1A]/30 focus:outline-none focus:border-[#1A9E7A] focus:ring-4 focus:ring-[#1A9E7A]/10 transition-all font-medium hover:border-[#0A1F1A]/20"
+                        className="w-full px-5 py-4 rounded-2xl bg-cream border border-ink/10 text-ink placeholder:text-ink/30 focus:outline-none focus:border-emerald-light focus:ring-4 focus:ring-emerald-light/10 transition-all font-medium hover:border-ink/20"
                       />
                     </div>
                     <div className="group/input">
-                      <label htmlFor="contact-email" className="block text-xs font-black text-[#0A1F1A]/40 mb-2 uppercase tracking-widest group-focus-within/input:text-[#1A9E7A] transition-colors">
+                      <label htmlFor="contact-email" className="block text-xs font-black text-ink/40 mb-2 uppercase tracking-widest group-focus-within/input:text-emerald-light transition-colors">
                         Email
                       </label>
                       <input
@@ -234,20 +234,20 @@ export default async function ContactPage() {
                         type="email"
                         required
                         placeholder="contact@exemple.com"
-                        className="w-full px-5 py-4 rounded-2xl bg-[#FAFAF7] border border-[#0A1F1A]/10 text-[#0A1F1A] placeholder:text-[#0A1F1A]/30 focus:outline-none focus:border-[#1A9E7A] focus:ring-4 focus:ring-[#1A9E7A]/10 transition-all font-medium hover:border-[#0A1F1A]/20"
+                        className="w-full px-5 py-4 rounded-2xl bg-cream border border-ink/10 text-ink placeholder:text-ink/30 focus:outline-none focus:border-emerald-light focus:ring-4 focus:ring-emerald-light/10 transition-all font-medium hover:border-ink/20"
                       />
                     </div>
                   </div>
 
                   <div className="group/input">
-                    <label htmlFor="contact-subject" className="block text-xs font-black text-[#0A1F1A]/40 mb-2 uppercase tracking-widest group-focus-within/input:text-[#1A9E7A] transition-colors">
+                    <label htmlFor="contact-subject" className="block text-xs font-black text-ink/40 mb-2 uppercase tracking-widest group-focus-within/input:text-emerald-light transition-colors">
                       Sujet
                     </label>
                     <select
                       id="contact-subject"
                       name="subject"
                       required
-                      className="w-full px-5 py-4 rounded-2xl bg-[#FAFAF7] border border-[#0A1F1A]/10 text-[#0A1F1A] focus:outline-none focus:border-[#1A9E7A] focus:ring-4 focus:ring-[#1A9E7A]/10 transition-all font-medium hover:border-[#0A1F1A]/20 appearance-none cursor-pointer"
+                      className="w-full px-5 py-4 rounded-2xl bg-cream border border-ink/10 text-ink focus:outline-none focus:border-emerald-light focus:ring-4 focus:ring-emerald-light/10 transition-all font-medium hover:border-ink/20 appearance-none cursor-pointer"
                     >
                       <option value="">Choisir un sujet...</option>
                       <option value="question_generale">Question générale</option>
@@ -261,7 +261,7 @@ export default async function ContactPage() {
                   </div>
 
                   <div className="group/input">
-                    <label htmlFor="contact-message" className="block text-xs font-black text-[#0A1F1A]/40 mb-2 uppercase tracking-widest group-focus-within/input:text-[#1A9E7A] transition-colors">
+                    <label htmlFor="contact-message" className="block text-xs font-black text-ink/40 mb-2 uppercase tracking-widest group-focus-within/input:text-emerald-light transition-colors">
                       Message
                     </label>
                     <textarea
@@ -270,14 +270,14 @@ export default async function ContactPage() {
                       rows={6}
                       required
                       placeholder="Décrivez votre demande en détail..."
-                      className="w-full px-5 py-4 rounded-2xl bg-[#FAFAF7] border border-[#0A1F1A]/10 text-[#0A1F1A] placeholder:text-[#0A1F1A]/30 focus:outline-none focus:border-[#1A9E7A] focus:ring-4 focus:ring-[#1A9E7A]/10 transition-all font-medium resize-none hover:border-[#0A1F1A]/20"
+                      className="w-full px-5 py-4 rounded-2xl bg-cream border border-ink/10 text-ink placeholder:text-ink/30 focus:outline-none focus:border-emerald-light focus:ring-4 focus:ring-emerald-light/10 transition-all font-medium resize-none hover:border-ink/20"
                     />
                   </div>
 
                   <div className="pt-4">
                     <button
                       type="submit"
-                      className="w-full bg-[#0A1F1A] hover:bg-[#0D5C4A] text-white font-bold py-5 rounded-2xl transition-all shadow-[0_20px_40px_-15px_rgba(10,31,26,0.6)] hover:shadow-[0_20px_40px_-10px_rgba(13,92,74,0.6)] active:scale-[0.98] flex items-center justify-center gap-3 group/btn text-lg"
+                      className="w-full bg-ink hover:bg-emerald text-white font-bold py-5 rounded-2xl transition-all shadow-[0_20px_40px_-15px_rgba(10,31,26,0.6)] hover:shadow-[0_20px_40px_-10px_rgba(13,92,74,0.6)] active:scale-[0.98] flex items-center justify-center gap-3 group/btn text-lg"
                     >
                       Envoyer le message
                       <ArrowRight size={20} className="group-hover/btn:translate-x-1.5 transition-transform" />
@@ -294,11 +294,11 @@ export default async function ContactPage() {
           <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-24">
             
             <div className="lg:w-1/3 pt-4">
-               <span className="inline-block bg-[#0D5C4A]/10 text-[#0D5C4A] font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 border border-[#0D5C4A]/20">
+               <span className="inline-block bg-emerald/10 text-emerald font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 border border-emerald/20">
                  Communauté
                </span>
-               <h3 className="text-4xl font-display font-black text-[#0A1F1A] mb-6 tracking-tighter">Social Club.</h3>
-               <p className="text-lg text-[#0A1F1A]/60 font-light mb-10 leading-relaxed">
+               <h3 className="text-4xl font-display font-black text-ink mb-6 tracking-tighter">Social Club.</h3>
+               <p className="text-lg text-ink/60 font-light mb-10 leading-relaxed">
                  Retrouvez-nous là où l'écosystème Yayyam grandit. Astuces e-commerce, coulisses, nouveautés et moments forts.
                </p>
 
@@ -353,8 +353,8 @@ export default async function ContactPage() {
 
             <div className="lg:w-2/3">
               {mapsUrl ? (
-                <div className="w-full h-full min-h-[350px] rounded-[3rem] overflow-hidden shadow-[0_20px_50px_-15px_rgba(10,31,26,0.1)] border border-[#0A1F1A]/5 relative group">
-                  <div className="absolute inset-0 bg-[#0A1F1A]/5 group-hover:bg-transparent transition-colors duration-500 pointer-events-none" />
+                <div className="w-full h-full min-h-[350px] rounded-[3rem] overflow-hidden shadow-[0_20px_50px_-15px_rgba(10,31,26,0.1)] border border-ink/5 relative group">
+                  <div className="absolute inset-0 bg-ink/5 group-hover:bg-transparent transition-colors duration-500 pointer-events-none" />
                   <iframe
                     src={mapsUrl}
                     width="100%"
@@ -368,12 +368,12 @@ export default async function ContactPage() {
                   />
                 </div>
               ) : (
-                <div className="w-full h-full min-h-[350px] rounded-[3rem] bg-[#0A1F1A]/5 border border-[#0A1F1A]/10 flex flex-col items-center justify-center text-center p-10">
-                   <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-[#0A1F1A]/40 mb-6 shadow-sm">
+                <div className="w-full h-full min-h-[350px] rounded-[3rem] bg-ink/5 border border-ink/10 flex flex-col items-center justify-center text-center p-10">
+                   <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-ink/40 mb-6 shadow-sm">
                      <MapPin size={32} />
                    </div>
-                   <h4 className="text-xl font-display font-black text-[#0A1F1A] mb-2">Bureau de Dakar</h4>
-                   <p className="text-[#0A1F1A]/60 max-w-sm">Siège des opérations Yayyam au Sénégal. Accès réservé aux employés et partenaires.</p>
+                   <h4 className="text-xl font-display font-black text-ink mb-2">Bureau de Dakar</h4>
+                   <p className="text-ink/60 max-w-sm">Siège des opérations Yayyam au Sénégal. Accès réservé aux employés et partenaires.</p>
                 </div>
               )}
             </div>
@@ -382,30 +382,30 @@ export default async function ContactPage() {
         </section>
 
         {/* ── TRUST BADGES ───────────────────────────────────── */}
-        <section className="py-20 px-6 border-y border-[#0A1F1A]/5 bg-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#1A9E7A]/[0.02] via-transparent to-transparent pointer-events-none" />
+        <section className="py-20 px-6 border-y border-ink/5 bg-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-light/[0.02] via-transparent to-transparent pointer-events-none" />
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
             <div className="text-center group">
-              <div className="w-16 h-16 bg-[#FAFAF7] rounded-2xl flex items-center justify-center mx-auto mb-5 text-[#0D5C4A] border border-[#0A1F1A]/5 group-hover:-translate-y-1 group-hover:shadow-md transition-all">
+              <div className="w-16 h-16 bg-cream rounded-2xl flex items-center justify-center mx-auto mb-5 text-emerald border border-ink/5 group-hover:-translate-y-1 group-hover:shadow-md transition-all">
                 <Headphones size={28} />
               </div>
-              <h4 className="font-display font-black text-xl text-[#0A1F1A] mb-2">Support Humain</h4>
-              <p className="text-sm text-[#0A1F1A]/60 leading-relaxed px-4">Pas de chatbot qui tourne en boucle. Vous parlez à de vraies personnes basées en d'Afrique de l'Ouest.</p>
+              <h4 className="font-display font-black text-xl text-ink mb-2">Support Humain</h4>
+              <p className="text-sm text-ink/60 leading-relaxed px-4">Pas de chatbot qui tourne en boucle. Vous parlez à de vraies personnes basées en d'Afrique de l'Ouest.</p>
             </div>
             <div className="text-center group">
-              <div className="w-16 h-16 bg-[#FAFAF7] rounded-2xl flex items-center justify-center mx-auto mb-5 text-[#0D5C4A] border border-[#0A1F1A]/5 group-hover:-translate-y-1 group-hover:shadow-md transition-all">
+              <div className="w-16 h-16 bg-cream rounded-2xl flex items-center justify-center mx-auto mb-5 text-emerald border border-ink/5 group-hover:-translate-y-1 group-hover:shadow-md transition-all">
                 <Shield size={28} />
               </div>
-              <h4 className="font-display font-black text-xl text-[#0A1F1A] mb-2">Confidentiel</h4>
-              <p className="text-sm text-[#0A1F1A]/60 leading-relaxed px-4">Vos données et celles de vos clients sont chiffrées de bout en bout et hébergées sur des serveurs sécurisés.</p>
+              <h4 className="font-display font-black text-xl text-ink mb-2">Confidentiel</h4>
+              <p className="text-sm text-ink/60 leading-relaxed px-4">Vos données et celles de vos clients sont chiffrées de bout en bout et hébergées sur des serveurs sécurisés.</p>
             </div>
             <div className="text-center group">
-              <div className="w-16 h-16 bg-[#FAFAF7] rounded-2xl flex items-center justify-center mx-auto mb-5 text-[#0D5C4A] border border-[#0A1F1A]/5 group-hover:-translate-y-1 group-hover:shadow-md transition-all">
+              <div className="w-16 h-16 bg-cream rounded-2xl flex items-center justify-center mx-auto mb-5 text-emerald border border-ink/5 group-hover:-translate-y-1 group-hover:shadow-md transition-all">
                 <HelpCircle size={28} />
               </div>
-              <h4 className="font-display font-black text-xl text-[#0A1F1A] mb-2">Centre d'Aide</h4>
-              <p className="text-sm text-[#0A1F1A]/60 leading-relaxed px-4">
-                Une base de connaissances complète pour <Link href="/#faq" className="text-[#1A9E7A] font-bold hover:underline">répondre aux questions fréquentes</Link> en toute autonomie.
+              <h4 className="font-display font-black text-xl text-ink mb-2">Centre d'Aide</h4>
+              <p className="text-sm text-ink/60 leading-relaxed px-4">
+                Une base de connaissances complète pour <Link href="/#faq" className="text-emerald-light font-bold hover:underline">répondre aux questions fréquentes</Link> en toute autonomie.
               </p>
             </div>
           </div>
@@ -413,7 +413,7 @@ export default async function ContactPage() {
       </main>
 
       {/* ── FOOTER MINI ──────────────────────────────────────── */}
-      <footer className="bg-[#0A1F1A] py-10 px-6 text-center relative overflow-hidden">
+      <footer className="bg-ink py-10 px-6 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
         <div className="relative z-10">
           <div className="flex items-center justify-center gap-2 mb-4">

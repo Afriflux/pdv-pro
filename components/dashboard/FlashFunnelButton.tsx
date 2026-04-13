@@ -21,7 +21,7 @@ export default function FlashFunnelButton({ productId, compact = false, classNam
         alert(res?.error || "Erreur de génération du Funnel Flash")
         setLoading(false)
       }
-    } catch (err) {
+    } catch (_err) {
       alert("Une erreur inattendue est survenue.")
       setLoading(false)
     }

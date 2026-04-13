@@ -36,7 +36,7 @@ interface WaveCheckoutSession {
 
 // ─── Réponse Orange Money WebPay ──────────────────────────────────────────────
 
-interface OrangeWebPayResponse {
+interface _OrangeWebPayResponse {
   status: number
   message: string
   data: {

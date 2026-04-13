@@ -49,7 +49,7 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
 }
 
 /* ─── Lightweight floating animation via CSS keyframes ─── */
-function FloatingDiv({ children, className = '', duration = 8 }: { children: React.ReactNode; className?: string; duration?: number }) {
+function FloatingDiv({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`${className} animate-[yayyamFloat_8s_ease-in-out_infinite]`}>
       {children}
@@ -188,7 +188,7 @@ export function HeroSection({
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-[#0D5C4A]/20 to-[#0ABFAA]/20 motion-safe:blur-[100px] rounded-full animate-pulse-slow"></div>
               
               {/* Main Phone Mockup */}
-              <FloatingDiv duration={8} className="relative w-full h-full rounded-[3rem] border-[1px] border-white/80 shadow-[0_40px_100px_-20px_rgba(13,92,74,0.3)] bg-white/50 motion-safe:backdrop-blur-2xl p-4 overflow-hidden group">
+              <FloatingDiv className="relative w-full h-full rounded-[3rem] border-[1px] border-white/80 shadow-[0_40px_100px_-20px_rgba(13,92,74,0.3)] bg-white/50 motion-safe:backdrop-blur-2xl p-4 overflow-hidden group">
                 <div className="relative w-full h-full rounded-[2rem] overflow-hidden bg-white/50 shadow-inner">
                   <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
                     src="/landing/hero_mockup.png" 

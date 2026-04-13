@@ -47,7 +47,7 @@ interface StoreRow {
   name:    string
 }
 
-interface WalletRow {
+interface _WalletRow {
   id:          string
   balance:     number
   pending:     number

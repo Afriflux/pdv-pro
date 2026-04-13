@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Package, Settings, Share2, Send, BarChart3, ArrowRight, X, ChevronLeft, ChevronRight, Rocket, Truck, CreditCard } from 'lucide-react'
+import { Package, Settings, Share2, Send, ArrowRight, X, ChevronLeft, ChevronRight, Rocket, Truck, CreditCard } from 'lucide-react'
 
 const STEPS = [
   {

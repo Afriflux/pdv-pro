@@ -64,7 +64,7 @@ export default function GlobalCoach() {
            }, 800)
         }
       }
-    } catch (error) {
+    } catch (_error) {
       setMessages(prev => [...prev, { role: 'assistant', content: 'Le signal avec ton coach est faible. Réessaie plus tard !' }])
     } finally {
       setIsLoading(false)
@@ -73,7 +73,7 @@ export default function GlobalCoach() {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-[200]">
+      <div className="fixed bottom-[85px] left-3 lg:bottom-6 lg:left-auto lg:right-6 lg:z-[200] z-[100]">
         {!isOpen ? (
           <button
             onClick={() => setIsOpen(true)}
@@ -89,7 +89,7 @@ export default function GlobalCoach() {
             </div>
           </button>
         ) : (
-          <div className="w-[90vw] sm:w-[400px] h-[500px] bg-white rounded-3xl shadow-2xl flex flex-col border border-gray-100 overflow-hidden animate-in slide-in-from-bottom-5 translate-x-[-10px] sm:translate-x-0">
+          <div className="w-[90vw] sm:w-[400px] h-[500px] bg-white rounded-3xl shadow-2xl flex flex-col border border-gray-100 overflow-hidden animate-in slide-in-from-bottom-5 origin-bottom-left lg:origin-bottom-right">
             {/* Header */}
             <div className="bg-[#0A0A0A] p-4 text-white flex justify-between items-center shrink-0 rounded-t-3xl relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
