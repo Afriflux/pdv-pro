@@ -23,12 +23,17 @@ async function getAIConfig(): Promise<AIRouterConfig> {
     .eq('key', 'AI_ROUTING_PREFS')
     .single()
 
-  const config: AIRouterConfig = {}
+  const config: AIRouterConfig = {
+    anthropicKey: process.env.ANTHROPIC_API_KEY,
+    openaiKey: process.env.OPENAI_API_KEY,
+    geminiKey: process.env.GEMINI_API_KEY,
+  }
+  
   if (keys) {
     for (const k of keys) {
-      if (k.key === 'ANTHROPIC_API_KEY') config.anthropicKey = k.value
-      if (k.key === 'OPENAI_API_KEY') config.openaiKey = k.value
-      if (k.key === 'GEMINI_API_KEY') config.geminiKey = k.value
+      if (k.key === 'ANTHROPIC_API_KEY' && k.value) config.anthropicKey = k.value
+      if (k.key === 'OPENAI_API_KEY' && k.value) config.openaiKey = k.value
+      if (k.key === 'GEMINI_API_KEY' && k.value) config.geminiKey = k.value
     }
   }
   if (routingPrefsRow?.value) {
