@@ -59,7 +59,11 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
     userQuery = userQuery.or(`name.ilike.%${query}%,email.ilike.%${query}%,phone.ilike.%${query}%`)
   }
   if (roleFilter !== 'all') {
-    userQuery = userQuery.eq('role', roleFilter)
+    if (roleFilter === 'acheteur') {
+      userQuery = userQuery.in('role', ['acheteur', 'client'])
+    } else {
+      userQuery = userQuery.eq('role', roleFilter)
+    }
   }
 
   const { data: users, count, error } = await userQuery
@@ -82,12 +86,12 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
   }
 
   // ── KPI Stats ──
-  const roleCountPromises = ['vendeur', 'acheteur', 'affilie', 'ambassadeur', 'closer', 'super_admin', 'gestionnaire', 'support'].map(
+  const roleCountPromises = ['vendeur', 'acheteur', 'client', 'affilie', 'ambassadeur', 'closer', 'super_admin', 'gestionnaire', 'support'].map(
     role => supabase.from('User').select('id', { count: 'exact', head: true }).eq('role', role)
   )
   const roleCounts = await Promise.all(roleCountPromises)
-  const [vendeurC, acheteurC, affilieC, ambassadeurC, closerC, adminC, gestC, supportC] = roleCounts.map(r => r.count ?? 0)
-  const totalUsers = vendeurC + acheteurC + affilieC + ambassadeurC + closerC + adminC + gestC + supportC
+  const [vendeurC, acheteurC, clientC, affilieC, ambassadeurC, closerC, adminC, gestC, supportC] = roleCounts.map(r => r.count ?? 0)
+  const totalUsers = vendeurC + acheteurC + clientC + affilieC + ambassadeurC + closerC + adminC + gestC + supportC
 
   const totalPages = Math.ceil((count ?? 0) / pageSize)
 
@@ -134,7 +138,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
           {[
             { label: 'Total', value: totalUsers, color: 'text-white' },
             { label: 'Vendeurs', value: vendeurC, color: 'text-emerald-300' },
-            { label: 'Clients', value: acheteurC, color: 'text-amber-300' },
+            { label: 'Clients', value: acheteurC + clientC, color: 'text-amber-300' },
             { label: 'Affiliés', value: affilieC, color: 'text-cyan-300' },
             { label: 'Ambassadeurs', value: ambassadeurC, color: 'text-pink-300' },
             { label: 'Closers', value: closerC, color: 'text-orange-300' },
@@ -142,7 +146,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
             { label: 'Support', value: supportC, color: 'text-blue-300' },
           ].map(kpi => (
             <div key={kpi.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3 lg:p-4 flex flex-col">
-              <span className="text-white/50 text-[10px] font-black uppercase tracking-widest mb-1">{kpi.label}</span>
+              <span className="text-white/50 text-xs font-black uppercase tracking-widest mb-1">{kpi.label}</span>
               <span className={`text-xl font-black ${kpi.color}`}>{kpi.value}</span>
             </div>
           ))}
@@ -152,23 +156,23 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
       {/* ── CONTENT ── */}
       <div className="flex flex-col lg:flex-row items-start gap-6 w-full relative z-20 px-6 lg:px-10 -mt-16 pb-20">
         
-        {/* Sidebar Filtres */}
-        <aside className="w-full lg:w-[250px] flex-shrink-0 sticky top-[100px] z-10 bg-white border border-gray-100 p-5 rounded-3xl shadow-xl flex flex-col gap-4">
-          <h2 className="text-[10px] items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2">
+        {/* Sidebar Filtres -- horizontal scroll mobile, vertical sidebar desktop */}
+        <aside className="w-full lg:w-[250px] flex-shrink-0 lg:sticky lg:top-[100px] z-10 bg-white border border-gray-100 p-3 lg:p-5 rounded-2xl lg:rounded-3xl shadow-xl flex flex-col gap-3 lg:gap-4">
+          <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2">
             <Filter size={14} /> Filtres par rôle
           </h2>
-          <nav className="flex flex-col gap-1.5">
+          <nav className="flex lg:flex-col gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
             {ROLE_FILTERS.map(filter => (
               <Link
                 key={filter.value}
                 href={`/admin/users?role=${filter.value}&q=${query}`}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${
+                className={`flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-xl lg:rounded-2xl text-xs lg:text-sm font-bold transition-all duration-300 whitespace-nowrap shrink-0 ${
                   roleFilter === filter.value
                   ? 'bg-[#0A4138] text-white shadow-md shadow-emerald-900/20'
-                    : 'text-gray-500 hover:bg-emerald-50 hover:text-gray-900 border border-transparent'
+                    : 'text-gray-500 hover:bg-emerald-50 hover:text-gray-900 border border-gray-100 lg:border-transparent'
                 }`}
               >
-                <span className="text-base">{filter.icon}</span>
+                <span className="text-sm lg:text-base">{filter.icon}</span>
                 <span>{filter.label}</span>
               </Link>
             ))}
@@ -190,12 +194,12 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 bg-[#FAFAF7]">
-                    <th className="text-left px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Utilisateur</th>
-                    <th className="text-left px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Rôle</th>
-                    <th className="text-left px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest hidden md:table-cell">Contact</th>
-                    <th className="text-left px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest hidden lg:table-cell">KYC</th>
-                    <th className="text-left px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest hidden lg:table-cell">Inscription</th>
-                    <th className="text-right px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Action</th>
+                    <th className="text-left px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Utilisateur</th>
+                    <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Rôle</th>
+                    <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest hidden md:table-cell">Contact</th>
+                    <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest hidden lg:table-cell">KYC</th>
+                    <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest hidden lg:table-cell">Inscription</th>
+                    <th className="text-right px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -239,12 +243,12 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
                             </div>
                             <div className="min-w-0">
                               <p className="font-black text-gray-900 truncate text-sm">{user.name}</p>
-                              <p className="text-[11px] text-gray-400 truncate">{user.id.slice(0, 12)}...</p>
+                              <p className="text-xs text-gray-400 truncate">{user.id.slice(0, 12)}...</p>
                             </div>
                           </div>
                         </td>
                         <td className="px-4 py-4">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-black border ${roleInfo.bg} ${roleInfo.color}`}>
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black border ${roleInfo.bg} ${roleInfo.color}`}>
                             {roleInfo.label}
                           </span>
                         </td>
@@ -276,7 +280,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
                         <td className="px-6 py-4 text-right">
                           <Link
                             href={detailLink}
-                            className="text-[11px] font-black text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-all"
+                            className="text-xs font-black text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-all"
                           >
                             Voir espace →
                           </Link>

@@ -87,11 +87,11 @@ export default function WalletActions({ storeId, currentBalance }: { storeId: st
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Solde actuel</p>
+                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Solde actuel</p>
                 <p className="text-lg font-black text-[#1A1A1A]">{currentBalance.toLocaleString('fr-FR')} FCFA</p>
               </div>
               <div>
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5">Montant (FCFA)</label>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest block mb-1.5">Montant (FCFA)</label>
                 <input
                   autoFocus
                   type="number"
@@ -103,7 +103,7 @@ export default function WalletActions({ storeId, currentBalance }: { storeId: st
                 />
               </div>
               <div>
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5">Motif (optionnel)</label>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest block mb-1.5">Motif (optionnel)</label>
                 <input
                   type="text"
                   value={reason}

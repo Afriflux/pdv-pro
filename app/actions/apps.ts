@@ -20,7 +20,7 @@ async function checkAdmin() {
 
 export async function getMarketplaceApps() {
   try {
-    const apps = await prisma.marketplaceApp.findMany({
+    const apps = await prisma.marketplaceApp.findMany({ take: 50, 
       orderBy: { created_at: 'desc' }
     })
     return apps

@@ -99,7 +99,7 @@ export default function EmailMarketing({ store }: EmailMarketingProps) {
            </h3>
            <div className="space-y-4">
              <div>
-               <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Sujet de l'email</label>
+               <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Sujet de l'email</label>
                <input 
                  autoFocus required
                  value={subject} onChange={e => setSubject(e.target.value)}
@@ -107,7 +107,7 @@ export default function EmailMarketing({ store }: EmailMarketingProps) {
                />
              </div>
              <div>
-               <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Contenu Message</label>
+               <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Contenu Message</label>
                <textarea 
                  required rows={5}
                  value={htmlContent} onChange={e => setHtmlContent(e.target.value)}
@@ -147,7 +147,7 @@ export default function EmailMarketing({ store }: EmailMarketingProps) {
                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4 mt-6">
                  <Phone className="w-5 h-5 text-gray-400 mt-1 shrink-0" />
                  <div className="flex-1 space-y-2">
-                   <label className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]">Numéro WhatsApp Service Client</label>
+                   <label className="text-xs font-black uppercase tracking-widest text-[#1A1A1A]">Numéro WhatsApp Service Client</label>
                    <input
                      value={waNumber}
                      onChange={(e) => setWaNumber(e.target.value)}
@@ -184,7 +184,7 @@ export default function EmailMarketing({ store }: EmailMarketingProps) {
                  <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold text-xs">{store?.name?.charAt(0) || 'S'}</div>
                  <div>
                    <p className="text-sm font-bold">{store?.name || 'Votre Boutique'}</p>
-                   <p className="text-[10px] opacity-80">Bot automatisé</p>
+                   <p className="text-xs opacity-80">Bot automatisé</p>
                  </div>
                </div>
                
@@ -194,7 +194,7 @@ export default function EmailMarketing({ store }: EmailMarketingProps) {
                    On a remarqué que tu avais laissé des articles dans ton panier chez <b>{store?.name}</b> !<br/><br/>
                    Ton stock est mis de côté, voici le lien pour finaliser ta commande avant rupture : <br/>
                    <span className="text-blue-500 underline mt-1 block">Finaliser l'achat</span>
-                   <span className="text-[10px] text-gray-400 absolute bottom-1.5 right-2">Maintenant</span>
+                   <span className="text-xs text-gray-400 absolute bottom-1.5 right-2">Maintenant</span>
                  </div>
                </div>
             </div>

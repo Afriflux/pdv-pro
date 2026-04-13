@@ -86,19 +86,19 @@ export default function HelpdeskControls({ tickets }: Props) {
       {/* STATS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm cursor-pointer hover:border-gray-300 transition-colors" onClick={() => setFilter('ALL')}>
-            <p className="text-[11px] uppercase font-black text-gray-400 tracking-wider">Total Requêtes</p>
+            <p className="text-xs uppercase font-black text-gray-400 tracking-wider">Total Requêtes</p>
             <h3 className="text-3xl font-black text-gray-900 mt-1">{tickets.length}</h3>
          </div>
          <div className="bg-white rounded-2xl p-5 border border-red-100 shadow-sm cursor-pointer hover:border-red-300 transition-colors" onClick={() => setFilter('OPEN')}>
-            <p className="text-[11px] uppercase font-black text-red-400 tracking-wider">Nouveaux</p>
+            <p className="text-xs uppercase font-black text-red-400 tracking-wider">Nouveaux</p>
             <h3 className="text-3xl font-black text-red-600 mt-1">{openTickets}</h3>
          </div>
          <div className="bg-white rounded-2xl p-5 border border-amber-100 shadow-sm cursor-pointer hover:border-amber-300 transition-colors" onClick={() => setFilter('IN_PROGRESS')}>
-            <p className="text-[11px] uppercase font-black text-amber-400 tracking-wider">En cours (Traitement)</p>
+            <p className="text-xs uppercase font-black text-amber-400 tracking-wider">En cours (Traitement)</p>
             <h3 className="text-3xl font-black text-amber-600 mt-1">{processingTickets}</h3>
          </div>
          <div className="bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm cursor-pointer hover:border-emerald-300 transition-colors" onClick={() => setFilter('CLOSED')}>
-            <p className="text-[11px] uppercase font-black text-emerald-400 tracking-wider">Traités / Résolus</p>
+            <p className="text-xs uppercase font-black text-emerald-400 tracking-wider">Traités / Résolus</p>
             <h3 className="text-3xl font-black text-emerald-600 mt-1">{closedTickets}</h3>
          </div>
       </div>
@@ -151,7 +151,7 @@ export default function HelpdeskControls({ tickets }: Props) {
                    <tr key={t.id} className="hover:bg-gray-50 transition-colors group">
                      <td className="px-6 py-4">
                         <div className="font-bold text-gray-900">{t.customer_name}</div>
-                        <div className="text-[11px] text-gray-500 font-medium mt-0.5">{t.customer_phone || t.customer_email || 'Aucun contact direct'}</div>
+                        <div className="text-xs text-gray-500 font-medium mt-0.5">{t.customer_phone || t.customer_email || 'Aucun contact direct'}</div>
                      </td>
                      <td className="px-6 py-4">
                         {t.order_id ? (
@@ -165,7 +165,7 @@ export default function HelpdeskControls({ tickets }: Props) {
                      <td className="px-6 py-4 min-w-[300px] whitespace-normal">
                         <div className="font-bold text-gray-900">{t.subject}</div>
                         <p className="text-gray-500 text-xs mt-1 line-clamp-2 leading-relaxed">{t.message}</p>
-                        <div className="text-[10px] text-gray-400 mt-2 font-medium">{format(new Date(t.created_at), "dd MMM yyyy 'à' HH:mm", { locale: fr })}</div>
+                        <div className="text-xs text-gray-400 mt-2 font-medium">{format(new Date(t.created_at), "dd MMM yyyy 'à' HH:mm", { locale: fr })}</div>
                      </td>
                      <td className="px-6 py-4">
                         {getStatusBadge(t.status)}

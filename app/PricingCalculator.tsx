@@ -85,7 +85,7 @@ export default function PricingCalculator({ tiers }: PricingCalculatorProps) {
           <div className="absolute top-0 w-full h-1 bg-emerald"></div>
           <p className="text-sm font-bold text-emerald/70 uppercase tracking-wider mb-2">Vous recevez</p>
           <p className="text-4xl font-black text-emerald">{mounted ? vendorNet.toLocaleString('fr-FR') : '230 000'} F</p>
-          <p className="text-[10px] text-emerald mt-2 font-bold uppercase tracking-widest bg-emerald/10 px-3 py-1 rounded-full text-center">soit {vendorPercent}% de vos ventes</p>
+          <p className="text-xs text-emerald mt-2 font-bold uppercase tracking-widest bg-emerald/10 px-3 py-1 rounded-full text-center">soit {vendorPercent}% de vos ventes</p>
         </div>
       </div>
 

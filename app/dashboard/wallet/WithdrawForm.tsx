@@ -144,12 +144,12 @@ export default function WithdrawForm({
           </span>
         </div>
         <div className="flex items-center justify-between mt-1.5 px-0.5">
-          <p className={`text-[11px] font-medium ${
+          <p className={`text-xs font-medium ${
             amount < MIN_AMOUNT && amount > 0 ? 'text-red-400' : 'text-gray-400'
           }`}>
             Min : {MIN_AMOUNT.toLocaleString('fr-FR')} FCFA
           </p>
-          <p className={`text-[11px] font-medium ${
+          <p className={`text-xs font-medium ${
             amount > balance ? 'text-red-400' : 'text-gray-400'
           }`}>
             Disponible : <strong>{balance.toLocaleString('fr-FR')} FCFA</strong>
@@ -159,7 +159,7 @@ export default function WithdrawForm({
 
       {/* ── Boutons rapides ── */}
       <div>
-        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
           Montants rapides
         </p>
         <div className="grid grid-cols-4 gap-2">
@@ -190,12 +190,12 @@ export default function WithdrawForm({
       {/* ── Compte de destination (readonly) ── */}
       <div className="bg-[#FAFAF7] rounded-xl p-4 border border-gray-100">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
             Compte de destination
           </p>
           <a
             href="/dashboard/settings#retrait"
-            className="text-[11px] font-bold text-[#0F7A60] hover:underline"
+            className="text-xs font-bold text-[#0F7A60] hover:underline"
           >
             Modifier →
           </a>
@@ -212,7 +212,7 @@ export default function WithdrawForm({
             )}
           </div>
         </div>
-        <p className="text-[10px] text-gray-400 mt-2 italic">
+        <p className="text-xs text-gray-400 mt-2 italic">
           Non modifiable ici — modifier dans les Paramètres
         </p>
       </div>

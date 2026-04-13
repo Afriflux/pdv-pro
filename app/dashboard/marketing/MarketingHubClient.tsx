@@ -49,7 +49,7 @@ export default function MarketingHubClient({ store, products, links, domain }: M
       
       {/* SIDEBAR NAVIGATION */}
       <div className="w-full lg:w-72 shrink-0 space-y-2">
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 px-4 px-2">Menu</h3>
+        <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4 px-4 px-2">Menu</h3>
         <nav className="flex flex-col space-y-1 bg-white p-2 rounded-3xl border border-gray-100 shadow-sm">
           {tabs.map((tab) => {
             const Icon = tab.icon
@@ -70,7 +70,7 @@ export default function MarketingHubClient({ store, products, links, domain }: M
                   </span>
                   <div>
                     <p className={`font-bold text-sm ${isActive ? 'text-white' : 'text-[#1A1A1A]'}`}>{tab.label}</p>
-                    <p className={`text-[10px] uppercase font-bold tracking-wider mt-0.5 ${isActive ? 'text-white/50' : 'text-gray-400'}`}>{tab.desc}</p>
+                    <p className={`text-xs uppercase font-bold tracking-wider mt-0.5 ${isActive ? 'text-white/50' : 'text-gray-400'}`}>{tab.desc}</p>
                   </div>
                 </div>
                 {isActive && <ChevronRight size={16} className="text-white/50" />}
@@ -106,7 +106,7 @@ export default function MarketingHubClient({ store, products, links, domain }: M
               <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-gold/10 rounded-full blur-3xl group-hover:bg-gold/20 transition-all duration-700" />
               <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                  <span className="inline-block bg-gold/10 text-gold-rich text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg mb-3">ACTION RAPIDE</span>
+                  <span className="inline-block bg-gold/10 text-gold-rich text-xs font-black uppercase tracking-widest px-3 py-1 rounded-lg mb-3">ACTION RAPIDE</span>
                   <h3 className="text-xl font-black text-[#1A1A1A]">Lien de votre boutique</h3>
                   <p className="text-sm text-gray-500 mt-1 max-w-sm font-medium">Copiez ce lien pour le coller dans la section "Site Web" de votre bio Instagram ou l'envoyer par WhatsApp.</p>
                 </div>

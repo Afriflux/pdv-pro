@@ -107,7 +107,7 @@ function OverrideRow({ item, onSave, onRemove, isLoading }: { item: OverrideItem
               {isLoading ? '...' : 'Enregistrer'}
             </button>
           ) : (
-            <span className="text-[10px] text-gray-300 font-bold uppercase tracking-wider px-2">À jour</span>
+            <span className="text-xs text-gray-300 font-bold uppercase tracking-wider px-2">À jour</span>
           )}
           <button 
             type="button"
@@ -291,7 +291,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
         >
           Demandes de Retraits
           {initialWithdrawals.filter((w: any) => w.status === 'pending').length > 0 && (
-            <span className="ml-2 bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">
+            <span className="ml-2 bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full">
               {initialWithdrawals.filter((w: any) => w.status === 'pending').length}
             </span>
           )}
@@ -338,7 +338,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
               <h3 className="text-xl font-black text-[#1A1A1A]">
                 Mode d'Affiliation
               </h3>
-              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">
                 {isActive ? 'Globale (Toute la boutique)' : 'Sur-mesure (Exceptions)'}
               </p>
             </div>
@@ -374,7 +374,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
             
             <div className="p-6 md:p-8 flex flex-col md:flex-row items-start md:items-end gap-6">
               <div className="w-full md:w-64">
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">
                   Commission par défaut
                 </label>
                 <div className="relative">
@@ -453,7 +453,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
             <div className="overflow-x-auto">
               <table className="w-full text-left whitespace-nowrap">
                 <thead>
-                  <tr className="bg-white text-gray-400 text-[10px] font-bold uppercase tracking-wider">
+                  <tr className="bg-white text-gray-400 text-xs font-bold uppercase tracking-wider">
                     <th className="px-6 py-4 border-b border-gray-100">Cible (Produit / Page)</th>
                     <th className="px-6 py-4 border-b border-gray-100">Statut du lien</th>
                     <th className="px-6 py-4 border-b border-gray-100">Commission (sur config. finale)</th>
@@ -528,7 +528,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
             </div>
             <div>
               <h3 className="text-xl font-black text-[#1A1A1A]">Challenge Mensuel (Gamification)</h3>
-              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Motivez vos affiliés avec un objectif</p>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Motivez vos affiliés avec un objectif</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -546,7 +546,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
         {gamificationActive && (
           <div className="p-6 md:p-8 bg-amber-50/30 flex flex-col md:flex-row gap-6 items-end">
             <div className="flex-1">
-              <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Objectif de Ventes Mensuelles</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Objectif de Ventes Mensuelles</label>
               <div className="relative">
                 <input 
                   type="number" 
@@ -559,7 +559,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
               </div>
             </div>
             <div className="flex-1">
-              <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Prime à gagner</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Prime à gagner</label>
               <div className="relative">
                 <input 
                   type="number" 
@@ -588,7 +588,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
           <div className="p-6 md:p-8 border-b border-gray-50 flex items-center justify-between bg-white">
             <div>
               <h3 className="text-lg md:text-xl font-black text-[#1A1A1A]">Votre réseau</h3>
-              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-1">Vos ambassadeurs</p>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Vos ambassadeurs</p>
             </div>
             <div className="bg-[#FAFAF7] border border-gray-100 px-4 py-2 rounded-xl text-xs font-bold text-gray-600 shadow-sm">
               {affiliates.length} total
@@ -597,7 +597,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
 
           <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
-              <tr className="bg-[#FAFAF7]/50 text-gray-400 text-[10px] font-bold uppercase tracking-wider">
+              <tr className="bg-[#FAFAF7]/50 text-gray-400 text-xs font-bold uppercase tracking-wider">
                 <th className="px-6 py-4 font-semibold border-b border-gray-100">Ambassadeur</th>
                 <th className="px-6 py-4 font-semibold border-b border-gray-100 text-center">Status</th>
                 <th className="px-6 py-4 font-semibold border-b border-gray-100 text-right">Performances</th>
@@ -627,7 +627,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
                         <div className="min-w-0">
                           <p className="font-black text-[#1A1A1A] truncate">{aff.user?.name || 'Inconnu'}</p>
                           <div className="flex items-center gap-2 mt-0.5">
-                             <p className="text-[11px] text-gray-500 font-mono">{aff.user?.phone || '...'}</p>
+                             <p className="text-xs text-gray-500 font-mono">{aff.user?.phone || '...'}</p>
                              <button 
                                aria-label="Contacter sur WhatsApp"
                                title="Contacter sur WhatsApp"
@@ -646,17 +646,17 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
                     </td>
                     <td className="px-6 py-4 text-center">
                       {aff.status === 'active' && (
-                        <span className="inline-flex items-center gap-1.5 bg-[#0F7A60]/10 text-[#0F7A60] px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase ring-1 ring-[#0F7A60]/20">
+                        <span className="inline-flex items-center gap-1.5 bg-[#0F7A60]/10 text-[#0F7A60] px-2.5 py-1 rounded-lg text-xs font-bold uppercase ring-1 ring-[#0F7A60]/20">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#0F7A60]"></span> Actif
                         </span>
                       )}
                       {aff.status === 'pending' && (
-                        <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-600 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase ring-1 ring-orange-200">
+                        <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-600 px-2.5 py-1 rounded-lg text-xs font-bold uppercase ring-1 ring-orange-200">
                           <span className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-pulse"></span> En attente
                         </span>
                       )}
                       {aff.status === 'rejected' && (
-                        <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase ring-1 ring-red-200">
+                        <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 px-2.5 py-1 rounded-lg text-xs font-bold uppercase ring-1 ring-red-200">
                           <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> Refusé
                         </span>
                       )}
@@ -664,13 +664,13 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-5 text-gray-500">
                         <div className="text-center">
-                          <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5 text-gray-400">Clics</p>
+                          <p className="text-xs font-bold uppercase tracking-wider mb-0.5 text-gray-400">Clics</p>
                           <p className="text-[#1A1A1A] font-mono font-black flex items-center justify-end gap-1">
                             <MousePointer2 size={12} className="text-gray-400" /> {aff.clicks || 0}
                           </p>
                         </div>
                         <div className="text-center">
-                          <p className="text-[10px] font-bold uppercase tracking-wider mb-0.5 text-gray-400">Ventes</p>
+                          <p className="text-xs font-bold uppercase tracking-wider mb-0.5 text-gray-400">Ventes</p>
                           <p className="text-[#1A1A1A] font-mono font-black flex items-center justify-end gap-1">
                             <TrendingUp size={12} className="text-gray-400" /> {aff.total_sales || 0}
                           </p>
@@ -680,9 +680,9 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
                     <td className="px-6 py-4 text-right">
                       <div className="flex flex-col items-end">
                         <p className="text-lg font-black text-[#0F7A60]">
-                          {(aff.total_earnings || 0).toLocaleString('fr-FR')} <span className="text-[10px] font-bold text-gray-400">FCFA</span>
+                          {(aff.total_earnings || 0).toLocaleString('fr-FR')} <span className="text-xs font-bold text-gray-400">FCFA</span>
                         </p>
-                        <p className="text-[9px] text-gray-400 font-bold tracking-wider uppercase mt-0.5 flex items-center gap-1">
+                        <p className="text-xs text-gray-400 font-bold tracking-wider uppercase mt-0.5 flex items-center gap-1">
                           <BadgeDollarSign size={10} /> Gains générés
                         </p>
                       </div>
@@ -710,21 +710,21 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
                       )}
                       {aff.status === 'active' && (
                         <div className="flex flex-col items-center justify-center gap-2">
-                           <span className="text-[10px] text-gray-500 font-mono bg-[#FAFAF7] border border-gray-100 px-2 py-1 rounded-md font-bold">REF: {aff.code}</span>
+                           <span className="text-xs text-gray-500 font-mono bg-[#FAFAF7] border border-gray-100 px-2 py-1 rounded-md font-bold">REF: {aff.code}</span>
                            <button 
                              onClick={async () => {
                                const link = `${appUrl}/s/${storeSlug}?ref=${aff.code}`
                                await navigator.clipboard.writeText(link)
                                toast.success('Lien copié !')
                              }}
-                             className="text-[10px] text-[#0F7A60] font-bold hover:underline flex items-center gap-1 mt-1"
+                             className="text-xs text-[#0F7A60] font-bold hover:underline flex items-center gap-1 mt-1"
                            >
                              <ExternalLink size={10} /> Copier le lien
                            </button>
                            <button 
                              onClick={() => handleReject(aff.id, true)}
                              disabled={actionLoading === aff.id}
-                             className="text-[10px] text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 mt-1"
+                             className="text-xs text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 mt-1"
                              title="Suspendre cet affilié"
                            >
                              <XCircle size={10} /> Suspendre
@@ -746,7 +746,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
           <div className="p-6 md:p-8 border-b border-gray-50 flex flex-col md:flex-row items-center justify-between gap-4 bg-white">
             <div>
               <h3 className="text-xl font-black text-[#1A1A1A]">Demandes de Retraits</h3>
-              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-1">Gérez les paiements de vos affiliés</p>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Gérez les paiements de vos affiliés</p>
             </div>
             <button 
               onClick={handleExportCSV}
@@ -758,7 +758,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
           
           <div className="overflow-x-auto">
             <table className="w-full text-left whitespace-nowrap">
-              <thead className="bg-[#FAFAF7]/50 text-gray-400 text-[10px] font-bold uppercase tracking-wider border-b border-gray-100">
+              <thead className="bg-[#FAFAF7]/50 text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-100">
                 <tr>
                   <th className="px-6 py-4">Date</th>
                   <th className="px-6 py-4">Affilié</th>
@@ -783,7 +783,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="font-black text-gray-900">{w.Affiliate.user?.name || 'Inconnu'}</span>
-                          <span className="text-[10px] text-gray-400 font-mono">{w.Affiliate.code}</span>
+                          <span className="text-xs text-gray-400 font-mono">{w.Affiliate.code}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 font-black text-[#1A1A1A]">
@@ -793,10 +793,10 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
                         <span className="text-xs font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md">
                           {w.payment_method.toUpperCase()}
                         </span>
-                        {w.phone && <p className="text-[10px] text-gray-400 mt-1 font-mono">{w.phone}</p>}
+                        {w.phone && <p className="text-xs text-gray-400 mt-1 font-mono">{w.phone}</p>}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${w.status === 'pending' ? 'bg-orange-50 text-orange-600' : w.status === 'completed' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${w.status === 'pending' ? 'bg-orange-50 text-orange-600' : w.status === 'completed' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
                           {w.status === 'pending' ? 'En attente' : w.status === 'completed' ? 'Payé' : 'Rejeté'}
                         </span>
                       </td>

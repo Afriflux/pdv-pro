@@ -108,7 +108,7 @@ export default async function AdminWithdrawalsPage({ searchParams }: PageProps) 
         <div className="w-full relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 mb-3">
-              <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-black tracking-widest uppercase">
+              <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-black tracking-widest uppercase">
                 Gouvernance & Finances
               </span>
             </div>
@@ -129,7 +129,7 @@ export default async function AdminWithdrawalsPage({ searchParams }: PageProps) 
                 <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:rotate-6">
                   <Wallet className="w-24 h-24" />
                 </div>
-                <p className="text-[11px] font-black uppercase text-gray-400 tracking-widest mb-1 relative z-10">Total Demandes</p>
+                <p className="text-xs font-black uppercase text-gray-400 tracking-widest mb-1 relative z-10">Total Demandes</p>
                 <div className="flex items-baseline gap-2 relative z-10">
                    <h3 className="text-4xl font-black text-gray-900 tracking-tight">{totalRequests}</h3>
                 </div>
@@ -140,7 +140,7 @@ export default async function AdminWithdrawalsPage({ searchParams }: PageProps) 
                 <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:-rotate-6">
                   <Clock className="w-24 h-24 text-amber-500" />
                 </div>
-                <p className="text-[11px] font-black uppercase text-amber-500/80 tracking-widest mb-1 relative z-10">À Décaisser ({pendingCount})</p>
+                <p className="text-xs font-black uppercase text-amber-500/80 tracking-widest mb-1 relative z-10">À Décaisser ({pendingCount})</p>
                 <div className="flex items-baseline gap-2 relative z-10">
                    <h3 className="text-2xl font-black text-amber-500 tracking-tight">{pendingAmount.toLocaleString()} <span className="text-sm">FCFA</span></h3>
                 </div>
@@ -151,7 +151,7 @@ export default async function AdminWithdrawalsPage({ searchParams }: PageProps) 
                 <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:rotate-6">
                   <Banknote className="w-24 h-24 text-[#0F7A60]" />
                 </div>
-                <p className="text-[11px] font-black uppercase text-[#0F7A60]/80 tracking-widest mb-1 relative z-10">Total Payé</p>
+                <p className="text-xs font-black uppercase text-[#0F7A60]/80 tracking-widest mb-1 relative z-10">Total Payé</p>
                 <div className="flex flex-col relative z-10">
                    <h3 className="text-2xl font-black text-[#0F7A60] tracking-tight">{totalDecaisse >= 1_000_000 ? (totalDecaisse/1_000_000).toFixed(2) + ' M' : (totalDecaisse/1000).toFixed(0) + ' K'}</h3>
                    <span className="text-xs text-[#0F7A60] font-bold mt-1">FCFA</span>
@@ -163,7 +163,7 @@ export default async function AdminWithdrawalsPage({ searchParams }: PageProps) 
                 <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:-rotate-6">
                   <TrendingUp className="w-24 h-24 text-blue-500" />
                 </div>
-                <p className="text-[11px] font-black uppercase text-blue-500/80 tracking-widest mb-1 relative z-10">Liquidités Sortantes</p>
+                <p className="text-xs font-black uppercase text-blue-500/80 tracking-widest mb-1 relative z-10">Liquidités Sortantes</p>
                 <div className="flex items-baseline gap-2 relative z-10 mt-2">
                    <span className="px-3 py-1 bg-blue-50 border border-blue-100 text-blue-600 font-bold text-xs rounded-lg">Flux de trésorerie actif</span>
                 </div>

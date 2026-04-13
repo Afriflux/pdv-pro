@@ -66,7 +66,7 @@ export default function Error({
 
       <div className="mt-8 flex items-center gap-2 text-slate/50">
         <Store size={16} />
-        <span className="font-display font-black tracking-tighter text-sm">Yayyam<span className="text-emerald">Pro</span></span>
+        <span className="font-display font-black tracking-tighter text-sm">Yayyam</span>
       </div>
     </div>
   )

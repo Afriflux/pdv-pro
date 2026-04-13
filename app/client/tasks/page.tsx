@@ -9,7 +9,7 @@ export default async function ClientTasksPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const tasks = await prisma.task.findMany({
+  const tasks = await prisma.task.findMany({ take: 50, 
     where: { user_id: user.id },
     orderBy: { createdAt: 'desc' }
   })

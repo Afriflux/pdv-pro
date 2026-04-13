@@ -52,7 +52,7 @@ export function StickyMobileCTA({ productId, price, theme }: { productId: string
     <div className="fixed bottom-6 lg:bottom-10 inset-x-0 w-full flex justify-center z-40 px-4 pointer-events-none animate-in slide-in-from-bottom-24 duration-700 fade-in">
       <div className="bg-white/70 backdrop-blur-3xl border border-white/80 p-2 lg:p-2.5 rounded-[100px] shadow-2xl shadow-[rgba(0,0,0,0.08)] flex items-center gap-4 w-full max-w-sm lg:max-w-md pointer-events-auto transition-transform hover:scale-[1.02]">
         <div className="flex-1 pl-5">
-          <p className="text-[10px] lg:text-xs font-black text-gray-400 text-opacity-80 uppercase tracking-widest leading-none mb-0.5">Total à payer</p>
+          <p className="text-xs lg:text-xs font-black text-gray-400 text-opacity-80 uppercase tracking-widest leading-none mb-0.5">Total à payer</p>
           <p className="text-xl lg:text-2xl font-black text-gray-900 leading-tight tracking-tight">{price.toLocaleString('fr-FR')} <span className="text-sm">FCFA</span></p>
         </div>
         <Link 

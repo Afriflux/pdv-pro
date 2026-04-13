@@ -132,7 +132,7 @@ export default function WhatsAppDashboardClient({ initialAgents }: { initialAgen
                   <div className="md:pl-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Nom */}
                     <div>
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Nom du Service / Agent</label>
+                      <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-1.5">Nom du Service / Agent</label>
                       <input 
                         type="text" 
                         value={agent.name}
@@ -143,7 +143,7 @@ export default function WhatsAppDashboardClient({ initialAgents }: { initialAgen
                     </div>
                     {/* Phone */}
                     <div>
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Numéro (Format Inter. sans +)</label>
+                      <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-1.5">Numéro (Format Inter. sans +)</label>
                       <div className="relative">
                         <Smartphone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input 
@@ -158,7 +158,7 @@ export default function WhatsAppDashboardClient({ initialAgents }: { initialAgen
                     
                     {/* Description */}
                     <div className="md:col-span-2">
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Sous-titre / Description</label>
+                      <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-1.5">Sous-titre / Description</label>
                       <input 
                         type="text" 
                         value={agent.desc}
@@ -170,7 +170,7 @@ export default function WhatsAppDashboardClient({ initialAgents }: { initialAgen
 
                      {/* Message pré-rempli */}
                      <div className="md:col-span-2">
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-[#0F7A60] mb-1.5">Message d'accroche Automatique</label>
+                      <label className="block text-xs font-black uppercase tracking-widest text-[#0F7A60] mb-1.5">Message d'accroche Automatique</label>
                       <input 
                         type="text" 
                         value={agent.prefix}
@@ -183,7 +183,7 @@ export default function WhatsAppDashboardClient({ initialAgents }: { initialAgen
                     {/* Apparence */}
                     <div className="flex items-center gap-3 md:col-span-2 mt-2">
                       <div className="flex-1">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Couleur du profil</label>
+                        <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-1.5">Couleur du profil</label>
                         <select 
                           title="Couleur du profil"
                           aria-label="Couleur du profil"
@@ -195,7 +195,7 @@ export default function WhatsAppDashboardClient({ initialAgents }: { initialAgen
                         </select>
                       </div>
                       <div className="flex-1">
-                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5">Icône</label>
+                        <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-1.5">Icône</label>
                         <select 
                           title="Icône du profil"
                           aria-label="Icône du profil"

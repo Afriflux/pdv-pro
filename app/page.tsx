@@ -284,24 +284,24 @@ export default async function LandingPage() {
                <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-5 w-72 text-left shadow-sm hover:shadow-md transition-shadow transform hover:-translate-y-1">
                  <div className="flex justify-between items-center mb-4">
                    <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-black text-xs">Y</div>
-                   <span className="text-[10px] text-gray-400 font-medium">Aujourd'hui, 09:42</span>
+                   <span className="text-xs text-gray-400 font-medium">Aujourd'hui, 09:42</span>
                  </div>
                  <p className="text-xs text-emerald-900/60 font-bold mb-1 uppercase tracking-wider">Transfert reçu avec succès</p>
                  <p className="text-2xl font-black text-emerald-600 mb-2">+ 45 000 F</p>
                  <p className="text-xs text-gray-500 font-medium">De: YAYYAM</p>
-                 <p className="text-[10px] text-gray-400 mt-2">Nouveau solde: 124 500 F</p>
+                 <p className="text-xs text-gray-400 mt-2">Nouveau solde: 124 500 F</p>
                </div>
 
                {/* Mockup Preuve de retrait OM */}
                <div className="bg-orange-50/50 border border-orange-100 rounded-2xl p-5 w-72 text-left shadow-sm hover:shadow-md transition-shadow transform hover:-translate-y-1">
                  <div className="flex justify-between items-center mb-4">
                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-black text-xs">OM</div>
-                   <span className="text-[10px] text-gray-400 font-medium">Hier, 18:15</span>
+                   <span className="text-xs text-gray-400 font-medium">Hier, 18:15</span>
                  </div>
                  <p className="text-xs text-orange-900/60 font-bold mb-1 uppercase tracking-wider">Paiement reçu</p>
                  <p className="text-2xl font-black text-orange-600 mb-2">+ 120 000 F</p>
                  <p className="text-xs text-gray-500 font-medium">De: YAYYAM PAYMENTS</p>
-                 <p className="text-[10px] text-gray-400 mt-2">Nouveau solde: 450 000 F</p>
+                 <p className="text-xs text-gray-400 mt-2">Nouveau solde: 450 000 F</p>
                </div>
             </div>
             <div className="mt-10 flex items-center justify-center gap-2 text-sm text-gray-500 font-medium bg-gray-50 inline-flex px-6 py-2 rounded-full border border-gray-100 mx-auto">
@@ -338,7 +338,7 @@ export default async function LandingPage() {
                  <p className="text-slate text-sm font-medium">Wave & Orange Money par défaut</p>
                </div>
                <div className="bg-white border-2 border-gold/40 rounded-2xl p-6 text-center shadow-lg flex-1 hover:border-gold transition-colors flex flex-col items-center justify-center relative overflow-hidden">
-                  <div className="absolute top-0 right-0 bg-gold text-white text-[10px] font-black uppercase px-3 py-1 rounded-bl-xl">Spécial E-commerce</div>
+                  <div className="absolute top-0 right-0 bg-gold text-white text-xs font-black uppercase px-3 py-1 rounded-bl-xl">Spécial E-commerce</div>
                   <div className="text-4xl leading-none mb-3 mt-2">📦</div>
                   <h4 className="font-display font-black text-ink text-xl mb-1">Service COD</h4>
                   <p className="text-gold-dark font-bold text-sm">Paiement à la livraison : 5% fixe</p>
@@ -650,7 +650,7 @@ export default async function LandingPage() {
                     <th className="p-5 text-center bg-emerald/5">
                       <div className="flex flex-col items-center gap-1">
                         <span className="text-lg font-black text-emerald">Yayyam</span>
-                        <span className="text-[10px] bg-emerald/10 text-emerald px-2 py-0.5 rounded-full font-bold">UEMOA #1</span>
+                        <span className="text-xs bg-emerald/10 text-emerald px-2 py-0.5 rounded-full font-bold">UEMOA #1</span>
                       </div>
                     </th>
                     <th className="p-5 text-center text-sm font-bold text-slate">WhatsApp</th>

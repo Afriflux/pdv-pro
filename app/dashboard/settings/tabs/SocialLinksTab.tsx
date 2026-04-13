@@ -119,7 +119,7 @@ export function SocialLinksTab({ store }: { store: any }) {
                     
                     {/* Zone Input Droite */}
                     <div className="flex-1 flex flex-col justify-center px-4 py-3">
-                      <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-0.5">
+                      <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-0.5">
                         {net.label}
                       </label>
                       <input 

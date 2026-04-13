@@ -145,7 +145,7 @@ export function SocialProofControls({
             <div className="bg-rose-50/20 p-5 rounded-[20px] border border-rose-100 flex items-center justify-between">
               <div>
                 <label className="block text-[13px] font-black text-rose-900 mb-0.5">Mode Simulateur</label>
-                <p className="text-[10px] uppercase font-bold tracking-wider text-rose-500">Génère de fausses ventes</p>
+                <p className="text-xs uppercase font-bold tracking-wider text-rose-500">Génère de fausses ventes</p>
               </div>
               {/* eslint-disable-next-line */}
               <button

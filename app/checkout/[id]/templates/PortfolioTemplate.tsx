@@ -43,7 +43,7 @@ export function PortfolioTemplate({
       {/* ── Titre centré ───────────────────────────────────────── */}
       <div className="max-w-4xl mx-auto px-6 pt-12 md:pt-20 pb-8 text-center">
         {product.category && (
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-4" {...{ style: { color: accent } }}>{product.category}</p>
+          <p className="text-xs font-black uppercase tracking-[0.3em] mb-4" {...{ style: { color: accent } }}>{product.category}</p>
         )}
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05]">{product.name}</h1>
         {product.description && (

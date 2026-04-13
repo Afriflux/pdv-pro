@@ -61,7 +61,7 @@ export default function CronButton({ label, endpoint, description, lastRunStr }:
         <button
           onClick={handleTrigger}
           disabled={loading}
-          className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider transition-all shadow-sm border ${
+          className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider transition-all shadow-sm border ${
             loading 
               ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
               : 'bg-gradient-to-r from-[#0F7A60] to-teal-500 hover:from-[#0D5C4A] hover:to-[#0F7A60] text-white border-[#0F7A60]/50 shadow-[0_4px_15px_rgba(15,122,96,0.2)] hover:shadow-[0_6px_20px_rgba(15,122,96,0.3)]'
@@ -78,14 +78,14 @@ export default function CronButton({ label, endpoint, description, lastRunStr }:
 
       {lastRunStr && (
         <div className="flex items-center gap-2 mt-2">
-           <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">Dernière exécution :</span>
+           <span className="text-xs uppercase font-black tracking-widest text-gray-400">Dernière exécution :</span>
            {(() => {
              try {
                const parsed = JSON.parse(lastRunStr)
                const isErr = parsed.status === 'error'
                const d = new Date(parsed.time)
                return (
-                 <span className={`px-2 py-0.5 rounded border text-[10px] font-bold ${isErr ? 'bg-red-50 text-red-600 border-red-200' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
+                 <span className={`px-2 py-0.5 rounded border text-xs font-bold ${isErr ? 'bg-red-50 text-red-600 border-red-200' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
                    {isErr ? 'Erreur' : 'Succès'} • {d.toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour:'2-digit', minute:'2-digit' })}
                  </span>
                )
@@ -110,18 +110,18 @@ export default function CronButton({ label, endpoint, description, lastRunStr }:
                   <Check className="w-3 h-3" />
                 )}
               </span>
-              <span className={`text-[10px] font-black uppercase tracking-wider ${error ? 'text-red-600' : 'text-emerald-600'}`}>
+              <span className={`text-xs font-black uppercase tracking-wider ${error ? 'text-red-600' : 'text-emerald-600'}`}>
                 {error ? 'Échec' : 'Succès'}
               </span>
             </div>
             <button 
               onClick={() => { setResult(null); setError(null); }}
-              className={`text-[10px] font-bold px-2 py-1 rounded-lg transition-colors ${error ? 'text-red-500 hover:bg-red-100' : 'text-emerald-500 hover:bg-emerald-100'}`}
+              className={`text-xs font-bold px-2 py-1 rounded-lg transition-colors ${error ? 'text-red-500 hover:bg-red-100' : 'text-emerald-500 hover:bg-emerald-100'}`}
             >
               Effacer
             </button>
           </div>
-          <pre className={`text-[11px] font-mono overflow-x-auto p-3 rounded-xl border max-h-40 shadow-inner ${error ? 'text-red-800 bg-red-100/50 border-red-200/50' : 'text-emerald-800 bg-emerald-100/50 border-emerald-200/50'}`}>
+          <pre className={`text-xs font-mono overflow-x-auto p-3 rounded-xl border max-h-40 shadow-inner ${error ? 'text-red-800 bg-red-100/50 border-red-200/50' : 'text-emerald-800 bg-emerald-100/50 border-emerald-200/50'}`}>
             {JSON.stringify(result || { error }, null, 2)}
           </pre>
         </div>

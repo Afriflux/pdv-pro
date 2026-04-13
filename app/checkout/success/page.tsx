@@ -1,9 +1,14 @@
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Check, X, CheckCircle2, MessageCircle, Star, Share2, MapPin } from 'lucide-react'
-import { PromoCopyButton } from './PromoCopyButton'
+import { Check, X, CheckCircle2, MessageCircle, Star, Share2 } from 'lucide-react'
 import { SaveAddressCTA } from './SaveAddressCTA'
+import { PurchasePixelTracker } from './PurchasePixelTracker'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  robots: 'noindex, nofollow',
+}
 
 interface SuccessPageProps {
   searchParams: { order?: string; cod?: string; status?: string }
@@ -102,7 +107,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
           <div className="bg-cream rounded-xl p-4 mb-6 text-left">
             <div className="flex justify-between items-center text-sm mb-2">
               <span className="text-dust">Commande</span>
-              <span className="text-ink font-mono text-xs font-semibold">#{formattedOrderId}</span>
+              <span className="text-ink font-mono text-sm font-semibold">#{formattedOrderId}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-dust">Statut</span>
@@ -110,7 +115,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             </div>
           </div>
           
-          <Link href="/" className="block w-full bg-red-600 text-white py-3 rounded-xl font-medium text-center hover:bg-red-700 transition">
+          <Link href="/" className="block w-full bg-red-600 text-white py-3.5 rounded-xl font-medium text-center hover:bg-red-700 transition">
             Réessayer
           </Link>
         </div>
@@ -118,7 +123,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
     )
   }
 
-  const accent = (store as any)?.primary_color || '#0F7A60'
+  const accent = store?.primary_color || '#0F7A60'
 
   return (
     <div className="min-h-screen bg-[#FAFAF7] flex items-center justify-center p-6">
@@ -128,6 +133,14 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
         <div className="w-20 h-20 border-2 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce" {...{ style: { backgroundColor: `${accent}11`, borderColor: `${accent}33`, color: accent } }}>
            <CheckCircle2 size={40} strokeWidth={2.5} />
         </div>
+
+        {/* Purchase Pixel Tracking (client-side dedup with CAPI) */}
+        <PurchasePixelTracker
+          orderId={order.id}
+          value={order.total}
+          contentName={product?.name ?? 'Produit'}
+        />
+        
         
         {/* Titre */}
         <h1 className="font-display text-ink text-2xl font-bold mb-2">
@@ -136,7 +149,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
         
         {/* Sous-titre dynamique */}
         <p className="text-slate text-sm mb-6">
-          Merci pour votre achat. Le vendeur a été notifié. {isCod && (store as any)?.closing_enabled 
+          Merci pour votre achat. Le vendeur a été notifié. {isCod && store?.closing_enabled 
             ? " Un de nos agents téléphoniques vous contactera sous peu pour confirmer l'expédition de votre commande."
             : isCod 
               ? " Paiement à la réception de votre commande."
@@ -151,11 +164,11 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
         <div className="bg-cream rounded-xl p-4 mb-6 text-left space-y-3">
           <div className="flex justify-between items-center text-sm">
             <span className="text-dust">Commande</span>
-            <span className="text-ink font-mono text-xs font-semibold">#{formattedOrderId}</span>
+            <span className="text-ink font-mono text-sm font-semibold">#{formattedOrderId}</span>
           </div>
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-dust">Produit</span>
-            <span className="text-ink font-medium max-w-[60%] text-right truncate">{product?.name ?? '—'}</span>
+          <div className="flex justify-between items-center text-sm gap-4">
+            <span className="text-dust shrink-0">Produit</span>
+            <span className="text-ink font-medium text-right truncate flex-1">{product?.name ?? '—'}</span>
           </div>
           <div className="flex justify-between items-center text-sm">
             <span className="text-dust">Montant</span>
@@ -164,7 +177,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
           <div className="flex justify-between items-center text-sm pt-2 border-t border-line">
             <span className="text-dust">Statut</span>
             {isCod ? (
-              <span className="text-amber-600 font-medium font-mono text-xs">À LA LIVRAISON</span>
+              <span className="text-amber-600 font-medium font-mono text-xs sm:text-sm">À LA LIVRAISON</span>
             ) : (
               <span className="font-medium flex items-center gap-1" {...{ style: { color: accent } }}>Payé <Check size={14} /></span>
             )}
@@ -200,7 +213,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
                     }`}>
                       {step.icon}
                     </div>
-                    <span className={`text-[10px] font-bold mt-2 text-center leading-tight ${
+                    <span className={`text-xs font-bold mt-2 text-center leading-tight ${
                       i <= currentStep ? 'text-emerald-700' : 'text-gray-400'
                     }`}>{step.label}</span>
                   </div>
@@ -223,17 +236,17 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
               <strong>Heure :</strong> {booking.start_time} {booking.end_time ? `- ${booking.end_time}` : ''}
             </p>
             <div className="flex gap-2">
-              <a href={visioLink} target="_blank" rel="noopener noreferrer" className="flex-1 py-2.5 bg-[#0F7A60] hover:bg-[#0c624d] text-white text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
+              <a href={visioLink} target="_blank" rel="noopener noreferrer" className="flex-1 py-3.5 bg-[#0F7A60] hover:bg-[#0c624d] text-white text-xs sm:text-sm font-bold uppercase tracking-wider text-center rounded-lg transition min-h-[44px]">
                 Rejoindre Visio
               </a>
-              <a href={icsDataUrl} download={`Yayyam_Booking_${formattedOrderId}.ics`} className="flex-1 py-2.5 bg-white border border-line hover:bg-cream text-[#0F7A60] text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
+              <a href={icsDataUrl} download={`Yayyam_Booking_${formattedOrderId}.ics`} className="flex-1 py-3.5 bg-white border border-line hover:bg-cream text-[#0F7A60] text-xs sm:text-sm font-bold uppercase tracking-wider text-center rounded-lg transition min-h-[44px]">
                 + Agenda
               </a>
             </div>
             
-            {(store as any)?.whatsapp && (
-              <div className="mt-2">
-                <a suppressHydrationWarning href={`https://wa.me/${(store as any).whatsapp}?text=${encodeURIComponent(`Bonjour, j'ai réservé une session de "${product?.name}" le ${new Date(booking.date).toLocaleDateString('fr-FR')} à ${booking.start_time} (Commande #${formattedOrderId}). J'ai un imprévu, est-il possible de reprogrammer ce rendez-vous s'il vous plaît ?`)}`} target="_blank" rel="noopener noreferrer" className="block w-full py-2.5 bg-white border border-line hover:bg-cream text-dust text-xs font-bold uppercase tracking-wider text-center rounded-lg transition">
+            {store?.whatsapp && (
+              <div className="mt-2 text-center">
+                <a suppressHydrationWarning href={`https://wa.me/${store?.whatsapp}?text=${encodeURIComponent(`Bonjour, j'ai réservé une session de "${product?.name}" le ${new Date(booking.date).toLocaleDateString('fr-FR')} à ${booking.start_time} (Commande #${formattedOrderId}). J'ai un imprévu, est-il possible de reprogrammer ce rendez-vous s'il vous plaît ?`)}`} target="_blank" rel="noopener noreferrer" className="inline-block w-full py-3.5 px-4 bg-white border border-line hover:bg-cream text-dust text-sm font-bold uppercase tracking-wider text-center rounded-lg transition min-h-[44px]">
                   Demander une reprogrammation
                 </a>
               </div>
@@ -262,12 +275,12 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
               href={`https://t.me/Yayyam_bot?start=${orderId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 w-full bg-[#0088cc] hover:bg-[#0077b5] text-white py-3 rounded-xl font-bold text-sm text-center flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/30"
+              className="mt-2 w-full bg-[#0088cc] hover:bg-[#0077b5] text-white py-3.5 px-4 rounded-xl font-bold text-sm text-center flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/30 min-h-[44px]"
             >
               <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
               Récupérer mon accès VIP
             </a>
-            <p className="text-[11px] text-blue-600/70 text-center mt-3 font-medium leading-relaxed">
+            <p className="text-xs text-blue-600/70 text-center mt-3 font-medium leading-relaxed">
               Discutez avec notre bot officiel pour récupérer<br/>votre lien d'invitation à usage unique.
             </p>
           </div>
@@ -275,10 +288,10 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
         
         {/* CTAs */}
         <div className="space-y-3">
-          <Link href={`/track?ref=${orderId}`} className="block w-full bg-slate-900 text-white py-3 rounded-xl font-medium text-center hover:bg-black transition shadow-lg">
+          <Link href={`/track?ref=${orderId}`} className="block w-full bg-slate-900 text-white py-3.5 min-h-[44px] flex items-center justify-center rounded-xl font-medium text-center hover:bg-black transition shadow-lg">
             Suivre ma commande
           </Link>
-          <Link href={`/${(store as any)?.slug || ''}`} className="block w-full text-slate border border-line py-3 rounded-xl font-medium text-center hover:bg-gray-50 transition">
+          <Link href={`/${store?.slug || ''}`} className="block w-full text-slate border border-line py-3.5 min-h-[44px] flex items-center justify-center rounded-xl font-medium text-center hover:bg-gray-50 transition">
             Retour à l'espace de vente
           </Link>
           
@@ -290,15 +303,15 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             </h3>
             <p className="text-slate mb-4 leading-snug">Partagez ce lien avec vos amis. Pour chaque achat via votre lien, vous gagnez une commission.</p>
             <div className="flex gap-2">
-              <input type="text" readOnly value={`https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} className="flex-1 text-xs px-3 py-2 bg-white border border-line rounded-lg text-dust outline-none truncate" title="Lien de partage" placeholder="Lien de partage" />
-              <a suppressHydrationWarning href={`https://wa.me/?text=Découvre %20${encodeURIComponent(product?.name || '')}%20sur%20Yayyam%20Pro:%20https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-[#25D366] text-white rounded-lg flex items-center justify-center hover:bg-[#20b858] transition" title="Partager sur WhatsApp" aria-label="Partager sur WhatsApp">
+              <input type="text" readOnly value={`https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} className="flex-1 text-sm px-4 py-3.5 bg-white border border-line rounded-lg text-dust outline-none truncate" title="Lien de partage" placeholder="Lien de partage" />
+              <a suppressHydrationWarning href={`https://wa.me/?text=Découvre %20${encodeURIComponent(product?.name || '')}%20sur%20Yayyam%20Pro:%20https://yayyam.com/checkout/${order.product_id}?ref=${order.buyer_phone || ''}`} target="_blank" rel="noopener noreferrer" className="px-4 py-3.5 bg-[#25D366] text-white rounded-lg flex items-center justify-center hover:bg-[#20b858] transition min-h-[44px]" title="Partager sur WhatsApp" aria-label="Partager sur WhatsApp">
                 <Share2 size={16} />
               </a>
             </div>
           </div>
           
-          {(store as any)?.whatsapp && (
-             <a suppressHydrationWarning href={`https://wa.me/${(store as any).whatsapp}?text=Bonjour, concernant ma commande ${formattedOrderId}...`} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#25D366] text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-[#20b858] transition shadow-lg mb-8">
+          {store?.whatsapp && (
+             <a suppressHydrationWarning href={`https://wa.me/${store.whatsapp}?text=Bonjour, concernant ma commande ${formattedOrderId}...`} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#25D366] text-white py-3.5 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-[#20b858] transition shadow-lg mb-8">
                <MessageCircle size={18} />
                Contacter sur WhatsApp
              </a>
@@ -310,7 +323,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
           <SaveAddressCTA 
             buyerName={order.buyer_name || ''}
             buyerPhone={order.buyer_phone}
-            buyerEmail={(order as any).buyer_email || ''}
+            buyerEmail={order.buyer_email || ''}
             deliveryAddress={order.delivery_address}
           />
         )}
@@ -322,9 +335,11 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center transition hover:shadow-md">
             <h4 className="font-bold text-amber-900 mb-1">Satisfait de votre achat ?</h4>
             <p className="text-xs text-amber-700 mb-3">Laissez un avis au vendeur pour l'encourager.</p>
-            <Link href={`/${(store as any)?.slug}/${order.product_id}#reviews`} className="flex justify-center gap-1 group">
+            <Link href={`/${store?.slug}/${order.product_id}#reviews`} className="flex justify-center gap-1 group">
               {[1, 2, 3, 4, 5].map(i => (
-                <Star key={i} size={28} className="text-amber-300 group-hover:text-amber-500 fill-amber-300 group-hover:fill-amber-500 transition-colors cursor-pointer" />
+                <div key={i} className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer">
+                  <Star size={28} className="text-amber-300 group-hover:text-amber-500 fill-amber-300 group-hover:fill-amber-500 transition-colors" />
+                </div>
               ))}
             </Link>
           </div>
@@ -334,8 +349,8 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
             <h4 className="font-bold text-ink mb-1 flex items-center justify-center gap-2"><Share2 size={16}/> Partagez votre trouvaille</h4>
             <p className="text-xs text-slate mb-4">Recommandez ce produit à vos amis.</p>
             <div className="flex justify-center gap-3">
-              <a href={`https://wa.me/?text=Je viens d'acheter sur ${(store as any)?.name || 'cette boutique'} via Yayyam ! Regarde : https://yayyam.com/${(store as any)?.slug}/${order.product_id}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#25D366]/10 text-[#25D366] flex items-center justify-center hover:bg-[#25D366] hover:text-white transition">WA</a>
-              <a href={`https://www.facebook.com/sharer/sharer.php?u=https://yayyam.com/${(store as any)?.slug}/${order.product_id}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center hover:bg-[#1877F2] hover:text-white transition">FB</a>
+              <a href={`https://wa.me/?text=Je viens d'acheter sur ${store?.name || 'cette boutique'} via Yayyam ! Regarde : https://yayyam.com/${store?.slug}/${order.product_id}`} target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-full bg-[#25D366]/10 text-[#25D366] flex items-center justify-center hover:bg-[#25D366] hover:text-white transition">WA</a>
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=https://yayyam.com/${store?.slug}/${order.product_id}`} target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-full bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center hover:bg-[#1877F2] hover:text-white transition">FB</a>
             </div>
           </div>
 
@@ -343,7 +358,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
           <div className="bg-emerald/5 border border-emerald/20 rounded-xl p-5 text-center">
              <h4 className="font-bold text-emerald-rich mb-1">Revenez nous voir bientôt ! 💚</h4>
              <p className="text-xs text-emerald/80 mb-3">Explorez les autres produits de la boutique et profitez d&apos;offres exclusives.</p>
-             <Link href={`/${(store as any)?.slug || ''}`} className="inline-block px-6 py-2.5 bg-[#0F7A60] text-white font-bold text-sm rounded-xl hover:bg-[#0c624d] transition shadow-md">
+             <Link href={`/${store?.slug || ''}`} className="inline-block px-6 py-3.5 bg-[#0F7A60] text-white font-bold text-sm rounded-xl hover:bg-[#0c624d] transition shadow-md min-h-[44px]">
                Découvrir la boutique
              </Link>
           </div>
@@ -357,7 +372,7 @@ END:VCALENDAR`.replace(/\n/g, '%0A').replace(/ /g, '%20')
 
 export default function CheckoutSuccessPage({ searchParams }: SuccessPageProps) {
   // Les services de paiement tiers renvoient parfois order_id ou order
-  const orderId = (searchParams as any).order_id || searchParams.order
+  const orderId = (searchParams as Record<string, string | undefined>).order_id || searchParams.order
   const isCod   = searchParams.cod === 'true'
   const status  = searchParams.status || 'success'
 
@@ -370,7 +385,7 @@ export default function CheckoutSuccessPage({ searchParams }: SuccessPageProps) 
           </div>
           <h1 className="font-display text-ink text-2xl font-bold mb-2">Commande confirmée !</h1>
           <p className="text-slate text-sm mb-6">Vous recevrez une confirmation WhatsApp dans quelques instants.</p>
-          <a href="/" className="block w-full bg-emerald text-white py-3 rounded-xl font-medium text-center hover:bg-emerald-rich transition shadow-md shadow-emerald/20">
+          <a href="/" className="block w-full bg-emerald text-white py-3.5 rounded-xl font-medium text-center hover:bg-emerald-rich transition shadow-md shadow-emerald/20 min-h-[44px]">
             Retour à l&apos;accueil
           </a>
         </div>

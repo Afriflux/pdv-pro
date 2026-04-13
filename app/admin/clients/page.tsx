@@ -160,19 +160,19 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
         {/* ── KPIs ── */}
         <div className="relative z-10 mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 lg:p-5 flex flex-col">
-            <span className="text-emerald-100/70 text-[10px] font-black uppercase tracking-widest mb-1">Clients Uniques</span>
+            <span className="text-emerald-100/70 text-xs font-black uppercase tracking-widest mb-1">Clients Uniques</span>
             <span className="text-2xl font-black text-white">{totalBuyers}</span>
           </div>
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 lg:p-5 flex flex-col">
-            <span className="text-emerald-100/70 text-[10px] font-black uppercase tracking-widest mb-1">GMV Totale</span>
+            <span className="text-emerald-100/70 text-xs font-black uppercase tracking-widest mb-1">GMV Totale</span>
             <span className="text-2xl font-black text-amber-300">{formatMoney(totalGMV)}</span>
           </div>
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 lg:p-5 flex flex-col">
-            <span className="text-emerald-100/70 text-[10px] font-black uppercase tracking-widest mb-1">Panier Moyen</span>
+            <span className="text-emerald-100/70 text-xs font-black uppercase tracking-widest mb-1">Panier Moyen</span>
             <span className="text-2xl font-black text-white">{formatMoney(avgBasket)}</span>
           </div>
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 lg:p-5 flex flex-col">
-            <span className="text-emerald-100/70 text-[10px] font-black uppercase tracking-widest mb-1">Clients Récurrents</span>
+            <span className="text-emerald-100/70 text-xs font-black uppercase tracking-widest mb-1">Clients Récurrents</span>
             <span className="text-2xl font-black text-emerald-300">{repeatBuyers}</span>
           </div>
         </div>
@@ -226,12 +226,12 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
               <table className="w-full min-w-[800px]">
                 <thead>
                   <tr className="bg-[#FAFAF7] border-b border-gray-100">
-                    <th className="text-left px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Client</th>
-                    <th className="text-left px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Contact</th>
-                    <th className="text-center px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Commandes</th>
-                    <th className="text-right px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Dépensé</th>
-                    <th className="text-center px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Boutiques</th>
-                    <th className="text-right px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Dernier Achat</th>
+                    <th className="text-left px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Client</th>
+                    <th className="text-left px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Contact</th>
+                    <th className="text-center px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Commandes</th>
+                    <th className="text-right px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Total Dépensé</th>
+                    <th className="text-center px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Boutiques</th>
+                    <th className="text-right px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Dernier Achat</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -248,7 +248,7 @@ export default async function AdminClientsPage({ searchParams }: PageProps) {
                           <div>
                             <p className="font-bold text-gray-900 text-sm">{buyer.name}</p>
                             {buyer.totalOrders >= 3 && (
-                              <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                              <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
                                 🔥 Fidèle
                               </span>
                             )}

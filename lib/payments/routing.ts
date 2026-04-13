@@ -10,7 +10,7 @@ export interface PaymentRequestPayload {
   amount: number
   currency: string
   orderId: string
-  method: 'wave' | 'paytech' | 'bictorys' | 'cinetpay' | 'orange_money' | 'card'
+  method: 'wave' | 'paytech' | 'bictorys' | 'cinetpay' | 'moneroo'
   customer: {
     name: string
     phone: string

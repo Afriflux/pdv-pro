@@ -51,7 +51,7 @@ function OrderStatusBadge({ status }: { status: string }) {
       : 'bg-amber-500/10 text-amber-600'
 
   return (
-    <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${cls}`}>
+    <span className={`px-2 py-0.5 rounded-md text-xs font-black uppercase tracking-wider ${cls}`}>
       {STATUS_LABELS[status] ?? status}
     </span>
   )
@@ -187,19 +187,16 @@ export default async function AdminDashboard() {
   const capitalizedDate = dateFormatted.charAt(0).toUpperCase() + dateFormatted.slice(1)
 
   return (
-    <main className="min-h-screen font-sans border border-transparent bg-[#FAFAF7] flex flex-col">
+    <main className="min-h-screen font-sans border border-transparent bg-gray-50 flex flex-col">
       {/* ── SECTION 1 : HEADER FULL-BLEED EMERALD ──────────────────────── */}
-      <header className="w-full bg-gradient-to-r from-[#0D5C4A] via-[#0F7A60] to-teal-700 pt-10 pb-24 px-6 lg:px-14 relative overflow-hidden shrink-0 shadow-lg z-10">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white opacity-5 mix-blend-overlay rounded-full blur-3xl pointer-events-none translate-x-1/3 -translate-y-1/3" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#C9A84C] opacity-20 mix-blend-overlay rounded-full blur-3xl pointer-events-none -translate-x-1/2 translate-y-1/3" />
-
-        <div className="w-full flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
+      <header className="w-full bg-gradient-to-r from-[#0D5C4A] via-[#0F7A60] to-teal-700 pt-6 pb-16 px-6 lg:px-14 relative overflow-hidden shrink-0 shadow-lg z-10">
+        <div className="w-full flex flex-col md:flex-row md:items-end justify-between gap-3 relative z-10">
           <div>
-            <h1 className="text-3xl font-black text-white tracking-tight drop-shadow-sm">
+            <h1 className="text-xl font-black text-white tracking-tight">
               {greeting}, {userName} ! 👋
             </h1>
-            <p className="text-sm font-medium text-emerald-100/80 mt-1.5">
-              Statistiques globales au {capitalizedDate}
+            <p className="text-xs font-medium text-emerald-100/80 mt-1">
+              {capitalizedDate}
             </p>
           </div>
           <div className="flex-shrink-0 print:hidden opacity-90 hover:opacity-100 transition-opacity">
@@ -209,50 +206,46 @@ export default async function AdminDashboard() {
       </header>
 
       {/* ── CONTENU (Overlap) ── */}
-      <div className="w-full px-6 lg:px-14 space-y-8 animate-in fade-in duration-500 mb-20 -mt-14 relative z-20">
+      <div className="w-full px-6 lg:px-14 space-y-6 animate-in fade-in duration-500 mb-20 -mt-10 relative z-20">
 
         {/* ── SECTION 2 : 4 KPI CARDS (OVERLAP) ── */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           
-          <div className="bg-[#1A1A1A] border border-gray-800 hover:border-[#C9A84C]/50 hover:shadow-2xl hover:shadow-[#C9A84C]/20 transition-all duration-500 rounded-[28px] p-6 relative overflow-hidden group shadow-lg">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#C9A84C] mb-2 relative z-10">
+          <div className="bg-[#1A1A1A] border border-gray-800 hover:border-[#C9A84C]/50 transition-all duration-300 rounded-2xl p-4 relative overflow-hidden group shadow-md">
+            <p className="text-xs font-black uppercase tracking-widest text-[#C9A84C] mb-1 relative z-10">
               Revenus Plateforme (Total)
             </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-white truncate relative z-10 tracking-tighter group-hover:text-emerald-50 transition-colors duration-500">
-              {totalPlatformRevenue.toLocaleString('fr-FR')} <span className="text-sm text-gray-500 font-bold ml-1">F</span>
+            <p className="text-xl lg:text-2xl font-display font-black text-white truncate relative z-10 tracking-tighter">
+              {totalPlatformRevenue.toLocaleString('fr-FR')} <span className="text-xs text-gray-500 font-bold ml-1">F</span>
             </p>
           </div>
           
-          <div className="bg-white/90 backdrop-blur-xl border border-white hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-500 rounded-[28px] p-6 relative overflow-hidden group shadow-lg">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/[0.03] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 mb-2 relative z-10">
-              Volume Ventes Global (Auj.)
+          <div className="bg-white/90 backdrop-blur-xl border border-white hover:border-amber-500/30 transition-all duration-300 rounded-2xl p-4 relative overflow-hidden group shadow-md">
+            <p className="text-xs font-black uppercase tracking-widest text-amber-600 mb-1 relative z-10">
+              Volume Ventes (Auj.)
             </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] truncate relative z-10 tracking-tighter group-hover:text-amber-600 transition-colors duration-500">
-              {dailyGMV.toLocaleString('fr-FR')} <span className="text-sm font-bold text-gray-400 ml-1">F</span>
+            <p className="text-xl lg:text-2xl font-display font-black text-[#1A1A1A] truncate relative z-10 tracking-tighter">
+              {dailyGMV.toLocaleString('fr-FR')} <span className="text-xs font-bold text-gray-400 ml-1">F</span>
             </p>
           </div>
 
-          <div className="bg-white/90 backdrop-blur-xl border border-white hover:border-[#0F7A60]/30 hover:shadow-2xl hover:shadow-[#0F7A60]/10 transition-all duration-500 rounded-[28px] p-6 relative overflow-hidden group shadow-lg">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0F7A60]/[0.03] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#0F7A60] mb-2 relative z-10 flex items-center justify-between">
+          <div className="bg-white/90 backdrop-blur-xl border border-white hover:border-[#0F7A60]/30 transition-all duration-300 rounded-2xl p-4 relative overflow-hidden group shadow-md">
+            <p className="text-xs font-black uppercase tracking-widest text-[#0F7A60] mb-1 relative z-10 flex items-center justify-between">
               Vendeurs Actifs
-              <span className="bg-[#0F7A60]/10 text-[#0F7A60] px-2 py-0.5 rounded-md text-[9px] font-bold">+{newStoresWeek} (7j)</span>
+              <span className="bg-[#0F7A60]/10 text-[#0F7A60] px-2 py-0.5 rounded-md text-xs font-bold">+{newStoresWeek} (7j)</span>
             </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] relative z-10 tracking-tighter group-hover:text-[#0F7A60] transition-colors duration-500">
+            <p className="text-xl lg:text-2xl font-display font-black text-[#1A1A1A] relative z-10 tracking-tighter">
               {totalStores ?? 0}
             </p>
           </div>
 
-          <div className="bg-red-500/5 backdrop-blur-xl border border-red-500/20 hover:border-red-500/50 hover:shadow-2xl hover:shadow-red-500/20 transition-all duration-500 rounded-[28px] p-6 relative overflow-hidden group shadow-lg">
-             <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-             <p className="text-[10px] font-black uppercase tracking-widest text-red-600 mb-2 relative z-10 flex items-center justify-between">
+          <div className="bg-red-500/5 backdrop-blur-xl border border-red-500/20 hover:border-red-500/50 transition-all duration-300 rounded-2xl p-4 relative overflow-hidden group shadow-md">
+             <p className="text-xs font-black uppercase tracking-widest text-red-600 mb-1 relative z-10 flex items-center justify-between">
               Retraits en attente
-              {pendingWithdrawals ? <span className="bg-red-500 text-white px-2 py-0.5 rounded-md text-[9px] font-bold animate-pulse">{pendingWithdrawals ?? 0} req</span> : null}
+              {pendingWithdrawals ? <span className="bg-red-500 text-white px-2 py-0.5 rounded-md text-xs font-bold animate-pulse">{pendingWithdrawals ?? 0} req</span> : null}
             </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-red-600 truncate relative z-10 tracking-tighter flex items-center gap-1 group-hover:text-red-700 transition-colors duration-500">
-              {totalPendingAmount.toLocaleString('fr-FR')} <span className="text-sm font-bold opacity-60 mt-2">F</span>
+            <p className="text-xl lg:text-2xl font-display font-black text-red-600 truncate relative z-10 tracking-tighter flex items-center gap-1">
+              {totalPendingAmount.toLocaleString('fr-FR')} <span className="text-xs font-bold opacity-60">F</span>
             </p>
           </div>
         </section>
@@ -265,7 +258,7 @@ export default async function AdminDashboard() {
                 <Wallet size={20} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-red-500/70 uppercase tracking-widest">Opérations de caisse</p>
+                <p className="text-xs font-black text-red-500/70 uppercase tracking-widest">Opérations de caisse</p>
                 <p className="text-sm font-black text-[#1A1A1A] group-hover:text-red-600 transition-colors">Retraits d'urgence <span className="text-red-500">({pendingWithdrawals ?? 0})</span></p>
               </div>
             </div>
@@ -280,7 +273,7 @@ export default async function AdminDashboard() {
                 <ShieldAlert size={20} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-amber-500/70 uppercase tracking-widest">Identités Vendeurs</p>
+                <p className="text-xs font-black text-amber-500/70 uppercase tracking-widest">Identités Vendeurs</p>
                 <p className="text-sm font-black text-[#1A1A1A] group-hover:text-amber-600 transition-colors">KYC en attente <span className="text-amber-500">({pendingKYC ?? 0})</span></p>
               </div>
             </div>
@@ -295,7 +288,7 @@ export default async function AdminDashboard() {
                 <AlertTriangle size={20} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-blue-500/70 uppercase tracking-widest">Service Clientèle</p>
+                <p className="text-xs font-black text-blue-500/70 uppercase tracking-widest">Service Clientèle</p>
                 <p className="text-sm font-black text-[#1A1A1A] group-hover:text-blue-600 transition-colors">Plaintes ouvertes <span className="text-blue-500">({openComplaints ?? 0})</span></p>
               </div>
             </div>
@@ -314,8 +307,8 @@ export default async function AdminDashboard() {
               <div>
                 <h2 className="font-black text-[#1A1A1A] text-lg">Activité Globale (7 derniers jours)</h2>
                 <div className="flex gap-4 mt-2">
-                  <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#0F7A60]"></div><span className="text-[10px] font-bold text-gray-500 uppercase">Revenus (Commissions)</span></div>
-                  <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#C9A84C]"></div><span className="text-[10px] font-bold text-gray-500 uppercase">Volume (GMV)</span></div>
+                  <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#0F7A60]"></div><span className="text-xs font-bold text-gray-500 uppercase">Revenus (Commissions)</span></div>
+                  <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#C9A84C]"></div><span className="text-xs font-bold text-gray-500 uppercase">Volume (GMV)</span></div>
                 </div>
               </div>
               <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#0F7A60]/10 transition-colors duration-500 text-gray-400 group-hover:text-[#0F7A60]">
@@ -335,9 +328,9 @@ export default async function AdminDashboard() {
                <h2 className="font-black text-[#1A1A1A] text-sm mb-4">Statuts (7j)</h2>
                <AdminPieChart data={pieData} />
                <div className="flex justify-center gap-4 mt-2">
-                 <span className="text-[10px] font-bold text-gray-400"><span className="text-[#0F7A60] w-2 h-2 inline-block rounded-full bg-[#0F7A60] mr-1"></span> Succès</span>
-                 <span className="text-[10px] font-bold text-gray-400"><span className="text-[#3B82F6] w-2 h-2 inline-block rounded-full bg-[#3B82F6] mr-1"></span> En cours</span>
-                 <span className="text-[10px] font-bold text-gray-400"><span className="text-[#EF4444] w-2 h-2 inline-block rounded-full bg-[#EF4444] mr-1"></span> Échecs</span>
+                 <span className="text-xs font-bold text-gray-400"><span className="text-[#0F7A60] w-2 h-2 inline-block rounded-full bg-[#0F7A60] mr-1"></span> Succès</span>
+                 <span className="text-xs font-bold text-gray-400"><span className="text-[#3B82F6] w-2 h-2 inline-block rounded-full bg-[#3B82F6] mr-1"></span> En cours</span>
+                 <span className="text-xs font-bold text-gray-400"><span className="text-[#EF4444] w-2 h-2 inline-block rounded-full bg-[#EF4444] mr-1"></span> Échecs</span>
                </div>
             </div>
 
@@ -349,7 +342,7 @@ export default async function AdminDashboard() {
                  {leaderboardOpts.map((store, i) => (
                    <div key={i} className="flex justify-between items-center bg-black/10 backdrop-blur-sm p-3 rounded-2xl border border-white/5 shadow-sm hover:bg-black/20 transition-colors">
                       <div className="flex items-center gap-3">
-                        <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black ${i===0?'bg-[#C9A84C] text-white shadow-md shadow-[#C9A84C]/30':i===1?'bg-gray-300 text-gray-800':i===2?'bg-amber-700/50 text-amber-100':'bg-white/10 text-white/50'}`}>
+                        <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black ${i===0?'bg-[#C9A84C] text-white shadow-md shadow-[#C9A84C]/30':i===1?'bg-gray-300 text-gray-800':i===2?'bg-amber-700/50 text-amber-100':'bg-white/10 text-white/50'}`}>
                           {i + 1}
                         </span>
                         <span className="text-xs font-bold text-emerald-50 truncate max-w-[120px]">{store.name}</span>
@@ -388,7 +381,7 @@ export default async function AdminDashboard() {
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="text-[11px] font-mono font-bold text-gray-400">#{order.id.split('-')[0].toUpperCase()}</p>
+                            <p className="text-xs font-mono font-bold text-gray-400">#{order.id.split('-')[0].toUpperCase()}</p>
                             <OrderStatusBadge status={order.status} />
                           </div>
                           <p className="text-sm font-bold text-[#1A1A1A] truncate group-hover:text-[#0F7A60] transition-colors">{order.Store?.name ?? 'Boutique inconnue'}</p>
@@ -396,7 +389,7 @@ export default async function AdminDashboard() {
                     </div>
                     <div className="text-right flex-shrink-0 pl-4">
                       <p className="text-[15px] font-black text-[#1A1A1A]">{(order.total || 0).toLocaleString('fr-FR')} F</p>
-                      <p className="text-[10px] text-gray-400 font-bold mt-0.5">
+                      <p className="text-xs text-gray-400 font-bold mt-0.5">
                         {new Date(order.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>

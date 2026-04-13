@@ -78,7 +78,7 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
               </h2>
               <div className="flex items-center gap-1.5 mt-1 text-dust">
                 <Clock size={12} />
-                <p className="text-[10px] uppercase font-bold tracking-wider">
+                <p className="text-xs uppercase font-bold tracking-wider">
                   {new Date(order.created_at).toLocaleDateString('fr-FR', {
                     day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
                   })}
@@ -95,7 +95,7 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
             </button>
           </div>
           <div>
-            <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-md border ${status.color}`}>
+            <span className={`text-xs font-black uppercase px-2 py-1 rounded-md border ${status.color}`}>
               {status.label}
             </span>
           </div>
@@ -109,7 +109,7 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
             <div className="flex gap-4">
               <div className="relative w-16 h-16 rounded-xl bg-cream flex-shrink-0 overflow-hidden border border-line">
                 {product?.images?.[0] ? (
-                  <Image src={product.images[0]} alt="Produit" fill className="object-cover" unoptimized />
+                  <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={product.images[0]} alt="Produit" fill className="object-cover" unoptimized />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300">📦</div>
                 )}
@@ -117,12 +117,12 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
               <div className="flex-1 flex flex-col justify-center">
                 <p className="font-bold text-ink text-sm line-clamp-2">{product?.name ?? '—'}</p>
                 {variant && (
-                  <p className="text-[10px] font-bold text-slate mt-0.5 uppercase tracking-wide">
+                  <p className="text-xs font-bold text-slate mt-0.5 uppercase tracking-wide">
                     {variant.value_1}{variant.value_2 ? ` / ${variant.value_2}` : ''}
                   </p>
                 )}
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="px-2 py-0.5 rounded bg-emerald/5 text-emerald text-[10px] font-black border border-emerald/10 uppercase">
+                  <span className="px-2 py-0.5 rounded bg-emerald/5 text-emerald text-xs font-black border border-emerald/10 uppercase">
                     Qté: {order.quantity}
                   </span>
                   <span className="text-xs font-black text-ink">
@@ -136,13 +136,13 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
               <div className="flex gap-4 mt-4 pt-4 border-t border-line">
                 <div className="relative w-12 h-12 rounded-xl bg-cream flex-shrink-0 overflow-hidden border border-line">
                   {bump_product.images?.[0] ? (
-                    <Image src={bump_product.images[0]} alt="Bump Produit" fill className="object-cover" unoptimized />
+                    <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={bump_product.images[0]} alt="Bump Produit" fill className="object-cover" unoptimized />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-300">🎁</div>
                   )}
                 </div>
                 <div className="flex-1 flex flex-col justify-center">
-                  <span className="text-[9px] font-black uppercase text-emerald tracking-wider mb-0.5">Order Bump</span>
+                  <span className="text-xs font-black uppercase text-emerald tracking-wider mb-0.5">Order Bump</span>
                   <p className="font-bold text-ink text-xs line-clamp-1">{bump_product.name}</p>
                   <p className="text-xs font-black text-ink mt-0.5">
                     {bump_product.price.toLocaleString('fr-FR')} F
@@ -160,13 +160,13 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
             
             <div className="space-y-3">
               <div>
-                <p className="text-[10px] font-black text-slate uppercase tracking-wider">Nom complet</p>
+                <p className="text-xs font-black text-slate uppercase tracking-wider">Nom complet</p>
                 <p className="font-bold text-ink text-sm">{order.buyer_name}</p>
               </div>
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] font-black text-slate uppercase tracking-wider">Téléphone</p>
+                  <p className="text-xs font-black text-slate uppercase tracking-wider">Téléphone</p>
                   <p className="font-bold text-ink text-sm">{order.buyer_phone}</p>
                 </div>
                 <div className="flex gap-2">
@@ -180,7 +180,7 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
               </div>
 
               <div>
-                <p className="text-[10px] font-black text-slate uppercase tracking-wider">Adresse</p>
+                <p className="text-xs font-black text-slate uppercase tracking-wider">Adresse</p>
                 <p className="font-bold text-ink text-sm leading-snug">
                   {order.delivery_address || 'Aucune adresse renseignée'}
                 </p>
@@ -205,8 +205,8 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
             
             <div className="space-y-2">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-slate font-bold uppercase text-[10px]">Méthode</span>
-                <span className="font-black text-ink bg-cream px-2 py-1 rounded-md uppercase text-[9px]">
+                <span className="text-slate font-bold uppercase text-xs">Méthode</span>
+                <span className="font-black text-ink bg-cream px-2 py-1 rounded-md uppercase text-xs">
                   {isCod ? 'Cash on Delivery' : order.payment_method}
                 </span>
               </div>
@@ -220,7 +220,7 @@ export function OrderDetailsDrawer({ order, isOpen, onClose }: OrderDetailsDrawe
                 <span className="text-red-500">− {(order.platform_fee || 0).toLocaleString('fr-FR')} F</span>
               </div>
               <div className="mt-3 p-3 bg-emerald/5 rounded-xl border border-emerald/10">
-                <p className="text-[9px] font-black text-emerald uppercase tracking-widest mb-0.5">Net pour vous</p>
+                <p className="text-xs font-black text-emerald uppercase tracking-widest mb-0.5">Net pour vous</p>
                 <p className="text-lg font-black text-emerald">
                   {(order.vendor_amount || order.total).toLocaleString('fr-FR')} <span className="text-xs">FCFA</span>
                 </p>

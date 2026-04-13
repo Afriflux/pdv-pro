@@ -13,7 +13,7 @@ export default async function PortalAgendaPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const bookings = await prisma.booking.findMany({
+  const bookings = await prisma.booking.findMany({ take: 50, 
     where: { 
       order: { buyer_id: user.id } 
     },

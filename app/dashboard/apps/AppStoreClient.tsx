@@ -205,11 +205,11 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
             <div className="flex items-center gap-4 bg-white px-5 py-3 rounded-2xl border border-gray-100 shadow-sm shrink-0">
                <div className="text-center px-4 border-r border-gray-100">
                   <p className="text-2xl font-black text-ink">{appsEnVitrine}</p>
-                  <p className="text-[10px] uppercase font-bold text-gray-400">Apps Utiles</p>
+                  <p className="text-xs uppercase font-bold text-gray-400">Apps Utiles</p>
                </div>
                <div className="text-center px-4">
                   <p className="text-2xl font-black text-emerald-600">{installCounts}</p>
-                  <p className="text-[10px] uppercase font-bold text-emerald-600/60">Installées</p>
+                  <p className="text-xs uppercase font-bold text-emerald-600/60">Installées</p>
                </div>
             </div>
           </div>
@@ -219,27 +219,27 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
             
             {/* Sidebar Filtres d'état */}
             <div className="w-full md:w-56 shrink-0 bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col gap-2 sticky top-4">
-              <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest pl-2 mb-2">Bibliothèque</h3>
+              <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2 mb-2">Bibliothèque</h3>
               <button 
                 onClick={() => setInstallFilter('all')}
                 className={`w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center justify-between ${installFilter === 'all' ? 'bg-ink text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'}`}
               >
                 <span>Tout parcourir</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${installFilter === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{appsEnVitrine}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${installFilter === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{appsEnVitrine}</span>
               </button>
               <button 
                 onClick={() => setInstallFilter('installed')}
                 className={`w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center justify-between ${installFilter === 'installed' ? 'bg-[#0F7A60] text-white shadow-md' : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'}`}
               >
                 <span>Installées</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${installFilter === 'installed' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'}`}>{installCounts}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${installFilter === 'installed' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'}`}>{installCounts}</span>
               </button>
               <button 
                 onClick={() => setInstallFilter('uninstalled')}
                 className={`w-full text-left px-4 py-3 rounded-xl text-[13px] font-bold transition-all flex items-center justify-between ${installFilter === 'uninstalled' ? 'bg-gray-900 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'}`}
               >
                 <span>Non installées</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full ${installFilter === 'uninstalled' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{appsEnVitrine - installCounts}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${installFilter === 'uninstalled' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{appsEnVitrine - installCounts}</span>
               </button>
             </div>
 
@@ -284,12 +284,12 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                       
                       <div className="flex flex-col gap-2 items-end">
                         {app.isPro && (
-                          <span className="flex items-center gap-1 text-[10px] uppercase font-black tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
+                          <span className="flex items-center gap-1 text-xs uppercase font-black tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">
                             <Star size={12} className="fill-amber-500" /> Premium
                           </span>
                         )}
                         {isInstalled && (
-                          <span className="flex items-center gap-1 text-[10px] uppercase font-black tracking-wider text-emerald-700 bg-emerald-100 px-2 py-1 rounded-lg">
+                          <span className="flex items-center gap-1 text-xs uppercase font-black tracking-wider text-emerald-700 bg-emerald-100 px-2 py-1 rounded-lg">
                             Actif
                           </span>
                         )}
@@ -297,7 +297,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                     </div>
 
                     <div className="flex-1">
-                      <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{app.category}</div>
+                      <div className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{app.category}</div>
                       <h3 className="font-black text-[#1A1A1A] text-lg mb-2 leading-tight">{app.name}</h3>
                       <p className="text-[13px] text-gray-500 leading-relaxed font-medium">{app.description}</p>
                     </div>

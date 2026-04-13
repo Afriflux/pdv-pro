@@ -119,7 +119,7 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
             { label: 'Résolus', value: resolvedCount ?? 0, color: 'text-emerald-300' },
           ].map(kpi => (
             <div key={kpi.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col">
-              <span className="text-emerald-100/70 text-[10px] font-black uppercase tracking-widest mb-1">{kpi.label}</span>
+              <span className="text-emerald-100/70 text-xs font-black uppercase tracking-widest mb-1">{kpi.label}</span>
               <span className={`text-2xl font-black ${kpi.color}`}>{kpi.value}</span>
             </div>
           ))}
@@ -130,7 +130,7 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
         
         {/* Sidebar Filtres */}
         <aside className="w-full lg:w-[250px] flex-shrink-0 sticky top-[100px] z-10 bg-white border border-gray-100 p-5 rounded-3xl shadow-xl flex flex-col gap-4">
-          <h2 className="text-[10px] items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2">
+          <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2">
             <Filter size={14} /> Statut
           </h2>
           <nav className="flex flex-col gap-1.5">
@@ -157,11 +157,11 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
           </nav>
 
           <div className="border-t border-gray-100 pt-4 mt-2">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Bientôt</p>
+            <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Bientôt</p>
             <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 text-center">
               <MessageSquare size={20} className="text-emerald-500 mx-auto mb-2" />
               <p className="text-xs font-bold text-emerald-700">Chat en temps réel</p>
-              <p className="text-[10px] text-emerald-500 mt-1">Discussion style WhatsApp intégrée</p>
+              <p className="text-xs text-emerald-500 mt-1">Discussion style WhatsApp intégrée</p>
             </div>
           </div>
         </aside>
@@ -181,10 +181,10 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 bg-[#FAFAF7]">
-                    <th className="text-left px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Ticket</th>
-                    <th className="text-left px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Boutique</th>
-                    <th className="text-left px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest hidden md:table-cell">Statut</th>
-                    <th className="text-left px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest hidden lg:table-cell">Date</th>
+                    <th className="text-left px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Ticket</th>
+                    <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Boutique</th>
+                    <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest hidden md:table-cell">Statut</th>
+                    <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest hidden lg:table-cell">Date</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -213,7 +213,7 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
                           <span className="text-xs font-bold text-gray-600">{storeMap[ticket.store_id] ?? ticket.store_id?.slice(0, 8)}</span>
                         </td>
                         <td className="px-4 py-4 hidden md:table-cell">
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-black border ${statusInfo.bg} ${statusInfo.color}`}>
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black border ${statusInfo.bg} ${statusInfo.color}`}>
                             <StatusIcon size={12} />
                             {statusInfo.label}
                           </span>

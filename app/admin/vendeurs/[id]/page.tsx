@@ -261,17 +261,17 @@ export default async function VendeurDetailPage({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
           <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Commandes 30j</p>
+            <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1.5">Commandes 30j</p>
             <p className="text-2xl lg:text-3xl font-black text-[#1A1A1A]">{totalOrders}</p>
           </div>
           <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-[#0F7A60]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">CA Vendeur 30j</p>
+            <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1.5">CA Vendeur 30j</p>
             <p className="text-2xl lg:text-3xl font-black text-[#0F7A60]">{formatAmount(totalRevenue)}</p>
           </div>
           <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Solde Wallet Actuel</p>
+            <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1.5">Solde Wallet Actuel</p>
             <p className="text-2xl lg:text-3xl font-black text-[#C9A84C]">{formatAmount(Number(wallet?.balance ?? 0))}</p>
           </div>
         </div>
@@ -284,21 +284,21 @@ export default async function VendeurDetailPage({
             
             {/* Wallet Detailed Card */}
             <div className="bg-white border border-gray-100 rounded-3xl p-6 lg:p-8 shadow-sm">
-              <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-5">💰 Wallet & Finances</h2>
+              <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-5">💰 Wallet & Finances</h2>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 <div className="bg-[#FAFAF7] rounded-2xl p-5 text-center border justify-center flex flex-col border-emerald-100/50 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/10 rounded-bl-full pointer-events-none"></div>
-                  <p className="text-[10px] text-emerald-600 font-black uppercase tracking-wider mb-1">Solde Disponible</p>
+                  <p className="text-xs text-emerald-600 font-black uppercase tracking-wider mb-1">Solde Disponible</p>
                   <p className="text-xl lg:text-2xl font-black text-[#0F7A60]">{formatAmount(Number(wallet?.balance ?? 0))}</p>
                 </div>
                 <div className="bg-[#FAFAF7] border border-amber-100/50 rounded-2xl p-5 text-center relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-bl-full pointer-events-none"></div>
-                  <p className="text-[10px] text-amber-600 font-black uppercase tracking-wider mb-1">En attente (Sésquestre)</p>
+                  <p className="text-xs text-amber-600 font-black uppercase tracking-wider mb-1">En attente (Sésquestre)</p>
                   <p className="text-xl lg:text-2xl font-black text-amber-700">{formatAmount(Number(wallet?.pending ?? 0))}</p>
                 </div>
                 <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5 text-center">
-                  <p className="text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1">Total Généré Historique</p>
+                  <p className="text-xs text-gray-500 font-black uppercase tracking-wider mb-1">Total Généré Historique</p>
                   <p className="text-xl lg:text-2xl font-black text-gray-800">{formatAmount(Number(wallet?.total_earned ?? 0))}</p>
                 </div>
               </div>
@@ -327,9 +327,9 @@ export default async function VendeurDetailPage({
             {/* Commandes récentes */}
             <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
               <div className="px-6 lg:px-8 py-5 border-b border-gray-50 bg-[#FAFAF7]/50 flex justify-between items-center">
-                <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest">📦 Dernières Commandes (30j)</h2>
+                <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest">📦 Dernières Commandes (30j)</h2>
                 {orders.length > 8 && (
-                   <Link href={`/admin/orders?store=${store.id}`} className="text-[10px] font-bold text-[#0F7A60] hover:underline uppercase tracking-wide">Voir tout</Link>
+                   <Link href={`/admin/orders?store=${store.id}`} className="text-xs font-bold text-[#0F7A60] hover:underline uppercase tracking-wide">Voir tout</Link>
                 )}
               </div>
               <div className="divide-y divide-gray-50">
@@ -341,15 +341,15 @@ export default async function VendeurDetailPage({
                   >
                     <div className="flex items-center gap-4">
                        <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 group-hover:text-[#0F7A60] group-hover:border-[#0F7A60]/20 group-hover:bg-[#0F7A60]/5 transition-colors">
-                          <span className="text-[10px] font-black">#</span>
+                          <span className="text-xs font-black">#</span>
                        </div>
                        <div>
                          <p className="text-xs font-mono font-bold text-[#1A1A1A] group-hover:text-[#0F7A60] transition-colors">{order.id.slice(-8).toUpperCase()}</p>
-                         <p className="text-[10px] text-gray-400 mt-0.5">{formatDate(order.created_at)}</p>
+                         <p className="text-xs text-gray-400 mt-0.5">{formatDate(order.created_at)}</p>
                        </div>
                     </div>
                     <div className="flex items-center gap-3">
-                       <span className={`text-[10px] font-black px-2.5 py-1 rounded-full ${
+                       <span className={`text-xs font-black px-2.5 py-1 rounded-full ${
                          order.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
                          order.status === 'paid' ? 'bg-blue-100 text-blue-700' :
                          order.status === 'refunded' ? 'bg-purple-100 text-purple-700' :
@@ -387,13 +387,13 @@ export default async function VendeurDetailPage({
             <div className="bg-white border border-gray-100 rounded-3xl p-6 lg:p-8 shadow-sm space-y-8">
               {/* Vendeur */}
               <div>
-                <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">👤 Profil Vendeur</h2>
+                <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">👤 Profil Vendeur</h2>
                 {vendor ? (
                   <div className="space-y-3">
                     <Row label="Nom complet" value={vendor.name} />
                     <Row label="Email" value={<a href={`mailto:${vendor.email}`} className="text-[#0F7A60] hover:underline font-bold">{vendor.email}</a>} />
                     <Row label="Téléphone" value={vendor.phone ? <a href={`tel:${vendor.phone}`} className="hover:underline">{vendor.phone}</a> : 'Non renseigné'} />
-                    <Row label="Rôle" value={<span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider font-black">{vendor.role}</span>} />
+                    <Row label="Rôle" value={<span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md text-xs uppercase tracking-wider font-black">{vendor.role}</span>} />
                   </div>
                 ) : (
                   <p className="text-xs text-gray-400 italic">Compte utilisateur supprimé ou introuvable.</p>
@@ -404,7 +404,7 @@ export default async function VendeurDetailPage({
 
               {/* Boutique */}
               <div>
-                <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">🏪 Données Boutique</h2>
+                <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">🏪 Données Boutique</h2>
                 <div className="space-y-3">
                   <Row label="WhatsApp" value={store.whatsapp ? <a href={`https://wa.me/${store.whatsapp.replace(/\+/g,'')}`} target="_blank" rel="noreferrer" className="text-[#0F7A60] hover:underline">{store.whatsapp}</a> : 'Non renseigné'} />
                   <Row label="Onboarding" value={store.onboarding_completed ? '✅ Complété' : '⏳ Incomplet'} />
@@ -417,7 +417,7 @@ export default async function VendeurDetailPage({
                   />
                   {store.description && (
                     <div className="pt-2">
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Description (Bio)</p>
+                      <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1.5">Description (Bio)</p>
                       <p className="text-xs text-gray-600 leading-relaxed bg-[#FAFAF7] p-3 rounded-xl border border-gray-100">
                         {store.description}
                       </p>
@@ -430,8 +430,8 @@ export default async function VendeurDetailPage({
             {/* Conformité KYC */}
             <div className="bg-white border border-gray-100 rounded-3xl p-6 lg:p-8 shadow-sm">
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest">🛡️ Conformité KYC</h2>
-                <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border ${kycBadge.cls}`}>
+                <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest">🛡️ Conformité KYC</h2>
+                <span className={`px-2 py-1 rounded-md text-xs font-black uppercase tracking-wider border ${kycBadge.cls}`}>
                   {kycBadge.label}
                 </span>
               </div>
@@ -482,7 +482,7 @@ export default async function VendeurDetailPage({
             {/* Actions Super Admin */}
             <div className="bg-[#1A1A1A] border border-gray-800 rounded-3xl p-6 lg:p-8 shadow-xl relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-               <h2 className="text-[11px] font-black text-gray-500 uppercase tracking-widest mb-5 relative z-10">⚡ Actions Super Admin</h2>
+               <h2 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-5 relative z-10">⚡ Actions Super Admin</h2>
                <div className="space-y-4 relative z-10 flex flex-col">
                   {/* Édition Administrative avancée (Modal Client) */}
                   <AdminVendorEdit 
@@ -533,7 +533,7 @@ function Row({
 }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <p className="text-[11px] font-black text-gray-400 uppercase tracking-wider flex-shrink-0">
+      <p className="text-xs font-black text-gray-400 uppercase tracking-wider flex-shrink-0">
         {label}
       </p>
       <p className={`text-xs text-right text-[#1A1A1A] font-medium truncate ${mono ? 'font-mono' : ''}`}>

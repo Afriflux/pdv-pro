@@ -27,13 +27,13 @@ export async function POST() {
     }
 
     // ── 1. Fetch Vendeurs ──
-    const vendors = await prisma.user.findMany({
+    const vendors = await prisma.user.findMany({ take: 50, 
       where: { role: 'vendeur', email: { not: null } },
       select: { email: true, name: true }
     })
 
     // ── 2. Fetch Acheteurs ──
-    const orders = await prisma.order.findMany({
+    const orders = await prisma.order.findMany({ take: 50, 
       where: { buyer_email: { not: null } },
       select: { buyer_email: true, buyer_name: true },
       distinct: ['buyer_email']

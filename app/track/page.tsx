@@ -112,7 +112,7 @@ function TrackOrderContent() {
           <div className="bg-white p-6 md:p-8 rounded-[1.7rem] border border-gray-50">
             <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-5 relative z-10">
               <div className="flex-1">
-                <label htmlFor="ref-input" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">
+                <label htmlFor="ref-input" className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 px-1">
                   Référence Commande
                 </label>
                 <div className="relative">
@@ -129,7 +129,7 @@ function TrackOrderContent() {
                 </div>
               </div>
               <div className="flex-1">
-                <label htmlFor="phone-input" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1">
+                <label htmlFor="phone-input" className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 px-1">
                   Téléphone utilisé
                 </label>
                 <div className="relative">
@@ -186,7 +186,7 @@ function TrackOrderContent() {
             {/* Order Header */}
             <div className="px-6 md:px-10 py-8 border-b border-gray-50 bg-gradient-to-r from-gray-50 to-white flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] font-black text-[#0F7A60] uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                <p className="text-xs font-black text-[#0F7A60] uppercase tracking-widest mb-2 flex items-center gap-1.5">
                    <span className="w-2 h-2 rounded-full bg-[#0F7A60] animate-pulse" />
                    Statut en direct
                 </p>
@@ -244,7 +244,7 @@ function TrackOrderContent() {
                         </motion.span>
                         <motion.span 
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 + (idx * 0.1) }}
-                            className="text-[10px] text-gray-400 font-medium mt-1 text-center truncate w-full"
+                            className="text-xs text-gray-400 font-medium mt-1 text-center truncate w-full"
                         >
                             {step.description}
                         </motion.span>
@@ -267,7 +267,7 @@ function TrackOrderContent() {
                   <div className="flex gap-4 p-4 border border-gray-100/80 rounded-3xl hover:shadow-lg hover:shadow-gray-100 transition-shadow bg-white">
                     <div className="w-20 h-20 bg-gray-50 border border-gray-100/50 rounded-[1.2rem] flex items-center justify-center text-3xl shadow-inner flex-shrink-0 relative overflow-hidden">
                       {order.product.images?.[0] ? (
-                        <Image src={order.product.images[0]} alt={order.product.name} fill className="object-cover" />
+                        <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={order.product.images[0]} alt={order.product.name} fill className="object-cover" />
                       ) : (
                         "📦"
                       )}
@@ -313,7 +313,7 @@ function TrackOrderContent() {
                              <MapPin className="w-4 h-4 text-blue-600" />
                            </div>
                            <div className="pt-0.5">
-                             <span className="block text-[10px] text-blue-500/70 font-black uppercase tracking-widest mb-0.5">Zone définie</span>
+                             <span className="block text-xs text-blue-500/70 font-black uppercase tracking-widest mb-0.5">Zone définie</span>
                              <span className="font-black text-gray-900 text-base">{order.deliveryZone.name}</span>
                            </div>
                          </div>
@@ -322,7 +322,7 @@ function TrackOrderContent() {
                          <div className="flex gap-4">
                             <div className="w-10 h-10 rounded-full bg-transparent flex items-center justify-center shrink-0" />
                            <div className="pt-0.5 max-w-[200px]">
-                             <span className="block text-[10px] text-gray-400 font-black uppercase tracking-widest mb-0.5">Adresse de dépôt</span>
+                             <span className="block text-xs text-gray-400 font-black uppercase tracking-widest mb-0.5">Adresse de dépôt</span>
                              <span className="font-bold text-gray-600 leading-relaxed text-sm">{order.delivery_address}</span>
                            </div>
                          </div>

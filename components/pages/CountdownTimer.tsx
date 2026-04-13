@@ -30,17 +30,17 @@ export function CountdownTimer({ durationSeconds }: { durationSeconds?: number }
     <div className="flex justify-center gap-3 md:gap-4 pt-4">
       <div className="bg-white px-5 py-4 rounded-[24px] shadow-sm border border-red-50 min-w-[80px]">
         <span className="block text-4xl font-black text-red-600">{h}</span>
-        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Heures</span>
+        <span className="text-xs font-black text-gray-400 uppercase tracking-widest mt-1">Heures</span>
       </div>
       <div className="text-4xl font-black text-red-200 py-4">:</div>
       <div className="bg-white px-5 py-4 rounded-[24px] shadow-sm border border-red-50 min-w-[80px]">
         <span className="block text-4xl font-black text-red-600">{m}</span>
-        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Minutes</span>
+        <span className="text-xs font-black text-gray-400 uppercase tracking-widest mt-1">Minutes</span>
       </div>
       <div className="text-4xl font-black text-red-200 py-4">:</div>
       <div className="bg-white px-5 py-4 rounded-[24px] shadow-sm border border-red-50 min-w-[80px]">
         <span className="block text-4xl font-black text-red-600">{s}</span>
-        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Secondes</span>
+        <span className="text-xs font-black text-gray-400 uppercase tracking-widest mt-1">Secondes</span>
       </div>
     </div>
   )

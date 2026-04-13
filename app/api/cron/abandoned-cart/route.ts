@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 import { prisma } from '@/lib/prisma'
 import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
+import { executeWorkflows } from '@/lib/workflows/execution'
 
 export async function GET(req: NextRequest) {
   // Optionnel : Vérifier un CRON_SECRET pour la sécurité
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
     // Pour des raisons de MVP/Vitesse, je cible tous les `new` qui ont au moins 30 minutes.
     const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000)
 
-    const abandonedLeads = await prisma.lead.findMany({
+    const abandonedLeads = await prisma.lead.findMany({ take: 50, 
       where: {
         source: 'abandoned_cart',
         status: 'new',
@@ -23,9 +24,9 @@ export async function GET(req: NextRequest) {
     })
 
     const productIds = Array.from(new Set(abandonedLeads.map(l => l.product_id).filter(Boolean) as string[]))
-    const products = await prisma.product.findMany({
+    const products = await prisma.product.findMany({ take: 50, 
       where: { id: { in: productIds } },
-      select: { id: true, name: true, store: { select: { name: true } } }
+      select: { id: true, name: true, store: { select: { id: true, name: true } } }
     })
 
     if (abandonedLeads.length === 0) {
@@ -56,6 +57,19 @@ export async function GET(req: NextRequest) {
           data: { status: 'contacted' }
         })
         processed++
+
+        // Trigger "Panier Abandonné" workflow for customizable vendor reactions
+        if (lead.product_id) {
+          const product = products.find(p => p.id === lead.product_id)
+          if (product?.store?.id) {
+            executeWorkflows(product.store.id, 'Panier Abandonné', {
+              client_name: lead.name || 'Client',
+              client_phone: lead.phone || '',
+              product_name: product.name || 'Produit',
+              store_name: product.store.name || 'Boutique',
+            }).catch(e => console.error('[Workflow Panier Abandonné]', e))
+          }
+        }
       } else {
         // En cas d'échec WhatsApp, on peut le marquer failed ou réessayer plus tard. On ignore pour l'instant.
         failed++

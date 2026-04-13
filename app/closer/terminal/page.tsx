@@ -208,7 +208,7 @@ export default function TerminalPage() {
                   >
                      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-emerald-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                      <div className="flex items-start justify-between mb-4 relative z-10">
-                       <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100/50 inline-flex items-center gap-1">
+                       <span className="text-xs font-black uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100/50 inline-flex items-center gap-1">
                          <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" /> {lead.source}
                        </span>
                      </div>
@@ -308,7 +308,7 @@ export default function TerminalPage() {
                  <motion.div variants={itemVars} key={lead.id} className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100/60 rounded-2xl p-4 shadow-sm relative overflow-hidden">
                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" />
                    <h4 className="font-black text-gray-900 mb-1 line-clamp-1 relative z-10 text-[15px]">{lead.name}</h4>
-                   <p className="text-[10px] uppercase font-black text-emerald-600 relative z-10 flex items-center gap-1 mt-2">
+                   <p className="text-xs uppercase font-black text-emerald-600 relative z-10 flex items-center gap-1 mt-2">
                      <TrendingUp size={12} /> {lead.commission_amount ? `${lead.commission_amount} FCFA` : 'Non défini'}
                    </p>
                  </motion.div>
@@ -338,7 +338,7 @@ export default function TerminalPage() {
                {lostLeads.map(lead => (
                  <motion.div variants={itemVars} key={lead.id} className="bg-red-50/40 border border-red-100/60 rounded-2xl p-4 shadow-sm grayscale-[0.5]">
                    <h4 className="font-bold text-gray-700 mb-1 line-clamp-1 text-sm">{lead.name}</h4>
-                   <p className="text-[10px] text-gray-400 font-bold">Abandonné</p>
+                   <p className="text-xs text-gray-400 font-bold">Abandonné</p>
                  </motion.div>
                ))}
              </motion.div>
@@ -355,7 +355,7 @@ export default function TerminalPage() {
           <div className="overflow-x-auto w-full">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
-                <tr className="bg-[#FAFAF7]/80 border-b border-gray-100 text-[11px] uppercase font-black tracking-widest text-gray-400">
+                <tr className="bg-[#FAFAF7]/80 border-b border-gray-100 text-xs uppercase font-black tracking-widest text-gray-400">
                   <th className="px-8 py-5">Client</th>
                   <th className="px-8 py-5">Détails</th>
                   <th className="px-8 py-5 text-center">Statut</th>
@@ -390,21 +390,21 @@ export default function TerminalPage() {
                            </div>
                            <div>
                              <span className="font-black text-gray-900 text-base flex items-center gap-2">{lead.name}</span>
-                             <span className="text-[11px] text-gray-500 font-black font-mono tracking-wider mt-0.5 block">{lead.phone}</span>
+                             <span className="text-xs text-gray-500 font-black font-mono tracking-wider mt-0.5 block">{lead.phone}</span>
                            </div>
                          </div>
                       </td>
                       <td className="px-8 py-5">
                         <div className="flex flex-col">
                           <span className="font-bold text-gray-900 text-[13px]">{lead.Product?.name || 'Inconnu'}</span>
-                          <span className="text-[10px] uppercase font-black tracking-widest text-[#0F7A60] bg-emerald-50 px-2 py-0.5 rounded-md self-start mt-1">Source: {lead.source}</span>
+                          <span className="text-xs uppercase font-black tracking-widest text-[#0F7A60] bg-emerald-50 px-2 py-0.5 rounded-md self-start mt-1">Source: {lead.source}</span>
                         </div>
                       </td>
                       <td className="px-8 py-5 text-center">
-                        {lead.status === 'new' && <span className="inline-block text-[11px] font-black uppercase tracking-wider text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">Nouveau</span>}
-                        {lead.status === 'contacted' && <span className="inline-block text-[11px] font-black uppercase tracking-wider text-amber-700 bg-gradient-to-r from-amber-100 to-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 shadow-sm relative overflow-hidden"><div className="absolute top-0 left-0 w-1 h-full bg-amber-500"/>En Négociation</span>}
-                        {lead.status === 'won' && <span className="inline-block text-[11px] font-black uppercase tracking-wider text-emerald-700 bg-gradient-to-r from-emerald-100 to-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 shadow-sm"><Star size={10} className="inline mr-1 -mt-0.5 fill-emerald-700"/>Gagné</span>}
-                        {lead.status === 'lost' && <span className="inline-block text-[11px] font-black uppercase tracking-wider text-red-600 bg-red-50/80 px-3 py-1.5 rounded-lg border border-red-100">Perdu</span>}
+                        {lead.status === 'new' && <span className="inline-block text-xs font-black uppercase tracking-wider text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">Nouveau</span>}
+                        {lead.status === 'contacted' && <span className="inline-block text-xs font-black uppercase tracking-wider text-amber-700 bg-gradient-to-r from-amber-100 to-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 shadow-sm relative overflow-hidden"><div className="absolute top-0 left-0 w-1 h-full bg-amber-500"/>En Négociation</span>}
+                        {lead.status === 'won' && <span className="inline-block text-xs font-black uppercase tracking-wider text-emerald-700 bg-gradient-to-r from-emerald-100 to-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 shadow-sm"><Star size={10} className="inline mr-1 -mt-0.5 fill-emerald-700"/>Gagné</span>}
+                        {lead.status === 'lost' && <span className="inline-block text-xs font-black uppercase tracking-wider text-red-600 bg-red-50/80 px-3 py-1.5 rounded-lg border border-red-100">Perdu</span>}
                       </td>
                       <td className="px-8 py-5 flex justify-end gap-2 text-xs h-full items-center">
                         {lead.status === 'new' && (

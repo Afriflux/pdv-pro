@@ -22,7 +22,7 @@ export default async function HelpdeskPage() {
 
   if (!store) redirect('/dashboard')
 
-  const tickets = await prisma.helpdeskTicket.findMany({
+  const tickets = await prisma.helpdeskTicket.findMany({ take: 50, 
     where: { store_id: store.id },
     orderBy: { created_at: 'desc' }
   })

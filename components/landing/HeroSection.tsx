@@ -29,15 +29,19 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
     return () => obs.disconnect()
   }, [])
 
+  const delayMap: Record<number, string> = {
+    0: 'delay-0',
+    0.1: 'delay-[100ms]',
+    0.2: 'delay-[200ms]',
+    0.3: 'delay-[300ms]',
+    0.6: 'delay-[600ms]',
+  }
+  const delayClass = delayMap[delay] || 'delay-0'
+
   return (
     <div
       ref={ref}
-      className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(24px)',
-        transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
-      }}
+      className={`transition-all duration-700 ease-out ${delayClass} ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'} ${className}`}
     >
       {children}
     </div>
@@ -47,7 +51,7 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
 /* ─── Lightweight floating animation via CSS keyframes ─── */
 function FloatingDiv({ children, className = '', duration = 8 }: { children: React.ReactNode; className?: string; duration?: number }) {
   return (
-    <div className={className} style={{ animation: `yayyamFloat ${duration}s ease-in-out infinite` }}>
+    <div className={`${className} animate-[yayyamFloat_8s_ease-in-out_infinite]`}>
       {children}
     </div>
   )
@@ -123,8 +127,8 @@ export function HeroSection({
 
       <section className="relative pt-32 pb-40 overflow-hidden px-6 bg-[#FAFAF7]">
         {/* Background glowing gradient */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#0D5C4A]/10 via-[#C9A84C]/5 to-transparent blur-[120px] pointer-events-none"></div>
-        <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#0ABFAA]/5 via-transparent to-transparent blur-[100px] pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-[150vw] sm:w-[800px] h-[150vw] sm:h-[800px] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#0D5C4A]/10 via-[#C9A84C]/5 to-transparent motion-safe:blur-[120px] pointer-events-none"></div>
+        <div className="absolute top-1/2 left-0 w-[120vw] sm:w-[600px] h-[120vw] sm:h-[600px] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#0ABFAA]/5 via-transparent to-transparent motion-safe:blur-[100px] pointer-events-none"></div>
 
         <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
           
@@ -132,7 +136,7 @@ export function HeroSection({
           <div className="w-full lg:w-[55%] text-left space-y-10">
             
             <FadeIn delay={0}>
-              <div className="inline-flex items-center gap-3 bg-white/50 backdrop-blur-md border border-[#0A1F1A]/10 rounded-full px-5 py-2 mb-2 shadow-sm">
+              <div className="inline-flex items-center gap-3 bg-white/50 motion-safe:backdrop-blur-md border border-[#0A1F1A]/10 rounded-full px-5 py-2 mb-2 shadow-sm">
                 <span className="relative flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1A9E7A] opacity-75" />
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-[#0D5C4A]" />
@@ -181,12 +185,12 @@ export function HeroSection({
           <div className="w-full lg:w-[45%] relative h-full">
             <div className="relative w-full aspect-square xl:aspect-[4/5]">
               {/* Pulsing Backglow */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-[#0D5C4A]/20 to-[#0ABFAA]/20 blur-[100px] rounded-full animate-pulse-slow"></div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-[#0D5C4A]/20 to-[#0ABFAA]/20 motion-safe:blur-[100px] rounded-full animate-pulse-slow"></div>
               
               {/* Main Phone Mockup */}
-              <FloatingDiv duration={8} className="relative w-full h-full rounded-[3rem] border-[1px] border-white/80 shadow-[0_40px_100px_-20px_rgba(13,92,74,0.3)] bg-white/50 backdrop-blur-2xl p-4 overflow-hidden group">
+              <FloatingDiv duration={8} className="relative w-full h-full rounded-[3rem] border-[1px] border-white/80 shadow-[0_40px_100px_-20px_rgba(13,92,74,0.3)] bg-white/50 motion-safe:backdrop-blur-2xl p-4 overflow-hidden group">
                 <div className="relative w-full h-full rounded-[2rem] overflow-hidden bg-white/50 shadow-inner">
-                  <Image 
+                  <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
                     src="/landing/hero_mockup.png" 
                     alt="Plateforme Yayyam E-commerce Dashboard Mobile" 
                     fill 
@@ -198,23 +202,21 @@ export function HeroSection({
 
               {/* Floating Badges */}
               <div 
-                className="absolute -left-2 md:-left-12 top-16 md:top-32 scale-75 md:scale-100 origin-left bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white/40 flex items-center gap-4 z-20"
-                style={{ animation: 'yayyamFloatAlt 6s ease-in-out infinite 1s' }}
+                className="absolute -left-2 md:-left-12 top-16 md:top-32 scale-75 md:scale-100 origin-left bg-white/90 motion-safe:backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white/40 flex items-center gap-4 z-20 animate-[yayyamFloatAlt_6s_ease-in-out_infinite_1s]"
               >
-                 <div className="w-10 h-10 bg-blue-50 text-blue-600 font-bold rounded-xl flex items-center justify-center shadow-sm">W</div>
+                 <div className="w-11 h-11 bg-blue-50 text-blue-600 font-bold rounded-xl flex items-center justify-center shadow-sm">W</div>
                  <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Retrait Instantané</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Retrait Instantané</p>
                     <p className="text-xl font-black text-[#0A1F1A]">+45.000 <span className="text-sm">FCFA</span></p>
                  </div>
               </div>
 
               <div 
-                className="absolute -right-2 md:-right-8 bottom-16 md:bottom-40 scale-75 md:scale-100 origin-right bg-[#0A1F1A] rounded-2xl p-4 shadow-2xl border border-white/10 flex items-center gap-4 z-20"
-                style={{ animation: 'yayyamFloatAlt2 5s ease-in-out infinite 2s' }}
+                className="absolute -right-2 md:-right-8 bottom-16 md:bottom-40 scale-75 md:scale-100 origin-right bg-[#0A1F1A] rounded-2xl p-4 shadow-2xl border border-white/10 flex items-center gap-4 z-20 animate-[yayyamFloatAlt2_5s_ease-in-out_infinite_2s]"
               >
-                 <div className="w-10 h-10 bg-emerald-500/20 text-emerald-400 font-black rounded-xl flex items-center justify-center">🛍️</div>
+                 <div className="w-11 h-11 bg-emerald-500/20 text-emerald-400 font-black rounded-xl flex items-center justify-center">🛍️</div>
                  <div>
-                    <p className="text-[10px] font-bold text-emerald-500/80 uppercase tracking-widest">Vente générée</p>
+                    <p className="text-xs font-bold text-emerald-500/80 uppercase tracking-widest">Vente générée</p>
                     <p className="text-lg font-black text-white">Parfum Dubai XL</p>
                  </div>
               </div>

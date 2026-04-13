@@ -192,7 +192,7 @@ export default function UgcStudio({ storeName }: { storeName: string }) {
           {/* Controls */}
           <div className="space-y-6">
              <div>
-               <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Prénom du client</label>
+               <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Prénom du client</label>
                <input 
                  value={customerName}
                  onChange={(e) => setCustomerName(e.target.value)}
@@ -202,7 +202,7 @@ export default function UgcStudio({ storeName }: { storeName: string }) {
              </div>
 
              <div>
-               <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Note sur 5</label>
+               <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Note sur 5</label>
                <div className="flex gap-2">
                  {[1,2,3,4,5].map(star => (
                     <button 
@@ -217,7 +217,7 @@ export default function UgcStudio({ storeName }: { storeName: string }) {
              </div>
 
              <div>
-               <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Message d'avis</label>
+               <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Message d'avis</label>
                <textarea 
                  value={review}
                  onChange={(e) => setReview(e.target.value)}
@@ -226,7 +226,7 @@ export default function UgcStudio({ storeName }: { storeName: string }) {
              </div>
 
              <div>
-               <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Couleur de fond</label>
+               <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Couleur de fond</label>
                <div className="flex flex-wrap gap-3">
                  {[
                    { code: '#0F7A60', name: 'Émeraude' },

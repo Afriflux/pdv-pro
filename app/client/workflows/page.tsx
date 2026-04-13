@@ -11,7 +11,7 @@ export default async function ClientWorkflowsPage() {
 
   // Profile unused
 
-  const workflows = await prisma.workflow.findMany({
+  const workflows = await prisma.workflow.findMany({ take: 50, 
     where: { user_id: user.id },
     orderBy: { updated_at: 'desc' }
   })

@@ -22,7 +22,7 @@ export default async function AdminWorkflowsPage() {
   }
 
   // Fetch only SYSTEM templates (global workflows)
-  const globalWorkflowsRaw = await prisma.workflow.findMany({
+  const globalWorkflowsRaw = await prisma.workflow.findMany({ take: 50, 
     where: { store_id: null, user_id: null },
     orderBy: { created_at: 'desc' }
   }).catch(() => [])

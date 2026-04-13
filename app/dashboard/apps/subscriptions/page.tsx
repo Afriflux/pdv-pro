@@ -23,7 +23,7 @@ export default async function SubscriptionsPage() {
   if (!store) redirect('/dashboard')
 
   // Fetch all orders marked as subscriptions that are not cancelled
-  const subs = await prisma.order.findMany({
+  const subs = await prisma.order.findMany({ take: 50, 
     where: { 
       store_id: store.id,
       is_subscription: true,

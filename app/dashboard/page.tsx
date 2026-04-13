@@ -4,14 +4,17 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { randomUUID } from 'crypto'
 import { redirect } from 'next/navigation'
-import ChartLazyWrapper from './ChartLazyWrapper'
-import { CopyLinkQuickAction, WhatsAppQuickAction } from './DashboardActions'
-import { Package, ShoppingBag, ArrowRight, Eye, TrendingUp, Sparkles } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { Suspense } from 'react'
+import { Package, ShoppingBag, ArrowRight, Eye, TrendingUp, Sparkles, Loader2 } from 'lucide-react'
 import { Check360Widget } from '@/components/dashboard/Check360Widget'
 import WelcomeGuide from '@/components/dashboard/WelcomeGuide'
 import { GettingStartedChecklist } from '@/components/dashboard/GettingStartedChecklist'
 import { DailyDigestWidget } from '@/components/dashboard/DailyDigestWidget'
 import { prisma } from '@/lib/prisma'
+import { CopyLinkQuickAction, WhatsAppQuickAction } from './DashboardActions'
+
+const ChartLazyWrapper = dynamic(() => import('./ChartLazyWrapper'), { ssr: false, loading: () => <ChartSkeleton /> })
 
 // ── TYPES & HELPERS ──────────────────────────────────────────────────────────
 
@@ -29,7 +32,265 @@ const STATUS_LABELS: Record<string, string> = {
   no_answer: 'Pas de réponse',
 }
 
-// ── SERVER COMPONENT ─────────────────────────────────────────────────────────
+function KPISkeleton() {
+  return <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 animate-pulse mt-8"><div className="h-32 bg-gray-100 rounded-2xl"></div><div className="h-32 bg-gray-100 rounded-2xl"></div><div className="h-32 bg-gray-100 rounded-2xl"></div><div className="h-32 bg-gray-100 rounded-2xl"></div></div>
+}
+
+function ChartSkeleton() {
+  return <div className="w-full h-[250px] bg-gray-100 rounded-2xl animate-pulse flex items-center justify-center"><Loader2 className="animate-spin text-gray-300" /></div>
+}
+
+function OrdersSkeleton() {
+  return <div className="w-full h-64 bg-gray-100 rounded-2xl animate-pulse mt-8"></div>
+}
+
+function ChecklistSkeleton() {
+  return <div className="w-full h-24 bg-gray-100 rounded-2xl animate-pulse"></div>
+}
+
+// ── ASYNC COMPONENTS ─────────────────────────────────────────────────────────
+
+async function DashboardKPIs({ storeId, storeRaw }: { storeId: string, storeRaw: any }) {
+  const supabase = await createClient()
+  
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const [
+    { data: ordersTodayData },
+    { data: walletData },
+    { data: pendingData },
+    { count: productCount }
+  ] = await Promise.all([
+    supabase.from('Order').select('id, vendor_amount, status').eq('store_id', storeId).gte('created_at', today.toISOString()).in('status', ['paid','completed','delivered','confirmed','preparing','shipped']),
+    supabase.from('Wallet').select('balance, pending, total_earned').eq('vendor_id', storeId).single(),
+    supabase.from('Order').select('id').eq('store_id', storeId).in('status', ['pending','processing','preparing', 'cod_pending']),
+    supabase.from('Product').select('id', { count: 'exact', head: true }).eq('store_id', storeId).eq('active', true),
+  ])
+
+  const ordersToday = ordersTodayData || []
+  const caToday     = ordersToday.reduce((sum, o) => sum + (o.vendor_amount || 0), 0)
+  const countToday  = ordersToday.length
+  const pendingCount = pendingData?.length || 0
+  const wallet       = walletData || { balance: 0, pending: 0, total_earned: 0 }
+
+  return (
+    <>
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 relative z-10 my-8">
+        {/* KPI 1 : CA */}
+        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-4 lg:p-6">
+          <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">CA Aujourd'hui</p>
+          <p className="text-2xl lg:text-4xl font-black text-gray-900 truncate">
+            {caToday.toLocaleString('fr-FR')} <span className="text-sm text-gray-400">F</span>
+          </p>
+        </div>
+        
+        {/* KPI 2 : Ventes */}
+        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-4 lg:p-6">
+          <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Ventes Aujourd'hui</p>
+          <p className="text-2xl lg:text-4xl font-black text-gray-900">{countToday}</p>
+        </div>
+
+        {/* KPI 3 : Attente */}
+        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-4 lg:p-6">
+          <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">En attente</p>
+          <p className="text-2xl lg:text-4xl font-black text-gray-900">{pendingCount} <span className="text-sm font-bold text-gray-400 ml-1">à traiter</span></p>
+        </div>
+
+        {/* KPI 4 : Wallet */}
+        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-4 lg:p-6">
+          <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Wallet Dispo</p>
+          <p className="text-2xl lg:text-4xl font-black text-gray-900 flex items-center gap-1">
+            {wallet.balance.toLocaleString('fr-FR')} <span className="text-sm font-bold text-gray-400 mt-2">F</span>
+          </p>
+        </div>
+      </section>
+
+      {/* CHECK360 */}
+      <section className="mb-8">
+        <Check360Widget
+          storeName={storeRaw.name}
+          caToday={caToday}
+          countToday={countToday}
+          pendingCount={pendingCount}
+          walletBalance={wallet.balance}
+          productCount={productCount ?? 0}
+          caWeek={0} // Fake until we fetch it, or remove it from here
+          level="Bronze" // Quick fake logic since we don't block Dashboard
+        />
+      </section>
+    </>
+  )
+}
+
+async function DashboardChartServer({ storeId, storeSlug }: { storeId: string, storeSlug: string }) {
+  const supabase = await createClient()
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+  sevenDaysAgo.setHours(0, 0, 0, 0)
+
+  const { data: weekData } = await supabase.from('Order').select('vendor_amount, status, created_at').eq('store_id', storeId).gte('created_at', sevenDaysAgo.toISOString()).in('status', ['paid','completed','delivered','confirmed','preparing','shipped'])
+
+  const weekOrders = weekData || []
+  const chartDataMap = new Map<string, number>()
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date()
+    d.setDate(d.getDate() - i)
+    const dateStr = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`
+    chartDataMap.set(dateStr, 0)
+  }
+
+  weekOrders.forEach(o => {
+    const d = new Date(o.created_at)
+    const dateStr = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`
+    if (chartDataMap.has(dateStr)) {
+      chartDataMap.set(dateStr, chartDataMap.get(dateStr)! + (o.vendor_amount || 0))
+    }
+  })
+
+  const chartData = Array.from(chartDataMap.entries()).map(([date, total]) => ({ date, total }))
+
+  return (
+    <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10 mb-8">
+      {/* Graphique */}
+      <div className="lg:col-span-7 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col group">
+        <div className="mb-6 flex justify-between items-start">
+          <div>
+            <h2 className="font-black text-gray-900 text-lg">Revenus (7 derniers jours)</h2>
+            <p className="text-xs text-gray-500 mt-1">Évolution de votre chiffre d'affaires</p>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
+            <TrendingUp size={18} className="text-[#0F7A60]" />
+          </div>
+        </div>
+        <div className="flex-1 min-h-[250px] -ml-4">
+           <ChartLazyWrapper data={chartData} />
+        </div>
+      </div>
+
+      {/* Actions Rapides */}
+      <div className="lg:col-span-5 flex flex-col gap-4">
+        <a href={`/${storeSlug}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 px-6 py-4 bg-white border border-gray-100 text-gray-900 rounded-2xl text-sm font-black hover:border-gray-200 transition-all shadow-sm w-full">
+          <Eye size={18} className="text-[#0F7A60]" />
+          Aperçu de ma boutique
+        </a>
+        <div className="grid grid-cols-2 gap-4 flex-1">
+          <Link href="/dashboard/products/new" className="bg-[#0F7A60] hover:bg-[#0B5C48] text-white p-6 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all shadow-sm">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <span className="text-2xl font-light leading-none">+</span>
+            </div>
+            <span className="text-xs font-black tracking-wide text-center">Nouveau produit</span>
+          </Link>
+
+          <Link href="/dashboard/orders" className="bg-white border border-gray-100 p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-gray-200 transition-all shadow-sm text-gray-900">
+            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-[#0F7A60]">
+               <Package size={22} />
+            </div>
+            <span className="text-xs font-black tracking-wide text-center">Mes commandes</span>
+          </Link>
+          <CopyLinkQuickAction slug={storeSlug} />
+          <WhatsAppQuickAction slug={storeSlug} />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+async function RecentOrdersServer({ storeId }: { storeId: string }) {
+  const supabase = await createClient()
+  const { data: lastOrdersData } = await supabase.from('Order').select('id, vendor_amount, status, created_at, product_id, product_name:Product(name)').eq('store_id', storeId).order('created_at', { ascending: false }).limit(5)
+
+  return (
+    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden flex flex-col mb-8">
+      <div className="px-6 py-6 border-b border-gray-100 flex items-center justify-between">
+        <h2 className="font-black text-gray-900 text-lg">Dernières commandes</h2>
+        <Link href="/dashboard/orders" className="text-xs font-black text-[#0F7A60] bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1">
+          Voir tout <ArrowRight size={14}/>
+        </Link>
+      </div>
+      
+      <div className="flex-1 flex flex-col p-2">
+        {lastOrdersData && lastOrdersData.length > 0 ? (
+          <div className="space-y-1">
+            {lastOrdersData.map(order => {
+              const pNameRow = Array.isArray(order.product_name) ? order.product_name[0] : order.product_name
+              const productName = (pNameRow as { name?: string } | null)?.name ?? 'Produit inconnu'
+              
+              return (
+                <div key={order.id} className="px-4 py-3.5 rounded-2xl flex items-center justify-between hover:bg-gray-50 transition-all">
+                  <div className="flex items-center gap-4 min-w-0">
+                     <div className="min-w-0">
+                       <div className="flex items-center gap-2 mb-1">
+                         <p className="text-xs font-mono font-bold text-gray-400">#{order.id.split('-')[0].toUpperCase()}</p>
+                         <span className="text-xs font-black uppercase text-gray-600 bg-gray-100 px-2 py-0.5 rounded-md">
+                           {STATUS_LABELS[order.status] || order.status}
+                         </span>
+                       </div>
+                       <p className="text-sm font-bold text-gray-900 truncate">{productName}</p>
+                     </div>
+                  </div>
+                  <div className="text-right flex-shrink-0 pl-4">
+                    <p className="text-[15px] font-black text-gray-900">{(order.vendor_amount || 0).toLocaleString('fr-FR')} F</p>
+                    <p className="text-xs text-gray-400 font-bold mt-0.5">
+                      {new Date(order.created_at).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="p-8 text-center"><p className="text-sm font-bold text-gray-400">Aucune commande</p></div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+async function ChecklistServer({ storeId }: { storeId: string }) {
+  const supabase = await createClient()
+  const [
+    { count: productCount },
+    { count: zoneCount },
+    { count: promoCount },
+    { count: delivererCount },
+    { count: walletSettingCount },
+    { data: storeRaw }
+  ] = await Promise.all([
+    supabase.from('Product').select('id', { count: 'exact', head: true }).eq('store_id', storeId).eq('active', true),
+    supabase.from('DeliveryZone').select('id', { count: 'exact', head: true }).eq('store_id', storeId),
+    supabase.from('Promotion').select('id', { count: 'exact', head: true }).eq('store_id', storeId),
+    supabase.from('Deliverer').select('id', { count: 'exact', head: true }).eq('store_id', storeId),
+    supabase.from('WalletSetting').select('id', { count: 'exact', head: true }).eq('vendor_id', storeId),
+    supabase.from('Store').select('meta_pixel_id, tiktok_pixel_id, logo_url').eq('id', storeId).single()
+  ])
+
+  const safeProductCount = productCount ?? 0
+  const safeZoneCount = zoneCount ?? 0
+  const safePromoCount = promoCount ?? 0
+  const safeDelivererCount = delivererCount ?? 0
+  const safeWalletSettingCount = walletSettingCount ?? 0
+  const hasSettingsChecked = !!storeRaw?.meta_pixel_id || !!storeRaw?.tiktok_pixel_id || !!storeRaw?.logo_url
+
+  const isNewVendor = safeProductCount === 0 || safeZoneCount === 0 || safePromoCount === 0 || safeDelivererCount === 0 || safeWalletSettingCount === 0 || !hasSettingsChecked
+
+  if (!isNewVendor) return null
+
+  return (
+    <div className="mb-8">
+      <GettingStartedChecklist 
+        hasProducts={safeProductCount > 0} 
+        hasZones={safeZoneCount > 0}
+        hasPromotions={safePromoCount > 0}
+        hasDeliveries={safeDelivererCount > 0}
+        hasWallet={safeWalletSettingCount > 0}
+        hasSettings={hasSettingsChecked}
+      />
+    </div>
+  )
+}
+
+// ── MAIN SERVER COMPONENT ──────────────────────────────────────────────────
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -44,638 +305,63 @@ export default async function DashboardPage() {
     .single()
 
   if (!storeRaw) {
-    // ---- Auto-création pour les anciens comptes sans Store ----
     const supabaseAdmin = createAdminClient()
-    
-    // 0. S'assurer que l'utilisateur existe dans public.User
     const { data: existingUser } = await supabaseAdmin.from('User').select('id').eq('id', user.id).single()
     if (!existingUser) {
       await supabaseAdmin.from('User').insert({
-        id: user.id,
-        role: 'vendeur',
-        name: user.user_metadata?.name || user.email?.split('@')[0] || 'Vendeur',
-        email: user.email,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        id: user.id, role: 'vendeur', name: user.user_metadata?.name || user.email?.split('@')[0] || 'Vendeur', email: user.email, created_at: new Date().toISOString(), updated_at: new Date().toISOString()
       })
     }
-
     const newStoreId = randomUUID()
     const name = user.user_metadata?.name || 'Ma Boutique'
     const baseSlug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').slice(0, 25)
     const newSlug = `${baseSlug}-${randomUUID().slice(0, 4)}`
 
-    const { data: insertedStore, error: storeError } = await supabaseAdmin.from('Store').insert({
-      id: newStoreId,
-      user_id: user.id,
-      name: name,
-      slug: newSlug,
-      onboarding_completed: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+    const { data: insertedStore } = await supabaseAdmin.from('Store').insert({
+      id: newStoreId, user_id: user.id, name: name, slug: newSlug, onboarding_completed: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString()
     }).select().single()
 
-    if (storeError || !insertedStore) {
-      console.error('Store auto-create error:', storeError)
-    } else {
+    if (insertedStore) {
       const realStoreId = insertedStore.id;
-      const { error: walletError } = await supabaseAdmin.from('Wallet').insert({
-        id: randomUUID(),
-        vendor_id: realStoreId,
-        balance: 0,
-        pending: 0,
-        total_earned: 0,
-        updated_at: new Date().toISOString(),
-      })
-
-      if (walletError && walletError.code !== '23505') {
-        console.error('Wallet insert auto-create error:', walletError)
-      }
-      
-      storeRaw = {
-        id: realStoreId,
-        name: insertedStore.name,
-        slug: insertedStore.slug,
-        logo_url: insertedStore.logo_url,
-        contract_accepted: insertedStore.contract_accepted,
-        meta_pixel_id: null,
-        tiktok_pixel_id: null
-      }
-    }
-
-    if (!storeRaw || storeRaw.id === newStoreId) {
-      storeRaw = {
-        id: newStoreId,
-        name: name,
-        slug: newSlug,
-        logo_url: null,
-        contract_accepted: false,
-        meta_pixel_id: null,
-        tiktok_pixel_id: null
-      }
+      await supabaseAdmin.from('Wallet').insert({ id: randomUUID(), vendor_id: realStoreId, balance: 0, pending: 0, total_earned: 0 })
+      storeRaw = { id: realStoreId, name: insertedStore.name, slug: insertedStore.slug, logo_url: insertedStore.logo_url, contract_accepted: insertedStore.contract_accepted, meta_pixel_id: null, tiktok_pixel_id: null }
+    } else {
+      storeRaw = { id: newStoreId, name: name, slug: newSlug, logo_url: null, contract_accepted: false, meta_pixel_id: null, tiktok_pixel_id: null }
     }
   }
 
-  const storeId   = storeRaw.id
-  const storeSlug = storeRaw.slug
-
-  // --- Dates pour les requêtes ---
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  
-  const sevenDaysAgo = new Date()
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-  sevenDaysAgo.setHours(0, 0, 0, 0)
-
-  // --- 2. Requêtes parallèles ---
-  const [
-    { data: ordersTodayData },
-    { data: walletData },
-    { data: pendingData },
-    { data: weekData },
-    { data: lastOrdersData },
-    { data: userData },
-    { count: productCount },
-    { count: zoneCount },
-    { count: promoCount },
-    { count: delivererCount },
-    { count: walletSettingCount }
-  ] = await Promise.all([
-    // CA + ventes aujourd'hui
-    supabase.from('Order')
-      .select('id, vendor_amount, status, created_at')
-      .eq('store_id', storeId)
-      .gte('created_at', today.toISOString())
-      .in('status', ['paid','completed','delivered','confirmed','preparing','shipped']),
-
-    // Wallet
-    supabase.from('Wallet')
-      .select('balance, pending, total_earned')
-      .eq('vendor_id', storeId).single(),
-
-    // Commandes en attente
-    supabase.from('Order')
-      .select('id, status')
-      .eq('store_id', storeId)
-      .in('status', ['pending','processing','preparing', 'cod_pending']),
-
-    // 7 derniers jours (pour le graph)
-    supabase.from('Order')
-      .select('vendor_amount, status, created_at')
-      .eq('store_id', storeId)
-      .gte('created_at', sevenDaysAgo.toISOString())
-      .in('status', ['paid','completed','delivered','confirmed','preparing','shipped']),
-
-    // 5 dernières commandes (toutes périodes)
-    supabase.from('Order')
-      .select('id, vendor_amount, status, created_at, product_id, product_name:Product(name)')
-      .eq('store_id', storeId)
-      .order('created_at', { ascending: false })
-      .limit(5),
-
-    // Nom du vendeur
-    supabase.from('User')
-      .select('name')
-      .eq('id', user.id).single(),
-      
-    // Count produits pour le conseil IA
-    supabase.from('Product')
-      .select('id', { count: 'exact', head: true })
-      .eq('store_id', storeId)
-      .eq('active', true),
-      
-    // Count zones
-    supabase.from('DeliveryZone')
-      .select('id', { count: 'exact', head: true })
-      .eq('store_id', storeId),
-      
-    // Count promotions
-    supabase.from('Promotion')
-      .select('id', { count: 'exact', head: true })
-      .eq('store_id', storeId),
-      
-    // Count livreurs
-    supabase.from('Deliverer')
-      .select('id', { count: 'exact', head: true })
-      .eq('store_id', storeId),
-      
-    // Count WalletSetting (pour savoir si retrait configuré)
-    supabase.from('WalletSetting')
-      .select('id', { count: 'exact', head: true })
-      .eq('vendor_id', storeId)
-  ])
-
-  // --- App Store : Check installed apps ---
-  const isCoachIaInstalled = await prisma.installedApp.findFirst({
-    where: { store_id: storeId, app_id: 'coach-ia', status: 'active' }
-  })
-
-  // --- Calculs KPIs ---
-  const ordersToday = ordersTodayData || []
-  const caToday     = ordersToday.reduce((sum, o) => sum + (o.vendor_amount || 0), 0)
-  const countToday  = ordersToday.length
-  
-  const pendingCount = pendingData?.length || 0
-  const wallet       = walletData || { balance: 0, pending: 0, total_earned: 0 }
-  const totalEarned  = wallet.total_earned || 0
-
-  // --- Calculs Graphique 7 jours ---
-  const weekOrders = weekData || []
-  // Initialiser les 7 derniers jours à 0
-  const chartDataMap = new Map<string, number>()
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date()
-    d.setDate(d.getDate() - i)
-    // format DD/MM
-    const dateStr = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`
-    chartDataMap.set(dateStr, 0)
-  }
-
-  // Remplir avec les données réelles
-  weekOrders.forEach(o => {
-    const d = new Date(o.created_at)
-    const dateStr = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`
-    if (chartDataMap.has(dateStr)) {
-      chartDataMap.set(dateStr, chartDataMap.get(dateStr)! + (o.vendor_amount || 0))
-    }
-  })
-
-  const chartData = Array.from(chartDataMap.entries()).map(([date, total]) => ({ date, total }))
-
-  const caWeek = weekOrders.reduce((sum, o) => sum + (o.vendor_amount || 0), 0)
-
-  // --- Section 1: Salutation ---
-  const userName = userData?.name?.split(' ')[0] || 'Vendeur'
-  const now = new Date()
-  const hour = now.getUTCHours() // GMT+0 pour Afrique de l'Ouest (Dakar, Abidjan, Bamako)
-  const greeting = hour < 12 ? 'Bon matin' : hour < 18 ? 'Bon après-midi' : 'Bonsoir'
-  
-  // Formatage date "Lundi 17 mars 2026"
-  const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-  const dateFormatted = new Date().toLocaleDateString('fr-FR', dateOptions)
+  const userName = user.user_metadata?.name?.split(' ')[0] || 'Vendeur'
+  const dateFormatted = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
   const capitalizedDate = dateFormatted.charAt(0).toUpperCase() + dateFormatted.slice(1)
 
-  // --- Section 5: Niveau Vendeur ---
-  let level = 'Bronze'
-  let emoji = '🥉'
-  let nextLevelThreshold = 500000
-  let nextLevelName = 'Silver'
-
-  if (totalEarned >= 10000000) {
-    level = 'Platinum'
-    emoji = '💎'
-    nextLevelThreshold = totalEarned // Max level
-    nextLevelName = 'Max'
-  } else if (totalEarned >= 2000000) {
-    level = 'Gold'
-    emoji = '🥇'
-    nextLevelThreshold = 10000000
-    nextLevelName = 'Platinum'
-  } else if (totalEarned >= 500000) {
-    level = 'Silver'
-    emoji = '🥈'
-    nextLevelThreshold = 2000000
-    nextLevelName = 'Gold'
-  }
-  
-  const progressPercent = level === 'Platinum' ? 100 : Math.min(100, (totalEarned / nextLevelThreshold) * 100)
-  const missingForNext = nextLevelThreshold - totalEarned
-
-  const safeProductCount = productCount ?? 0
-  const safeZoneCount = zoneCount ?? 0
-  const safePromoCount = promoCount ?? 0
-  const safeDelivererCount = delivererCount ?? 0
-  const safeWalletSettingCount = walletSettingCount ?? 0
-  
-  const hasSettingsChecked = !!storeRaw.meta_pixel_id || !!storeRaw.tiktok_pixel_id || !!storeRaw.logo_url
-
-  // --- Check si le vendeur est nouveau (a configuré tous les éléments essentiels) ---
-  const isNewVendor = safeProductCount === 0 || safeZoneCount === 0 || safePromoCount === 0 || safeDelivererCount === 0 || safeWalletSettingCount === 0 || !hasSettingsChecked
-
-  // --- Défi dynamique basé sur les perf du vendeur ---
-  const avgDailyOrders = caWeek > 0 ? Math.round(weekOrders.length / 7) : 0
-  const challengeGoal = avgDailyOrders >= 8 ? 10 : avgDailyOrders >= 3 ? 5 : 3
-  const challengeReward = challengeGoal === 10 ? 1500 : challengeGoal === 5 ? 500 : 250
-  const challengeCompleted = countToday >= challengeGoal
-
-  // --- Sparklines 7j réelles ---
-  const sparklineValues = chartData.map(d => d.total)
-  const sparkMax = Math.max(...sparklineValues, 1)
-  const toSparklinePath = (values: number[], maxVal: number) => {
-    const points = values.map((v, i) => {
-      const x = (i / (values.length - 1)) * 100
-      const y = 50 - (v / maxVal) * 45
-      return `${x},${y}`
-    })
-    const areaPath = `M0,50 L0,${50 - (values[0] / maxVal) * 45} ${points.map((p, i) => i === 0 ? `L${p}` : `L${p}`).join(' ')} L100,50 Z`
-    const linePath = `M${points.join(' L')}`
-    return { areaPath, linePath }
-  }
-  const sparkCA = toSparklinePath(sparklineValues, sparkMax)
-  const sparkOrders = toSparklinePath(chartData.map(d => weekOrders.filter(o => {
-    const orderDay = `${new Date(o.created_at).getDate().toString().padStart(2, '0')}/${(new Date(o.created_at).getMonth() + 1).toString().padStart(2, '0')}`
-    return orderDay === d.date
-  }).length), Math.max(...chartData.map(d => weekOrders.filter(o => {
-    const orderDay = `${new Date(o.created_at).getDate().toString().padStart(2, '0')}/${(new Date(o.created_at).getMonth() + 1).toString().padStart(2, '0')}`
-    return orderDay === d.date
-  }).length), 1))
-  
-  const todayProgressProps = { style: { width: `${Math.min(100, (countToday / challengeGoal) * 100)}%` } };
-  const levelProgressProps = { style: { width: `${progressPercent}%` } };
-
   return (
-    <main className="min-h-screen bg-[#FAFAF7] font-sans pb-20 relative">
-      {/* Ambient BG Glows */}
-      <div className="absolute top-0 left-10 w-[600px] h-[600px] bg-[#0F7A60]/[0.03] blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-[20%] right-0 w-[500px] h-[500px] bg-[#C9A84C]/[0.03] blur-[120px] rounded-full pointer-events-none" />
-
+    <main className="min-h-screen bg-gray-50 font-sans pb-20 relative">
       <WelcomeGuide />
       
-      {/* ── SECTION 1 : HEADER ───────────────────────────────────────────── */}
-      <header className="bg-white/70 backdrop-blur-2xl border-b border-gray-100 px-6 lg:px-10 py-8 relative z-10">
-        <div className="w-full flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
+      {/* HEADER */}
+      <header className="bg-white border-b border-gray-200 px-6 lg:px-10 py-8 relative z-10">
+        <div className="w-full flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black text-[#1A1A1A] tracking-tight">
-              Bonjour, {userName} ! 👋
-            </h1>
-            <p className="text-sm font-medium text-gray-400 mt-2">
-              {capitalizedDate} · {greeting}
-            </p>
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Bonjour, {userName} ! 👋</h1>
+            <p className="text-sm font-medium text-gray-500 mt-2">{capitalizedDate}</p>
           </div>
-          
-          {/* Alerte Contrat */}
           {!storeRaw.contract_accepted && (
-            <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm mt-4 md:mt-0">
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl flex items-center gap-3">
               <span className="text-xl">⚠️</span>
               <div>
                 <p className="text-sm font-bold">Vos ventes sont désactivées</p>
-                <Link href="/dashboard/settings#contrat" className="text-xs font-bold underline hover:text-amber-900 transition-colors">
-                  Signer le contrat →
-                </Link>
+                <Link href="/dashboard/settings#contrat" className="text-xs font-bold underline">Signer le contrat →</Link>
               </div>
             </div>
           )}
         </div>
       </header>
 
-      <div className="w-full p-6 lg:p-10 space-y-8">
-
-        {/* ── GAMIFICATION BANNER (BOUCLE DE CROISSANCE) ───────────────────── */}
-        <div className={`w-full rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-xl text-white overflow-hidden relative ${challengeCompleted ? 'bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-500 shadow-emerald-500/20' : 'bg-gradient-to-r from-orange-400 via-orange-500 to-amber-500 shadow-orange-500/20'}`}>
-           <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
-           <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-amber-300/30 blur-2xl rounded-full translate-y-1/3 pointer-events-none"></div>
-           <div className="relative z-10 flex items-center gap-5">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 text-3xl shrink-0">
-                {challengeCompleted ? '🏆' : '🎯'}
-              </div>
-              <div>
-                <h3 className="text-2xl font-black tracking-tight mb-1">
-                  {challengeCompleted ? 'Défi réussi ! 🎉' : `Défi du jour : Gagnez ${challengeReward.toLocaleString('fr-FR')} FCFA !`}
-                </h3>
-                <p className="font-medium text-white/90">
-                  {challengeCompleted 
-                    ? `Félicitations ! Vous avez réalisé ${countToday} ventes. Votre prime de ${challengeReward.toLocaleString('fr-FR')} FCFA sera créditée.`
-                    : <>Réalisez <strong className="text-white">{challengeGoal} ventes aujourd&apos;hui</strong> pour débloquer votre prime Wallet Yayyam.</>
-                  }
-                </p>
-                <div className="mt-3 flex items-center gap-3">
-                  <div className="flex-1 h-2.5 bg-black/10 rounded-full overflow-hidden max-w-[200px] border border-white/10 shadow-inner">
-                    <div className="h-full bg-white rounded-full transition-all duration-500" {...todayProgressProps}></div>
-                  </div>
-                  <span className="text-xs font-black bg-white/20 px-2 py-0.5 rounded-md">{countToday} / {challengeGoal}</span>
-                </div>
-              </div>
-           </div>
-           <Link href={`/${storeSlug}`} className="relative z-10 mt-6 md:mt-0 bg-white text-orange-600 px-6 py-3.5 rounded-2xl font-bold hover:bg-orange-50 hover:scale-[1.02] transition-all shadow-lg shrink-0 flex flex-col items-center leading-tight">
-             <span>Voir ma boutique</span>
-             <span className="text-[10px] font-medium text-orange-400">Partager pour vendre</span>
-           </Link>
-        </div>
-
-        {isNewVendor && (
-          <GettingStartedChecklist 
-            hasProducts={safeProductCount > 0} 
-            hasZones={safeZoneCount > 0}
-            hasPromotions={safePromoCount > 0}
-            hasDeliveries={safeDelivererCount > 0}
-            hasWallet={safeWalletSettingCount > 0}
-            hasSettings={hasSettingsChecked}
-          />
-        )}
-
-        {/* ── SECTION 2 : 4 KPI CARDS (Métriques Cash style Apple Stocks) ── */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 relative z-10">
-          <div className="bg-white/80 backdrop-blur-xl border border-white hover:border-[#0F7A60]/30 hover:shadow-2xl hover:shadow-[#0F7A60]/10 transition-all duration-500 rounded-[32px] p-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0F7A60]/[0.02] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 relative z-10 flex items-center justify-between">
-              <span>CA Aujourd&apos;hui</span>
-            </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] truncate relative z-10 tracking-tighter group-hover:text-[#0F7A60] transition-colors duration-500">
-              {caToday.toLocaleString('fr-FR')} <span className="text-sm text-gray-400 font-bold ml-1">F</span>
-            </p>
-            {/* Sparkline réelle 7j */}
-            <div className="absolute bottom-0 left-0 w-full h-1/2 opacity-20 group-hover:opacity-40 group-hover:text-[#0F7A60] transition-all duration-500 pointer-events-none">
-              <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full text-gray-400 group-hover:text-[#0F7A60]">
-                <path d={sparkCA.areaPath} fill="currentColor" />
-                <path d={sparkCA.linePath} fill="none" stroke="currentColor" strokeWidth="2" />
-              </svg>
-            </div>
-          </div>
-          
-          <div className="bg-white/80 backdrop-blur-xl border border-white hover:border-[#1A1A1A]/20 hover:shadow-2xl hover:shadow-black/5 transition-all duration-500 rounded-[32px] p-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 relative z-10">
-              Ventes Aujourd&apos;hui
-            </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] relative z-10 tracking-tighter">
-              {countToday}
-            </p>
-            {/* Sparkline réelle 7j */}
-            <div className="absolute bottom-0 left-0 w-full h-1/2 opacity-20 group-hover:opacity-30 transition-all duration-500 pointer-events-none">
-              <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full text-gray-400 group-hover:text-gray-600">
-                <path d={sparkOrders.areaPath} fill="currentColor" />
-                <path d={sparkOrders.linePath} fill="none" stroke="currentColor" strokeWidth="2" />
-              </svg>
-            </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-xl border border-white hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 rounded-[32px] p-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 relative z-10">
-              Commandes en attente
-            </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-[#1A1A1A] relative z-10 tracking-tighter group-hover:text-blue-600 transition-colors duration-500">
-              {pendingCount} <span className="text-sm font-bold opacity-40 ml-1 group-hover:opacity-100">à traiter</span>
-            </p>
-            <div className="absolute bottom-0 left-0 w-full h-1/2 opacity-[0.05] group-hover:opacity-[0.15] transition-all duration-500 pointer-events-none">
-              <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full text-[#1A1A1A] group-hover:text-blue-600">
-                <path d="M0,50 L0,20 C30,30 50,5 70,15 C85,25 95,10 100,5 L100,50 Z" fill="currentColor" />
-                <path d="M0,20 C30,30 50,5 70,15 C85,25 95,10 100,5" fill="none" stroke="currentColor" strokeWidth="2" />
-              </svg>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] border border-white/10 rounded-[32px] p-6 shadow-2xl shadow-black/20 relative overflow-hidden group text-white hover:shadow-[#C9A84C]/20 hover:-translate-y-1 transition-all duration-500">
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#C9A84C]/20 blur-2xl rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
-            
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#C9A84C] opacity-90 mb-2 relative z-10">
-              Wallet (Dispo)
-            </p>
-            <p className="text-3xl lg:text-4xl font-display font-black text-white truncate relative z-10 tracking-tighter flex items-center gap-1 group-hover:text-amber-50 transition-colors duration-500">
-              {wallet.balance.toLocaleString('fr-FR')} <span className="text-sm font-bold opacity-60 mt-2">F</span>
-            </p>
-            {/* Fake Sparkline (Area Chart) */}
-            <div className="absolute bottom-0 left-0 w-full h-3/4 opacity-10 group-hover:opacity-30 transition-all duration-500 pointer-events-none">
-               <svg viewBox="0 0 100 50" preserveAspectRatio="none" className="w-full h-full text-[#C9A84C]">
-                <path d="M0,50 L0,45 C20,40 40,50 60,30 C80,10 90,20 100,5 L100,50 Z" fill="currentColor" />
-                <path d="M0,45 C20,40 40,50 60,30 C80,10 90,20 100,5" fill="none" stroke="currentColor" strokeWidth="2" />
-              </svg>
-            </div>
-          </div>
-        </section>
-
-        {/* ── CHECK360° — ANALYSE IA ───────────────────────────────────────── */}
-        <section>
-          <Check360Widget
-            storeName={storeRaw.name}
-            caToday={caToday}
-            countToday={countToday}
-            pendingCount={pendingCount}
-            walletBalance={wallet.balance}
-            productCount={safeProductCount}
-            caWeek={caWeek}
-            level={level}
-          />
-        </section>
-
-        {/* ── COACH IA QUOTIDIEN (Daily Digest) ─────────────────────────── */}
-        {isCoachIaInstalled && <DailyDigestWidget storeId={storeId} />}
-
-        {/* ── SECTION 3 : GRAPHIQUE 7J + ACTIONS RAPIDES ───────────────────── */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
-          
-          {/* Graphique (7 cols) */}
-          <div className="lg:col-span-7 bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] p-6 shadow-xl shadow-gray-200/50 flex flex-col group hover:shadow-2xl hover:shadow-gray-200/80 transition-all duration-500">
-            <div className="mb-6 flex justify-between items-start">
-              <div>
-                <h2 className="font-black text-[#1A1A1A] text-lg">Revenus (7 derniers jours)</h2>
-                <p className="text-xs text-gray-500 mt-1">Évolution panoramique de votre chiffre d&apos;affaires</p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#0F7A60]/10 transition-colors duration-500 text-gray-400 group-hover:text-[#0F7A60]">
-                <TrendingUp size={18} />
-              </div>
-            </div>
-            <div className="flex-1 min-h-[250px] -ml-4">
-               <ChartLazyWrapper data={chartData} />
-            </div>
-          </div>
-
-          {/* Actions Rapides (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
-            
-            {/* Bouton Aperçu mis en évidence */}
-            {storeSlug && (
-              <a
-                href={`/${storeSlug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-6 py-4 bg-white/60 backdrop-blur-xl border border-white text-gray-700 rounded-2xl text-sm font-black hover:border-[#0F7A60]/30 hover:bg-[#0F7A60]/5 hover:text-[#0F7A60] hover:shadow-lg hover:shadow-[#0F7A60]/10 transition-all duration-300 group shadow-sm w-full relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                <Eye size={18} className="group-hover:text-[#0F7A60] transition-colors" />
-                Aperçu de ma boutique
-              </a>
-            )}
-
-            <div className="grid grid-cols-2 gap-4 flex-1">
-              <Link href="/dashboard/products/new" className="bg-gradient-to-br from-[#0F7A60] to-[#0B5C48] hover:to-[#094A3A] text-white p-6 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all duration-300 shadow-lg shadow-[#0F7A60]/20 hover:shadow-xl hover:shadow-[#0F7A60]/40 hover:-translate-y-1 group relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:scale-110 group-hover:bg-white/30 transition-all duration-500 shadow-inner">
-                  <span className="text-2xl font-light leading-none">+</span>
-                </div>
-                <span className="text-xs font-black tracking-wide text-center">Nouveau produit</span>
-              </Link>
-
-              <Link href="/dashboard/orders" className="bg-white/60 backdrop-blur-xl border border-white p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-[#0F7A60]/30 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-[#0F7A60]/10 hover:-translate-y-1 group text-[#1A1A1A]">
-                <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:bg-[#0F7A60]/10 group-hover:text-[#0F7A60] transition-all duration-500">
-                   <Package size={22} className="text-gray-400 group-hover:text-[#0F7A60] transition-colors" />
-                </div>
-                <span className="text-xs font-black tracking-wide text-center group-hover:text-[#0F7A60] transition-colors">Mes commandes</span>
-              </Link>
-
-              <CopyLinkQuickAction slug={storeSlug} />
-              <WhatsAppQuickAction slug={storeSlug} />
-            </div>
-          </div>
-
-        </section>
-
-        {/* ── SECTION 4 & 5 : DERN. COMMANDES + NIVEAU VENDEUR ─────────────── */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
-          
-          {/* 5 Dernières Commandes (7 cols) */}
-          <div className="lg:col-span-7 bg-white/80 backdrop-blur-2xl border border-white rounded-[32px] shadow-xl shadow-gray-200/40 overflow-hidden flex flex-col">
-            <div className="px-6 py-6 border-b border-gray-100/50 flex items-center justify-between bg-white/50">
-              <h2 className="font-black text-[#1A1A1A] text-lg">Dernières commandes</h2>
-              <Link href="/dashboard/orders" className="text-xs font-black text-[#0F7A60] hover:text-[#0B5C48] bg-[#0F7A60]/5 hover:bg-[#0F7A60]/10 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1">
-                Voir tout <ArrowRight size={14}/>
-              </Link>
-            </div>
-            
-            <div className="flex-1 flex flex-col p-2">
-              {lastOrdersData && lastOrdersData.length > 0 ? (
-                <div className="space-y-1">
-                  {lastOrdersData.map(order => {
-                    const pNameRow = Array.isArray(order.product_name)
-                      ? order.product_name[0]
-                      : order.product_name
-                    const productName = (pNameRow as { name?: string } | null)?.name ?? 'Produit inconnu'
-                    
-                    return (
-                      <div key={order.id} className="px-4 py-3.5 rounded-2xl flex items-center justify-between hover:bg-gray-50/80 transition-all duration-300 group cursor-default">
-                        <div className="flex items-center gap-4 min-w-0">
-                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner ${
-                             ['completed', 'delivered'].includes(order.status) ? 'bg-[#0F7A60]/10 text-[#0F7A60]' :
-                             ['cancelled'].includes(order.status) ? 'bg-red-500/10 text-red-500' :
-                             'bg-amber-500/10 text-amber-500'
-                           }`}>
-                             <ShoppingBag size={18} />
-                           </div>
-                           <div className="min-w-0">
-                             <div className="flex items-center gap-2 mb-1">
-                               <p className="text-[11px] font-mono font-bold text-gray-400">#{order.id.split('-')[0].toUpperCase()}</p>
-                               <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md ${
-                                 ['completed', 'delivered'].includes(order.status) ? 'bg-[#0F7A60]/10 text-[#0F7A60]' :
-                                 ['cancelled'].includes(order.status) ? 'bg-red-500/10 text-red-500' :
-                                 'bg-amber-500/10 text-amber-600'
-                               }`}>
-                                 {STATUS_LABELS[order.status] || order.status}
-                               </span>
-                             </div>
-                             <p className="text-sm font-bold text-[#1A1A1A] truncate group-hover:text-[#0F7A60] transition-colors">{productName}</p>
-                           </div>
-                        </div>
-                        <div className="text-right flex-shrink-0 pl-4">
-                          <p className="text-[15px] font-black text-[#1A1A1A]">{(order.vendor_amount || 0).toLocaleString('fr-FR')} F</p>
-                          <p className="text-[10px] text-gray-400 font-bold mt-0.5">
-                            {new Date(order.created_at).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                  <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3">
-                    <ShoppingBag size={24} className="text-gray-300" />
-                  </div>
-                  <p className="text-sm font-bold text-gray-400">Aucune commande pour le moment</p>
-                  <p className="text-xs text-gray-400 mt-1 max-w-xs">Partagez votre lien de boutique pour générer vos premières ventes !</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Niveau Vendeur (5 cols) */}
-          <div className="lg:col-span-5 bg-gradient-to-br from-[#1A1A1A] to-[#2A2A2A] rounded-[32px] p-8 shadow-2xl shadow-black/20 text-white relative overflow-hidden flex flex-col justify-between group hover:-translate-y-1 transition-transform duration-500 border border-white/10">
-            {/* Décoration BG */}
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#C9A84C]/20 blur-[60px] rounded-full translate-x-1/3 -translate-y-1/3 group-hover:bg-[#C9A84C]/30 transition-colors duration-500 pointer-events-none" />
-            
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-8">
-                <p className="text-[10px] font-black uppercase text-[#C9A84C] tracking-widest">Niveau vendeur</p>
-                <Sparkles size={16} className="text-[#C9A84C] opacity-50" />
-              </div>
-              
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl shadow-inner backdrop-blur-sm group-hover:scale-110 transition-transform duration-500">
-                  {emoji}
-                </div>
-                <div>
-                  <h3 className="text-3xl font-black text-white tracking-tight">{level}</h3>
-                  <p className="text-xs text-gray-400 font-bold mt-1">Avantages exclusifs actifs</p>
-                </div>
-              </div>
-
-              {level !== 'Platinum' ? (
-                <div className="space-y-3">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-gray-300">Progression vers {nextLevelName}</span>
-                    <span className="text-[#C9A84C]">{Math.round(progressPercent)}%</span>
-                  </div>
-                  
-                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-[#C9A84C] to-yellow-300 rounded-full transition-all duration-1000 ease-out"
-                      {...levelProgressProps}
-                    />
-                  </div>
-                  
-                  <p className="text-xs text-gray-400 font-medium">
-                    Encore <span className="text-white font-bold">{missingForNext.toLocaleString('fr-FR')} F</span> à générer pour débloquer le palier {nextLevelName}.
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-[#C9A84C]/20 border border-[#C9A84C]/30 rounded-xl p-4">
-                  <p className="text-sm font-black text-[#C9A84C]">Félicitations ! 🏆</p>
-                  <p className="text-xs text-gray-300 mt-1">Vous avez atteint le palier maximum. Contactez votre account manager pour vos avantages VIP.</p>
-                </div>
-              )}
-            </div>
-
-            <Link 
-              href="/dashboard/abonnements" 
-              className="mt-6 block w-full text-center bg-white/10 hover:bg-white/15 border border-white/10 transition-colors py-3 rounded-xl text-xs font-bold text-white shadow-sm"
-            >
-              Voir les avantages de mon niveau
-            </Link>
-          </div>
-
-        </section>
-
+      <div className="w-full p-6 lg:p-10">
+        <Suspense fallback={<ChecklistSkeleton />}><ChecklistServer storeId={storeRaw.id} /></Suspense>
+        <Suspense fallback={<KPISkeleton />}><DashboardKPIs storeId={storeRaw.id} storeRaw={storeRaw} /></Suspense>
+        <Suspense fallback={<ChartSkeleton />}><DashboardChartServer storeId={storeRaw.id} storeSlug={storeRaw.slug} /></Suspense>
+        <Suspense fallback={<OrdersSkeleton />}><RecentOrdersServer storeId={storeRaw.id} /></Suspense>
       </div>
     </main>
   )

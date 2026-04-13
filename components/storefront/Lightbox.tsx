@@ -59,11 +59,10 @@ export function Lightbox({ images, initialIndex = 0, onClose }: LightboxProps) {
       {/* Image Centrale */}
       <div className="w-[90vw] h-[85vh] relative group flex items-center justify-center">
         <div className="relative w-full h-full max-w-full max-h-[85vh]">
-          <Image 
-            src={images[index]} 
+          <Image src={images[index]} 
             alt={`Image ${index + 1}`} 
             fill
-            sizes="90vw"
+            sizes="100vw"
             className="object-contain drop-shadow-2xl"
           />
         </div>

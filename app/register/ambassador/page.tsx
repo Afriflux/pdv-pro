@@ -117,7 +117,7 @@ function AmbassadorContent() {
               <div>
                 <label htmlFor="ambassadorCodeInput" className="block text-sm font-medium text-charcoal mb-1.5">
                   Code Ambassadeur 
-                  <span className="ml-1 text-[10px] text-gray-400 font-normal">(optionnel)</span>
+                  <span className="ml-1 text-xs text-gray-400 font-normal">(optionnel)</span>
                 </label>
                 <div className="relative">
                   <input
@@ -189,7 +189,7 @@ function AmbassadorContent() {
               </button>
             </div>
             
-            <p className="text-center text-[10px] text-slate mt-8">
+            <p className="text-center text-xs text-slate mt-8">
               Vous pourrez créer une boutique plus tard depuis votre dashboard.
             </p>
           </div>

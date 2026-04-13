@@ -64,21 +64,21 @@ export default async function FinancesConfigPage() {
           
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 lg:p-5 flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-emerald-100/70 text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5"><WalletIcon className="w-3.5 h-3.5" /> Solde Central</span>
+              <span className="text-emerald-100/70 text-xs font-black uppercase tracking-widest mb-1 flex items-center gap-1.5"><WalletIcon className="w-3.5 h-3.5" /> Solde Central</span>
               <span className="text-2xl font-black text-white">{platformBalance.toLocaleString('fr-FR')} <span className="text-sm font-bold text-emerald-100/50">CFA</span></span>
             </div>
           </div>
 
           <div className="bg-white/10 backdrop-blur-md border border-amber-500/30 rounded-2xl p-4 lg:p-5 flex items-center justify-between shadow-[0_0_15px_rgba(245,158,11,0.1)]">
             <div className="flex flex-col">
-              <span className="text-emerald-100/70 text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5"><TrendingUp className="w-3.5 h-3.5" /> Chiffre d'Affaires Global</span>
+              <span className="text-emerald-100/70 text-xs font-black uppercase tracking-widest mb-1 flex items-center gap-1.5"><TrendingUp className="w-3.5 h-3.5" /> Chiffre d'Affaires Global</span>
               <span className="text-2xl font-black text-amber-400">{platformTotalEarned.toLocaleString('fr-FR')} <span className="text-sm font-bold text-amber-400/50">CFA</span></span>
             </div>
           </div>
 
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 lg:p-5 flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-emerald-100/70 text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5"><HandCoins className="w-3.5 h-3.5" /> En attente de déblocage</span>
+              <span className="text-emerald-100/70 text-xs font-black uppercase tracking-widest mb-1 flex items-center gap-1.5"><HandCoins className="w-3.5 h-3.5" /> En attente de déblocage</span>
               <span className="text-2xl font-black text-white/80">{platformPending.toLocaleString('fr-FR')} <span className="text-sm font-bold text-white/30">CFA</span></span>
             </div>
           </div>

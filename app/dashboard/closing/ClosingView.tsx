@@ -141,13 +141,13 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
 
   const getStatusBadge = (s: string) => {
     switch (s) {
-      case 'PENDING': return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">En Attente</span>
-      case 'SCHEDULED': return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-200">Planifié</span>
-      case 'CANCELLATION_REQUESTED': return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200">Annulation</span>
-      case 'VALIDATED': return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">Validé</span>
-      case 'REJECTED': return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-red-100 text-red-800 border border-red-200">Rejeté</span>
-      case 'NO_REPLY': return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-gray-100 text-gray-800 border border-gray-200">Injoignable</span>
-      default: return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-gray-100 text-gray-800 border border-gray-200">{s}</span>
+      case 'PENDING': return <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">En Attente</span>
+      case 'SCHEDULED': return <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-black uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-200">Planifié</span>
+      case 'CANCELLATION_REQUESTED': return <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-black uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200">Annulation</span>
+      case 'VALIDATED': return <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">Validé</span>
+      case 'REJECTED': return <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-black uppercase tracking-wider bg-red-100 text-red-800 border border-red-200">Rejeté</span>
+      case 'NO_REPLY': return <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-black uppercase tracking-wider bg-gray-100 text-gray-800 border border-gray-200">Injoignable</span>
+      default: return <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-black uppercase tracking-wider bg-gray-100 text-gray-800 border border-gray-200">{s}</span>
     }
   }
 
@@ -208,7 +208,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
             <div className="relative z-10 flex flex-col items-start gap-4">
               <div className="w-12 h-12 rounded-[20px] bg-[#0F7A60]/10 text-[#0F7A60] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500"><DollarSign size={24} /></div>
               <div>
-                <p className="text-[11px] font-black text-[#0F7A60] uppercase tracking-wider mb-1">CA Sécurisé</p>
+                <p className="text-xs font-black text-[#0F7A60] uppercase tracking-wider mb-1">CA Sécurisé</p>
                 <p className="font-display font-black text-[#1A1A1A] text-2xl truncate">{caSecurise.toLocaleString('fr-FR')} <span className="text-sm font-bold text-gray-400">F</span></p>
               </div>
             </div>
@@ -220,7 +220,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
             <div className="relative z-10 flex flex-col items-start gap-4">
               <div className="w-12 h-12 rounded-[20px] bg-blue-50 text-blue-500 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500"><CheckCircleIcon size={24} /></div>
               <div>
-                <p className="text-[11px] font-black text-blue-500 uppercase tracking-wider mb-1">Validés</p>
+                <p className="text-xs font-black text-blue-500 uppercase tracking-wider mb-1">Validés</p>
                 <p className="font-display font-black text-3xl text-[#1A1A1A]">{nbValides}</p>
               </div>
             </div>
@@ -232,7 +232,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
             <div className="relative z-10 flex flex-col items-start gap-4">
               <div className="w-12 h-12 rounded-[20px] bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500"><Target size={24} /></div>
               <div>
-                <p className="text-[11px] font-black text-purple-600 uppercase tracking-wider mb-1">Tx Closing</p>
+                <p className="text-xs font-black text-purple-600 uppercase tracking-wider mb-1">Tx Closing</p>
                 <p className="font-display font-black text-3xl text-[#1A1A1A]">{tauxClosing}%</p>
               </div>
             </div>
@@ -244,7 +244,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
             <div className="relative z-10 flex flex-col items-start gap-4">
               <div className="w-12 h-12 rounded-[20px] bg-[#C9A84C]/10 text-[#C9A84C] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500"><ClipboardList size={24} /></div>
               <div>
-                <p className="text-[11px] font-black text-[#C9A84C] uppercase tracking-wider mb-1">Total Traité</p>
+                <p className="text-xs font-black text-[#C9A84C] uppercase tracking-wider mb-1">Total Traité</p>
                 <p className="font-display font-black text-3xl text-[#1A1A1A]">{nbValides + nbRejetes}</p>
               </div>
             </div>
@@ -351,7 +351,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
       ) : viewMode === 'TABLE' ? (
         <div className="bg-white/80 backdrop-blur-xl border border-white rounded-[32px] overflow-x-auto shadow-xl shadow-gray-200/50">
            <table className="w-full text-left whitespace-nowrap">
-              <thead className="bg-[#FAFAF7] border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              <thead className="bg-[#FAFAF7] border-b border-gray-100 text-xs font-black text-gray-400 uppercase tracking-widest">
                  <tr>
                     <th className="px-6 py-5 rounded-tl-[32px]">Client</th>
                     <th className="px-6 py-5">Montant & Produit</th>
@@ -373,8 +373,8 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
                              <div className="flex flex-col gap-1.5">
                                 <span className="font-black text-[#1A1A1A] text-[15px]">{lockBadge}{req.buyerName}</span>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                   <a suppressHydrationWarning href={`tel:${req.buyerPhone}`} onClick={() => startCall(req.id)} className="font-mono text-[11px] text-gray-500 hover:text-[#0F7A60] font-bold flex items-center gap-1.5 bg-gray-100 hover:bg-emerald-50 px-2 py-1 rounded-md transition-colors"><PhoneIcon size={12}/>{req.buyerPhone}</a>
-                                   <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-white bg-gradient-to-r from-[#25D366] to-[#1EBE5C] hover:shadow-md px-2.5 py-1 font-bold text-[10px] sm:text-xs rounded-md shadow-sm shadow-[#25D366]/20 transition-transform active:scale-95" title="WhatsApp">
+                                   <a suppressHydrationWarning href={`tel:${req.buyerPhone}`} onClick={() => startCall(req.id)} className="font-mono text-xs text-gray-500 hover:text-[#0F7A60] font-bold flex items-center gap-1.5 bg-gray-100 hover:bg-emerald-50 px-2 py-1 rounded-md transition-colors"><PhoneIcon size={12}/>{req.buyerPhone}</a>
+                                   <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-white bg-gradient-to-r from-[#25D366] to-[#1EBE5C] hover:shadow-md px-2.5 py-1 font-bold text-xs sm:text-xs rounded-md shadow-sm shadow-[#25D366]/20 transition-transform active:scale-95" title="WhatsApp">
                                       <WhatsAppIcon className="w-3.5 h-3.5" /> WhatsApp
                                    </a>
                                 </div>
@@ -388,11 +388,11 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
                           </td>
                           <td className="px-6 py-5">
                              <div className="flex flex-col items-start gap-1.5">
-                                <span className={`flex items-center gap-1 px-2.5 py-1 rounded-md border text-[9px] font-black uppercase tracking-widest ${temp.color}`}>
+                                <span className={`flex items-center gap-1 px-2.5 py-1 rounded-md border text-xs font-black uppercase tracking-widest ${temp.color}`}>
                                    <temp.icon size={10} /> {temp.label}
                                 </span>
                                 {req.score && req.score.refused_orders === 0 && (
-                                   <span className="flex items-center gap-1.5 text-[10px] text-[#0F7A60] font-bold"><ShieldCheck size={14}/> Fiable</span>
+                                   <span className="flex items-center gap-1.5 text-xs text-[#0F7A60] font-bold"><ShieldCheck size={14}/> Fiable</span>
                                 )}
                              </div>
                           </td>
@@ -400,7 +400,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
                              {getStatusBadge(req.status)}
                           </td>
                           <td className="px-6 py-5 text-right">
-                             <button onClick={() => setViewMode('CARDS')} className="bg-gradient-to-br from-[#1A1A1A] to-gray-800 text-white text-[11px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl hover:shadow-lg transition-all active:scale-95 shadow-sm inline-flex items-center gap-2">
+                             <button onClick={() => setViewMode('CARDS')} className="bg-gradient-to-br from-[#1A1A1A] to-gray-800 text-white text-xs font-black uppercase tracking-widest px-4 py-2.5 rounded-xl hover:shadow-lg transition-all active:scale-95 shadow-sm inline-flex items-center gap-2">
                                 <LayoutGrid size={14} /> Traiter
                              </button>
                           </td>
@@ -442,7 +442,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
                         <div>
                            <div className="flex items-center gap-2">
                              <h3 className="font-black text-ink text-lg sm:text-xl truncate">{req.buyerName}</h3>
-                             <span className={`flex items-center gap-1 px-2 py-0.5 rounded border text-[9px] font-black uppercase tracking-wider shrink-0 ${temp.color}`}>
+                             <span className={`flex items-center gap-1 px-2 py-0.5 rounded border text-xs font-black uppercase tracking-wider shrink-0 ${temp.color}`}>
                                <temp.icon size={10} /> {temp.label}
                              </span>
                            </div>
@@ -504,7 +504,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
                       
                       <div className="mt-auto pt-4 flex items-end justify-between border-t border-dashed border-line xl:border-none xl:pt-6">
                          <div>
-                           <p className="text-[10px] uppercase font-black text-dust tracking-wider">Montant à encaisser</p>
+                           <p className="text-xs uppercase font-black text-dust tracking-wider">Montant à encaisser</p>
                            <p className="font-black text-emerald text-xl sm:text-2xl">{req.orderTotal.toLocaleString('fr-FR')} <span className="text-sm">F</span></p>
                          </div>
                       </div>
@@ -542,14 +542,14 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
                                  <button 
                                    onClick={() => handleAction(req.id, 'NO_REPLY')}
                                    disabled={loading !== null}
-                                   className="bg-amber-100 text-amber-800 hover:bg-amber-200 font-bold py-2.5 sm:py-3 rounded-xl flex items-center justify-center gap-2 transition-colors text-[10px] sm:text-xs disabled:opacity-50"
+                                   className="bg-amber-100 text-amber-800 hover:bg-amber-200 font-bold py-2.5 sm:py-3 rounded-xl flex items-center justify-center gap-2 transition-colors text-xs sm:text-xs disabled:opacity-50"
                                  >
                                    <Clock className="w-4 h-4" /> Injoignable
                                  </button>
                                  <button 
                                    onClick={() => handleAction(req.id, 'CANCELLATION_REQUESTED')}
                                    disabled={loading !== null}
-                                   className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 font-bold py-2.5 sm:py-3 rounded-xl flex items-center justify-center gap-2 transition-colors text-[10px] sm:text-xs disabled:opacity-50"
+                                   className="bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 font-bold py-2.5 sm:py-3 rounded-xl flex items-center justify-center gap-2 transition-colors text-xs sm:text-xs disabled:opacity-50"
                                  >
                                    <XCircleIcon className="w-4 h-4" /> Annuler / Refus
                                  </button>
@@ -642,7 +642,7 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
                                <div className="absolute -left-[1.35rem] top-1.5 w-2 h-2 rounded-full bg-slate-300 border-2 border-white"></div>
                                <p className="text-xs text-slate font-medium">
                                  <span className="font-bold text-ink">{h.agentName}</span> a marqué comme <span className="font-black">{h.action}</span>
-                                 <span className="text-[10px] text-dust ml-2">{new Date(h.createdAt).toLocaleString('fr-FR')}</span>
+                                 <span className="text-xs text-dust ml-2">{new Date(h.createdAt).toLocaleString('fr-FR')}</span>
                                </p>
                                {h.details && (
                                  <p className="text-xs text-slate bg-slate-50 p-2 rounded block mt-1 italic border border-line border-l-amber-400 border-l-4">{h.details}</p>

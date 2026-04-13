@@ -122,20 +122,20 @@ export function HelpdeskWidget({ storeId, accentColor }: Props) {
                    <form onSubmit={handleSubmit} className="space-y-4">
                      <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-[11px] uppercase font-black text-gray-500 mb-1.5 ml-1 tracking-wider">Nom Complet <span className="text-red-400">*</span></label>
+                          <label className="block text-xs uppercase font-black text-gray-500 mb-1.5 ml-1 tracking-wider">Nom Complet <span className="text-red-400">*</span></label>
                           <input required type="text" value={form.customer_name} onChange={e => setForm({...form, customer_name: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none transition-shadow focus:ring-2 focus:ring-[var(--accent)] border-[var(--accent)]" placeholder="Ex: Awa Diop" />
                         </div>
                         <div>
-                          <label className="block text-[11px] uppercase font-black text-gray-500 mb-1.5 ml-1 tracking-wider">N° Commande</label>
+                          <label className="block text-xs uppercase font-black text-gray-500 mb-1.5 ml-1 tracking-wider">N° Commande</label>
                           <input type="text" value={form.order_id} onChange={e => setForm({...form, order_id: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none transition-shadow focus:ring-2 focus:ring-[var(--accent)] border-[var(--accent)]" placeholder="Optionnel" />
                         </div>
                      </div>
                      <div>
-                        <label className="block text-[11px] uppercase font-black text-gray-500 mb-1.5 ml-1 tracking-wider">Tél / WhatsApp <span className="text-red-400">*</span></label>
+                        <label className="block text-xs uppercase font-black text-gray-500 mb-1.5 ml-1 tracking-wider">Tél / WhatsApp <span className="text-red-400">*</span></label>
                         <input required type="tel" value={form.customer_phone} onChange={e => setForm({...form, customer_phone: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none transition-shadow focus:ring-2 focus:ring-[var(--accent)] border-[var(--accent)]" placeholder="+221 ..." />
                      </div>
                      <div>
-                        <label className="block text-[11px] uppercase font-black text-gray-500 mb-1.5 ml-1 tracking-wider">Sujet <span className="text-red-400">*</span></label>
+                        <label className="block text-xs uppercase font-black text-gray-500 mb-1.5 ml-1 tracking-wider">Sujet <span className="text-red-400">*</span></label>
                         <select required aria-label="Sujet" title="Sujet" value={form.subject} onChange={e => setForm({...form, subject: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none transition-shadow cursor-pointer focus:ring-2 focus:ring-[var(--accent)] border-[var(--accent)]">
                           <option value="">Sélectionnez un sujet</option>
                           <option value="Suivi de Commande">Suivi de Commande</option>
@@ -146,7 +146,7 @@ export function HelpdeskWidget({ storeId, accentColor }: Props) {
                         </select>
                      </div>
                      <div>
-                        <label className="block text-[11px] uppercase font-black text-gray-500 mb-1.5 ml-1 tracking-wider">Message <span className="text-red-400">*</span></label>
+                        <label className="block text-xs uppercase font-black text-gray-500 mb-1.5 ml-1 tracking-wider">Message <span className="text-red-400">*</span></label>
                         <textarea required rows={4} value={form.message} onChange={e => setForm({...form, message: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none transition-shadow resize-none focus:ring-2 focus:ring-[var(--accent)] border-[var(--accent)]" placeholder="Expliquez-nous votre problème en détails..."></textarea>
                      </div>
 

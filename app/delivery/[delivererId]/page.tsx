@@ -81,18 +81,18 @@ export default function DelivererPortal({ params }: { params: { delivererId: str
                <Rocket size={24} className="text-[#0F7A60]" />
              </div>
              <div>
-                <p className="text-[10px] uppercase font-black tracking-widest text-[#0F7A60] mb-0.5">Portail Livreur</p>
+                <p className="text-xs uppercase font-black tracking-widest text-[#0F7A60] mb-0.5">Portail Livreur</p>
                 <h1 className="text-xl font-black">{deliverer.name}</h1>
                 <p className="text-xs font-medium text-cream/70 opacity-80 pt-1">Boutique: {deliverer.store.name}</p>
              </div>
           </div>
           <div className="grid grid-cols-2 gap-3 mt-6">
              <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-                <p className="text-[10px] text-cream uppercase font-bold mb-1">A livrer</p>
+                <p className="text-xs text-cream uppercase font-bold mb-1">A livrer</p>
                 <p className="text-2xl font-black text-white">{pendingOrders.length}</p>
              </div>
              <div className="bg-emerald/10 rounded-xl p-3 border border-emerald/20">
-                <p className="text-[10px] text-cream uppercase font-bold mb-1">Terminées</p>
+                <p className="text-xs text-cream uppercase font-bold mb-1">Terminées</p>
                 <p className="text-2xl font-black text-[#0F7A60]">{deliveredOrders.length}</p>
              </div>
           </div>
@@ -136,24 +136,24 @@ export default function DelivererPortal({ params }: { params: { delivererId: str
                <div key={order.id} className="bg-white rounded-3xl p-5 shadow-sm border border-line">
                  <div className="flex justify-between items-start mb-4">
                    <div>
-                     <span className="font-mono text-[10px] font-black bg-[#f4f4f5] text-slate px-2 py-1 rounded-md">
+                     <span className="font-mono text-xs font-black bg-[#f4f4f5] text-slate px-2 py-1 rounded-md">
                        #{order.id.split('-')[0].toUpperCase()}
                      </span>
                      <h3 className="text-lg font-black text-ink mt-2 leading-tight">{order.buyer_name}</h3>
-                     <p className="text-[10px] uppercase font-bold text-slate flex items-center gap-1 mt-1">
+                     <p className="text-xs uppercase font-bold text-slate flex items-center gap-1 mt-1">
                         <Clock size={12} /> {format(new Date(order.created_at), 'dd MMM à HH:mm', { locale: fr })}
                      </p>
                    </div>
                    <div className="text-right">
                      <p className="text-xl font-black text-ink">{order.total.toLocaleString('fr-FR')}</p>
-                     <p className="text-[9px] uppercase font-black text-slate tracking-wider">CFA À ENCAISSER</p>
+                     <p className="text-xs uppercase font-black text-slate tracking-wider">CFA À ENCAISSER</p>
                    </div>
                  </div>
 
                  <div className="flex items-center gap-3 bg-[#fcfcfc] border border-line p-3 rounded-2xl mb-4">
                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm shrink-0 overflow-hidden">
                      {order.product?.images?.[0] ? (
-                       <Image src={order.product.images[0]} alt="product" width={40} height={40} className="object-cover" />
+                       <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={order.product.images[0]} alt="product" width={40} height={40} className="object-cover" />
                      ) : <Package size={16} className="text-slate" />}
                    </div>
                    <p className="text-sm font-black text-ink line-clamp-1">{order.product?.name || 'Produit'}</p>

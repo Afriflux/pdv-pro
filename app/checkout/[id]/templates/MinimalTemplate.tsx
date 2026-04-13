@@ -121,7 +121,7 @@ export function MinimalTemplate({
         )}
 
         {/* Micro badges */}
-        <div className="flex items-center justify-center gap-6 text-gray-400 text-[11px] font-bold uppercase tracking-widest pt-4">
+        <div className="flex items-center justify-center gap-6 text-gray-400 text-xs font-bold uppercase tracking-widest pt-4">
           <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Sécurisé</span>
           <span className="flex items-center gap-1.5"><Truck className="w-3.5 h-3.5" /> Livraison</span>
           <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> Garanti 7j</span>

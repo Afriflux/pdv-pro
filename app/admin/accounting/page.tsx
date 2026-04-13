@@ -79,15 +79,15 @@ export default async function AdminAccountingPage() {
         {/* KPI P&L Overview */}
         <div className="relative z-10 mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col">
-            <span className="text-emerald-100/70 text-[10px] font-black uppercase mb-1">C.A Brut Global</span>
+            <span className="text-emerald-100/70 text-xs font-black uppercase mb-1">C.A Brut Global</span>
             <span className="text-2xl font-black text-white">{platformTotalEarned.toLocaleString('fr-FR')} <span className="text-sm">CFA</span></span>
           </div>
           <div className="bg-red-500/10 backdrop-blur-md border border-red-500/20 rounded-2xl p-4 flex flex-col shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-            <span className="text-red-200/90 text-[10px] font-black uppercase mb-1">Total Charges (Fixes & Var)</span>
+            <span className="text-red-200/90 text-xs font-black uppercase mb-1">Total Charges (Fixes & Var)</span>
             <span className="text-2xl font-black text-red-100">{totalExpenses.toLocaleString('fr-FR')} <span className="text-sm">CFA</span></span>
           </div>
           <div className="bg-[#C9A84C]/10 backdrop-blur-md border border-[#C9A84C]/30 rounded-2xl p-4 flex flex-col shadow-[0_0_15px_rgba(201,168,76,0.15)]">
-            <span className="text-[#C9A84C]/90 text-[10px] font-black uppercase mb-1">Bénéfice Net (Période)</span>
+            <span className="text-[#C9A84C]/90 text-xs font-black uppercase mb-1">Bénéfice Net (Période)</span>
             <span className="text-2xl font-black text-[#C9A84C]">{netProfit.toLocaleString('fr-FR')} <span className="text-sm">CFA</span></span>
           </div>
         </div>

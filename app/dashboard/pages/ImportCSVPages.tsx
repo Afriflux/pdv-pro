@@ -118,7 +118,7 @@ export default function ImportCSVPages({ onImportSuccess }: { onImportSuccess?: 
 
   return (
     <div className="bg-white border border-[#0F7A60]/20 rounded-2xl overflow-hidden shadow-sm relative">
-      <div className="absolute top-0 right-0 bg-[#0F7A60] pt-1 pb-1.5 px-3 rounded-bl-xl text-white text-[10px] font-black tracking-widest uppercase flex items-center gap-1.5 shadow-sm">
+      <div className="absolute top-0 right-0 bg-[#0F7A60] pt-1 pb-1.5 px-3 rounded-bl-xl text-white text-xs font-black tracking-widest uppercase flex items-center gap-1.5 shadow-sm">
         <Upload size={12} className="text-[#C9A84C]" /> IMPORT CSV
       </div>
       <div className="p-6 space-y-5">
@@ -164,7 +164,7 @@ export default function ImportCSVPages({ onImportSuccess }: { onImportSuccess?: 
               </button>
             </div>
             
-            <p className="text-[10px] text-gray-400 mt-6 font-mono tracking-wide">
+            <p className="text-xs text-gray-400 mt-6 font-mono tracking-wide">
               COLONNES REQUISES : {CSV_HEADERS.join(', ')}
             </p>
             <input aria-label="Fichier CSV" title="Fichier CSV" ref={fileRef} type="file" accept=".csv" className="hidden" onChange={onFileChange} />

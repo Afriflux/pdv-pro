@@ -198,7 +198,7 @@ export function TestimonialsSection({ s, theme = DEFAULT_THEME }: { s: Section; 
                    <p className="font-bold text-gray-900 leading-tight flex justify-between items-center w-full">
                      {t.name}
                    </p>
-                   <span className="text-[10px] text-green-600 font-black flex items-center gap-1 uppercase tracking-widest mt-0.5">
+                   <span className="text-xs text-green-600 font-black flex items-center gap-1 uppercase tracking-widest mt-0.5">
                       ✓ Achat vérifié
                    </span>
                  </div>
@@ -334,7 +334,7 @@ export function ProductCards({ products, theme = DEFAULT_THEME }: { products: Pr
               {p.images?.[0] ? (
                  <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
                    <div className="absolute inset-0 bg-gray-50" />
-                   <Image src={p.images[0]} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                   <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={p.images[0]} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                  </div>
               ) : (
                  <div className="relative w-full h-40 bg-gray-50 flex items-center justify-center text-4xl">🛍️</div>
@@ -345,7 +345,7 @@ export function ProductCards({ products, theme = DEFAULT_THEME }: { products: Pr
                 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-t border-gray-100 pt-8">
                   <div>
-                    <p className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-1">Prix total</p>
+                    <p className="text-xs font-black tracking-widest text-gray-400 uppercase mb-1">Prix total</p>
                     <span className="text-4xl font-black text-gray-900">
                       {p.price.toLocaleString('fr-FR')} <span className="text-xl">FCFA</span>
                     </span>
@@ -481,7 +481,7 @@ export function CrossSellSection({ products, theme = DEFAULT_THEME }: { products
             <div key={p.id} className="bg-white/60 backdrop-blur-2xl border border-white rounded-[32px] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:-translate-y-2 transition-transform duration-300 group flex flex-col h-full">
               <div className="aspect-[4/3] bg-gray-50 relative overflow-hidden">
                 {p.images?.[0] ? (
-                  <Image src={p.images[0]} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={p.images[0]} alt={p.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-4xl">🛍️</div>
                 )}

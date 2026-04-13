@@ -76,7 +76,7 @@ export default function CreateAdminForm() {
     'focus:bg-white focus:border-[#0F7A60] focus:ring-4 focus:ring-[#0F7A60]/10 outline-none transition-all duration-300 ' +
     'placeholder:text-gray-400 shadow-inner hover:bg-white/50'
 
-  const labelCls = 'block text-[11px] font-black text-gray-500 mb-2 uppercase tracking-widest'
+  const labelCls = 'block text-xs font-black text-gray-500 mb-2 uppercase tracking-widest'
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -122,7 +122,7 @@ export default function CreateAdminForm() {
             <option value="support">Support</option>
             {/* super_admin non attribuable depuis l'interface */}
           </select>
-          <p className="mt-1 text-[10px] text-gray-400 font-medium">
+          <p className="mt-1 text-xs text-gray-400 font-medium">
             Le rôle <strong>Super Admin</strong> ne peut pas être attribué ici.
           </p>
         </div>
@@ -151,7 +151,7 @@ export default function CreateAdminForm() {
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-          <p className="mt-1 text-[10px] text-gray-400 font-medium">
+          <p className="mt-1 text-xs text-gray-400 font-medium">
             L&apos;admin devra changer son mot de passe à la première connexion.
           </p>
         </div>

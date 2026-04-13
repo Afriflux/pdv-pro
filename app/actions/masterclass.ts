@@ -30,7 +30,7 @@ export async function getMasterclassArticles(adminMode = false, roleTarget?: str
       ]
     }
 
-    const articles = await prisma.masterclassArticle.findMany({
+    const articles = await prisma.masterclassArticle.findMany({ take: 50, 
       where,
       orderBy: { created_at: 'desc' }
     })

@@ -56,7 +56,7 @@ function ProductListRow({ product, baseUrl }: { product: Product; baseUrl: strin
       {/* Image miniature */}
       <div className="w-14 h-14 rounded-xl bg-gray-50 flex-shrink-0 overflow-hidden border border-gray-100 shadow-sm relative z-10">
         {product.images?.[0] ? (
-          <Image src={product.images[0]} alt={product.name || "Image du produit"} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+          <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={product.images[0]} alt={product.name || "Image du produit"} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-xl">📦</div>
         )}
@@ -72,7 +72,7 @@ function ProductListRow({ product, baseUrl }: { product: Product; baseUrl: strin
 
       {/* Prix */}
       <div className="w-24 text-right">
-        <p className="font-bold text-emerald text-sm">{product.price.toLocaleString('fr-FR')} <span className="text-[10px] font-normal">FCFA</span></p>
+        <p className="font-bold text-emerald text-sm">{product.price.toLocaleString('fr-FR')} <span className="text-xs font-normal">FCFA</span></p>
       </div>
 
       {/* Type & Statut */}
@@ -143,7 +143,7 @@ function LargeProductCard({ product, baseUrl }: { product: Product; baseUrl: str
       {/* Image large */}
       <div className="md:w-2/5 aspect-[16/10] md:aspect-auto relative bg-gray-50/50 border-b md:border-b-0 md:border-r border-gray-100/50 overflow-hidden z-10">
         {product.images?.[0] ? (
-          <Image src={product.images[0]} alt={product.name || "Image du produit"} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+          <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={product.images[0]} alt={product.name || "Image du produit"} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-50">📦</div>
         )}

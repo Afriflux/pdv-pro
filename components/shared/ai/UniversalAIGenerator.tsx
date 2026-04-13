@@ -157,25 +157,25 @@ export function UniversalAIGenerator({ mode, category: defaultCategory, onGenera
   if (isSingle && singleGenerated) {
     return (
       <div className="bg-white border-2 border-[#0F7A60]/20 rounded-2xl overflow-hidden shadow-sm mb-8 relative p-6 space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="absolute top-0 right-0 bg-[#0F7A60] pt-1 pb-1.5 px-3 rounded-bl-xl text-white text-[10px] font-black tracking-widest uppercase flex items-center gap-1.5 shadow-sm">
+        <div className="absolute top-0 right-0 bg-[#0F7A60] pt-1 pb-1.5 px-3 rounded-bl-xl text-white text-xs font-black tracking-widest uppercase flex items-center gap-1.5 shadow-sm">
           <Sparkles size={12} className="text-[#C9A84C]" /> {labels?.badge}
         </div>
         <div className="bg-[#FAFAF7] border border-gray-200 rounded-xl p-5 space-y-4">
           <div className="flex items-center gap-2 text-sm font-black text-[#0F7A60] mb-2">
             <Check size={16} /> Fiche générée avec succès
           </div>
-          <div><p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Titre généré</p><p className="font-bold text-[#1A1A1A]">{singleGenerated.title}</p></div>
+          <div><p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Titre généré</p><p className="font-bold text-[#1A1A1A]">{singleGenerated.title}</p></div>
           <div>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Description optimisée</p>
+            <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Description optimisée</p>
             <div className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed max-h-[150px] overflow-y-auto custom-scrollbar pr-2">{singleGenerated.description}</div>
           </div>
           <div className="grid grid-cols-1 gap-4 pt-2">
             <div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Angles Marketing clés</p>
+              <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Angles Marketing clés</p>
               <ul className="text-sm text-gray-600 list-disc pl-4">{singleGenerated.marketingAngles?.map((angle: string, i: number) => <li key={i}>{angle}</li>)}</ul>
             </div>
             <div>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">SEO (Meta Title & Meta Description)</p>
+              <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">SEO (Meta Title & Meta Description)</p>
               <div className="bg-white p-3 rounded-lg border border-gray-100 mt-1">
                 <p className="text-blue-600 text-sm font-semibold truncate hover:underline cursor-pointer">{singleGenerated.seoTitle}</p>
                 <p className="text-green-700 text-xs truncate">yayyam.com/p/votre-produit</p>
@@ -200,7 +200,7 @@ export function UniversalAIGenerator({ mode, category: defaultCategory, onGenera
   if (!isSingle && bulkGenerated.length > 0) {
     return (
       <div className="bg-white border-2 border-[#0F7A60]/20 rounded-2xl overflow-hidden shadow-sm relative p-6 mb-6 space-y-4 animate-in fade-in duration-500">
-        <div className="absolute top-0 right-0 bg-[#0F7A60] pt-1 pb-1.5 px-3 rounded-bl-xl text-white text-[10px] font-black tracking-widest uppercase flex items-center gap-1.5 shadow-sm">
+        <div className="absolute top-0 right-0 bg-[#0F7A60] pt-1 pb-1.5 px-3 rounded-bl-xl text-white text-xs font-black tracking-widest uppercase flex items-center gap-1.5 shadow-sm">
           <Sparkles size={12} className="text-[#C9A84C]" /> {labels?.badge}
         </div>
         <div className="flex items-center justify-between mb-2">
@@ -257,7 +257,7 @@ export function UniversalAIGenerator({ mode, category: defaultCategory, onGenera
   // Formulaire d'entrée
   return (
     <div className={`bg-white border-2 border-[#0F7A60]/20 rounded-2xl overflow-hidden shadow-sm relative ${isSingle ? 'mb-8' : 'mb-6'}`}>
-      <div className="absolute top-0 right-0 bg-[#0F7A60] pt-1 pb-1.5 px-3 rounded-bl-xl text-white text-[10px] font-black tracking-widest uppercase flex items-center gap-1.5 shadow-sm">
+      <div className="absolute top-0 right-0 bg-[#0F7A60] pt-1 pb-1.5 px-3 rounded-bl-xl text-white text-xs font-black tracking-widest uppercase flex items-center gap-1.5 shadow-sm">
         <Sparkles size={12} className="text-[#C9A84C]" /> {labels?.badge}
       </div>
       <div className="p-6">

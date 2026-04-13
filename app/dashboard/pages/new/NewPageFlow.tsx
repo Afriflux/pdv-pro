@@ -363,7 +363,7 @@ export function NewPageFlow({ storeId, products, initialTemplateData, globalTemp
 
             <div className="flex-1 z-10 text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                <span className="bg-emerald-500/20 text-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded tracking-wide uppercase">Nouveau</span>
+                <span className="bg-emerald-500/20 text-emerald-100 text-xs font-bold px-2 py-0.5 rounded tracking-wide uppercase">Nouveau</span>
                 <h2 className="text-xl sm:text-2xl font-bold font-display">Cloner une page existante</h2>
               </div>
               <p className="text-emerald-50 text-sm md:text-base leading-relaxed mb-6 md:mb-0 max-w-xl">
@@ -411,8 +411,8 @@ export function NewPageFlow({ storeId, products, initialTemplateData, globalTemp
               <span className="text-sm font-bold text-gray-400 uppercase tracking-widest px-4 flex items-center gap-2">
                 <LayoutTemplate className="w-4 h-4" /> Ou choisir un modèle
               </span>
-              <span className="text-[10px] font-bold text-[#0F7A60] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 flex items-center gap-1.5 shadow-sm">
-                 <span className="bg-[#0F7A60] text-white w-4 h-4 rounded-full flex items-center justify-center text-[9px]">{globalTemplates.length}</span> Modèles design • <span className="text-lg leading-none">∞</span> Pages IA possibles
+              <span className="text-xs font-bold text-[#0F7A60] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 flex items-center gap-1.5 shadow-sm">
+                 <span className="bg-[#0F7A60] text-white w-4 h-4 rounded-full flex items-center justify-center text-xs">{globalTemplates.length}</span> Modèles design • <span className="text-lg leading-none">∞</span> Pages IA possibles
               </span>
             </div>
             <div className="h-px bg-gray-200 flex-1"></div>
@@ -450,7 +450,7 @@ export function NewPageFlow({ storeId, products, initialTemplateData, globalTemp
                         }`}
                       >
                         <span className="truncate pr-2">{g.label}</span>
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${
+                        <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${
                           selectedGroup === g.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
                         }`}>
                           {count}
@@ -835,7 +835,7 @@ export function NewPageFlow({ storeId, products, initialTemplateData, globalTemp
                       <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${t.colors} shadow-inner`}></div>
                       <div className="text-left">
                         <p className={`text-sm font-bold leading-tight ${pageTheme === t.id ? 'text-gold-dark' : 'text-ink'}`}>{t.name}</p>
-                        <p className="text-[10px] text-gray-500 font-medium">{t.text}</p>
+                        <p className="text-xs text-gray-500 font-medium">{t.text}</p>
                       </div>
                     </button>
                   ))}
@@ -849,7 +849,7 @@ export function NewPageFlow({ storeId, products, initialTemplateData, globalTemp
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-ink flex items-center gap-2">
-                      A/B Testing Magique <span className="bg-gold/20 text-gold-dark text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded font-bold">Pro</span>
+                      A/B Testing Magique <span className="bg-gold/20 text-gold-dark text-xs uppercase tracking-widest px-1.5 py-0.5 rounded font-bold">Pro</span>
                     </h3>
                     <p className="text-xs text-gray-500 mt-1 mb-3 pr-2">Générez 2 variantes de cette page et laissez notre algorithme trouver la version qui convertit le mieux.</p>
                     <button type="button" className="text-xs font-bold text-white bg-ink hover:bg-black px-4 py-2 rounded-lg transition-colors shadow-sm">

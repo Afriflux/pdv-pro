@@ -97,7 +97,7 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
       <div className="relative z-10">
         {(errorMsg || formError) && (
           <div className="mb-8 overflow-hidden animate-[fade-in_0.3s_ease-out]">
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-2xl px-4 py-3 flex items-start gap-3 break-words">
+            <div role="alert" aria-live="polite" className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-2xl px-4 py-3 flex items-start gap-3 break-words">
               <AlertTriangle className="shrink-0 mt-0.5 w-4 h-4" />
               <span className="font-medium">{formError || errorMsg}</span>
             </div>
@@ -122,13 +122,13 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
 
         <div className="flex items-center gap-4 mb-6 opacity-60">
           <div className="h-px bg-gradient-to-r from-transparent to-white/20 flex-1"></div>
-          <span className="text-[10px] text-white/50 uppercase tracking-[0.2em] font-black">ou création manuelle</span>
+          <span className="text-xs text-white/50 uppercase tracking-[0.2em] font-black">ou création manuelle</span>
           <div className="h-px bg-gradient-to-l from-transparent to-white/20 flex-1"></div>
         </div>
 
         {/* ── Sélecteur de rôle Magique ──────────────── */}
         <div className="mb-8 relative">
-          <p className="text-[11px] font-black text-emerald-400/70 uppercase tracking-widest mb-3 text-center">Profil d'accès</p>
+          <p className="text-xs font-black text-emerald-400/70 uppercase tracking-widest mb-3 text-center">Profil d'accès</p>
           <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/40 rounded-[1.5rem] border border-white/5 relative z-10 w-full mb-2">
             
             <button
@@ -144,7 +144,7 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
                 />
               )}
               <ShoppingBag className="w-6 h-6 relative z-10" />
-              <span className="text-[10px] font-black uppercase tracking-widest relative z-10">Acheteur</span>
+              <span className="text-xs font-black uppercase tracking-widest relative z-10">Acheteur</span>
             </button>
 
             <button
@@ -160,7 +160,7 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
                 />
               )}
               <Briefcase className="w-6 h-6 relative z-10" />
-              <span className="text-[10px] font-black uppercase tracking-widest relative z-10">Vendeur</span>
+              <span className="text-xs font-black uppercase tracking-widest relative z-10">Vendeur</span>
             </button>
             
             <button
@@ -176,7 +176,7 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
                 />
               )}
               <Users className="w-6 h-6 relative z-10" />
-              <span className="text-[10px] font-black uppercase tracking-widest relative z-10">Affilié</span>
+              <span className="text-xs font-black uppercase tracking-widest relative z-10">Affilié</span>
             </button>
             
             <button
@@ -192,11 +192,11 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
                 />
               )}
               <Headset className="w-6 h-6 relative z-10" />
-              <span className="text-[10px] font-black uppercase tracking-widest relative z-10">Closer</span>
+              <span className="text-xs font-black uppercase tracking-widest relative z-10">Closer</span>
             </button>
           </div>
           {/* Description du rôle sélectionné */}
-          <p className="text-center text-[11px] text-white/40 font-medium mt-1 transition-all">
+          <p className="text-center text-xs text-white/40 font-medium mt-1 transition-all">
             {ROLE_DESCRIPTIONS[role]}
           </p>
         </div>
@@ -208,12 +208,6 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
             setFormError(null)
             const formElement = e.currentTarget
             
-            const pwd = (formElement.elements.namedItem('password') as HTMLInputElement).value
-            const confirmPwd = (formElement.elements.namedItem('confirm_password') as HTMLInputElement).value
-            if (pwd !== confirmPwd) {
-              setFormError('Les mots de passe ne correspondent pas.')
-              return
-            }
             if (!phone) {
               setFormError('Veuillez entrer votre numéro WhatsApp.')
               return
@@ -263,7 +257,7 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
           {/* inputs are now explicitly collected via FormData */}
 
           <div className="group/input">
-            <label htmlFor="name" className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
+            <label htmlFor="name" className="block text-xs font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
               {role === 'vendeur' ? 'Boutique / Marque' : 'Nom Complet'}
             </label>
             <input
@@ -275,16 +269,18 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
           </div>
 
           <div className="group/input">
-            <label htmlFor="email" className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">Email</label>
+            <label htmlFor="email" className="flex items-center gap-2 text-xs font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
+              Email <span className="text-xs text-white/30 lowercase tracking-normal font-medium">(Optionnel)</span>
+            </label>
             <input
-              id="email" name="email" type="email" required
+              id="email" name="email" type="email"
               placeholder="contact@exemple.com"
               className="w-full px-4 py-4 rounded-xl bg-black/40 border border-white/5 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/50 transition-all text-sm shadow-inner hover:border-white/10 hover:bg-black/50"
             />
           </div>
 
           <div className="group/input">
-            <label className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
+            <label className="block text-xs font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
               Numéro WhatsApp
             </label>
             <PhoneInput value={phone} onChange={setPhone} placeholder="77 000 00 00" required theme="dark" />
@@ -296,8 +292,8 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
               className="overflow-hidden animate-[fade-slice-down_0.4s_ease-out_both]"
             >
                 <div className="group/code pt-2">
-                  <label htmlFor="ambassadorCodeInput" className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/code:text-emerald-400 transition-colors">
-                    Code Référentiel <span className="text-[10px] text-white/30 lowercase tracking-normal font-medium ml-1">(Optionnel)</span>
+                  <label htmlFor="ambassadorCodeInput" className="block text-xs font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/code:text-emerald-400 transition-colors">
+                    Code Référentiel <span className="text-xs text-white/30 lowercase tracking-normal font-medium ml-1">(Optionnel)</span>
                   </label>
                   <div className="relative">
                     <input
@@ -338,31 +334,17 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            <div className="group/input">
-              <label htmlFor="password" className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">Mot de passe</label>
-              <PasswordInput
-                id="password"
-                name="password"
-                placeholder="••••••••"
-                minLength={8}
-                required
-                autoComplete="new-password"
-                className="w-full px-4 py-4 rounded-xl bg-black/40 border border-white/5 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/50 transition-all text-sm shadow-inner hover:border-white/10 hover:bg-black/50"
-              />
-            </div>
-            <div className="group/input">
-              <label htmlFor="confirm_password" className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">Confirmation</label>
-              <PasswordInput
-                id="confirm_password"
-                name="confirm_password"
-                placeholder="••••••••"
-                minLength={8}
-                required
-                autoComplete="new-password"
-                className="w-full px-4 py-4 rounded-xl bg-black/40 border border-white/5 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/50 transition-all text-sm shadow-inner hover:border-white/10 hover:bg-black/50"
-              />
-            </div>
+          <div className="group/input pt-2">
+            <label htmlFor="password" className="block text-xs font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">Mot de passe</label>
+            <PasswordInput
+              id="password"
+              name="password"
+              placeholder="8 caractères minimum"
+              minLength={8}
+              required
+              autoComplete="new-password"
+              className="w-full px-4 py-4 rounded-xl bg-black/40 border border-white/5 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/50 transition-all text-sm shadow-inner hover:border-white/10 hover:bg-black/50"
+            />
           </div>
 
           <button
@@ -381,9 +363,9 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
               </>
             ) : (
               <>
-                {role === 'vendeur' ? 'Déployer Cloud Store' : 
+                {role === 'vendeur' ? 'Créer mon compte' : 
                  role === 'affilie' ? 'Rejoindre l\'affiliation' :
-                 role === 'closer' ? 'Devenir Closer' : 'Accéder à mon espace'}
+                 role === 'closer' ? 'Devenir Closer' : 'Créer mon compte'}
                 {canSubmit && <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />}
               </>
             )}

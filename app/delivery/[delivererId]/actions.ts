@@ -21,7 +21,7 @@ export async function getDelivererDataAction(delivererId: string) {
     }
 
     // Get orders assigned to this deliverer
-    const orders = await prisma.order.findMany({
+    const orders = await prisma.order.findMany({ take: 50, 
       where: {
         deliverer_id: delivererId,
         status: { in: ['preparing', 'shipped', 'delivered'] }
@@ -41,7 +41,7 @@ export async function getDelivererDataAction(delivererId: string) {
     })
 
     // Assigning Delivery Zones
-    const storeZones = await prisma.deliveryZone.findMany({
+    const storeZones = await prisma.deliveryZone.findMany({ take: 50, 
       where: { store_id: deliverer.store_id },
       select: { id: true, name: true }
     })

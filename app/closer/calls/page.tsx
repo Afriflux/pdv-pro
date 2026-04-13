@@ -13,7 +13,7 @@ export default async function CloserCallsPage() {
   if (!user) redirect('/login')
 
   // Récupération des leads "En négociation" (contacted ou qualified)
-  const activeLeads = await prisma.lead.findMany({
+  const activeLeads = await prisma.lead.findMany({ take: 50, 
     where: {
       closer_id: user.id,
       status: { in: ['contacted', 'qualified'] },

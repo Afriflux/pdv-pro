@@ -152,7 +152,7 @@ export async function getStoreCustomersAction() {
     if (!store_id) return { error: 'Non autorisé', customers: [] }
 
     // On récupère les commandes pour extraire une liste unique de clients
-    const orders = await prisma.order.findMany({
+    const orders = await prisma.order.findMany({ take: 50, 
       where: { store_id },
       select: { buyer_name: true, buyer_phone: true },
       orderBy: { created_at: 'desc' }

@@ -115,7 +115,7 @@ export function GettingStartedChecklist({
   const strokeDashoffset = circumference - (animatedProgress / 100) * circumference
 
   return (
-    <div className="bg-white/70 backdrop-blur-3xl border border-white max-w-7xl mx-auto rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-700 relative">
+    <div className="bg-white/70 backdrop-blur-3xl border border-white max-w-7xl mx-auto rounded-[24px] lg:rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-6 lg:mb-8 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-700 relative">
       <div 
         className="absolute top-6 right-6 cursor-pointer text-gray-400 hover:text-ink hover:bg-gray-100 p-2 rounded-full transition-all" 
         onClick={hideGuide} 
@@ -124,7 +124,7 @@ export function GettingStartedChecklist({
         <X size={20} />
       </div>
 
-      <div className="p-8 lg:p-10 flex flex-col lg:flex-row gap-10">
+      <div className="p-5 lg:p-10 flex flex-col lg:flex-row gap-6 lg:gap-10">
         
         {/* Left Side: Progress & Intro */}
         <div className="flex flex-col items-center lg:items-start lg:w-1/3 shrink-0">
@@ -163,14 +163,14 @@ export function GettingStartedChecklist({
             </div>
           </div>
           
-          <h2 className="text-2xl lg:text-3xl font-black text-ink mb-3 text-center lg:text-left tracking-tight">Checklist de<br />Succès 🚀</h2>
+          <h2 className="text-xl lg:text-3xl font-black text-ink mb-2 lg:mb-3 text-center lg:text-left tracking-tight">Checklist de<br />Succès 🚀</h2>
           <p className="text-gray-500 text-sm font-medium text-center lg:text-left leading-relaxed">
             Complétez ces étapes pour lancer votre business et encaisser vos premiers paiements sur Yayyam.
           </p>
         </div>
 
         {/* Right Side: Steps Grid */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-5">
           {steps.map((step) => (
             <div 
               key={step.id} 

@@ -12,7 +12,7 @@ export default async function CloserWalletPage() {
   if (!user) redirect('/login')
 
   // Récupération des leads closés et de leurs commissions
-  const closedLeads = await prisma.lead.findMany({
+  const closedLeads = await prisma.lead.findMany({ take: 50, 
     where: {
       closer_id: user.id,
       status: 'won',
@@ -45,7 +45,7 @@ export default async function CloserWalletPage() {
   }, 0)
 
   // Calcule dynamiquement le solde en déduisant les retraits Closers (CloserWithdrawal)
-  const withdrawals = await prisma.closerWithdrawal.findMany({
+  const withdrawals = await prisma.closerWithdrawal.findMany({ take: 50, 
     where: { closer_id: user.id }
   })
   

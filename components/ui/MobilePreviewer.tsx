@@ -92,7 +92,7 @@ export function MobilePreviewer({ name, price, description, images, template, ty
               <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
                  {images.length > 0 && (
                    <div className="relative w-full h-32 mb-3">
-                     <Image src={images[0]} alt="Product" fill className="object-cover rounded-xl" unoptimized />
+                     <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={images[0]} alt="Product" fill className="object-cover rounded-xl" unoptimized />
                    </div>
                  )}
                  <h2 className="font-bold text-gray-900 leading-tight">{name || 'Nom du produit'}</h2>
@@ -107,7 +107,7 @@ export function MobilePreviewer({ name, price, description, images, template, ty
                  </button>
               </div>
 
-              <div className="text-center text-[10px] text-gray-400 font-medium">Propulsé par Yayyam</div>
+              <div className="text-center text-xs text-gray-400 font-medium">Propulsé par Yayyam</div>
             </div>
           </div>
         )

@@ -59,7 +59,7 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
           {!(product.images && product.images.length > 0) && (
             <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-dust">
               <span className="text-5xl">📦</span>
-              <span className="text-xs">Aucune image</span>
+              <span className="text-sm">Aucune image</span>
             </div>
           )}
         </Link>
@@ -101,7 +101,7 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
           onClick={handleToggle}
           disabled={pending}
           title={product.active ? 'Cliquer pour désactiver' : 'Cliquer pour activer'}
-          className={`absolute top-2 right-2 z-20 text-xs font-semibold px-2 py-1 rounded-full shadow-sm transition-all ${
+          className={`absolute top-2 right-2 z-20 text-xs font-semibold px-3 py-2 rounded-full shadow-sm min-h-[44px] min-w-[44px] transition-all flex items-center justify-center ${
             pending
               ? 'opacity-50 cursor-wait bg-gray-200 text-gray-400'
               : product.active
@@ -123,18 +123,18 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
         </Link>
 
         {product.category && (
-          <p className="text-[11px] text-dust mb-2 truncate">{product.category}</p>
+          <p className="text-sm text-dust mb-2 truncate">{product.category}</p>
         )}
 
         <div className="mt-auto relative z-10">
           <p className="font-display text-[#0F7A60] font-black text-xl leading-none flex items-baseline gap-1 mt-3">
             {product.price.toLocaleString('fr-FR')}
-            <span className="text-[10px] text-gray-400 font-sans font-bold uppercase">FCFA</span>
+            <span className="text-xs text-gray-400 font-sans font-bold uppercase">FCFA</span>
           </p>
           
           <div className="flex items-center gap-1.5 mt-2 mb-3">
-            <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400 bg-white border border-gray-100 px-2 py-0.5 rounded-full shadow-sm">
-              <Eye size={10} />
+            <div className="flex items-center gap-1 text-sm font-bold text-gray-400 bg-white border border-gray-100 px-2 py-0.5 rounded-full shadow-sm">
+              <Eye size={12} />
               <span>{(product.views || 0).toLocaleString()} vues</span>
             </div>
           </div>
@@ -144,14 +144,14 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
           {/* LIEN + ACTIONS */}
           <div className="flex items-center gap-1.5">
             <div className="flex-1 bg-cream rounded-lg px-2 py-1.5 min-w-0">
-              <p className="text-[10px] text-emerald font-mono truncate">
+              <p className="text-sm text-emerald font-mono truncate">
                 /pay/{product.id.slice(0, 8)}...
               </p>
             </div>
             <CopyButton url={`${baseUrl}/pay/${product.id}`} compact />
             <Link
               href={`/pay/${product.id}`}
-              className="text-[11px] bg-emerald text-white px-2.5 py-1.5 rounded-lg hover:bg-emerald-rich transition font-medium flex-shrink-0"
+              className="text-xs bg-emerald text-white px-3 py-3.5 min-h-[44px] rounded-lg hover:bg-emerald-rich transition font-medium flex-shrink-0 flex items-center justify-center"
             >
               Voir
             </Link>
@@ -160,20 +160,20 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
           <div className="flex gap-2 mt-2 relative z-10">
             <Link
               href={`/dashboard/products/${product.id}/edit`}
-              className="flex-1 flex items-center justify-center gap-1.5 text-[11px] font-bold text-gray-600 bg-white border border-gray-200 rounded-xl py-2 hover:text-[#0F7A60] hover:border-[#0F7A60]/30 hover:bg-[#0F7A60]/5 transition-all duration-300 shadow-sm"
+              className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-gray-600 bg-white border border-gray-200 rounded-xl py-3.5 min-h-[44px] hover:text-[#0F7A60] hover:border-[#0F7A60]/30 hover:bg-[#0F7A60]/5 transition-all duration-300 shadow-sm"
             >
               ✏️ Modifier
             </Link>
             <button
               onClick={handleDuplicate}
               disabled={pending}
-              className="flex-1 flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate border border-line rounded-lg py-1.5 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium text-slate border border-line rounded-lg py-3.5 min-h-[44px] hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition disabled:opacity-50"
             >
               {pending ? '...' : '👯 Dupliquer'}
             </button>
             <button
               onClick={() => setShowQR(true)}
-              className="flex-shrink-0 flex items-center justify-center w-9 h-9 text-slate border border-line rounded-lg hover:text-emerald hover:border-emerald/30 hover:bg-emerald/5 transition"
+              className="flex-shrink-0 flex items-center justify-center w-11 h-11 text-slate border border-line rounded-lg hover:text-emerald hover:border-emerald/30 hover:bg-emerald/5 transition"
               title="Afficher le QR Code"
             >
               <QrCode size={16} />

@@ -133,7 +133,7 @@ export default function KYCClient({
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 mb-4">
-              <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-black tracking-widest uppercase">
+              <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-black tracking-widest uppercase">
                 Gouvernance & Sécurité
               </span>
             </div>
@@ -168,7 +168,7 @@ export default function KYCClient({
               <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:-rotate-6">
                 <ShieldAlert className="w-24 h-24 text-[#C9A84C]" />
               </div>
-              <p className="text-[11px] font-black uppercase text-[#C9A84C]/80 tracking-widest mb-1 relative z-10">À Traiter</p>
+              <p className="text-xs font-black uppercase text-[#C9A84C]/80 tracking-widest mb-1 relative z-10">À Traiter</p>
               <div className="flex items-baseline gap-2 relative z-10">
                  <h3 className="text-4xl font-black text-[#C9A84C] tracking-tight">{totalSubmitted}</h3>
               </div>
@@ -178,7 +178,7 @@ export default function KYCClient({
               <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:rotate-6">
                 <ShieldCheck className="w-24 h-24 text-[#0F7A60]" />
               </div>
-              <p className="text-[11px] font-black uppercase text-[#0F7A60]/80 tracking-widest mb-1 relative z-10">Vérifiés</p>
+              <p className="text-xs font-black uppercase text-[#0F7A60]/80 tracking-widest mb-1 relative z-10">Vérifiés</p>
               <div className="flex items-baseline gap-2 relative z-10">
                  <h3 className="text-4xl font-black text-[#0F7A60] tracking-tight">{totalVerified}</h3>
               </div>
@@ -188,7 +188,7 @@ export default function KYCClient({
               <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:rotate-6">
                 <ShieldX className="w-24 h-24 text-red-500" />
               </div>
-              <p className="text-[11px] font-black uppercase text-red-500/80 tracking-widest mb-1 relative z-10">Rejetés</p>
+              <p className="text-xs font-black uppercase text-red-500/80 tracking-widest mb-1 relative z-10">Rejetés</p>
               <div className="flex items-baseline gap-2 relative z-10">
                  <h3 className="text-4xl font-black text-red-500 tracking-tight">{totalRejected}</h3>
               </div>
@@ -198,7 +198,7 @@ export default function KYCClient({
               <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:-rotate-6">
                 <UserCheck className="w-24 h-24" />
               </div>
-              <p className="text-[11px] font-black uppercase text-gray-400 tracking-widest mb-1 relative z-10">Vendeurs</p>
+              <p className="text-xs font-black uppercase text-gray-400 tracking-widest mb-1 relative z-10">Vendeurs</p>
               <div className="flex items-baseline gap-2 relative z-10">
                  <h3 className="text-4xl font-black text-gray-900 tracking-tight">{totalProfiles}</h3>
               </div>
@@ -210,7 +210,7 @@ export default function KYCClient({
           
           {/* ── COLONNE GAUCHE : ONGLETS LATÉRAUX ── */}
           <aside className="w-full lg:w-[280px] flex-shrink-0 sticky top-[80px] z-10">
-            <h2 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Statuts KYC</h2>
+            <h2 className="text-xs font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Statuts KYC</h2>
             
             <nav className="bg-white/80 backdrop-blur-2xl border border-white/50 rounded-3xl p-3 flex flex-col gap-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               <Link 
@@ -221,7 +221,7 @@ export default function KYCClient({
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 shadow-sm ${currentStatus === 'submitted' ? 'bg-white' : 'bg-amber-400'}`} />
                   <span>En attente</span>
                 </div>
-                <span className={`text-[10px] font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${currentStatus === 'submitted' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-600'}`}>
+                <span className={`text-xs font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${currentStatus === 'submitted' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-600'}`}>
                   {totalSubmitted}
                 </span>
               </Link>
@@ -234,7 +234,7 @@ export default function KYCClient({
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 shadow-sm ${currentStatus === 'verified' ? 'bg-white' : 'bg-[#0F7A60]'}`} />
                   <span>Vérifiés</span>
                 </div>
-                <span className={`text-[10px] font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${currentStatus === 'verified' ? 'bg-white/20 text-white' : 'bg-teal-50 text-teal-600'}`}>
+                <span className={`text-xs font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${currentStatus === 'verified' ? 'bg-white/20 text-white' : 'bg-teal-50 text-teal-600'}`}>
                   {totalVerified}
                 </span>
               </Link>
@@ -247,7 +247,7 @@ export default function KYCClient({
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 shadow-sm ${currentStatus === 'rejected' ? 'bg-white' : 'bg-red-500'}`} />
                   <span>Rejetés</span>
                 </div>
-                <span className={`text-[10px] font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${currentStatus === 'rejected' ? 'bg-white/20 text-white' : 'bg-red-50 text-red-600'}`}>
+                <span className={`text-xs font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${currentStatus === 'rejected' ? 'bg-white/20 text-white' : 'bg-red-50 text-red-600'}`}>
                   {totalRejected}
                 </span>
               </Link>
@@ -309,11 +309,11 @@ export default function KYCClient({
                   <table className="w-full text-left">
                     <thead className="bg-gray-50/50 border-b border-gray-100">
                       <tr>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Vendeur</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Document</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date soumission</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hidden sm:table-cell">Identité fournie</th>
-                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Action</th>
+                        <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Vendeur</th>
+                        <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Document</th>
+                        <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Date soumission</th>
+                        <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hidden sm:table-cell">Identité fournie</th>
+                        <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400 text-right">Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100/50">
@@ -381,14 +381,14 @@ export default function KYCClient({
                              <p className="text-xs font-bold text-gray-500 mt-1 flex items-center gap-1"><UserCheck size={12}/> {fullName}</p>
                            </div>
                         </div>
-                        <span className="text-[10px] font-black text-gray-400 border border-gray-200 px-2 py-1 rounded-lg bg-white/50">{submittedAt}</span>
+                        <span className="text-xs font-black text-gray-400 border border-gray-200 px-2 py-1 rounded-lg bg-white/50">{submittedAt}</span>
                       </div>
 
                       <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                            <span className="text-xl">{docIcon}</span>
                            <div>
-                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Document Reçu</p>
+                             <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Document Reçu</p>
                              <p className="text-sm font-bold text-gray-700 capitalize">{docType}</p>
                            </div>
                         </div>
@@ -427,7 +427,7 @@ export default function KYCClient({
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl border border-indigo-100 shadow-sm relative">
                   <FileText size={24} />
-                  <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-sm border border-white">
+                  <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs font-black px-1.5 py-0.5 rounded-full shadow-sm border border-white">
                     {Math.floor(Math.random() * 20 + 80)}% Trust
                   </div>
                 </div>
@@ -436,7 +436,7 @@ export default function KYCClient({
                   <p className="text-sm font-bold text-gray-500 mt-0.5 flex items-center gap-1.5">
                     {selectedStore.name} 
                     <span className="w-1 h-1 bg-gray-300 rounded-full"></span> 
-                    <span className="text-[#0F7A60] bg-[#0F7A60]/10 px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider border border-[#0F7A60]/20">Score de Fiabilité A</span>
+                    <span className="text-[#0F7A60] bg-[#0F7A60]/10 px-2 py-0.5 rounded-md text-xs uppercase tracking-wider border border-[#0F7A60]/20">Score de Fiabilité A</span>
                   </p>
                 </div>
               </div>
@@ -460,7 +460,7 @@ export default function KYCClient({
                  <div className="p-6 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        <div className="space-y-2">
-                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Recto (Image HD)</p>
+                         <p className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2">Recto (Image HD)</p>
                          {selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url ? (
                            <button onClick={() => { setLightboxImage(selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url!); setLightboxScale(1); }} className="block relative aspect-[1.58] bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
                              {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -473,7 +473,7 @@ export default function KYCClient({
                        </div>
 
                        <div className="space-y-2">
-                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Verso (Optionnel)</p>
+                         <p className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2">Verso (Optionnel)</p>
                          {selectedStore.kyc_documents?.id_card_back_url ? (
                            <button onClick={() => { setLightboxImage(selectedStore.kyc_documents!.id_card_back_url!); setLightboxScale(1); }} className="block relative aspect-[1.58] bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
                              {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -486,7 +486,7 @@ export default function KYCClient({
                        </div>
 
                        <div className="space-y-2 md:col-span-2">
-                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Justificatif de domicile (Moins de 3 mois)</p>
+                         <p className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2">Justificatif de domicile (Moins de 3 mois)</p>
                          {selectedStore.kyc_documents?.domicile_url ? (
                            <button onClick={() => { setLightboxImage(selectedStore.kyc_documents!.domicile_url!); setLightboxScale(1); }} className="block relative h-48 bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
                              {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -510,7 +510,7 @@ export default function KYCClient({
                  {/* Ligne 1 : Date expiration & Soft Reject */}
                  <div className="flex flex-col sm:flex-row gap-4">
                    <div className="flex-1 bg-gray-50 rounded-2xl p-4 border border-gray-200/60 shadow-inner">
-                     <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5"><Calendar size={14} className="text-[#0F7A60]"/> Date d'expiration KYC</label>
+                     <label className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 flex items-center gap-1.5"><Calendar size={14} className="text-[#0F7A60]"/> Date d'expiration KYC</label>
                      <input 
                        type="date"
                        title="Date d'expiration"
@@ -520,7 +520,7 @@ export default function KYCClient({
                      />
                    </div>
                    <div className="flex-1 bg-amber-50 rounded-2xl p-4 border border-amber-200/60 shadow-inner flex flex-col justify-center">
-                     <label className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-2 flex items-center gap-1.5"><MessageCircle size={14}/> Demander correction</label>
+                     <label className="text-xs font-black text-amber-600 uppercase tracking-widest mb-2 flex items-center gap-1.5"><MessageCircle size={14}/> Demander correction</label>
                      <button 
                        onClick={() => handleAction('correction')}
                        className="w-full py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-xl text-xs font-bold transition-colors border border-amber-300/50 shadow-sm"
@@ -532,7 +532,7 @@ export default function KYCClient({
 
                  {/* Ligne 2 : Rejet total & Validation */}
                  <div className="bg-red-50/50 rounded-2xl p-4 border border-red-100/50">
-                   <label className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-2 flex">Motif de rejet strict (Optionnel pour Validation)</label>
+                   <label className="text-xs font-black text-red-500 uppercase tracking-widest mb-2 flex">Motif de rejet strict (Optionnel pour Validation)</label>
                    <textarea
                      className="w-full bg-white border border-red-200 shadow-inner rounded-xl p-3 text-sm font-medium text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none resize-none transition-all placeholder:text-gray-400"
                      placeholder="Ex: Faux document avéré, usurpation..."

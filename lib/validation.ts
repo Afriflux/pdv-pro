@@ -124,7 +124,7 @@ export const checkoutSchema: Validator<{
     payment_method: {
       type: 'string',
       required: true,
-      enum: ['wave', 'orange_money', 'card_cinetpay', 'card_paytech', 'bictorys', 'kkiapay', 'cod'],
+      enum: ['wave', 'bictorys', 'paytech', 'cinetpay', 'moneroo', 'cod', 'pending'],
       label: 'Méthode de paiement'
     },
   }
@@ -151,7 +151,7 @@ export const paymentInitiateSchema: Validator<{
     method: {
       type: 'string',
       required: true,
-      enum: ['wave', 'orange_money', 'card_cinetpay', 'card_paytech', 'bictorys', 'kkiapay'],
+      enum: ['wave', 'bictorys', 'paytech', 'cinetpay', 'moneroo'],
       label: 'Méthode de paiement'
     },
   }

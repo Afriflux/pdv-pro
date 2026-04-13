@@ -210,7 +210,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
                       <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-[2rem] bg-white p-2 shadow-xl border border-gray-100 relative z-10 hover:shadow-2xl transition-all duration-500">
                         <div className="w-full h-full rounded-[1.5rem] sm:rounded-[1.5rem] overflow-hidden bg-gray-50 flex items-center justify-center relative border border-gray-100">
                           {avatarPreview ? (
-                            <Image src={avatarPreview} alt="Avatar" fill unoptimized className="object-cover transition-transform duration-700 group-hover/avatar:scale-105" />
+                            <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={avatarPreview} alt="Avatar" fill unoptimized className="object-cover transition-transform duration-700 group-hover/avatar:scale-105" />
                           ) : (
                             <span className="text-gray-300 font-bold flex flex-col items-center justify-center text-4xl">
                               {profile?.name?.[0] || 'U'}
@@ -219,7 +219,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
                           
                           <label htmlFor="avatar-upload" className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center transition-all duration-300 backdrop-blur-sm cursor-pointer scale-110 group-hover/avatar:scale-100">
                             <Camera size={28} className="text-white mb-2" strokeWidth={2} />
-                            <span className="text-white text-[11px] font-bold tracking-widest uppercase">Modifier</span>
+                            <span className="text-white text-xs font-bold tracking-widest uppercase">Modifier</span>
                             <input title="Avatar" id="avatar-upload" type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={handleFileChange} />
                           </label>
                         </div>
@@ -394,7 +394,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
                       {(addresses || []).map((address) => (
                         <div key={address.id} className="relative p-5 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
                           {address.is_default && (
-                            <span className="absolute top-4 right-4 text-[10px] uppercase font-black tracking-wider px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md">
+                            <span className="absolute top-4 right-4 text-xs uppercase font-black tracking-wider px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md">
                               Par défaut
                             </span>
                           )}

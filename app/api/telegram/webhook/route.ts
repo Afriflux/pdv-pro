@@ -37,6 +37,9 @@ interface TelegramMessage {
 interface TelegramUpdate {
   update_id: number
   message?: TelegramMessage
+  callback_query?: { id: string; data?: string; message: TelegramMessage; from: TelegramUser }
+  chat_member?: { invite_link?: { invite_link: string }; from?: TelegramUser; new_chat_member?: { user: TelegramUser } }
+  chat_join_request?: { invite_link?: { invite_link: string }; from?: TelegramUser; new_chat_member?: { user: TelegramUser } }
 }
 
 // --- Handler Principal ---
@@ -52,6 +55,39 @@ export async function POST(req: NextRequest) {
 
     // 2. Parsing de l'Update
     const update = (await req.json()) as TelegramUpdate
+
+    // Handle Callback Query (Inline Keyboard pour /lier)
+    if (update.callback_query) {
+      const cbData = update.callback_query.data
+      if (cbData?.startsWith('link_prod:')) {
+        const productId = cbData.split(':')[1]
+        const cbChatId = update.callback_query.message.chat.id.toString()
+        await supabaseAdmin.from('TelegramCommunity').update({ product_id: productId }).eq('chat_id', cbChatId)
+        const { data: product } = await supabaseAdmin.from('Product').select('name').eq('id', productId).single()
+        const botToken = process.env.TELEGRAM_BOT_TOKEN
+        await fetch(`https://api.telegram.org/bot${botToken}/answerCallbackQuery`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ callback_query_id: update.callback_query.id, text: 'Produit Lié ✅' })
+        })
+        await fetch(`https://api.telegram.org/bot${botToken}/editMessageText`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: cbChatId, message_id: update.callback_query.message.message_id, text: `✅ Ce groupe est désormais lié au produit : <b>${product?.name || 'Inconnu'}</b>`, parse_mode: 'HTML' })
+        })
+      }
+      return NextResponse.json({ ok: true })
+    }
+
+    // Handle Chat Member Updated (mapping invite_link → telegram_user_id)
+    const chatMemberUpdate = update.chat_member || update.chat_join_request
+    if (chatMemberUpdate?.invite_link?.invite_link) {
+      const inviteLinkUsed = chatMemberUpdate.invite_link.invite_link
+      const telegramUserId = String(chatMemberUpdate.from?.id || chatMemberUpdate.new_chat_member?.user?.id)
+      if (inviteLinkUsed && telegramUserId && telegramUserId !== 'undefined') {
+        await supabaseAdmin.from('TelegramCommunityAccess').update({ telegram_user_id: telegramUserId }).eq('invite_link', inviteLinkUsed)
+      }
+      return NextResponse.json({ ok: true })
+    }
+
     if (!update.message) {
       return NextResponse.json({ ok: true })
     }
@@ -88,6 +124,12 @@ export async function POST(req: NextRequest) {
         break
       case '/aide':
         await handleAide(chatId)
+        break
+      case '/admin':
+        await handleAdmin(chatId, from)
+        break
+      case '/lier':
+        await handleLier(chatId)
         break
       default:
         // Handler /connect CODE (fonctionne dans les groupes)
@@ -493,6 +535,64 @@ async function handleAide(chatId: string) {
  */
 async function handleUnknown(chatId: string) {
   await sendMessage(chatId, `🤔 Désolé, je n'ai pas compris.\n\nTapez /aide pour voir les commandes disponibles.`)
+}
+
+async function handleAdmin(chatId: string, from: TelegramUser) {
+  const userName = from.first_name || 'Admin'
+  const { error: upsertError } = await supabaseAdmin
+    .from('IntegrationKey')
+    .upsert({ key: 'TELEGRAM_ADMIN_CHAT_ID', value: chatId, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+
+  if (upsertError) {
+    await sendMessage(chatId, '❌ Erreur lors de la configuration. Réessayez.')
+    return
+  }
+
+  await supabaseAdmin
+    .from('PlatformConfig')
+    .upsert({ key: 'TELEGRAM_ADMIN_CHAT_ID', value: chatId, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+
+  await sendMessage(chatId,
+    `✅ <b>Configuration réussie !</b>\n\n` +
+    `Salut ${userName} 👋\n` +
+    `Ce chat (ID: <code>${chatId}</code>) recevra désormais :\n` +
+    `• 🛡️ Les soumissions KYC\n` +
+    `• 🚨 Les signalements clients\n` +
+    `• 📊 Les alertes admin importantes`
+  )
+}
+
+async function handleLier(chatId: string) {
+  const { data: community } = await supabaseAdmin
+    .from('TelegramCommunity')
+    .select('id, store_id')
+    .eq('chat_id', chatId)
+    .single()
+
+  if (!community) {
+    await sendMessage(chatId, "❌ Ce groupe n'est pas lié à une boutique Yayyam.")
+    return
+  }
+
+  const { data: products } = await supabaseAdmin
+    .from('Product')
+    .select('id, name')
+    .eq('store_id', community.store_id)
+    .eq('is_active', true)
+    .limit(10)
+
+  if (!products || products.length === 0) {
+    await sendMessage(chatId, "⚠️ Aucun produit disponible dans votre boutique.")
+    return
+  }
+
+  const inline_keyboard = products.map(p => ([{ text: `📦 ${p.name}`, callback_data: `link_prod:${p.id}` }]))
+  const botToken = process.env.TELEGRAM_BOT_TOKEN
+  await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: 'Sélectionnez le produit à lier à ce groupe :', reply_markup: { inline_keyboard } })
+  })
 }
 
 // --- Helpers ---

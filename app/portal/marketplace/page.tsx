@@ -14,12 +14,12 @@ export default async function MarketplacePage() {
   }
 
   // Fetch tous les partenariats existants de l'utilisateur (active, pending, rejected)
-  const userAffiliations = await prisma.affiliate.findMany({
+  const userAffiliations = await prisma.affiliate.findMany({ take: 50, 
     where: { user_id: user.id }
   })
 
   // Fetch tous les produits 'affiliate_active' de toutes les boutiques 'affiliate_active'
-  const activeProducts = await prisma.product.findMany({
+  const activeProducts = await prisma.product.findMany({ take: 50, 
     where: {
       OR: [
         { affiliate_active: true },
@@ -53,7 +53,7 @@ export default async function MarketplacePage() {
   })
 
   // Fetch toutes les pages de ventes 'affiliate_active'
-  const activePages = await prisma.salePage.findMany({
+  const activePages = await prisma.salePage.findMany({ take: 50, 
     where: {
       OR: [
         { affiliate_active: true },

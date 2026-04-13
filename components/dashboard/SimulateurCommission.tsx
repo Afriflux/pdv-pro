@@ -131,14 +131,14 @@ export default function SimulateurCommission() {
           <div className="grid grid-cols-3 gap-3">
             {/* Palier */}
             <div className="bg-[#FAFAF7] rounded-2xl p-4 space-y-1 text-center border border-gray-100">
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Palier</p>
+              <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Palier</p>
               <p className="font-black text-sm" style={{ color: tier.color }}>{tier.name}</p>
               <p className="text-2xl font-black" style={{ color: tier.color }}>{tier.rate}%</p>
             </div>
 
             {/* Commission */}
             <div className="bg-red-50 rounded-2xl p-4 space-y-1 text-center border border-red-100">
-              <p className="text-[10px] font-black text-red-400 uppercase tracking-widest">Commission</p>
+              <p className="text-xs font-black text-red-400 uppercase tracking-widest">Commission</p>
               <p className="font-black text-sm text-red-500">Yayyam</p>
               <p className="text-xl font-black text-red-600">
                 {fmt(commission)}
@@ -148,7 +148,7 @@ export default function SimulateurCommission() {
 
             {/* Net */}
             <div className="bg-[#0F7A60]/5 rounded-2xl p-4 space-y-1 text-center border border-[#0F7A60]/10">
-              <p className="text-[10px] font-black text-[#0F7A60] uppercase tracking-widest">Vous gardez</p>
+              <p className="text-xs font-black text-[#0F7A60] uppercase tracking-widest">Vous gardez</p>
               <p className="font-black text-sm text-[#0F7A60]">Net vendeur</p>
               <p className="text-xl font-black text-[#0F7A60]">
                 {fmt(net)}

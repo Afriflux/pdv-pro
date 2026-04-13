@@ -61,19 +61,19 @@ export default function CustomersClient({ customers, storeName }: CustomersClien
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
          <div className="bg-white/80 p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 flex flex-col justify-between hover:-translate-y-1 transition-transform relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
-            <p className="text-[11px] font-black tracking-widest uppercase text-emerald mb-1">Nombre de Clients</p>
+            <p className="text-xs font-black tracking-widest uppercase text-emerald mb-1">Nombre de Clients</p>
             <p className="font-display font-black text-3xl text-ink">{customers.length}</p>
          </div>
 
          <div className="bg-white/80 p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 flex flex-col justify-between hover:-translate-y-1 transition-transform relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
-            <p className="text-[11px] font-black tracking-widest uppercase text-gold mb-1">Clients VIP (2+ achats)</p>
+            <p className="text-xs font-black tracking-widest uppercase text-gold mb-1">Clients VIP (2+ achats)</p>
             <p className="font-display font-black text-3xl text-ink">{vips} <span className="text-sm text-gray-400 font-bold">/ {customers.length}</span></p>
          </div>
 
          <div className="bg-white/80 p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 flex flex-col justify-between hover:-translate-y-1 transition-transform relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
-            <p className="text-[11px] font-black tracking-widest uppercase text-blue-500 mb-1">Panier Moyen (LTV)</p>
+            <p className="text-xs font-black tracking-widest uppercase text-blue-500 mb-1">Panier Moyen (LTV)</p>
             <p className="font-display font-black text-3xl text-ink">
               {Math.round(avgLtv).toLocaleString('fr-FR')} <span className="text-sm font-bold text-gray-400">FCFA</span>
             </p>
@@ -95,12 +95,12 @@ export default function CustomersClient({ customers, storeName }: CustomersClien
       {/* Table de Répartition */}
       <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
         <div className="hidden md:flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-[#FAFAFA]">
-          <div className="w-[30%] text-[10px] font-black text-gray-400 tracking-widest uppercase">Client</div>
-          <div className="w-[15%] text-[10px] font-black text-gray-400 tracking-widest uppercase">Téléphone</div>
-          <div className="w-[15%] text-[10px] font-black text-gray-400 tracking-widest uppercase text-center">Achats</div>
-          <div className="w-[15%] text-[10px] font-black text-gray-400 tracking-widest uppercase text-right">LTV (Dépensé)</div>
-          <div className="w-[15%] text-[10px] font-black text-gray-400 tracking-widest uppercase text-center">Dernier Achat</div>
-          <div className="w-[10%] text-[10px] font-black text-gray-400 tracking-widest uppercase text-right">Contacter</div>
+          <div className="w-[30%] text-xs font-black text-gray-400 tracking-widest uppercase">Client</div>
+          <div className="w-[15%] text-xs font-black text-gray-400 tracking-widest uppercase">Téléphone</div>
+          <div className="w-[15%] text-xs font-black text-gray-400 tracking-widest uppercase text-center">Achats</div>
+          <div className="w-[15%] text-xs font-black text-gray-400 tracking-widest uppercase text-right">LTV (Dépensé)</div>
+          <div className="w-[15%] text-xs font-black text-gray-400 tracking-widest uppercase text-center">Dernier Achat</div>
+          <div className="w-[10%] text-xs font-black text-gray-400 tracking-widest uppercase text-right">Contacter</div>
         </div>
 
         <div className="divide-y divide-gray-100">
@@ -118,7 +118,7 @@ export default function CustomersClient({ customers, storeName }: CustomersClien
                   <div className="w-full md:w-[30%]">
                     <p className="font-display font-bold text-ink text-sm lg:text-base flex items-center gap-2">
                        {c.name}
-                       <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1 ${tag.color}`}>
+                       <span className={`px-2 py-0.5 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1 ${tag.color}`}>
                          {tag.icon && <tag.icon size={10} />}
                          {tag.label}
                        </span>
@@ -138,7 +138,7 @@ export default function CustomersClient({ customers, storeName }: CustomersClien
 
                   {/* LTV */}
                   <div className="w-full md:w-[15%] text-left md:text-right font-black text-emerald text-sm">
-                    {c.totalSpent.toLocaleString('fr-FR')} <span className="text-[10px] font-bold">FCFA</span>
+                    {c.totalSpent.toLocaleString('fr-FR')} <span className="text-xs font-bold">FCFA</span>
                   </div>
 
                   {/* Date Dernier Achat */}

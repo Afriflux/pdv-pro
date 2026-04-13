@@ -88,7 +88,7 @@ function OverrideRow({ item, onSave, onRemove, isLoading }: { item: ProductOverr
               {isLoading ? '...' : 'Enregistrer'}
             </button>
           ) : (
-            <span className="text-[10px] text-gray-300 font-bold uppercase tracking-wider px-2">À jour</span>
+            <span className="text-xs text-gray-300 font-bold uppercase tracking-wider px-2">À jour</span>
           )}
           <button 
             type="button"
@@ -211,7 +211,7 @@ export default function CloserClient({ storeId, initialActive, initialMargin, pr
                   <h3 className="text-xl font-black text-[#1A1A1A]">
                     Programme de Closing
                   </h3>
-                  <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">
                     {isActive ? 'Activé (envoi automatique)' : 'Mode Manuel ou Désactivé'}
                   </p>
                 </div>
@@ -240,7 +240,7 @@ export default function CloserClient({ storeId, initialActive, initialMargin, pr
               <div className="bg-white border-t border-gray-50 flex flex-col">
                 <div className="p-6 md:p-8 flex flex-col md:flex-row items-start md:items-end gap-6">
                   <div className="w-full md:w-64">
-                    <label htmlFor="closer-margin" className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">
+                    <label htmlFor="closer-margin" className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 pl-1">
                       Commission par défaut
                     </label>
                     <div className="relative">
@@ -302,7 +302,7 @@ export default function CloserClient({ storeId, initialActive, initialMargin, pr
                 <div className="overflow-x-auto">
                   <table className="w-full text-left whitespace-nowrap">
                     <thead>
-                      <tr className="bg-white text-gray-400 text-[10px] font-bold uppercase tracking-wider">
+                      <tr className="bg-white text-gray-400 text-xs font-bold uppercase tracking-wider">
                         <th className="px-6 py-4 border-b border-gray-100">Cible (Produit)</th>
                         <th className="px-6 py-4 border-b border-gray-100">Statut du Closing</th>
                         <th className="px-6 py-4 border-b border-gray-100">Commission (sur vente réussie)</th>
@@ -353,7 +353,7 @@ export default function CloserClient({ storeId, initialActive, initialMargin, pr
           <div className="p-6 md:p-8 border-b border-gray-50 flex flex-col md:flex-row items-center justify-between gap-4 bg-white">
             <div>
               <h3 className="text-xl font-black text-[#1A1A1A]">Performances Closers</h3>
-              <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-1">Analyse des équipes intervenant sur vos leads</p>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mt-1">Analyse des équipes intervenant sur vos leads</p>
             </div>
             <div className="bg-[#FAFAF7] border border-gray-100 px-4 py-2 rounded-xl text-xs font-bold text-gray-600 shadow-sm">
               {performances.length} membre(s)
@@ -362,7 +362,7 @@ export default function CloserClient({ storeId, initialActive, initialMargin, pr
           
           <div className="overflow-x-auto">
             <table className="w-full text-left whitespace-nowrap">
-              <thead className="bg-[#FAFAF7]/50 text-gray-400 text-[10px] font-bold uppercase tracking-wider border-b border-gray-100">
+              <thead className="bg-[#FAFAF7]/50 text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-100">
                 <tr>
                   <th className="px-6 py-4">Closer</th>
                   <th className="px-6 py-4 text-center">Négociation</th>
@@ -404,7 +404,7 @@ export default function CloserClient({ storeId, initialActive, initialMargin, pr
                                {/* eslint-disable-next-line react/forbid-dom-props */}
                                <div className="h-full bg-red-400" style={{ width: `${totalResolved > 0 ? 100 - winRate : 0}%` }}></div>
                              </div>
-                             <span className="text-[10px] font-bold text-gray-500">{perf.won_count} / {totalResolved} ({winRate}%)</span>
+                             <span className="text-xs font-bold text-gray-500">{perf.won_count} / {totalResolved} ({winRate}%)</span>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right font-black text-[#1A1A1A]">

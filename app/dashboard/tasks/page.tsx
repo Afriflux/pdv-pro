@@ -17,7 +17,7 @@ export default async function TasksPage() {
 
   if (!store) redirect('/dashboard')
 
-  const tasks = await prisma.task.findMany({
+  const tasks = await prisma.task.findMany({ take: 50, 
     where: { store_id: store.id },
     orderBy: { createdAt: 'desc' }
   })
@@ -42,7 +42,7 @@ export default async function TasksPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="font-display text-ink text-xl font-bold">Gestion des Tâches & SAV</h1>
-            <p className="text-dust text-[10px] font-black uppercase tracking-widest mt-0.5">Pilotez votre support et vos livraisons</p>
+            <p className="text-dust text-xs font-black uppercase tracking-widest mt-0.5">Pilotez votre support et vos livraisons</p>
           </div>
         </div>
       </header>

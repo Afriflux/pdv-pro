@@ -185,7 +185,7 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
               <h3 className="text-lg font-black text-gray-900 group-hover:text-[#0D5C4A] transition-colors">{service.name}</h3>
               {stats && stats.sparklineData && stats.sparklineData.some(d => d > 0) && (
                 <div className="hidden sm:flex items-center gap-2 bg-emerald-50/50 px-2.5 py-1 rounded-xl border border-emerald-100/50">
-                  <span className="text-[9px] uppercase font-black tracking-widest text-emerald-600/60 hidden md:block">7j</span>
+                  <span className="text-xs uppercase font-black tracking-widest text-emerald-600/60 hidden md:block">7j</span>
                   <svg width="40" height="14" className="overflow-visible">
                     <polyline 
                       points={stats.sparklineData.map((val, i) => `${i * (40/6)},${14 - (val / Math.max(...stats.sparklineData, 1)) * 14}`).join(' ')} 
@@ -241,7 +241,7 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
                 }
               </div>
             </div>
-            <span className={`text-[10px] font-black uppercase tracking-wider hidden sm:block ${
+            <span className={`text-xs font-black uppercase tracking-wider hidden sm:block ${
               isEnabled ? 'text-emerald-600' : 'text-gray-400'
             }`}>
               {isEnabled ? 'Actif' : 'Inactif'}
@@ -261,7 +261,7 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
                 {isNetworkLive && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>}
                 <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isNetworkLive ? 'bg-emerald-500 shadow-[0_0_8px_#10B981]' : 'bg-gray-300'}`}></span>
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider hidden sm:block">
+              <span className="text-xs font-black uppercase tracking-wider hidden sm:block">
                 {isNetworkLive ? 'En Ligne' : 'Attente'}
               </span>
             </div>
@@ -369,10 +369,10 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-bold text-gray-800 flex items-center gap-2">
                     {field.label}
-                    {isSandbox && field.testKey && <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] uppercase font-black rounded-md">Test</span>}
+                    {isSandbox && field.testKey && <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-xs uppercase font-black rounded-md">Test</span>}
                   </label>
                   {serverValue && (
-                    <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1">
+                    <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3" /> Configuré
                     </span>
                   )}
@@ -402,7 +402,7 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
                 
                 {revealedKeys[field.actualKey] && (
                   <div className="text-xs bg-emerald-50 text-emerald-800 font-mono p-2 rounded-lg border border-emerald-200 break-all select-all mt-1 flex flex-col gap-1 shadow-inner animate-in fade-in slide-in-from-top-1">
-                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Valeur Décryptée</span>
+                    <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest">Valeur Décryptée</span>
                     {revealedKeys[field.actualKey]}
                   </div>
                 )}
@@ -439,7 +439,7 @@ export default function ServiceCard({ service, configMap, stats }: Props) {
         {/* ── AFFICHAGE DES LOGS/REQUETES RECENTES ── */}
         {stats && stats.recentLogs && stats.recentLogs.length > 0 && (
           <div className="pt-6 border-t border-gray-100 flex flex-col gap-3 relative">
-            <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5 mb-1">
+            <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5 mb-1">
               <History className="w-3.5 h-3.5" /> Activité Récente (Webhooks Confirmés)
             </h4>
             <div className="grid grid-cols-1 divide-y divide-gray-100 bg-gray-50/50 rounded-2xl border border-gray-100">

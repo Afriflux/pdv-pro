@@ -1,6 +1,11 @@
 import { redirect } from 'next/navigation'
 import UpsellClient from './UpsellClient'
 import { prisma } from '@/lib/prisma'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  robots: 'noindex, nofollow',
+}
 
 export default async function UpsellPage({ searchParams }: { searchParams: { o?: string; p?: string; d?: string } }) {
   const baseOrderId = searchParams.o

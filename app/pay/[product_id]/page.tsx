@@ -86,7 +86,7 @@ export default async function PayPage({
           </div>
           <span className="font-medium text-ink text-sm">{store.name}</span>
         </div>
-        <span className="text-[10px] text-dust font-mono bg-cream px-2 py-1 rounded-full border border-line">
+        <span className="text-xs text-dust font-mono bg-cream px-2 py-1 rounded-full border border-line">
           🔒 Paiement sécurisé
         </span>
       </div>
@@ -124,7 +124,7 @@ export default async function PayPage({
                     {promoPrice.toLocaleString('fr-FR')}
                     <span className="text-xs ml-1">FCFA</span>
                   </p>
-                  <div className="inline-block bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded mt-1 uppercase">
+                  <div className="inline-block bg-red-600 text-white text-xs font-black px-1.5 py-0.5 rounded mt-1 uppercase">
                     -{activePromo.discount_type === 'percentage' ? `${activePromo.discount_value}%` : 'PROMO'}
                   </div>
                 </>
@@ -147,11 +147,11 @@ export default async function PayPage({
 
           {/* Tags */}
           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-line flex-wrap">
-            <span className="text-[11px] border px-2.5 py-0.5 rounded-full font-medium" style={{ backgroundColor: `${primaryColor}11`, color: primaryColor, borderColor: `${primaryColor}22` }}>
+            <span className="text-xs border px-2.5 py-0.5 rounded-full font-medium" style={{ backgroundColor: `${primaryColor}11`, color: primaryColor, borderColor: `${primaryColor}22` }}>
               {product.type === 'digital' ? 'Digital' : product.type === 'coaching' ? 'Coaching' : 'Physique'}
             </span>
             {product.cash_on_delivery && (
-              <span className="text-[11px] bg-emerald/10 text-emerald border border-emerald/20 px-2.5 py-0.5 rounded-full font-medium">
+              <span className="text-xs bg-emerald/10 text-emerald border border-emerald/20 px-2.5 py-0.5 rounded-full font-medium">
                 💵 Paiement à la livraison disponible
               </span>
             )}
@@ -169,9 +169,9 @@ export default async function PayPage({
 
         {/* Réassurance */}
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6">
-          <span className="text-[11px] text-dust flex items-center gap-1 font-medium">🔒 Paiement sécurisé</span>
-          <span className="text-[11px] text-dust flex items-center gap-1 font-medium">⚡ Wave & Mobile Money</span>
-          <span className="text-[11px] text-dust flex items-center gap-1 font-bold">✓ Yayyam</span>
+          <span className="text-xs text-dust flex items-center gap-1 font-medium">🔒 Paiement sécurisé</span>
+          <span className="text-xs text-dust flex items-center gap-1 font-medium">⚡ Wave & Mobile Money</span>
+          <span className="text-xs text-dust flex items-center gap-1 font-bold">✓ Yayyam</span>
         </div>
       </div>
     </div>

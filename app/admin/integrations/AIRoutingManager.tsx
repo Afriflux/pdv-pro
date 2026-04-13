@@ -100,7 +100,7 @@ export default function AIRoutingManager({ initialConfig }: AIRoutingManagerProp
       <div className="flex flex-wrap md:flex-nowrap gap-3 items-center w-full lg:w-2/3">
         {[0, 1, 2].map(index => (
           <div key={`${mode}-${index}`} className="flex-1 min-w-[140px] relative">
-            <span className="absolute -top-2.5 left-3 px-1 bg-white text-[10px] font-black tracking-widest uppercase text-gray-400 z-10">
+            <span className="absolute -top-2.5 left-3 px-1 bg-white text-xs font-black tracking-widest uppercase text-gray-400 z-10">
                Choix #{index + 1}
             </span>
             <select
@@ -112,7 +112,7 @@ export default function AIRoutingManager({ initialConfig }: AIRoutingManagerProp
                 <option key={p.id} value={p.id}>{p.label}</option>
               ))}
             </select>
-            <div className="absolute top-1/2 -translate-y-1/2 right-4 pointer-events-none text-gray-400 text-[10px]">
+            <div className="absolute top-1/2 -translate-y-1/2 right-4 pointer-events-none text-gray-400 text-xs">
               ▼
             </div>
           </div>

@@ -116,7 +116,7 @@ export default async function ClosingPage() {
             
             <div>
               <div className="inline-flex items-center gap-2 mb-3">
-                <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-black tracking-widest uppercase">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-black tracking-widest uppercase">
                   Service Call-Center
                 </span>
                 {pendingCount > 0 && (
@@ -137,15 +137,15 @@ export default async function ClosingPage() {
             {/* KPIs Header */}
             <div className="flex items-center gap-3">
               <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md min-w-[130px]">
-                <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">En File</p>
+                <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1">En File</p>
                 <p className="text-3xl font-black text-white">{pendingCount}</p>
               </div>
               <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md min-w-[130px]">
-                <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1">Validés</p>
+                <p className="text-xs font-bold text-white/50 uppercase tracking-widest mb-1">Validés</p>
                 <p className="text-3xl font-black text-white">{validatedCount}</p>
               </div>
               <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md min-w-[130px]">
-                <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1">Taux Succès</p>
+                <p className="text-xs font-bold text-white/50 uppercase tracking-widest mb-1">Taux Succès</p>
                 <p className="text-3xl font-black text-white">{successRate}%</p>
               </div>
             </div>

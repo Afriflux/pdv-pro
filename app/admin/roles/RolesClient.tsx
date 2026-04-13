@@ -336,7 +336,7 @@ export default function RolesClient({
         title="Niveau d'accès"
         value={access}
         onChange={(e) => setPermission(roleId, permId, e.target.value as AccessLevel)}
-        className={`text-[11px] font-black shadow-sm border rounded-lg px-2 py-1.5 outline-none cursor-pointer transition-colors focus:ring-2 focus:ring-emerald-500/20 appearance-none text-center bg-no-repeat bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M2%204l4%204%204-4%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[position:calc(100%-6px)_center] pr-6 ${
+        className={`text-xs font-black shadow-sm border rounded-lg px-2 py-1.5 outline-none cursor-pointer transition-colors focus:ring-2 focus:ring-emerald-500/20 appearance-none text-center bg-no-repeat bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M2%204l4%204%204-4%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[position:calc(100%-6px)_center] pr-6 ${
           access === 'full' ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200/50' :
           access === 'read' ? 'bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200/50' :
           'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200/50'
@@ -411,7 +411,7 @@ export default function RolesClient({
                  </div>
                  <div>
                    <h2 className="text-sm font-black text-gray-900">Organigramme Dynamique</h2>
-                   <p className="text-[11px] text-gray-400 font-bold">{totalDeptCount} nœud{totalDeptCount > 1 ? 's' : ''} · {initialAdmins.length} membre{initialAdmins.length > 1 ? 's' : ''}</p>
+                   <p className="text-xs text-gray-400 font-bold">{totalDeptCount} nœud{totalDeptCount > 1 ? 's' : ''} · {initialAdmins.length} membre{initialAdmins.length > 1 ? 's' : ''}</p>
                  </div>
                </div>
                <button
@@ -444,8 +444,8 @@ export default function RolesClient({
                            <p className="font-black text-lg tracking-tight">{ceo.name || ceo.email}</p>
                            <p className="text-emerald-200 text-xs font-bold">{ceo.email}</p>
                            <div className="flex items-center gap-2 mt-2">
-                             <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-white/20">👑 Fondateur & CEO</span>
-                             <span className="bg-emerald-500/30 px-2 py-1 rounded-md text-[10px] font-black flex items-center gap-1">
+                             <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest border border-white/20">👑 Fondateur & CEO</span>
+                             <span className="bg-emerald-500/30 px-2 py-1 rounded-md text-xs font-black flex items-center gap-1">
                                <span className="w-1.5 h-1.5 bg-emerald-300 rounded-full animate-pulse" /> Super Admin
                              </span>
                            </div>
@@ -456,7 +456,7 @@ export default function RolesClient({
                      <div className="bg-[#0F7A60] text-white px-8 py-4 rounded-2xl shadow-lg border-2 border-emerald-400 flex flex-col items-center">
                        <ShieldCheck size={24} className="mb-2 text-emerald-300" />
                        <span className="font-black tracking-widest uppercase text-sm">Super Admin</span>
-                       <span className="text-[10px] text-emerald-100">Aucun CEO assigné</span>
+                       <span className="text-xs text-emerald-100">Aucun CEO assigné</span>
                      </div>
                    )
                  })()}
@@ -497,7 +497,7 @@ export default function RolesClient({
                  {/* Unassigned members */}
                  {unassignedMembers.length > 0 && (
                    <div className="mt-8 w-full max-w-md">
-                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 text-center">⚠️ Membres non assignés ({unassignedMembers.length})</p>
+                     <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3 text-center">⚠️ Membres non assignés ({unassignedMembers.length})</p>
                      <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-wrap gap-2 justify-center">
                        {unassignedMembers.map(m => (
                          <div key={m.id} className="bg-white border border-gray-100 rounded-xl px-3 py-2 flex items-center gap-2 shadow-sm">
@@ -528,7 +528,7 @@ export default function RolesClient({
            <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-xl shadow-black-[0.02] animate-in slide-in-from-bottom-2 duration-300">
               <div className="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-[#FAFAF7]/50">
                  <div>
-                   <h2 className="text-[11px] font-black uppercase tracking-widest text-[#0F7A60]">Membres ({initialAdmins.length})</h2>
+                   <h2 className="text-xs font-black uppercase tracking-widest text-[#0F7A60]">Membres ({initialAdmins.length})</h2>
                    <p className="text-sm text-gray-400 font-bold">Administrateurs ayant accès au back-office.</p>
                  </div>
                  <div className="relative w-full md:w-80">
@@ -547,7 +547,7 @@ export default function RolesClient({
               
               <div className="overflow-x-auto">
                  <table className="w-full text-left">
-                    <thead className="bg-[#FAFAF7]/50 text-[10px] uppercase font-black tracking-widest text-gray-400 border-b border-gray-100">
+                    <thead className="bg-[#FAFAF7]/50 text-xs uppercase font-black tracking-widest text-gray-400 border-b border-gray-100">
                        <tr>
                          <th className="px-6 py-4">Utilisateur</th>
                          <th className="px-6 py-4">Rôle assigné</th>
@@ -580,7 +580,7 @@ export default function RolesClient({
                                   </div>
                                </td>
                                <td className="px-6 py-4">
-                                  <span className={`inline-flex px-3 py-1 rounded-lg text-[10px] font-black tracking-wider uppercase border ${roleConf?.bgCls} ${roleConf?.colorCls}`}>
+                                  <span className={`inline-flex px-3 py-1 rounded-lg text-xs font-black tracking-wider uppercase border ${roleConf?.bgCls} ${roleConf?.colorCls}`}>
                                     {roleConf?.name || admin.role}
                                   </span>
                                </td>
@@ -588,7 +588,7 @@ export default function RolesClient({
                                   {format(new Date(admin.created_at), 'dd MMM yyyy', { locale: fr })}
                                </td>
                                <td className="px-6 py-4 text-right">
-                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-emerald-100">
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-black uppercase tracking-wider border border-emerald-100">
                                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div> Actif
                                   </span>
                                </td>
@@ -641,7 +641,7 @@ export default function RolesClient({
                     <table className="w-full text-left border-collapse">
                        <thead>
                           <tr className="bg-gray-50 border-b border-gray-100">
-                             <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400 w-1/3 border-r border-gray-100">
+                             <th className="px-6 py-5 text-xs font-black uppercase tracking-widest text-gray-400 w-1/3 border-r border-gray-100">
                                Accès Requis
                              </th>
                              {roles.map(role => {
@@ -653,7 +653,7 @@ export default function RolesClient({
                                <th key={role.id} className="px-6 py-5 border-r border-gray-100 last:border-0 min-w-[170px]">
                                   <div className="flex flex-col items-center gap-2">
                                      <div className="flex items-center gap-2">
-                                       <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider border shadow-sm ${role.bgCls} ${role.colorCls}`}>
+                                       <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider border shadow-sm ${role.bgCls} ${role.colorCls}`}>
                                          {role.name === 'Super Admin' && <Lock size={12} className="mr-1.5 opacity-50"/>}
                                          {role.name}
                                        </span>
@@ -684,7 +684,7 @@ export default function RolesClient({
                                          </div>
                                        )}
                                      </div>
-                                     <span className="text-[10px] font-bold text-gray-400">
+                                     <span className="text-xs font-bold text-gray-400">
                                        {userCount} membre{userCount !== 1 ? 's' : ''} impacté{userCount !== 1 ? 's' : ''}
                                      </span>
                                   </div>
@@ -697,7 +697,7 @@ export default function RolesClient({
                             <tr key={perm.id} className="hover:bg-[#FAFAF7] transition-colors">
                                <td className="px-6 py-4 border-r border-gray-100">
                                   <p className="text-sm font-bold text-gray-900">{perm.label}</p>
-                                  <p className="text-[11px] text-gray-400 font-medium mt-0.5">{perm.description}</p>
+                                  <p className="text-xs text-gray-400 font-medium mt-0.5">{perm.description}</p>
                                </td>
                                
                                {roles.map(role => {
@@ -720,7 +720,7 @@ export default function RolesClient({
                  </div>
                  
                  {/* Legend */}
-                 <div className="px-6 py-4 bg-[#FAFAF7] border-t border-gray-100 flex items-center justify-center gap-8 text-[11px] font-black text-gray-500 uppercase tracking-widest">
+                 <div className="px-6 py-4 bg-[#FAFAF7] border-t border-gray-100 flex items-center justify-center gap-8 text-xs font-black text-gray-500 uppercase tracking-widest">
                     <span className="flex items-center gap-2"><div className="w-3 h-3 bg-emerald-500 rounded-full"></div> Total (Modification)</span>
                     <span className="flex items-center gap-2"><div className="w-3 h-3 bg-amber-500 rounded-full"></div> Lecture seule</span>
                     <span className="flex items-center gap-2"><div className="w-3 h-3 bg-gray-300 rounded-full"></div> Aucun accès</span>
@@ -740,7 +740,7 @@ export default function RolesClient({
                        <div>
                          <p className="text-sm font-bold text-gray-900">Toi (Sultan AlQalifa) as modifié les droits du rôle <span className="text-amber-600 font-black px-1">Gestionnaire</span></p>
                          <p className="text-xs text-gray-500 font-medium mt-1">Retrait de l'accès à "Configuration Plateforme". Cette action a impacté 2 membres.</p>
-                         <p className="text-[10px] text-gray-400 font-bold mt-2 uppercase tracking-wider">Aujourd'hui à 14h30</p>
+                         <p className="text-xs text-gray-400 font-bold mt-2 uppercase tracking-wider">Aujourd'hui à 14h30</p>
                        </div>
                     </div>
                     <div className="flex items-start gap-4 p-5 hover:bg-gray-50/50 transition-colors">
@@ -750,7 +750,7 @@ export default function RolesClient({
                        <div>
                          <p className="text-sm font-bold text-gray-900">Toi (Sultan AlQalifa) as créé le rôle personnalisé <span className="text-indigo-600 font-black px-1">Modérateur (Corrigé)</span></p>
                          <p className="text-xs text-gray-500 font-medium mt-1">Accès partiel attribué aux Commandes et Vendeurs (Lecture seule).</p>
-                         <p className="text-[10px] text-gray-400 font-bold mt-2 uppercase tracking-wider">Hier à 09h15</p>
+                         <p className="text-xs text-gray-400 font-bold mt-2 uppercase tracking-wider">Hier à 09h15</p>
                        </div>
                     </div>
                  </div>
@@ -884,7 +884,7 @@ export default function RolesClient({
                           <p className="text-sm font-bold text-gray-900 group-hover:text-emerald-700 truncate transition-colors">{member.name || member.email.split('@')[0]}</p>
                           <p className="text-xs text-gray-400 font-medium truncate">{member.email}</p>
                         </div>
-                        <span className="text-[10px] font-black text-gray-300 group-hover:text-emerald-600 uppercase transition-colors">+ Ajouter</span>
+                        <span className="text-xs font-black text-gray-300 group-hover:text-emerald-600 uppercase transition-colors">+ Ajouter</span>
                       </button>
                     )
                   })}
@@ -937,17 +937,17 @@ function DeptModalContent({ dept, parentId, onClose, onSubmit }: {
           </p>
           <div className="space-y-4">
             <div>
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5">Nom</label>
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest block mb-1.5">Nom</label>
               <input autoFocus type="text" value={dName} onChange={e => setDName(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()}
                 placeholder={placeholder} className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 outline-none focus:border-[#0F7A60] focus:bg-white transition-all" />
             </div>
             <div>
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5">Sous-titre / Description</label>
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest block mb-1.5">Sous-titre / Description</label>
               <input type="text" value={dSub} onChange={e => setDSub(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()}
                 placeholder="ex: Campagnes & Réseaux sociaux" className="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-900 outline-none focus:border-[#0F7A60] focus:bg-white transition-all" />
             </div>
             <div>
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Couleur</label>
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest block mb-2">Couleur</label>
               <div className="flex flex-wrap gap-2">
                 {COLOR_KEYS.map(c => {
                   const col = DEPT_COLORS[c]
@@ -955,7 +955,7 @@ function DeptModalContent({ dept, parentId, onClose, onSubmit }: {
                     <button key={c} onClick={() => setDColor(c)}
                       className={`w-10 h-10 rounded-xl border-2 transition-all flex items-center justify-center ${col.bgCls} ${dColor === c ? `${col.borderCls} scale-110 ring-2 ring-offset-1` : 'border-transparent hover:scale-105'}`}
                     >
-                      <span className={`text-[10px] font-black ${col.textCls} uppercase`}>{c.charAt(0)}</span>
+                      <span className={`text-xs font-black ${col.textCls} uppercase`}>{c.charAt(0)}</span>
                     </button>
                   )
                 })}
@@ -1020,7 +1020,7 @@ function OrgNode({ dept, depth, admins, roles, onEdit, onDelete, onAddChild, onA
         </div>
 
         <span className={`font-black ${colors.textCls} text-[13px] uppercase tracking-wider mt-1`}>{dept.name}</span>
-        {dept.subtitle && <span className={`text-[10px] ${colors.subtextCls} font-bold mt-0.5`}>{dept.subtitle}</span>}
+        {dept.subtitle && <span className={`text-xs ${colors.subtextCls} font-bold mt-0.5`}>{dept.subtitle}</span>}
 
         {/* Members */}
         <div className="mt-3 pt-3 border-t border-gray-200/50 flex flex-col gap-1.5 w-full">
@@ -1033,23 +1033,23 @@ function OrgNode({ dept, depth, admins, roles, onEdit, onDelete, onAddChild, onA
                 {member.avatar_url ? (
                   <img src={member.avatar_url} alt={member.name || ''} className="w-7 h-7 rounded-lg object-cover border border-gray-100 flex-shrink-0" />
                 ) : (
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-[10px] flex-shrink-0 ${roleConf?.bgCls || 'bg-gray-50'} ${roleConf?.colorCls || 'text-gray-600'} border border-gray-100`}>
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0 ${roleConf?.bgCls || 'bg-gray-50'} ${roleConf?.colorCls || 'text-gray-600'} border border-gray-100`}>
                     {(member.name || member.email).charAt(0).toUpperCase()}
                   </div>
                 )}
                 <div className="min-w-0 text-left flex-1">
-                  <p className="text-[11px] font-black text-gray-900 truncate">{member.name || member.email.split('@')[0]}</p>
-                  <p className="text-[9px] text-gray-400 font-bold truncate">{roleConf?.name || member.role}</p>
+                  <p className="text-xs font-black text-gray-900 truncate">{member.name || member.email.split('@')[0]}</p>
+                  <p className="text-xs text-gray-400 font-bold truncate">{roleConf?.name || member.role}</p>
                 </div>
                 <button onClick={() => onRemoveMember(dept.id, member.id)} className="opacity-0 group-hover/member:opacity-100 p-0.5 text-gray-300 hover:text-red-500 transition-all flex-shrink-0" title="Retirer"><UserMinus size={10} /></button>
               </div>
             )
           }) : (
             <div className="bg-gray-50/80 rounded-lg px-2 py-2.5 text-center border border-dashed border-gray-200">
-              <p className="text-[9px] text-gray-400 font-bold italic">Aucun membre</p>
+              <p className="text-xs text-gray-400 font-bold italic">Aucun membre</p>
             </div>
           )}
-          <button onClick={() => onAssign(dept.id)} className="w-full bg-white hover:bg-gray-50 border border-dashed border-gray-200 hover:border-gray-300 rounded-lg px-2 py-1.5 text-[10px] font-bold text-gray-400 hover:text-gray-600 transition-all flex items-center justify-center gap-1">
+          <button onClick={() => onAssign(dept.id)} className="w-full bg-white hover:bg-gray-50 border border-dashed border-gray-200 hover:border-gray-300 rounded-lg px-2 py-1.5 text-xs font-bold text-gray-400 hover:text-gray-600 transition-all flex items-center justify-center gap-1">
             <Plus size={10} /> Membre
           </button>
         </div>

@@ -120,7 +120,7 @@ export function LiveCheckoutDrawer({ pageId, products, theme }: LiveCheckoutDraw
             <div className={`flex gap-4 p-4 rounded-2xl ${colors.bgLight} border border-${theme.color}-100`}>
               {product.images?.[0] ? (
                 <div className="relative w-20 h-20 rounded-xl overflow-hidden shadow-sm">
-                  <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                  <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={product.images[0]} alt={product.name} fill className="object-cover" />
                 </div>
               ) : (
                 <div className={`w-20 h-20 ${colors.bgPrimary} opacity-50 rounded-xl flex items-center justify-center text-white`}>📦</div>
@@ -146,17 +146,17 @@ export function LiveCheckoutDrawer({ pageId, products, theme }: LiveCheckoutDraw
             {/* Formulaire Express */}
             <form onSubmit={handleOrder} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[11px] font-black uppercase tracking-widest text-gray-400 ml-1">Nom Complet</label>
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Nom Complet</label>
                 <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Ex: Jean Dupont" className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-black transition-all outline-none font-medium" />
               </div>
               
               <div className="space-y-1">
-                <label className="text-[11px] font-black uppercase tracking-widest text-gray-400 ml-1">Numéro de Téléphone</label>
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Numéro de Téléphone</label>
                 <input required type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="+221 XX XXX XX XX" className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-black transition-all outline-none font-medium" />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-black uppercase tracking-widest text-gray-400 ml-1">Adresse de livraison détaillée</label>
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Adresse de livraison détaillée</label>
                 <textarea required value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} rows={3} placeholder="Ville, Quartier, Rue, Repères..." className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:border-black transition-all outline-none font-medium resize-none" />
               </div>
 

@@ -69,7 +69,7 @@ function StatsCards({ ambassadeurs }: { ambassadeurs: AmbassadorWithStore[] }) {
           <div key={s.label} className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group">
             <div className={`absolute inset-0 bg-gradient-to-br ${s.bg} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`}></div>
             <div className="flex items-center justify-between mb-3 relative z-10">
-               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{s.label}</p>
+               <p className="text-xs font-black text-gray-400 uppercase tracking-widest">{s.label}</p>
                <Icon className={`w-4 h-4 ${s.iconColor} opacity-70`} />
             </div>
             <p className={`text-2xl lg:text-3xl font-black relative z-10 ${s.color}`}>{s.value}</p>
@@ -229,7 +229,7 @@ function OngletAmbassadeurs({
         <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)] animate-in fade-in slide-in-from-bottom-2">
           <div className="overflow-x-auto">
           <table className="w-full text-left whitespace-nowrap">
-            <thead className="bg-[#FAFAF7] border-b border-gray-100 text-gray-400 uppercase text-[10px] font-black tracking-widest">
+            <thead className="bg-[#FAFAF7] border-b border-gray-100 text-gray-400 uppercase text-xs font-black tracking-widest">
               <tr>
                 <th className="px-6 py-5">Vendeur Associé</th>
                 <th className="px-6 py-5">Performance</th>
@@ -253,7 +253,7 @@ function OngletAmbassadeurs({
                         <div className="flex flex-col">
                           <span className="font-bold text-gray-900 group-hover:text-[#0F7A60] transition-colors">{amb.Store?.name ?? 'Inconnue'}</span>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="inline-flex items-center px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded text-[9px] font-mono font-bold tracking-widest">
+                            <span className="inline-flex items-center px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-mono font-bold tracking-widest">
                               {amb.code}
                             </span>
                           </div>
@@ -279,11 +279,11 @@ function OngletAmbassadeurs({
                     <td className="px-6 py-4">
                        <div className="flex flex-col gap-1">
                          <div className="flex items-center gap-1.5">
-                            <span className="text-[10px] text-gray-400 uppercase tracking-widest font-black w-14">Généré:</span>
+                            <span className="text-xs text-gray-400 uppercase tracking-widest font-black w-14">Généré:</span>
                             <span className="text-xs font-black text-gray-900">{amb.total_earned.toLocaleString('fr-FR')} F</span>
                          </div>
                          <div className="flex items-center gap-1.5">
-                            <span className="text-[10px] text-[#0F7A60] uppercase tracking-widest font-black w-14">À Payer:</span>
+                            <span className="text-xs text-[#0F7A60] uppercase tracking-widest font-black w-14">À Payer:</span>
                             <span className="text-xs font-black text-[#0F7A60]">{amb.balance.toLocaleString('fr-FR')} F</span>
                          </div>
                        </div>
@@ -293,22 +293,22 @@ function OngletAmbassadeurs({
                     <td className="px-6 py-4">
                       <div className="flex flex-col items-center gap-2">
                         {kycOk ? (
-                          <span className="w-full justify-center inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[9px] uppercase font-black tracking-wider">
+                          <span className="w-full justify-center inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-xs uppercase font-black tracking-wider">
                             <ShieldCheck size={10} /> KYC OK
                           </span>
                         ) : (
-                          <span className="w-full justify-center inline-flex items-center gap-1.5 px-2 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded text-[9px] uppercase font-black tracking-wider">
+                          <span className="w-full justify-center inline-flex items-center gap-1.5 px-2 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded text-xs uppercase font-black tracking-wider">
                             <ShieldAlert size={10} /> KYC REC.
                           </span>
                         )}
                         {amb.contract_accepted ? (
-                          <span className="w-full justify-center inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[9px] uppercase font-black tracking-wider">
+                          <span className="w-full justify-center inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-xs uppercase font-black tracking-wider">
                             <FileSignature size={10} /> CONTRAT SIGNÉ
                           </span>
                         ) : (
                           <button
                             onClick={(e) => { e.stopPropagation(); setContractAmb(amb); }}
-                            className="w-full justify-center inline-flex items-center gap-1.5 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded transition-colors"
+                            className="w-full justify-center inline-flex items-center gap-1.5 px-2 py-1 text-xs font-black uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded transition-colors"
                           >
                             <FileSignature size={10} /> EXIGER CONTRAT
                           </button>
@@ -319,14 +319,14 @@ function OngletAmbassadeurs({
                     {/* Statut & Date */}
                     <td className="px-6 py-4">
                        <div className="flex flex-col items-center gap-2">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider ${
                             amb.is_active
                               ? 'bg-emerald-50 border border-emerald-200 text-emerald-600'
                               : 'bg-red-50 border border-red-200 text-red-600'
                           }`}>
                             {amb.is_active ? 'Actif' : 'Bloqué'}
                           </span>
-                          <span className="text-[10px] font-bold text-gray-400">
+                          <span className="text-xs font-bold text-gray-400">
                             Depuis {format(new Date(amb.created_at), 'MMM yyyy', { locale: fr })}
                           </span>
                        </div>
@@ -385,7 +385,7 @@ function OngletAmbassadeurs({
                     </div>
                     <div>
                       <span className="font-bold text-gray-900 group-hover:text-[#0F7A60] transition-colors line-clamp-1">{amb.Store?.name ?? 'Inconnue'}</span>
-                      <span className="inline-flex mt-1 items-center px-2 py-0.5 bg-gray-50 text-gray-500 border border-gray-200 rounded text-[10px] font-mono font-bold tracking-widest">
+                      <span className="inline-flex mt-1 items-center px-2 py-0.5 bg-gray-50 text-gray-500 border border-gray-200 rounded text-xs font-mono font-bold tracking-widest">
                         {amb.code}
                       </span>
                     </div>
@@ -400,12 +400,12 @@ function OngletAmbassadeurs({
                {/* Stats Grid */}
                <div className="grid grid-cols-2 gap-3 mb-5">
                   <div className="bg-[#FAFAF7] rounded-2xl p-3 border border-gray-50">
-                    <p className="text-[10px] font-black uppercase text-gray-400 mb-1 flex items-center gap-1.5"><Users className="w-3 h-3"/> Filleuls</p>
+                    <p className="text-xs font-black uppercase text-gray-400 mb-1 flex items-center gap-1.5"><Users className="w-3 h-3"/> Filleuls</p>
                     <p className="text-lg font-black text-gray-900">{amb.total_referred}</p>
                     <p className="text-xs font-bold text-emerald-500 mt-0.5">{amb.total_qualified} Qual.</p>
                   </div>
                   <div className="bg-[#FAFAF7] rounded-2xl p-3 border border-gray-50">
-                    <p className="text-[10px] font-black uppercase text-gray-400 mb-1 flex items-center gap-1.5"><Wallet className="w-3 h-3"/> Gains</p>
+                    <p className="text-xs font-black uppercase text-gray-400 mb-1 flex items-center gap-1.5"><Wallet className="w-3 h-3"/> Gains</p>
                     <p className="text-lg font-black text-[#0F7A60]">{amb.total_earned >= 1000000 ? (amb.total_earned/1000000).toFixed(1) + 'M' : (amb.total_earned/1000).toFixed(0) + 'K'}</p>
                     <p className="text-xs font-bold text-amber-500 mt-0.5">{amb.balance > 0 ? `${amb.balance} F dûs` : 'Soldé'}</p>
                   </div>
@@ -474,7 +474,7 @@ function OngletRegles({ initialConfig }: { initialConfig: Record<string, string>
     'w-full bg-[#FAFAF7] border border-gray-200 rounded-xl py-3 px-4 text-sm font-bold text-[#1A1A1A] ' +
     'focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all shadow-inner'
 
-  const labelCls = 'block text-[11px] font-black text-gray-400 mb-1.5 uppercase tracking-widest'
+  const labelCls = 'block text-xs font-black text-gray-400 mb-1.5 uppercase tracking-widest'
 
   const isActive = config['ambassador_program_active'] === 'true'
   const commissionAmount = Number(config['ambassador_commission_fixed'] ?? '1000')
@@ -524,7 +524,7 @@ function OngletRegles({ initialConfig }: { initialConfig: Record<string, string>
                 onChange={e => handleChange('ambassador_commission_fixed', e.target.value)}
                 className={inputCls}
               />
-              <p className="mt-2 text-[10px] text-gray-400">Rémunération par filleul validé.</p>
+              <p className="mt-2 text-xs text-gray-400">Rémunération par filleul validé.</p>
             </div>
 
             {/* CA minimum filleul */}
@@ -539,7 +539,7 @@ function OngletRegles({ initialConfig }: { initialConfig: Record<string, string>
                 onChange={e => handleChange('ambassador_min_revenue', e.target.value)}
                 className={inputCls}
               />
-              <p className="mt-2 text-[10px] text-gray-400">Chiffre d'affaires à réaliser ce mois-ci par le filleul.</p>
+              <p className="mt-2 text-xs text-gray-400">Chiffre d'affaires à réaliser ce mois-ci par le filleul.</p>
             </div>
 
             {/* Durée observation filleul */}
@@ -554,7 +554,7 @@ function OngletRegles({ initialConfig }: { initialConfig: Record<string, string>
                 onChange={e => handleChange('ambassador_observation_days', e.target.value)}
                 className={inputCls}
               />
-              <p className="mt-2 text-[10px] text-gray-400">Période accordée au filleul pour réaliser le CA.</p>
+              <p className="mt-2 text-xs text-gray-400">Période accordée au filleul pour réaliser le CA.</p>
             </div>
           </div>
 
@@ -618,7 +618,7 @@ function OngletRegles({ initialConfig }: { initialConfig: Record<string, string>
 function RuleBlock({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) {
   return (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition-colors">
-      <p className="text-[11px] font-black text-gray-300 uppercase tracking-widest mb-3 flex items-center gap-2">
+      <p className="text-xs font-black text-gray-300 uppercase tracking-widest mb-3 flex items-center gap-2">
         <span className="text-lg">{icon}</span> {title}
       </p>
       <div className="text-sm font-medium text-gray-400 space-y-1.5 leading-relaxed">{children}</div>

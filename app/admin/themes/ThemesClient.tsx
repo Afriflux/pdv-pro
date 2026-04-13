@@ -176,12 +176,12 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
 
           <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl shadow-xl">
              <div className="flex flex-col">
-               <span className="text-[10px] font-black tracking-widest text-emerald-200 uppercase">Actifs</span>
+               <span className="text-xs font-black tracking-widest text-emerald-200 uppercase">Actifs</span>
                <span className="text-2xl font-black text-white">{publishedCount}</span>
              </div>
              <div className="w-[1px] h-8 bg-white/20 mx-2"></div>
              <div className="flex flex-col">
-               <span className="text-[10px] font-black tracking-widest text-emerald-200 uppercase">Total</span>
+               <span className="text-xs font-black tracking-widest text-emerald-200 uppercase">Total</span>
                <span className="text-2xl font-black text-white">{templates.length}</span>
              </div>
           </div>
@@ -274,7 +274,7 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
                        <div className="text-xs text-gray-500 line-clamp-1">{template.description}</div>
                      </td>
                      <td className="px-6 py-4">
-                       <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                       <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">
                          {template.category}
                        </span>
                      </td>
@@ -311,11 +311,11 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
                    ) : (
                      <div className="text-4xl opacity-20"><LayoutTemplate /></div>
                    )}
-                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm border border-black/5">
+                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 text-xs font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm border border-black/5">
                      {template.type.replace('_', ' ')}
                    </div>
                    {template.is_premium && (
-                     <div className="absolute bottom-3 left-3 bg-amber-400 text-amber-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm flex items-center gap-1">
+                     <div className="absolute bottom-3 left-3 bg-amber-400 text-amber-900 text-xs font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm flex items-center gap-1">
                        ⭐ {template.price}F
                      </div>
                    )}
@@ -325,7 +325,7 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
                  <div className="px-4 flex flex-col flex-1 pb-2">
                    <div className="flex flex-wrap gap-1 mb-2">
                      {(template.allowed_roles || ['vendor']).map((r: string) => (
-                       <span key={r} className="text-[9px] font-bold uppercase tracking-widest text-[#0F7A60] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">
+                       <span key={r} className="text-xs font-bold uppercase tracking-widest text-[#0F7A60] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">
                          {r === 'all' ? 'TOUS' : r}
                        </span>
                      ))}
@@ -337,7 +337,7 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
                    <div className="mt-auto flex items-center justify-between gap-2 pt-4 border-t border-gray-50">
                      <button 
                        onClick={() => handleToggleActive(template.id, template.active)}
-                       className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 rounded-xl text-[11px] font-black tracking-wide uppercase transition-all border ${template.active ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'}`}
+                       className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 rounded-xl text-xs font-black tracking-wide uppercase transition-all border ${template.active ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'}`}
                      >
                        {template.active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                        {template.active ? 'Actif' : 'Désactivé'}

@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Récupérer ses adresses de livraison
-    const addresses = await prisma.deliveryAddress.findMany({
+    const addresses = await prisma.deliveryAddress.findMany({ take: 50, 
       where: { user_id: user.id },
       orderBy: [{ is_default: 'desc' }, { created_at: 'desc' }],
       select: {

@@ -9,7 +9,7 @@ export default async function PortalWorkflowsPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const workflows = await prisma.workflow.findMany({
+  const workflows = await prisma.workflow.findMany({ take: 50, 
     where: { user_id: user.id },
     orderBy: { updated_at: 'desc' }
   })
@@ -27,7 +27,7 @@ export default async function PortalWorkflowsPage() {
     updated_at: w.updated_at.toISOString(),
   }))
 
-  const globalWorkflowsRaw = await prisma.workflow.findMany({
+  const globalWorkflowsRaw = await prisma.workflow.findMany({ take: 50, 
     where: { store_id: null, user_id: null },
     orderBy: { created_at: 'desc' }
   }).catch(() => [])

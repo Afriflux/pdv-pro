@@ -174,7 +174,7 @@ export default function PlatformSection({ initialConfig, allowedTabs }: Platform
                  title="Générer avec l'IA"
                  onClick={() => handleAIGenerate(field.key, field.key.replace('seo_', '') as 'title'|'description'|'keywords')}
                  disabled={generatingAI[field.key]}
-                 className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-[#0F7A60] to-teal-500 hover:from-[#0D5C4A] hover:to-teal-400 text-white text-[10px] font-black uppercase tracking-wider rounded-lg shadow-sm hover:shadow-md transition-all disabled:opacity-50 active:scale-95"
+                 className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-[#0F7A60] to-teal-500 hover:from-[#0D5C4A] hover:to-teal-400 text-white text-xs font-black uppercase tracking-wider rounded-lg shadow-sm hover:shadow-md transition-all disabled:opacity-50 active:scale-95"
                >
                  {generatingAI[field.key] ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
                  Aide IA
@@ -222,7 +222,7 @@ export default function PlatformSection({ initialConfig, allowedTabs }: Platform
                    Changer le fichier
                  </label>
                  {config[field.key] && (
-                   <div className="text-[10px] text-gray-400 mt-2 truncate w-48" title={config[field.key]}>
+                   <div className="text-xs text-gray-400 mt-2 truncate w-48" title={config[field.key]}>
                      {config[field.key]}
                    </div>
                  )}
@@ -251,7 +251,7 @@ export default function PlatformSection({ initialConfig, allowedTabs }: Platform
             <div className="flex items-center justify-between mt-1">
               <p className="text-xs text-gray-400">{field.helper}</p>
               {field.key === 'seo_description' && config[field.key] && (
-                 <span className={`text-[10px] font-bold ${(config[field.key]?.length || 0) < 120 ? 'text-amber-500' : 'text-emerald-500'}`}>
+                 <span className={`text-xs font-bold ${(config[field.key]?.length || 0) < 120 ? 'text-amber-500' : 'text-emerald-500'}`}>
                    {(config[field.key]?.length || 0)}/150 chars
                  </span>
               )}

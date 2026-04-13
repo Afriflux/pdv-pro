@@ -32,7 +32,7 @@ export function PricingCards() {
                <div className="w-8 h-8 rounded-full bg-emerald/10 flex items-center justify-center text-emerald shadow-sm">
                   <TrendingUp size={14} strokeWidth={2.5} />
                </div>
-               <span className="text-[11px] font-black text-emerald-rich uppercase tracking-[0.2em] bg-white px-4 py-2 rounded-xl border border-emerald/10 shadow-sm shadow-emerald/5">Votre CA mensuel</span>
+               <span className="text-xs font-black text-emerald-rich uppercase tracking-[0.2em] bg-white px-4 py-2 rounded-xl border border-emerald/10 shadow-sm shadow-emerald/5">Votre CA mensuel</span>
             </div>
             
             <div 
@@ -43,7 +43,7 @@ export function PricingCards() {
                <div className="w-8 h-8 rounded-full bg-ink/5 flex items-center justify-center text-ink shadow-sm">
                   <Diamond size={14} strokeWidth={2.5} />
                </div>
-               <span className="text-[11px] font-bold text-ink uppercase tracking-[0.2em] bg-white px-4 py-2 rounded-xl border border-line shadow-sm shadow-ink/5">Commission Yayyam</span>
+               <span className="text-xs font-bold text-ink uppercase tracking-[0.2em] bg-white px-4 py-2 rounded-xl border border-line shadow-sm shadow-ink/5">Commission Yayyam</span>
             </div>
             
             <div 
@@ -54,7 +54,7 @@ export function PricingCards() {
                <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold-rich shadow-sm">
                   <Wallet size={14} strokeWidth={2.5} />
                </div>
-               <span className="text-[11px] font-bold text-ink uppercase tracking-[0.2em] bg-white px-4 py-2 rounded-xl border border-line shadow-sm shadow-ink/5">Vous recevez</span>
+               <span className="text-xs font-bold text-ink uppercase tracking-[0.2em] bg-white px-4 py-2 rounded-xl border border-line shadow-sm shadow-ink/5">Vous recevez</span>
             </div>
             
             <div 
@@ -65,7 +65,7 @@ export function PricingCards() {
                <div className="w-8 h-8 rounded-full bg-slate/10 flex items-center justify-center text-slate shadow-sm">
                   <CreditCard size={14} strokeWidth={2.5} />
                </div>
-               <span className="text-[11px] font-bold text-slate uppercase tracking-[0.2em] bg-white px-4 py-2 rounded-xl border border-line shadow-sm shadow-ink/5">Frais passerelle</span>
+               <span className="text-xs font-bold text-slate uppercase tracking-[0.2em] bg-white px-4 py-2 rounded-xl border border-line shadow-sm shadow-ink/5">Frais passerelle</span>
             </div>
           </div>
         </div>
@@ -88,7 +88,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(0)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Votre CA Mensuel</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Votre CA Mensuel</span>
                <span className="font-mono text-sm font-bold text-charcoal">0 - 100K FCFA</span>
             </div>
             <div 
@@ -96,7 +96,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(1)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Commission Yayyam</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Commission Yayyam</span>
                <span className="text-5xl font-display font-black text-ink">8%</span>
             </div>
             <div 
@@ -104,7 +104,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(2)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest mt-2">Vous recevez</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest mt-2">Vous recevez</span>
                <span className="font-bold text-emerald text-xl">92%</span>
             </div>
             <div 
@@ -112,7 +112,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(3)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Frais passerelle</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Frais passerelle</span>
                <span className="text-sm font-medium text-slate">Inclus</span>
             </div>
           </div>
@@ -136,7 +136,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(0)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Votre CA Mensuel</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Votre CA Mensuel</span>
                <span className="font-mono text-sm font-bold text-charcoal">100K - 500K FCFA</span>
             </div>
             <div 
@@ -144,7 +144,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(1)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Commission Yayyam</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Commission Yayyam</span>
                <span className="text-5xl font-display font-black text-ink">7%</span>
             </div>
             <div 
@@ -152,7 +152,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(2)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest mt-2">Vous recevez</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest mt-2">Vous recevez</span>
                <span className="font-bold text-emerald text-xl">93%</span>
             </div>
             <div 
@@ -160,7 +160,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(3)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Frais passerelle</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Frais passerelle</span>
                <span className="text-sm font-medium text-slate">Inclus</span>
             </div>
           </div>
@@ -184,7 +184,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(0)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Votre CA Mensuel</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Votre CA Mensuel</span>
                <span className="font-mono text-sm font-bold text-charcoal">500K - 1M FCFA</span>
             </div>
             <div 
@@ -192,7 +192,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(1)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Commission Yayyam</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Commission Yayyam</span>
                <span className="text-5xl font-display font-black text-ink">6%</span>
             </div>
             <div 
@@ -200,7 +200,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(2)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest mt-2">Vous recevez</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest mt-2">Vous recevez</span>
                <span className="font-bold text-emerald text-xl">94%</span>
             </div>
             <div 
@@ -208,7 +208,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(3)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Frais passerelle</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Frais passerelle</span>
                <span className="text-sm font-medium text-slate">Inclus</span>
             </div>
           </div>
@@ -223,7 +223,7 @@ export function PricingCards() {
             <h4 className="font-bold text-emerald-light mb-3 text-lg">Palier Expert</h4>
             <p className="text-sm text-cream/90 leading-relaxed">Le grade d'élite. En dépassant 1 Million FCFA mensuels, vous obtenez notre meilleur taux de 5%. Frais Wave/Orange Money inclus. Zéro plafond de facturation.</p>
           </div>
-          <div className="absolute -top-[14px] left-1/2 -translate-x-1/2 bg-gold text-ink text-[10px] uppercase tracking-widest font-black px-4 py-1.5 rounded-full shadow-md whitespace-nowrap pointer-events-none z-[60] border border-gold-dark/30">
+          <div className="absolute -top-[14px] left-1/2 -translate-x-1/2 bg-gold text-ink text-xs uppercase tracking-widest font-black px-4 py-1.5 rounded-full shadow-md whitespace-nowrap pointer-events-none z-[60] border border-gold-dark/30">
             Meilleur taux (Populaire)
           </div>
           <div className="text-center pb-6 border-b border-emerald/20 mb-6 relative z-0 mt-2">
@@ -235,7 +235,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(0)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Votre CA Mensuel</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Votre CA Mensuel</span>
                <span className="font-mono text-sm font-bold text-charcoal">+ 1M FCFA</span>
             </div>
             <div 
@@ -243,7 +243,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(1)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest">Commission Yayyam</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest">Commission Yayyam</span>
                <span className={`text-5xl font-display font-black text-emerald md:scale-110 transition-transform ${activeRow === 1 ? 'scale-110' : ''}`}>5%</span>
             </div>
             <div 
@@ -251,7 +251,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(2)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest mt-2">Vous recevez</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest mt-2">Vous recevez</span>
                <span className={`font-bold text-emerald-rich text-xl md:text-2xl mt-2 md:mt-0 bg-emerald/10 rounded-full md:scale-110 px-4 py-1 transition-transform ${activeRow === 2 ? 'scale-110' : ''}`}>95%</span>
             </div>
             <div 
@@ -259,7 +259,7 @@ export function PricingCards() {
               onMouseEnter={() => setActiveRow(3)}
               onMouseLeave={() => setActiveRow(null)}
             >
-               <span className="md:hidden text-[10px] uppercase text-slate font-bold mb-1 tracking-widest mt-2 md:mt-0">Frais passerelle</span>
+               <span className="md:hidden text-xs uppercase text-slate font-bold mb-1 tracking-widest mt-2 md:mt-0">Frais passerelle</span>
                <span className="text-sm font-bold text-emerald">Inclus</span>
             </div>
           </div>

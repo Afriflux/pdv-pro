@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
-import CloserAnalyticsClient from './CloserAnalyticsClient'
+import nextDynamic from 'next/dynamic'
+
+const CloserAnalyticsClient = nextDynamic(() => import('./CloserAnalyticsClient'), { ssr: false, loading: () => <div className="animate-pulse h-[500px] w-full bg-gray-50"/> })
 
 export const dynamic = 'force-dynamic'
 
@@ -12,7 +14,7 @@ export default async function CloserAnalyticsPage() {
   if (!user) redirect('/login')
 
   // --- 1. Fetching all leads claimed by this closer ---
-  const leads = await prisma.lead.findMany({
+  const leads = await prisma.lead.findMany({ take: 50, 
     where: { closer_id: user.id },
     orderBy: { claimed_at: 'asc' } // chronological order for charts
   })

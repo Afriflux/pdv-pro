@@ -558,11 +558,11 @@ export async function POST(req: NextRequest) {
     const returnUrl = `${baseUrl}/checkout/success?order=${orderRecord.id}`
     const notifyUrlBase = `${baseUrl}/api/webhooks`
 
-    if (!['wave', 'paytech', 'bictorys', 'cinetpay', 'orange_money'].includes(payment_method)) {
+    if (!['wave', 'paytech', 'bictorys', 'cinetpay', 'moneroo'].includes(payment_method)) {
       return NextResponse.json({ error: 'Moyen de paiement invalide.' }, { status: 400 })
     }
 
-    const payloadMethod = payment_method as 'wave' | 'paytech' | 'bictorys' | 'cinetpay' | 'orange_money'
+    const payloadMethod = payment_method as 'wave' | 'paytech' | 'bictorys' | 'cinetpay' | 'moneroo'
 
     // Appel du Smart Router pour générer la session et gérer le fallback
     const paymentResponse = await createPaymentSession({

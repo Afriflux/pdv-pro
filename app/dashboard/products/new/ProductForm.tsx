@@ -667,7 +667,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                   </button>
                 ))}
               </div>
-              <p className="text-[11px] text-gray-500 mt-2 font-medium">
+              <p className="text-xs text-gray-500 mt-2 font-medium">
                 💡 Remarque : Yayyam relancera automatiquement le client à chaque itération. L'accès sera révoqué si le paiement échoue.
               </p>
             </div>
@@ -794,7 +794,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
               <div>
                 <p className="text-sm font-medium text-ink">Autoriser téléchargement vidéo</p>
-                <p className="text-[10px] text-gray-400">Si décoché, la vidéo sera uniquement en streaming.</p>
+                <p className="text-xs text-gray-400">Si décoché, la vidéo sera uniquement en streaming.</p>
               </div>
               <div
                 onClick={() => setVideoDownloadAllowed(v => !v)}
@@ -847,7 +847,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
               </div>
             </div>
             {cashOnDelivery && (
-              <p className="text-[11px] leading-relaxed text-amber-900/70 font-medium bg-white/50 p-2 rounded-lg border border-amber-200/50">
+              <p className="text-xs leading-relaxed text-amber-900/70 font-medium bg-white/50 p-2 rounded-lg border border-amber-200/50">
                 ✨ <strong>En activant cette option</strong>, vos clients pourront choisir de payer à la livraison <u>OU</u> en ligne. Ils gardent le choix.
               </p>
             )}
@@ -868,7 +868,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
               className={`p-4 rounded-xl border-2 text-left transition-all ${coachingType === 'individual' ? 'border-[#0F7A60] bg-[#0F7A60]/5' : 'border-gray-100 bg-white hover:border-gray-200'}`}
             >
               <h3 className="font-bold text-[#0F7A60] text-sm mb-1">👤 Individuel (1-on-1)</h3>
-              <p className="text-[11px] text-gray-500 leading-tight">1 client par créneau. Le créneau se bloque après réservation.</p>
+              <p className="text-xs text-gray-500 leading-tight">1 client par créneau. Le créneau se bloque après réservation.</p>
             </button>
             <button
               type="button"
@@ -876,7 +876,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
               className={`p-4 rounded-xl border-2 text-left transition-all ${coachingType === 'group' ? 'border-gold bg-gold/5' : 'border-gray-100 bg-white hover:border-gray-200'}`}
             >
               <h3 className="font-bold text-gold text-sm mb-1">👥 Session de Groupe</h3>
-              <p className="text-[11px] text-gray-500 leading-tight">Webinaire/Masterclass. Plusieurs clients sur le même créneau.</p>
+              <p className="text-xs text-gray-500 leading-tight">Webinaire/Masterclass. Plusieurs clients sur le même créneau.</p>
             </button>
           </div>
 
@@ -912,7 +912,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                   </label>
                 ))}
               </div>
-              <p className="text-[10px] text-gray-400 mt-1">Sélectionnez au moins une durée.</p>
+              <p className="text-xs text-gray-400 mt-1">Sélectionnez au moins une durée.</p>
             </div>
             
             <div className="col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-100 flex items-center justify-between">
@@ -1015,18 +1015,18 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                 className="relative w-20 h-20 group cursor-grab active:cursor-grabbing transition-all rounded-xl"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <Image src={src} alt={`Image produit ${i + 1}`} fill unoptimized className="object-cover rounded-xl border border-gray-200" />
+                  <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={src} alt={`Image produit ${i + 1}`} fill unoptimized className="object-cover rounded-xl border border-gray-200" />
                 
                 {/* Badge "Couverture" sur la première image */}
                 {i === 0 && (
-                  <span className="absolute -top-1.5 -left-1.5 bg-[#0F7A60] text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm z-10">
+                  <span className="absolute -top-1.5 -left-1.5 bg-[#0F7A60] text-white text-xs font-black px-1.5 py-0.5 rounded shadow-sm z-10">
                     COUV
                   </span>
                 )}
                 
                 {/* Badge GIF animé */}
                 {imageFiles[i]?.type === 'image/gif' && (
-                  <span className="absolute bottom-1 left-1 bg-purple-500 text-white text-[9px] font-black px-1 rounded animate-pulse z-10">
+                  <span className="absolute bottom-1 left-1 bg-purple-500 text-white text-xs font-black px-1 rounded animate-pulse z-10">
                     GIF
                   </span>
                 )}
@@ -1041,7 +1041,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                 </button>
                 
                 {/* Indicateur de drag */}
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[9px] text-center py-1 rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+                <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs text-center py-1 rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity font-bold">
                   Glissez/Réorganiser
                 </div>
               </div>
@@ -1129,7 +1129,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                     <label className="block text-sm font-medium text-gray-700">Type de licence</label>
                     <div className="group relative">
                       <HelpCircle size={16} className="text-gray-400 cursor-help" />
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-ink text-white text-xs p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
                         Définissez comment vos clients peuvent utiliser votre produit digital
                       </div>
                     </div>
@@ -1146,7 +1146,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                         key={opt.v}
                         type="button"
                         onClick={() => setLicenseType(opt.v)}
-                        className={`py-2 px-1 rounded-lg border text-[11px] font-bold transition ${
+                        className={`py-2 px-1 rounded-lg border text-xs font-bold transition ${
                           licenseType === opt.v ? 'border-gold bg-gold/10 text-gold' : 'border-gray-100 bg-white text-gray-400 hover:bg-gray-50'
                         }`}
                       >
@@ -1171,7 +1171,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                     <h3 className="text-sm font-semibold text-ink">🔄 Droit de revente</h3>
                     <div className="group relative">
                       <HelpCircle size={16} className="text-gray-400 cursor-help" />
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-ink text-white text-xs p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
                         Permettez à vos clients de revendre votre produit et gagnez une commission
                       </div>
                     </div>
@@ -1179,7 +1179,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                     <div>
                       <p className="text-sm font-medium text-ink">Autoriser la revente</p>
-                      <p className="text-[10px] text-gray-400">L&apos;acheteur peut revendre ce produit à ses propres clients.</p>
+                      <p className="text-xs text-gray-400">L&apos;acheteur peut revendre ce produit à ses propres clients.</p>
                     </div>
                     <div
                       onClick={() => setResaleAllowed(v => !v)}
@@ -1199,7 +1199,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                         placeholder="Ex : 10"
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
                       />
-                      <p className="text-[10px] text-gray-400 mt-1">% reversé au créateur à chaque revente (max 30%).</p>
+                      <p className="text-xs text-gray-400 mt-1">% reversé au créateur à chaque revente (max 30%).</p>
                     </div>
                   )}
                 </div>
@@ -1213,7 +1213,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                   <h3 className="text-sm font-semibold text-ink">Variétés</h3>
                   <div className="group relative">
                     <HelpCircle size={16} className="text-gray-400 cursor-help" />
-                    <div className="absolute bottom-full left-0 mb-2 w-48 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                    <div className="absolute bottom-full left-0 mb-2 w-48 bg-ink text-white text-xs p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
                       Ajoutez des options comme taille, couleur, etc.
                     </div>
                   </div>
@@ -1313,7 +1313,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                 <h3 className="text-sm font-semibold text-ink">🚀 Order Bump (Vente Additionnelle)</h3>
                 <div className="group relative">
                   <HelpCircle size={16} className="text-gray-400 cursor-help" />
-                  <div className="absolute bottom-full left-0 mb-2 w-56 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                  <div className="absolute bottom-full left-0 mb-2 w-56 bg-ink text-white text-xs p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
                     Proposez un produit additionnel en un clic sur la page de paiement. Idéal pour augmenter le panier moyen.
                   </div>
                 </div>
@@ -1323,7 +1323,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Activer l'Order Bump</label>
-                    <p className="text-[10px] text-gray-400 mt-1">Affichera une option sur le checkout.</p>
+                    <p className="text-xs text-gray-400 mt-1">Affichera une option sur le checkout.</p>
                   </div>
                   <div
                     onClick={() => setBumpActive(v => !v)}
@@ -1369,7 +1369,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="block text-sm font-medium text-emerald-900">Activer l'Upsell O-T-O</label>
-                    <p className="text-[10px] text-emerald-700 mt-1">Affichera une page "One Time Offer" juste après l'achat (réservé au COD).</p>
+                    <p className="text-xs text-emerald-700 mt-1">Affichera une page "One Time Offer" juste après l'achat (réservé au COD).</p>
                   </div>
                   <div
                     onClick={() => setOtoActive(v => !v)}
@@ -1419,7 +1419,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                 <h3 className="text-sm font-semibold text-ink">🤝 Programme d'Affiliation</h3>
                 <div className="group relative">
                   <HelpCircle size={16} className="text-gray-400 cursor-help" />
-                  <div className="absolute bottom-full left-0 mb-2 w-56 bg-ink text-white text-[11px] p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
+                  <div className="absolute bottom-full left-0 mb-2 w-56 bg-ink text-white text-xs p-2 rounded-lg opacity-0 shadow-lg invisible group-hover:opacity-100 group-hover:visible transition-all z-50 text-center pointer-events-none">
                     Définissez des règles de commission spécifiques pour ce produit, ou laissez vide pour hériter de la boutique.
                   </div>
                 </div>
@@ -1472,7 +1472,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
                     placeholder="Ex: https://drive.google.com/drive/folders/..."
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
                   />
-                  <p className="text-[10px] text-gray-400 mt-1">Fournissez vos visuels, bannières et textes pour aider les ambassadeurs à vendre.</p>
+                  <p className="text-xs text-gray-400 mt-1">Fournissez vos visuels, bannières et textes pour aider les ambassadeurs à vendre.</p>
                 </div>
               </div>
             </div>

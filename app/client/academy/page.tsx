@@ -19,7 +19,7 @@ export default async function ClientAcademyPage() {
   const dbArticles = await getMasterclassArticles(false, 'client')
 
   // Progression
-  const completedProgresses = await prisma.masterclassProgress.findMany({
+  const completedProgresses = await prisma.masterclassProgress.findMany({ take: 50, 
     where: { user_id: user.id },
     select: { article_id: true }
   })

@@ -45,7 +45,7 @@ function StatusBadge({ status }: { status: ComplaintRow['status'] }) {
     dismissed:     '❌ Rejeté',
   }
   return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-xl text-[10px] font-black uppercase tracking-wider ${styles[status]}`}>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-xl text-xs font-black uppercase tracking-wider ${styles[status]}`}>
       {labels[status]}
     </span>
   )
@@ -155,7 +155,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
       {/* ── COLONNE GAUCHE : ONGLETS LATÉRAUX ── */}
       <aside className="w-full lg:w-[300px] flex-shrink-0 sticky top-[64px] z-10 lg:h-[calc(100vh-64px)] overflow-y-auto bg-white/80 backdrop-blur-3xl border-r border-gray-200 p-5 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col gap-6">
         <div>
-          <h2 className="text-[10px] items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">Filtrer par Statut</h2>
+          <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">Filtrer par Statut</h2>
           
           <nav className="flex flex-col gap-1.5">
           {FILTERS.map(f => {
@@ -192,7 +192,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
         </div>
 
         <div>
-          <h2 className="text-[10px] items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4 mt-2">Période</h2>
+          <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4 mt-2">Période</h2>
           <nav className="flex flex-col gap-1.5">
           {[
             { id: 'all', label: 'Toutes les dates' },
@@ -277,7 +277,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
 
         <div className="overflow-x-auto relative z-10">
           <table className="w-full text-left">
-            <thead className="bg-[#0F7A60]/[0.02] border-b border-white/40 text-gray-500 uppercase text-[10px] font-black tracking-widest">
+            <thead className="bg-[#0F7A60]/[0.02] border-b border-white/40 text-gray-500 uppercase text-xs font-black tracking-widest">
               <tr>
                 <th className="px-6 py-5">Type</th>
                 <th className="px-6 py-5">Boutique visée</th>
@@ -397,7 +397,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
                     {TYPE_LABELS[complaint.type] ?? complaint.type}
                   </h3>
                   <div className="mt-2 p-2.5 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center text-[10px]">🏪</div>
+                    <div className="w-6 h-6 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center text-xs">🏪</div>
                     <span className="text-xs font-bold text-gray-700 truncate">{complaint.Store?.name ?? complaint.store_id ?? 'Boutique Inconnue'}</span>
                   </div>
                 </div>
@@ -463,7 +463,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
             <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50/50">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Date d'ouverture</h3>
+                  <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Date d'ouverture</h3>
                   <p className="text-sm font-bold text-gray-900">{format(new Date(selectedComplaint.created_at), 'dd MMMM yyyy HH:mm', { locale: fr })}</p>
                 </div>
                 <StatusBadge status={selectedComplaint.status} />
@@ -493,7 +493,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
               <div className="space-y-3">
                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center justify-between">
                   Déclaration du plaignant
-                  <span className="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-lg">{TYPE_LABELS[selectedComplaint.type]}</span>
+                  <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-lg">{TYPE_LABELS[selectedComplaint.type]}</span>
                 </h3>
                 <div className="bg-white p-5 rounded-2xl border border-red-100 shadow-sm relative">
                   <div className="absolute top-0 left-0 w-1 h-full bg-red-500 rounded-l-2xl"></div>
@@ -537,7 +537,7 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
 
             {/* Actions critiques en sticky bottom */}
             <div className="p-6 border-t border-gray-200 bg-white shadow-[0_-10px_30px_rgba(0,0,0,0.05)] space-y-3 shrink-0">
-              <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-1">Actions Décisionnelles</h4>
+              <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest text-center mb-1">Actions Décisionnelles</h4>
               <button 
                 onClick={() => {
                   handleStatusChange('investigating')

@@ -66,7 +66,7 @@ export default function ServerSidePixelsControls({ initialConfig }: Props) {
           </div>
           <div className="flex-1">
             <h2 className="text-xl font-black text-indigo-950 flex items-center gap-2">
-              Suivi Server-Side API <span className="bg-indigo-600 text-white text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded">Pro</span>
+              Suivi Server-Side API <span className="bg-indigo-600 text-white text-xs uppercase font-bold tracking-widest px-2 py-0.5 rounded">Pro</span>
             </h2>
             <p className="text-sm font-medium text-indigo-900/80 mt-1 max-w-2xl leading-relaxed">
               En raison de la mise à jour iOS 14+ et des AdBlockers, les pixels classiques ratent jusqu'à 60% de vos ventes. Le <b>Server-Side Tracking</b> contourne ces restrictions en envoyant l'événement directement depuis notre serveur.
@@ -100,7 +100,7 @@ export default function ServerSidePixelsControls({ initialConfig }: Props) {
                </div>
                <div>
                   <h3 className="font-bold text-gray-900 leading-tight">Meta (Facebook/Insta)</h3>
-                  <p className="text-[11px] text-gray-500 uppercase font-black tracking-widest mt-0.5">Pixel + API Conversions</p>
+                  <p className="text-xs text-gray-500 uppercase font-black tracking-widest mt-0.5">Pixel + API Conversions</p>
                </div>
              </div>
           </div>
@@ -130,7 +130,7 @@ export default function ServerSidePixelsControls({ initialConfig }: Props) {
                  placeholder="Généré via Facebook Events Manager"
                  className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
                />
-               <p className="text-[10px] text-gray-400 font-medium mt-2 leading-relaxed">
+               <p className="text-xs text-gray-400 font-medium mt-2 leading-relaxed">
                  Assure un Tracking d'achats fiable à 99% en Server-to-Server sans dépendre du navigateur.
                </p>
              </div>
@@ -148,7 +148,7 @@ export default function ServerSidePixelsControls({ initialConfig }: Props) {
                </div>
                <div>
                   <h3 className="font-bold text-gray-900 leading-tight">TikTok</h3>
-                  <p className="text-[11px] text-gray-500 uppercase font-black tracking-widest mt-0.5">Pixel de Suivi</p>
+                  <p className="text-xs text-gray-500 uppercase font-black tracking-widest mt-0.5">Pixel de Suivi</p>
                </div>
              </div>
           </div>
@@ -179,7 +179,7 @@ export default function ServerSidePixelsControls({ initialConfig }: Props) {
                </div>
                <div>
                   <h3 className="font-bold text-gray-900 leading-tight">Google Analytics / GTM</h3>
-                  <p className="text-[11px] text-gray-500 uppercase font-black tracking-widest mt-0.5">ID Google Tag</p>
+                  <p className="text-xs text-gray-500 uppercase font-black tracking-widest mt-0.5">ID Google Tag</p>
                </div>
              </div>
           </div>
@@ -198,7 +198,7 @@ export default function ServerSidePixelsControls({ initialConfig }: Props) {
                  placeholder="ex: G-1A2B3C4D5E"
                  className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow"
                />
-               <p className="text-[10px] text-gray-400 font-medium mt-2 leading-relaxed">
+               <p className="text-xs text-gray-400 font-medium mt-2 leading-relaxed">
                  Déploie l'ID de suivi Google Global Site Tag pour analyser votre trafic via GA4.
                </p>
              </div>

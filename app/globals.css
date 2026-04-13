@@ -1,6 +1,10 @@
+/* stylelint-disable at-rule-no-unknown */
 /* noinspection CssUnknownTarget, CssUnknownAtRule */
+/* noinspection CssUnknownAtRule */
 @tailwind base;
+/* noinspection CssUnknownAtRule */
 @tailwind components;
+/* noinspection CssUnknownAtRule */
 @tailwind utilities;
 
 @layer utilities {
@@ -10,6 +14,31 @@
     background-size: 100% 2em;
     background-position: 0 1em;
   }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pb-safe-16 {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+
+  .scrollbar-none {
+    -ms-overflow-style: none;
+  }
+  @supports (scrollbar-width: none) {
+    .scrollbar-none {
+      scrollbar-width: none;
+    }
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @layer base {
@@ -121,4 +150,14 @@
   10% { opacity: 0.5; }
   90% { opacity: 0.5; }
   100% { top: 110%; opacity: 0; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fade-slice-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }

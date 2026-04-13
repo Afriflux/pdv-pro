@@ -12,7 +12,7 @@ export default async function CloserTargetsPage() {
   if (!user) redirect('/login')
 
   // Trouver toutes les Boutiques qui ont activé la fonctionnalité Closer
-  const stores = await prisma.store.findMany({
+  const stores = await prisma.store.findMany({ take: 50, 
     where: {
       closer_active: true
     },

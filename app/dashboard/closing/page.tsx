@@ -23,7 +23,7 @@ export default async function ClosingPage() {
   if (!store) redirect('/dashboard')
 
   // Load all recent closing requests (pending first)
-  const closingRequests = await prisma.closingRequest.findMany({
+  const closingRequests = await prisma.closingRequest.findMany({ 
     where: { store_id: store.id },
     orderBy: [
       { status: 'asc' }, // PENDING will usually sort before VALIDATED or REJECTED
@@ -46,8 +46,9 @@ export default async function ClosingPage() {
   // Load Buyer Score for the phones involved
   type ClosingRequestPayload = typeof closingRequests[0]
   const phones = Array.from(new Set(closingRequests.map((r: ClosingRequestPayload) => r.order.buyer_phone)))
-  const buyerScores = await prisma.buyerScore.findMany({
-    where: { phone: { in: phones } }
+  const buyerScores = await prisma.buyerScore.findMany({ 
+    where: { phone: { in: phones } },
+    take: 200
   })
 
   type ScorePayload = typeof buyerScores[0]

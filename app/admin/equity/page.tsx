@@ -80,20 +80,20 @@ export default async function AdminEquityPage() {
         <div className="relative z-10 mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center justify-between">
              <div className="flex flex-col">
-               <span className="text-zinc-400 text-[10px] font-black uppercase mb-1">Capital Distribué</span>
+               <span className="text-zinc-400 text-xs font-black uppercase mb-1">Capital Distribué</span>
                <span className="text-2xl font-black text-white">{totalAllocated}% <span className="text-sm font-bold text-zinc-500">sur 100%</span></span>
              </div>
              <PieChart className="w-8 h-8 text-zinc-600 opacity-50" />
           </div>
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col">
-            <span className="text-zinc-400 text-[10px] font-black uppercase mb-1">Associés Actifs</span>
+            <span className="text-zinc-400 text-xs font-black uppercase mb-1">Associés Actifs</span>
             <span className="text-2xl font-black text-white">{shareholders.length} <span className="text-sm text-zinc-500">Membres du Board</span></span>
           </div>
           <div className="bg-emerald-500/10 backdrop-blur-md border border-emerald-500/30 rounded-2xl p-4 flex flex-col shadow-[0_0_15px_rgba(16,185,129,0.15)] overflow-hidden relative">
             <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-4 translate-y-4">
               <Landmark className="w-16 h-16 text-emerald-400" />
             </div>
-            <span className="text-emerald-400 text-[10px] font-black uppercase mb-1">Bénéfice Net Distribuable</span>
+            <span className="text-emerald-400 text-xs font-black uppercase mb-1">Bénéfice Net Distribuable</span>
             <span className="text-2xl font-black text-emerald-400">{netProfit.toLocaleString('fr-FR')} <span className="text-sm">CFA</span></span>
           </div>
         </div>

@@ -80,7 +80,7 @@ export default async function AdminEmailPage() {
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 mb-4">
-              <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-black tracking-widest uppercase">
+              <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-black tracking-widest uppercase">
                 Outils & Marketing
               </span>
             </div>
@@ -139,7 +139,7 @@ async function EmailDashboardContent() {
           <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:rotate-6">
             <Users className="w-24 h-24 text-[#0F7A60]" />
           </div>
-          <p className="text-[11px] font-black uppercase text-[#0F7A60] tracking-widest mb-1 relative z-10">Liste 1 - Acheteurs</p>
+          <p className="text-xs font-black uppercase text-[#0F7A60] tracking-widest mb-1 relative z-10">Liste 1 - Acheteurs</p>
           <div className="flex items-baseline gap-2 relative z-10">
              <h3 suppressHydrationWarning className="text-4xl font-black text-gray-900 tracking-tight">
                 {(list1?.totalSubscribers ?? 0).toLocaleString('fr-FR')}
@@ -152,7 +152,7 @@ async function EmailDashboardContent() {
           <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:-rotate-6">
             <Store className="w-24 h-24 text-amber-500" />
           </div>
-          <p className="text-[11px] font-black uppercase text-amber-500/80 tracking-widest mb-1 relative z-10">Liste 2 - Vendeurs</p>
+          <p className="text-xs font-black uppercase text-amber-500/80 tracking-widest mb-1 relative z-10">Liste 2 - Vendeurs</p>
           <div className="flex items-baseline gap-2 relative z-10">
              <h3 suppressHydrationWarning className="text-4xl font-black text-amber-500 tracking-tight">
                 {(list2?.totalSubscribers ?? 0).toLocaleString('fr-FR')}
@@ -165,7 +165,7 @@ async function EmailDashboardContent() {
           <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:rotate-6">
             <Mail className="w-24 h-24 text-indigo-500" />
           </div>
-          <p className="text-[11px] font-black uppercase text-indigo-500/80 tracking-widest mb-1 relative z-10">Liste 3 - Newsletters</p>
+          <p className="text-xs font-black uppercase text-indigo-500/80 tracking-widest mb-1 relative z-10">Liste 3 - Newsletters</p>
           <div className="flex items-baseline gap-2 relative z-10">
              <h3 suppressHydrationWarning className="text-4xl font-black text-indigo-500 tracking-tight">
                 {(list3?.totalSubscribers ?? 0).toLocaleString('fr-FR')}
@@ -178,7 +178,7 @@ async function EmailDashboardContent() {
           <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:-rotate-6">
             <Send className="w-24 h-24 text-emerald-600" />
           </div>
-          <p className="text-[11px] font-black uppercase text-emerald-600 tracking-widest mb-1 relative z-10">Volume Campagnes</p>
+          <p className="text-xs font-black uppercase text-emerald-600 tracking-widest mb-1 relative z-10">Volume Campagnes</p>
           <div className="flex items-baseline gap-2 relative z-10">
              <h3 className="text-4xl font-black text-emerald-600 tracking-tight">{campaigns.length}</h3>
           </div>

@@ -85,11 +85,11 @@ export default function AccountingClient({ initialExpenses }: { initialExpenses:
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Intitulé</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Catégorie</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Statut</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-right">Montant</th>
+                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Date</th>
+                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Intitulé</th>
+                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Catégorie</th>
+                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Statut</th>
+                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400 text-right">Montant</th>
               </tr>
             </thead>
             <tbody>
@@ -106,7 +106,7 @@ export default function AccountingClient({ initialExpenses }: { initialExpenses:
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-2">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border shadow-sm ${getCategoryBadge(expense.category)}`}>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider border shadow-sm ${getCategoryBadge(expense.category)}`}>
                         {getCategoryIcon(expense.category)}
                         {expense.category}
                       </span>
@@ -114,11 +114,11 @@ export default function AccountingClient({ initialExpenses }: { initialExpenses:
                   </td>
                   <td className="px-6 py-5">
                     {expense.isRecurring ? (
-                      <span className="inline-flex items-center px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-indigo-700 bg-indigo-50 rounded-lg">
+                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-black uppercase tracking-wider text-indigo-700 bg-indigo-50 rounded-lg">
                         Récurrent ({expense.frequency})
                       </span>
                     ) : (
-                      <span className="inline-flex items-center px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-gray-600 bg-gray-100 rounded-lg">
+                      <span className="inline-flex items-center px-2.5 py-1 text-xs font-black uppercase tracking-wider text-gray-600 bg-gray-100 rounded-lg">
                         Ponctuel
                       </span>
                     )}

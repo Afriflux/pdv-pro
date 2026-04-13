@@ -144,7 +144,7 @@ export function FortuneWheelPopup({
                 {isSpinning ? 'Ça tourne... 🎡' : 'Tenter ma chance !'}
               </button>
               
-              <p className="text-[10px] text-gray-400">En participant, vous acceptez d'être contacté sur WhatsApp pour la livraison.</p>
+              <p className="text-xs text-gray-400">En participant, vous acceptez d'être contacté sur WhatsApp pour la livraison.</p>
             </form>
           )}
         </div>

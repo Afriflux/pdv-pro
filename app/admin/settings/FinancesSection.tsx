@@ -62,7 +62,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
     'shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] placeholder:text-gray-400 ' +
     '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
 
-  const labelCls = 'block text-[10px] font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1'
+  const labelCls = 'block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1'
 
   return (
     <form onSubmit={handleSave} className="space-y-8">
@@ -81,7 +81,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
               <input title="Commission 0-100K" placeholder="%" type="number" step="0.1" value={tier1} onChange={e => setTier1(Number(e.target.value))} className={inputCls} required />
               <Percent className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0F7A60]" strokeWidth={2.5} />
             </div>
-            <p className="text-[10px] text-gray-400 mt-1 ml-1">Débutant</p>
+            <p className="text-xs text-gray-400 mt-1 ml-1">Débutant</p>
           </div>
           <div>
             <label className={labelCls}>100K - 500K FCFA</label>
@@ -89,7 +89,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
               <input title="Commission 100K-500K" placeholder="%" type="number" step="0.1" value={tier2} onChange={e => setTier2(Number(e.target.value))} className={inputCls} required />
               <Percent className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0F7A60]" strokeWidth={2.5} />
             </div>
-            <p className="text-[10px] text-gray-400 mt-1 ml-1">Actif</p>
+            <p className="text-xs text-gray-400 mt-1 ml-1">Actif</p>
           </div>
           <div>
             <label className={labelCls}>500K - 1M FCFA</label>
@@ -97,7 +97,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
               <input title="Commission 500K-1M" placeholder="%" type="number" step="0.1" value={tier3} onChange={e => setTier3(Number(e.target.value))} className={inputCls} required />
               <Percent className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0F7A60]" strokeWidth={2.5} />
             </div>
-            <p className="text-[10px] text-gray-400 mt-1 ml-1">Pro</p>
+            <p className="text-xs text-gray-400 mt-1 ml-1">Pro</p>
           </div>
           <div>
             <label className={labelCls}>+ 1M FCFA</label>
@@ -105,7 +105,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
               <input title="Commission 1M+" placeholder="%" type="number" step="0.1" value={tier4} onChange={e => setTier4(Number(e.target.value))} className={inputCls} required />
               <Percent className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0F7A60]" strokeWidth={2.5} />
             </div>
-            <p className="text-[10px] text-gray-400 mt-1 ml-1">Elite</p>
+            <p className="text-xs text-gray-400 mt-1 ml-1">Elite</p>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
               <input title="Commission COD" placeholder="%" type="number" step="0.1" value={cod} onChange={e => setCod(Number(e.target.value))} className={inputCls} required />
               <Package className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500" strokeWidth={2.5} />
             </div>
-            <p className="text-[10px] text-gray-400 mt-1 ml-1">Prélevé indépendamment du CA.</p>
+            <p className="text-xs text-gray-400 mt-1 ml-1">Prélevé indépendamment du CA.</p>
           </div>
 
           {/* Frais fixes */}
@@ -135,7 +135,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
               <input title="Frais de retrait fixes" placeholder="Frais en FCFA" type="number" value={feeFixed} onChange={e => setFeeFixed(Number(e.target.value))} className={inputCls} required />
               <Coins className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500" strokeWidth={2.5} />
             </div>
-            <p className="text-[10px] text-gray-400 mt-1 ml-1">Coût additionel au taux.</p>
+            <p className="text-xs text-gray-400 mt-1 ml-1">Coût additionel au taux.</p>
           </div>
 
           {/* Retrait Minimum */}
@@ -145,7 +145,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
               <input title="Seuil minimal de retrait" placeholder="Montant en FCFA" type="number" value={minWithdrawal} onChange={e => setMinWithdrawal(Number(e.target.value))} className={inputCls} required />
               <ArrowUpRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-red-400" strokeWidth={2.5} />
             </div>
-            <p className="text-[10px] text-gray-400 mt-1 ml-1">Seuil minimal (Traitement Auto/48H).</p>
+            <p className="text-xs text-gray-400 mt-1 ml-1">Seuil minimal (Traitement Auto/48H).</p>
           </div>
 
           {/* TVA Optionnelle */}
@@ -161,7 +161,7 @@ export default function FinancesSection({ initialConfig }: FinancesSectionProps)
                  <Percent className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0F7A60]" strokeWidth={2.5} />
               </div>
             </div>
-            <p className="text-[10px] text-gray-400 mt-1 ml-1">Optionnel. Collecte Taxe Numérique.</p>
+            <p className="text-xs text-gray-400 mt-1 ml-1">Optionnel. Collecte Taxe Numérique.</p>
           </div>
         </div>
       </div>

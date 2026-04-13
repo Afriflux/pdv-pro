@@ -70,7 +70,7 @@ export default async function SocialProofAppPage() {
                    <div className="flex flex-col justify-center w-full min-w-0 pr-2">
                       <div className="text-[13px] font-black text-gray-900 leading-tight truncate">Fatou D. (Dakar) a acheté</div>
                       <div className="text-[12px] text-gray-500 font-medium truncate mb-1">AirPods Pro - Edition Ultra</div>
-                      <div className="text-[10px] font-black text-rose-500 tracking-wider uppercase">Il y a 12 minutes</div>
+                      <div className="text-xs font-black text-rose-500 tracking-wider uppercase">Il y a 12 minutes</div>
                    </div>
                 </div>
              </div>

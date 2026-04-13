@@ -58,6 +58,9 @@ export async function generateMetadata({ params }: SalePagePublicProps): Promise
   const storeData = page.store as unknown as { name: string; store_name?: string } | { name: string; store_name?: string }[]
   const storeName = Array.isArray(storeData) ? (storeData[0]?.store_name || storeData[0]?.name) : (storeData?.store_name || storeData?.name)
 
+  const heroSection = sections.find(s => s.type === 'hero')
+  const heroImage = (heroSection as any)?.image || (heroSection as any)?.media_url
+
   return {
     title: `${page.title} | ${storeName || 'Espace'}`,
     description: desc,
@@ -68,9 +71,10 @@ export async function generateMetadata({ params }: SalePagePublicProps): Promise
       siteName: storeName || 'Yayyam',
       images: [
         {
-          url: '/og-image.svg',
+          url: heroImage || '/og-image.svg',
           width: 1200,
           height: 630,
+          alt: page.title,
         },
       ],
       locale: 'fr_FR',
@@ -80,6 +84,7 @@ export async function generateMetadata({ params }: SalePagePublicProps): Promise
       card: 'summary_large_image',
       title: page.title,
       description: desc,
+      images: heroImage ? [heroImage] : [],
     }
   }
 }

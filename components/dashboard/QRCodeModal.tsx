@@ -98,7 +98,7 @@ export function QRCodeModal({ productId, productName, onClose }: QRCodeModalProp
 
         {/* Footer info */}
         <div className="p-6 bg-gray-50 border-t border-line text-center">
-          <p className="text-[10px] text-dust font-bold uppercase tracking-widest">Généré par Yayyam</p>
+          <p className="text-xs text-dust font-bold uppercase tracking-widest">Généré par Yayyam</p>
         </div>
       </div>
     </div>

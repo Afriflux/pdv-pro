@@ -190,7 +190,7 @@ export default function AmbassadorWithdrawModal({ ambassadorId, balance }: Ambas
                 )}
               </button>
 
-              <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+              <p className="text-center text-xs text-gray-400 uppercase tracking-widest font-bold">
                 🔒 Sécurisé par YAYYAM
               </p>
             </form>

@@ -143,7 +143,7 @@ export default function SecuritySection() {
           </div>
           {/* Indicateur correspondance */}
           {confirmPassword && confirmPassword !== newPassword && (
-            <p role="alert" aria-live="polite" className="mt-1 text-[10px] text-red-500 font-medium">
+            <p role="alert" aria-live="polite" className="mt-1 text-xs text-red-500 font-medium">
               Les mots de passe ne correspondent pas.
             </p>
           )}

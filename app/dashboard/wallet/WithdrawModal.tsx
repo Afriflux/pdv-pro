@@ -47,7 +47,7 @@ export function WithdrawModal({
         
         <div className="flex flex-col items-start text-left relative z-10">
           <span className="text-sm font-black leading-none mb-1">Demander un retrait</span>
-          <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest leading-none flex items-center gap-1">
+          <span className="text-xs text-gray-300 font-bold uppercase tracking-widest leading-none flex items-center gap-1">
             Reçu instantanément
           </span>
         </div>
@@ -78,7 +78,7 @@ export function WithdrawModal({
                         <div className="space-y-3">
                           <span className="text-3xl">⚙️</span>
                           <p className="text-sm font-bold text-gray-600">Configuration requise</p>
-                          <p className="text-[11px] text-gray-400 leading-relaxed max-w-[200px] mx-auto">
+                          <p className="text-xs text-gray-400 leading-relaxed max-w-[200px] mx-auto">
                             Ajoutez un moyen de retrait pour pouvoir transférer vos fonds.
                           </p>
                           <Link href="/dashboard/settings#retrait" onClick={() => setIsOpen(false)} className="inline-flex items-center justify-center mt-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-[#1A1A1A] hover:bg-gray-50 transition-colors shadow-sm">
@@ -89,7 +89,7 @@ export function WithdrawModal({
                         <div className="space-y-2 py-3">
                           <span className="text-3xl">🔒</span>
                           <p className="text-sm font-bold text-gray-600">Solde insuffisant</p>
-                          <p className="text-[11px] text-gray-400 leading-relaxed">
+                          <p className="text-xs text-gray-400 leading-relaxed">
                             Il vous manque <strong className="text-gray-600 font-bold">{formatAmount(5000 - balance)} FCFA</strong> pour atteindre le seuil de retrait.
                           </p>
                         </div>

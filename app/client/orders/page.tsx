@@ -77,7 +77,7 @@ export default async function ClientOrdersPage() {
                             {o.product_id ? 'Achat Produit' : 'Panier multiple'}
                           </span>
                           <span className="hidden sm:inline text-xs text-gray-400 font-medium">chez</span>
-                          <Link href={`/${o.Store?.slug || ''}`} target="_blank" className="text-[11px] font-black bg-gray-100/80 hover:bg-[#0F7A60]/10 hover:text-[#0F7A60] px-2.5 py-1 rounded-md text-gray-600 transition-colors self-start sm:self-center">
+                          <Link href={`/${o.Store?.slug || ''}`} target="_blank" className="text-xs font-black bg-gray-100/80 hover:bg-[#0F7A60]/10 hover:text-[#0F7A60] px-2.5 py-1 rounded-md text-gray-600 transition-colors self-start sm:self-center">
                              {o.Store?.name || 'Boutique'}
                           </Link>
                         </div>
@@ -93,13 +93,13 @@ export default async function ClientOrdersPage() {
                     <div className="flex items-center gap-3 sm:gap-4 self-start sm:self-center">
                        <div className="hidden lg:block w-24">
                          {o.status === 'confirmed' ? (
-                           <span className="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-xl text-[11px] font-bold bg-green-50 text-green-700 border border-green-200">Confirmée</span>
+                           <span className="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-xl text-xs font-bold bg-green-50 text-green-700 border border-green-200">Confirmée</span>
                          ) : o.status === 'delivered' ? (
-                           <span className="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-xl text-[11px] font-bold bg-emerald-50 text-[#0F7A60] border border-[#0F7A60]/30 shadow-sm">Livrée</span>
+                           <span className="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-[#0F7A60] border border-[#0F7A60]/30 shadow-sm">Livrée</span>
                          ) : o.status === 'shipped' || o.status === 'processing' ? (
-                           <span className="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-xl text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">En cours</span>
+                           <span className="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">En cours</span>
                          ) : (
-                           <span className="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-xl text-[11px] font-bold bg-gray-100 text-gray-700">{o.status}</span>
+                           <span className="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 text-gray-700">{o.status}</span>
                          )}
                        </div>
 

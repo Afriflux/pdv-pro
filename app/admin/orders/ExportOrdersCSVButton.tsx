@@ -44,7 +44,7 @@ export default function ExportOrdersCSVButton() {
     <button
       onClick={handleExport}
       disabled={loading}
-      className="flex items-center gap-2 px-4 py-2 bg-emerald-900/10 hover:bg-emerald-900/20 text-[#0F7A60] font-black uppercase tracking-widest text-[11px] rounded-xl border border-emerald-900/20 shadow-sm transition-all disabled:opacity-50"
+      className="flex items-center gap-2 px-4 py-2 bg-emerald-900/10 hover:bg-emerald-900/20 text-[#0F7A60] font-black uppercase tracking-widest text-xs rounded-xl border border-emerald-900/20 shadow-sm transition-all disabled:opacity-50"
     >
       <Download className={`w-3.5 h-3.5 ${loading ? 'animate-bounce' : ''}`} />
       {loading ? 'Export...' : 'CSV'}

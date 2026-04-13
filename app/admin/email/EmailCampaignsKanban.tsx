@@ -98,7 +98,7 @@ export default function EmailCampaignsKanban({ campaigns }: { campaigns: Campaig
                 <col.icon className="w-5 h-5" />
               </div>
               <div>
-                <h3 className={`font-black uppercase tracking-widest text-[11px] ${col.colorClass}`}>
+                <h3 className={`font-black uppercase tracking-widest text-xs ${col.colorClass}`}>
                   {col.title}
                 </h3>
                 <p className="text-gray-500 text-xs font-bold mt-0.5">{col.campaigns.length} campagne(s)</p>
@@ -136,7 +136,7 @@ export default function EmailCampaignsKanban({ campaigns }: { campaigns: Campaig
                         <h4 className="font-bold leading-tight text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2" title={campaign.name}>
                           {campaign.name}
                         </h4>
-                        <p className="text-[11px] text-gray-400 font-medium mt-1 mb-1">
+                        <p className="text-xs text-gray-400 font-medium mt-1 mb-1">
                           {formatDate(campaign.scheduledAt ?? campaign.createdAt)}
                         </p>
                       </div>
@@ -154,14 +154,14 @@ export default function EmailCampaignsKanban({ campaigns }: { campaigns: Campaig
                   {col.id === 'sent' && delivered > 0 && (
                     <div className="grid grid-cols-2 gap-2 relative z-10 text-center">
                       <div className="bg-[#FAFAF7] rounded-xl p-3 border border-gray-100 flex flex-col items-center justify-center">
-                        <p className="text-[10px] uppercase font-black tracking-widest text-[#0F7A60] mb-1">Ouvertures</p>
+                        <p className="text-xs uppercase font-black tracking-widest text-[#0F7A60] mb-1">Ouvertures</p>
                         <p className="font-black text-gray-900 text-lg leading-none">{openRate.toFixed(1)}%</p>
-                        <p className="text-[9px] font-bold text-gray-400 mt-1">{formatNumber(opens)} vues</p>
+                        <p className="text-xs font-bold text-gray-400 mt-1">{formatNumber(opens)} vues</p>
                       </div>
                       <div className="bg-[#FAFAF7] rounded-xl p-3 border border-gray-100 flex flex-col items-center justify-center">
-                        <p className="text-[10px] uppercase font-black tracking-widest text-emerald-600/70 mb-1">Clics</p>
+                        <p className="text-xs uppercase font-black tracking-widest text-emerald-600/70 mb-1">Clics</p>
                         <p className="font-black text-gray-900 text-lg leading-none">{clickRate.toFixed(1)}%</p>
-                        <p className="text-[9px] font-bold text-gray-400 mt-1">{formatNumber(clicks)} clics</p>
+                        <p className="text-xs font-bold text-gray-400 mt-1">{formatNumber(clicks)} clics</p>
                       </div>
                     </div>
                   )}
@@ -170,11 +170,11 @@ export default function EmailCampaignsKanban({ campaigns }: { campaigns: Campaig
                   <div className="flex items-center justify-between pt-3 border-t border-gray-50 relative z-10">
                      <div className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
                         {delivered > 0 ? (
-                          <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest">
+                          <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-widest">
                             {formatNumber(delivered)} Récip.
                           </span>
                         ) : (
-                          <span className="text-[10px]">&nbsp;</span>
+                          <span className="text-xs">&nbsp;</span>
                         )}
                      </div>
                      
@@ -182,7 +182,7 @@ export default function EmailCampaignsKanban({ campaigns }: { campaigns: Campaig
                         href={isFauxContact ? '#' : `https://my.brevo.com/camp/summary/id/${campaign.id}`}
                         target={isFauxContact ? '_self' : '_blank'}
                         rel="noopener noreferrer"
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-emerald-100 hover:border-emerald-500/50 hover:bg-emerald-50/50 text-[#0F7A60] hover:shadow-md transition-all rounded-lg text-[11px] font-bold ${isFauxContact ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-emerald-100 hover:border-emerald-500/50 hover:bg-emerald-50/50 text-[#0F7A60] hover:shadow-md transition-all rounded-lg text-xs font-bold ${isFauxContact ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
                        {col.id === 'draft' ? <FileEdit className="w-3.5 h-3.5" /> : <PieChart className="w-3.5 h-3.5"/>}
                        Editer sur Brevo
@@ -199,7 +199,7 @@ export default function EmailCampaignsKanban({ campaigns }: { campaigns: Campaig
             {col.campaigns.length === 0 && (
               <div className="p-8 border-2 border-dashed border-gray-100 rounded-[1.5rem] flex flex-col items-center justify-center text-center">
                 <col.icon className="w-8 h-8 text-gray-300 mb-2" />
-                <p className="text-[11px] font-black uppercase text-gray-400 tracking-widest">Vide</p>
+                <p className="text-xs font-black uppercase text-gray-400 tracking-widest">Vide</p>
               </div>
             )}
           </div>

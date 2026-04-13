@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     const start24h = new Date(now.getTime() - 48 * 60 * 60 * 1000)
     const end24h = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
-    const emptyStores = await prisma.store.findMany({
+    const emptyStores = await prisma.store.findMany({ take: 50, 
       where: {
         created_at: { gte: start24h, lt: end24h },
         products: { none: {} }
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     const start72h = new Date(now.getTime() - 96 * 60 * 60 * 1000)
     const end72h = new Date(now.getTime() - 72 * 60 * 60 * 1000)
 
-    const unreadMasterclassUsers = await prisma.user.findMany({
+    const unreadMasterclassUsers = await prisma.user.findMany({ take: 50, 
       where: {
         role: 'vendeur',
         created_at: { gte: start72h, lt: end72h },

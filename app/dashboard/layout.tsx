@@ -2,6 +2,7 @@ import { GlobalHomeButton } from '@/components/shared/GlobalHomeButton'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { MobileBottomNav } from '@/components/dashboard/MobileBottomNav'
 import ContractBanner from '@/components/vendor/ContractBanner'
 import GlobalCoach from '@/components/dashboard/GlobalCoach'
 import LiveNotificationListener from '@/components/dashboard/LiveNotificationListener'
@@ -39,7 +40,7 @@ export default async function DashboardLayout({
   // Fetch installed apps if store exists
   let installedApps: string[] = []
   if (store) {
-    const apps = await prisma.installedApp.findMany({
+    const apps = await prisma.installedApp.findMany({ take: 50, 
       where: { store_id: store.id, status: 'active' },
       select: { app_id: true }
     })
@@ -54,7 +55,7 @@ export default async function DashboardLayout({
   // true par défaut : ne pas bloquer si le store n'existe pas encore
 
   return (
-    <div className="flex min-h-screen bg-[#FAFAF7]">
+    <div className="flex min-h-screen bg-gray-50">
       <Sidebar 
         storeName={storeName} 
         userName={vendorName} 
@@ -63,7 +64,7 @@ export default async function DashboardLayout({
         installedApps={installedApps}
       />
 
-      <main className="relative flex-1 bg-[#FAFAF7] min-w-0 min-h-screen overflow-auto">
+      <main className="relative flex-1 bg-gray-50 min-w-0 min-h-screen overflow-auto">
         
         {/* 🌟 UNIVERSAL MESH BACKGROUND 🌟 */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -82,11 +83,18 @@ export default async function DashboardLayout({
           />
         )}
 
-        <div className="pt-14 lg:pt-0 pb-12 w-full max-w-[2000px] mx-auto px-4 lg:px-8 xl:px-10 min-h-full">
+        <div className="pt-12 lg:pt-0 pb-24 lg:pb-12 w-full max-w-[2000px] mx-auto px-3 lg:px-8 xl:px-10 min-h-full">
           {children}
         </div>
         </div>
       </main>
+
+      {/* Bottom Tab Bar Mobile */}
+      <MobileBottomNav
+        storeName={storeName}
+        userName={vendorName}
+        avatarUrl={avatarUrl}
+      />
 
       {/* Le Coach IA Ultime Omniprésent */}
       <GlobalCoach />

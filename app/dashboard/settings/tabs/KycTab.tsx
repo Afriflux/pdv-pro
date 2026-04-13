@@ -202,7 +202,7 @@ export function KycTab({ store }: { store: any }) {
               {/* Stepper Progress Bar */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-2">
-                   <p className="text-[10px] font-black text-teal-600 uppercase tracking-widest">Étape {currentStep} sur {totalSteps}</p>
+                   <p className="text-xs font-black text-teal-600 uppercase tracking-widest">Étape {currentStep} sur {totalSteps}</p>
                 </div>
                 <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                   <motion.div 
@@ -385,7 +385,7 @@ function DocUploadFieldPremium({ label, subtitle, preview, setFile, isSelfie = f
         
         <div className="flex-1 bg-gray-50/50 border-2 border-dashed border-gray-300 rounded-[1rem] overflow-hidden group-hover:bg-teal-50/50 group-hover:border-teal-300 transition-colors relative flex items-center justify-center m-2">
           {preview ? (
-            <Image src={preview} alt={label} fill unoptimized className="object-cover transition-transform duration-700 group-hover:scale-105" />
+            <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={preview} alt={label} fill unoptimized className="object-cover transition-transform duration-700 group-hover:scale-105" />
           ) : (
             <div className="flex flex-col items-center justify-center text-gray-400 group-hover:text-teal-500 transition-colors px-6 text-center gap-3">
                <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${isSelfie ? 'bg-emerald-100/50 text-emerald-500' : 'bg-teal-100/50 text-teal-500'}`}>
@@ -393,7 +393,7 @@ function DocUploadFieldPremium({ label, subtitle, preview, setFile, isSelfie = f
                </div>
                <div>
                   <span className="text-[13px] font-bold block mb-1">Cliquer pour uploader</span>
-                  <span className="text-[11px] font-medium opacity-70">Glissez-déposez la photo ici.</span>
+                  <span className="text-xs font-medium opacity-70">Glissez-déposez la photo ici.</span>
                </div>
             </div>
           )}

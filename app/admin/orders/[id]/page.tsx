@@ -182,7 +182,7 @@ export default async function AdminOrderDetailPage({
                   <h1 className="text-4xl font-black text-white tracking-tight">
                     Commande #{shortId}
                   </h1>
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${statusColor}`}>
+                  <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-sm ${statusColor}`}>
                     {statusLabel}
                   </span>
                 </div>
@@ -195,7 +195,7 @@ export default async function AdminOrderDetailPage({
             
             <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md flex items-center gap-8">
               <div>
-                <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1">Paiement via</p>
+                <p className="text-xs font-bold text-white/50 uppercase tracking-widest mb-1">Paiement via</p>
                 <div className="flex items-center gap-2">
                   <CreditCard className="w-4 h-4 text-emerald-400" />
                   <span className="text-sm font-bold text-white">{paymentLabel}</span>
@@ -203,7 +203,7 @@ export default async function AdminOrderDetailPage({
               </div>
               <div className="w-px h-8 bg-white/10"></div>
               <div>
-                <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1">Montant Total</p>
+                <p className="text-xs font-bold text-white/50 uppercase tracking-widest mb-1">Montant Total</p>
                 <p className="text-lg font-black text-white">{formatAmount(Number(orderData.total))}</p>
               </div>
             </div>
@@ -241,7 +241,7 @@ export default async function AdminOrderDetailPage({
                       <div>
                         <p className="text-[15px] font-black text-[#1A1A1A] leading-tight mb-1">{product.name}</p>
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded-md bg-gray-200/50 text-gray-500 text-[10px] font-bold uppercase tracking-wider">
+                          <span className="px-2 py-0.5 rounded-md bg-gray-200/50 text-gray-500 text-xs font-bold uppercase tracking-wider">
                             {product.type}
                           </span>
                         </div>
@@ -305,7 +305,7 @@ export default async function AdminOrderDetailPage({
               <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#0F7A60] to-teal-400"></div>
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#0F7A60]/5 rounded-full blur-2xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
               
-              <h2 className="text-[11px] font-black text-[#0F7A60] uppercase tracking-widest mb-5">
+              <h2 className="text-xs font-black text-[#0F7A60] uppercase tracking-widest mb-5">
                 Actions Rapides
               </h2>
               {/* Le composant client gère l'UI du changement de statut */}
@@ -317,7 +317,7 @@ export default async function AdminOrderDetailPage({
 
             {/* Carte Finances Breakdown */}
             <section className="bg-white/90 backdrop-blur-xl border border-white/60 rounded-3xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-              <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-6">Résumé Financier</h2>
+              <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Résumé Financier</h2>
               
               <div className="space-y-4">
                 {/* Total payé */}
@@ -341,8 +341,8 @@ export default async function AdminOrderDetailPage({
 
               <div className="mt-6 pt-4 border-t border-dashed border-gray-200 bg-gray-50/50 -mx-6 -mb-6 px-6 pb-6 rounded-b-3xl">
                 <div className="flex justify-between items-center opacity-60">
-                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">Méthode</span>
-                  <span className="text-[10px] font-bold text-gray-500 bg-white border border-gray-200 px-2 py-0.5 rounded">{paymentLabel}</span>
+                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Méthode</span>
+                  <span className="text-xs font-bold text-gray-500 bg-white border border-gray-200 px-2 py-0.5 rounded">{paymentLabel}</span>
                 </div>
               </div>
             </section>
@@ -355,7 +355,7 @@ export default async function AdminOrderDetailPage({
                     <div className="p-2 rounded-xl bg-purple-50 border border-purple-100">
                       <StoreIcon className="w-4 h-4 text-purple-500" />
                     </div>
-                    <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Boutique</h2>
+                    <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest">Boutique</h2>
                   </div>
                   
                   <p className="text-base font-black text-[#1A1A1A] truncate">{store.name}</p>
@@ -365,7 +365,7 @@ export default async function AdminOrderDetailPage({
                 <div className="grid grid-cols-2 gap-1 p-1 bg-gray-50 rounded-[28px]">
                   <Link
                     href={`/admin/vendeurs/${store.id}`}
-                    className="flex justify-center items-center py-2.5 rounded-2xl text-[11px] font-black text-[#0F7A60] hover:bg-emerald-50 transition-colors"
+                    className="flex justify-center items-center py-2.5 rounded-2xl text-xs font-black text-[#0F7A60] hover:bg-emerald-50 transition-colors"
                   >
                     Profil Vendeur
                   </Link>
@@ -373,7 +373,7 @@ export default async function AdminOrderDetailPage({
                     href={`/${store.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex justify-center items-center py-2.5 rounded-2xl text-[11px] font-black text-gray-500 hover:bg-white hover:shadow-sm border border-transparent transition-all"
+                    className="flex justify-center items-center py-2.5 rounded-2xl text-xs font-black text-gray-500 hover:bg-white hover:shadow-sm border border-transparent transition-all"
                   >
                     Voir vitrine ↗
                   </a>

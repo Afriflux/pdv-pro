@@ -97,10 +97,10 @@ function PageRow({ page }: { page: SalePage }) {
             {page.title}
           </Link>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-[#0F7A60] font-black tracking-widest uppercase bg-[#0F7A60]/5 px-2 py-0.5 rounded-md border border-[#0F7A60]/10">
+            <span className="text-xs text-[#0F7A60] font-black tracking-widest uppercase bg-[#0F7A60]/5 px-2 py-0.5 rounded-md border border-[#0F7A60]/10">
               /{page.slug}
             </span>
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider hidden lg:inline-block">
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider hidden lg:inline-block">
               {TEMPLATE_LABELS[page.template] || page.template}
             </span>
           </div>
@@ -112,7 +112,7 @@ function PageRow({ page }: { page: SalePage }) {
         <button
           onClick={handleToggle}
           disabled={pending}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black tracking-widest uppercase border transition-all ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black tracking-widest uppercase border transition-all ${
             pending ? 'opacity-50 cursor-wait' : page.active 
             ? 'bg-emerald text-white border-emerald/10 shadow-sm shadow-emerald/10 hover:bg-emerald/90' 
             : 'bg-gray-50 text-gray-400 border-gray-100 hover:text-emerald hover:border-emerald/20'
@@ -127,24 +127,24 @@ function PageRow({ page }: { page: SalePage }) {
       <div className="hidden md:flex items-center justify-center gap-6 w-[25%] opacity-60 group-hover:opacity-100 transition-opacity">
         <div className="text-center">
           <p className="text-sm font-black text-ink">{page.views_count || 0}</p>
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Vues</p>
+          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Vues</p>
         </div>
         <div className="text-center">
           <p className="text-sm font-black text-ink">{page.sales_count || 0}</p>
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Ventes</p>
+          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Ventes</p>
         </div>
         <div className="text-center">
           <p className="text-sm font-black text-emerald">
             {page.views_count && page.views_count > 0 ? (((page.sales_count || 0) / page.views_count) * 100).toFixed(1) : '0'}%
           </p>
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Taux</p>
+          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Taux</p>
         </div>
       </div>
 
       {/* 4. Actions Rapides */}
       <div className="flex items-center justify-end gap-1.5 w-full md:w-[20%]">
         {page.product_ids && page.product_ids.length > 0 && (
-          <span className="mr-2 text-[10px] bg-gold/5 text-gold px-2 py-1 rounded-md font-black uppercase tracking-widest border border-gold/10 hidden xl:inline-block">
+          <span className="mr-2 text-xs bg-gold/5 text-gold px-2 py-1 rounded-md font-black uppercase tracking-widest border border-gold/10 hidden xl:inline-block">
             {page.product_ids.length} Produit{page.product_ids.length > 1 ? 's' : ''}
           </span>
         )}
@@ -197,7 +197,7 @@ function PageCard({ page }: { page: SalePage }) {
             <button
               onClick={handleToggle}
               disabled={pending}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black tracking-widest uppercase border transition-all shadow-sm ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black tracking-widest uppercase border transition-all shadow-sm ${
                 pending ? 'opacity-50 cursor-wait' : page.active 
                 ? 'bg-emerald text-white border-emerald/10 shadow-emerald/20 hover:bg-emerald/90' 
                 : 'bg-white/90 backdrop-blur-sm text-gray-500 border-gray-200 hover:text-emerald hover:border-emerald/20'
@@ -215,7 +215,7 @@ function PageCard({ page }: { page: SalePage }) {
             {page.title}
           </Link>
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-[10px] text-emerald font-black tracking-widest uppercase bg-emerald/5 px-2 py-0.5 rounded-md border border-emerald/10 max-w-full truncate">
+            <span className="text-xs text-emerald font-black tracking-widest uppercase bg-emerald/5 px-2 py-0.5 rounded-md border border-emerald/10 max-w-full truncate">
               /{page.slug}
             </span>
           </div>
@@ -223,22 +223,22 @@ function PageCard({ page }: { page: SalePage }) {
           <div className="grid grid-cols-3 gap-2 mt-auto pt-4 border-t border-gray-50 mb-4">
             <div className="text-center">
               <p className="text-sm font-black text-ink">{page.views_count || 0}</p>
-              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Vues</p>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Vues</p>
             </div>
             <div className="text-center border-l items-center border-gray-50">
               <p className="text-sm font-black text-ink">{page.sales_count || 0}</p>
-              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Ventes</p>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Ventes</p>
             </div>
             <div className="text-center border-l items-center border-gray-50">
               <p className="text-sm font-black text-emerald">
                 {page.views_count && page.views_count > 0 ? (((page.sales_count || 0) / page.views_count) * 100).toFixed(1) : '0'}%
               </p>
-              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Taux</p>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Taux</p>
             </div>
           </div>
 
           <div className="flex items-center justify-between border-t border-gray-50 pt-3">
-            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider truncate">
+            <div className="text-xs text-gray-400 font-bold uppercase tracking-wider truncate">
               {TEMPLATE_LABELS[page.template] || page.template}
             </div>
             <div className="flex items-center gap-1">
@@ -312,7 +312,7 @@ export default function PagesView({ pages }: PagesViewProps) {
                <Activity className="w-6 h-6" />
              </div>
              <div>
-               <p className="text-[11px] font-black tracking-widest uppercase text-[#C9A84C] mb-1">Pages Publiées</p>
+               <p className="text-xs font-black tracking-widest uppercase text-[#C9A84C] mb-1">Pages Publiées</p>
                <p className="font-display font-black text-3xl text-[#1A1A1A]">{activeCount} <span className="text-sm font-bold text-gray-400">/ {pages.length}</span></p>
              </div>
            </div>
@@ -327,7 +327,7 @@ export default function PagesView({ pages }: PagesViewProps) {
                <Eye className="w-6 h-6" />
              </div>
              <div>
-               <p className="text-[11px] font-black tracking-widest uppercase text-[#0F7A60] mb-1">Visites Totales</p>
+               <p className="text-xs font-black tracking-widest uppercase text-[#0F7A60] mb-1">Visites Totales</p>
                <p className="font-display font-black text-3xl text-[#1A1A1A]">{totalViews}</p>
              </div>
            </div>
@@ -342,7 +342,7 @@ export default function PagesView({ pages }: PagesViewProps) {
                <DollarSign className="w-6 h-6" />
              </div>
              <div>
-               <p className="text-[11px] font-black tracking-widest uppercase text-blue-500 mb-1">Ventes Réalisées</p>
+               <p className="text-xs font-black tracking-widest uppercase text-blue-500 mb-1">Ventes Réalisées</p>
                <p className="font-display font-black text-3xl text-[#1A1A1A]">{totalSales}</p>
              </div>
            </div>
@@ -357,7 +357,7 @@ export default function PagesView({ pages }: PagesViewProps) {
                <Target className="w-6 h-6" />
              </div>
              <div>
-               <p className="text-[11px] font-black tracking-widest uppercase text-purple-500 mb-1">Conversion Moy.</p>
+               <p className="text-xs font-black tracking-widest uppercase text-purple-500 mb-1">Conversion Moy.</p>
                <p className="font-display font-black text-3xl text-[#1A1A1A]">{avgConversion} <span className="text-sm font-bold text-gray-400">%</span></p>
              </div>
            </div>
@@ -382,19 +382,19 @@ export default function PagesView({ pages }: PagesViewProps) {
         <div className="flex items-center bg-white p-1 rounded-[16px] border border-gray-100 shadow-sm w-full sm:w-auto">
           <button 
             onClick={() => setStatusFilter('all')}
-            className={`flex-1 sm:flex-none px-5 py-2 rounded-[12px] text-[11px] font-black uppercase tracking-widest transition-all ${statusFilter === 'all' ? 'bg-[#FAFAF7] text-ink shadow-sm' : 'text-gray-400 hover:text-ink'}`}
+            className={`flex-1 sm:flex-none px-5 py-2 rounded-[12px] text-xs font-black uppercase tracking-widest transition-all ${statusFilter === 'all' ? 'bg-[#FAFAF7] text-ink shadow-sm' : 'text-gray-400 hover:text-ink'}`}
           >
             Toutes
           </button>
           <button 
             onClick={() => setStatusFilter('active')}
-            className={`flex-1 sm:flex-none px-5 py-2 rounded-[12px] text-[11px] font-black uppercase tracking-widest transition-all ${statusFilter === 'active' ? 'bg-emerald text-white shadow-sm shadow-emerald/20' : 'text-gray-400 hover:text-ink'}`}
+            className={`flex-1 sm:flex-none px-5 py-2 rounded-[12px] text-xs font-black uppercase tracking-widest transition-all ${statusFilter === 'active' ? 'bg-emerald text-white shadow-sm shadow-emerald/20' : 'text-gray-400 hover:text-ink'}`}
           >
             Publiées
           </button>
           <button 
             onClick={() => setStatusFilter('draft')}
-            className={`flex-1 sm:flex-none px-5 py-2 rounded-[12px] text-[11px] font-black uppercase tracking-widest transition-all ${statusFilter === 'draft' ? 'bg-gray-100 text-gray-600 shadow-sm' : 'text-gray-400 hover:text-ink'}`}
+            className={`flex-1 sm:flex-none px-5 py-2 rounded-[12px] text-xs font-black uppercase tracking-widest transition-all ${statusFilter === 'draft' ? 'bg-gray-100 text-gray-600 shadow-sm' : 'text-gray-400 hover:text-ink'}`}
           >
             Brouillons
           </button>
@@ -424,10 +424,10 @@ export default function PagesView({ pages }: PagesViewProps) {
         <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden">
           {/* Entête de table caché sur mobile */}
           <div className="hidden md:flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-[#FAFAFA]">
-            <div className="w-[35%] text-[10px] font-black text-gray-400 tracking-widest uppercase pl-4">Page de Vente</div>
-            <div className="w-[20%] text-[10px] font-black text-gray-400 tracking-widest uppercase text-center">Visibilité</div>
-            <div className="w-[25%] text-[10px] font-black text-gray-400 tracking-widest uppercase text-center hidden md:block">Performance (30j)</div>
-            <div className="w-[20%] text-[10px] font-black text-gray-400 tracking-widest uppercase text-right pr-4">Outils</div>
+            <div className="w-[35%] text-xs font-black text-gray-400 tracking-widest uppercase pl-4">Page de Vente</div>
+            <div className="w-[20%] text-xs font-black text-gray-400 tracking-widest uppercase text-center">Visibilité</div>
+            <div className="w-[25%] text-xs font-black text-gray-400 tracking-widest uppercase text-center hidden md:block">Performance (30j)</div>
+            <div className="w-[20%] text-xs font-black text-gray-400 tracking-widest uppercase text-right pr-4">Outils</div>
           </div>
 
           {/* Liste des lignes */}

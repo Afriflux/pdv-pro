@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+
 
 // ─── Séparation des espaces admin / vendeur ───────────────────────────────────
 // Rôles autorisés à accéder à /admin
@@ -9,11 +9,46 @@ const ADMIN_ROLES  = ['super_admin', 'gestionnaire', 'support'] as const
 
 type Role = typeof ADMIN_ROLES[number] | 'vendeur' | 'acheteur' | 'client' | 'ambassador' | 'affilie' | 'closer'
 
+// ─── Rate Limiting (in-memory, per Vercel instance) ──────────────────────────
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_WINDOW = 10_000 // 10 seconds
+const RATE_LIMIT_MAX = 30 // 30 requests per window
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimitMap.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    return false
+  }
+  entry.count++
+  return entry.count > RATE_LIMIT_MAX
+}
+
+// Clean up stale entries periodically (every 60s)
+if (typeof globalThis !== 'undefined') {
+  const cleanup = () => {
+    const now = Date.now()
+    rateLimitMap.forEach((entry, key) => {
+      if (now > entry.resetAt) rateLimitMap.delete(key)
+    })
+  }
+  setInterval(cleanup, 60_000)
+}
+
 export async function middleware(req: NextRequest) {
   // Configurer la réponse par défaut et injecter le pathname
   const res = NextResponse.next()
   const pathname = req.nextUrl.pathname
   res.headers.set('x-pathname', pathname)
+
+  // ── Rate Limit — API et auth endpoints ────────────────────────────────────
+  if (pathname.startsWith('/api/') || pathname.startsWith('/login') || pathname.startsWith('/register')) {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown'
+    if (isRateLimited(ip)) {
+      return new NextResponse('Too Many Requests', { status: 429, headers: { 'Retry-After': '10' } })
+    }
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,7 +64,21 @@ export async function middleware(req: NextRequest) {
     }}
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user: supabaseUser } } = await supabase.auth.getUser()
+  const user = supabaseUser
+
+  // --- MIGRATION FALLBACK: Update user_metadata.role if missing ---
+  if (user && !user.user_metadata?.role) {
+    try {
+      const { data: dbUser } = await supabase.from('User').select('role').eq('id', user.id).single()
+      if (dbUser?.role) {
+        await supabase.auth.updateUser({ data: { role: dbUser.role } })
+        user.user_metadata = { ...user.user_metadata, role: dbUser.role }
+      }
+    } catch (e) {
+      console.error('[Middleware] Error updating user metadata role fallback', e)
+    }
+  }
 
   // ── 1. Routes publiques → toujours autoriser ────────────────────────────────
   // /admin/login est public pour permettre la connexion sans session
@@ -54,14 +103,7 @@ export async function middleware(req: NextRequest) {
   ) {
     // Si déjà connecté sur /login ou /register → rediriger selon le rôle
     if (user && (pathname.startsWith('/login') || pathname.startsWith('/register'))) {
-      const supabaseAdmin = createAdminClient()
-      const { data: userData } = await supabaseAdmin
-        .from('User')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-
-      const role = userData?.role as Role | undefined
+      const role = user?.user_metadata?.role as Role | undefined
       if (role && ADMIN_ROLES.includes(role as typeof ADMIN_ROLES[number])) {
         return NextResponse.redirect(new URL('/admin', req.url))
       }
@@ -94,16 +136,9 @@ export async function middleware(req: NextRequest) {
     }
 
     // Vérifier le rôle
-    const supabaseAdmin = createAdminClient()
-    const { data: userData, error } = await supabaseAdmin
-      .from('User')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+    const role = user?.user_metadata?.role as Role | undefined
 
-    const role = userData?.role as Role | undefined
-
-    if (error || !role || !ADMIN_ROLES.includes(role as typeof ADMIN_ROLES[number])) {
+    if (!role || !ADMIN_ROLES.includes(role as typeof ADMIN_ROLES[number])) {
       // Vendeur ou rôle inconnu → rediriger vers dashboard vendeur
       console.warn(`[Middleware Admin] Accès refusé — user: ${user.email}, rôle: ${role}`)
       return NextResponse.redirect(new URL('/dashboard', req.url))
@@ -121,14 +156,7 @@ export async function middleware(req: NextRequest) {
     }
 
     // Vérifier le rôle
-    const supabaseAdmin = createAdminClient()
-    const { data: userData } = await supabaseAdmin
-      .from('User')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    const role = userData?.role as Role | undefined
+    const role = user?.user_metadata?.role as Role | undefined
 
     // Admin qui tente d'accéder au dashboard → rediriger vers admin
     if (role && ADMIN_ROLES.includes(role as typeof ADMIN_ROLES[number])) {
@@ -158,9 +186,8 @@ export async function middleware(req: NextRequest) {
   // ── 3.5. Routes /portal/* ──────────────────────────────────────────────────
   if (pathname.startsWith('/portal')) {
     if (!user) return NextResponse.redirect(new URL('/login', req.url))
-    const supabaseAdmin = createAdminClient()
-    const { data: userData } = await supabaseAdmin.from('User').select('role').eq('id', user.id).single()
-    if (userData?.role !== 'affilie') {
+    
+    if (user?.user_metadata?.role !== 'affilie') {
       return NextResponse.redirect(new URL('/dashboard', req.url))
     }
     return res
@@ -169,9 +196,8 @@ export async function middleware(req: NextRequest) {
   // ── 3.6. Routes /closer/* ──────────────────────────────────────────────────
   if (pathname.startsWith('/closer')) {
     if (!user) return NextResponse.redirect(new URL('/login', req.url))
-    const supabaseAdmin = createAdminClient()
-    const { data: userData } = await supabaseAdmin.from('User').select('role').eq('id', user.id).single()
-    if (userData?.role !== 'closer') {
+    
+    if (user?.user_metadata?.role !== 'closer') {
       return NextResponse.redirect(new URL('/dashboard', req.url))
     }
     return res
@@ -180,11 +206,10 @@ export async function middleware(req: NextRequest) {
   // ── 3.7. Routes /client/* ──────────────────────────────────────────────────
   if (pathname.startsWith('/client')) {
     if (!user) return NextResponse.redirect(new URL('/login', req.url))
-    const supabaseAdmin = createAdminClient()
-    const { data: userData } = await supabaseAdmin.from('User').select('role').eq('id', user.id).single()
-    if (userData?.role !== 'acheteur' && userData?.role !== 'client') {
+    
+    if (user?.user_metadata?.role !== 'acheteur' && user?.user_metadata?.role !== 'client') {
       // Les vendeurs et affiliés sont redirigés vers leur propre dashboard s'ils tentent d'accéder au client portal
-      if (userData?.role === 'affilie') return NextResponse.redirect(new URL('/portal', req.url))
+      if (user?.user_metadata?.role === 'affilie') return NextResponse.redirect(new URL('/portal', req.url))
       return NextResponse.redirect(new URL('/dashboard', req.url))
     }
     return res

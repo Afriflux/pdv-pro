@@ -43,7 +43,7 @@ export default function FlashSaleCountdown({ endsAt }: FlashSaleCountdownProps) 
         <Timer size={18} />
       </div>
       <div className="flex flex-col">
-        <span className="text-[10px] font-black uppercase tracking-widest text-red-800/60 leading-none mb-1">Offre expire dans</span>
+        <span className="text-xs font-black uppercase tracking-widest text-red-800/60 leading-none mb-1">Offre expire dans</span>
         <div className="flex items-center gap-1 font-mono text-lg font-black text-red-600">
           <span>{String(timeLeft.h).padStart(2, '0')}h</span>
           <span className="opacity-30">:</span>

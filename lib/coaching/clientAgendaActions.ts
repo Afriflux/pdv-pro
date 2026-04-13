@@ -9,7 +9,7 @@ export async function getClientBookings() {
   if (!user) throw new Error("Non autorisé");
 
   // Fetch all bookings where the order belongs to this buyer
-  const bookings = await prisma.booking.findMany({
+  const bookings = await prisma.booking.findMany({ take: 50, 
     where: { 
       order: {
         buyer_id: user.id

@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     // ---------------------------------------------------------
     // 1. VENDORS (Store Wallets)
     // ---------------------------------------------------------
-    const vendorWallets = await prisma.wallet.findMany({
+    const vendorWallets = await prisma.wallet.findMany({ take: 50, 
       where: {
         auto_withdraw_enabled: true,
         balance: { gt: 0 } // Must have at least something to trigger
@@ -68,14 +68,14 @@ export async function POST(req: Request) {
     // 2. AFFILIATES
     // ---------------------------------------------------------
     // Need to manual join User
-    const affiliates = await prisma.affiliate.findMany({
+    const affiliates = await prisma.affiliate.findMany({ take: 50, 
       where: {
         balance: { gt: 0 }
       }
     })
 
     const userIds = affiliates.map(a => a.user_id).filter(id => id && id.trim() !== "")
-    const users = await prisma.user.findMany({
+    const users = await prisma.user.findMany({ take: 50, 
       where: { id: { in: userIds } },
       select: { id: true, phone: true, affiliate_auto_withdraw: true, affiliate_auto_withdraw_threshold: true, withdrawal_method: true, withdrawal_number: true }
     })
@@ -120,7 +120,7 @@ export async function POST(req: Request) {
     // ---------------------------------------------------------
     // 3. CLOSERS
     // ---------------------------------------------------------
-    const closers = await prisma.user.findMany({
+    const closers = await prisma.user.findMany({ take: 50, 
       where: {
         role: 'closer',
         closer_auto_withdraw: true,

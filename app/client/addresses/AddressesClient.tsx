@@ -249,7 +249,7 @@ export default function AddressesClient({ addresses, profileName, profilePhone }
               >
                 {/* Badge par défaut */}
                 {addr.is_default && (
-                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black uppercase tracking-widest text-center py-1.5 flex items-center justify-center gap-1.5">
+                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-black uppercase tracking-widest text-center py-1.5 flex items-center justify-center gap-1.5">
                     <Star className="w-3 h-3 fill-current" />
                     Adresse par défaut
                   </div>
@@ -263,7 +263,7 @@ export default function AddressesClient({ addresses, profileName, profilePhone }
                         {labelConf.icon}
                       </div>
                       <div>
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${labelConf.color}`}>{addr.label}</span>
+                        <span className={`text-xs font-black uppercase tracking-widest ${labelConf.color}`}>{addr.label}</span>
                         <h3 className="font-black text-gray-900 text-lg leading-tight tracking-tight">{addr.name}</h3>
                       </div>
                     </div>
@@ -273,7 +273,7 @@ export default function AddressesClient({ addresses, profileName, profilePhone }
                       <button
                         onClick={() => openInMaps(addr.latitude!, addr.longitude!)}
                         title="Ouvrir dans Google Maps"
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider bg-blue-50 text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors"
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-black uppercase tracking-wider bg-blue-50 text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors"
                       >
                         <ExternalLink size={11} />
                         Maps
@@ -303,7 +303,7 @@ export default function AddressesClient({ addresses, profileName, profilePhone }
 
                   {/* GPS indicator */}
                   {addr.latitude && addr.longitude && (
-                    <div className="mb-4 flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg px-2 py-1 w-fit">
+                    <div className="mb-4 flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg px-2 py-1 w-fit">
                       <Navigation size={10} className="fill-emerald-500" />
                       GPS enregistré
                     </div>
@@ -353,7 +353,7 @@ export default function AddressesClient({ addresses, profileName, profilePhone }
                 <Plus className="w-6 h-6" />
               </div>
               <span className="text-sm font-bold">Ajouter une adresse</span>
-              <span className="text-[10px] text-gray-400 font-medium">{addresses.length}/{MAX_ADDRESSES} utilisées</span>
+              <span className="text-xs text-gray-400 font-medium">{addresses.length}/{MAX_ADDRESSES} utilisées</span>
             </button>
           )}
         </div>
@@ -451,7 +451,7 @@ export default function AddressesClient({ addresses, profileName, profilePhone }
                     type="button"
                     onClick={detectLocation}
                     disabled={locating}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-all disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-all disabled:opacity-50"
                   >
                     {locating ? (
                       <><Loader2 size={12} className="animate-spin" /> Localisation...</>
@@ -472,7 +472,7 @@ export default function AddressesClient({ addresses, profileName, profilePhone }
                   className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] px-4 py-3.5 text-[14px] font-semibold text-gray-900 focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 transition-all resize-none"
                 />
                 {geoCoords && (
-                  <p className="text-[11px] text-emerald-600 font-bold flex items-center gap-1.5 animate-in fade-in">
+                  <p className="text-xs text-emerald-600 font-bold flex items-center gap-1.5 animate-in fade-in">
                     <Navigation size={11} className="fill-emerald-500" /> 
                     Coordonnées GPS : {geoCoords.lat.toFixed(5)}, {geoCoords.lng.toFixed(5)}
                   </p>

@@ -398,14 +398,14 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
                     
                     <div className="flex items-center gap-3 mt-1">
                        <div className="flex flex-col flex-1">
-                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Fond personnalisé</label>
+                         <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Fond personnalisé</label>
                          <div className="flex">
                            <input type="color" title="Couleur de fond" value={link.bgColor || '#ffffff'} onChange={(e) => updateLink(index, 'bgColor', e.target.value)} className="h-8 w-10 border-0 p-0 rounded-l-md cursor-pointer shrink-0" />
                            <input type="text" value={link.bgColor || ''} onChange={(e) => updateLink(index, 'bgColor', e.target.value)} placeholder="Défaut" className="flex-1 border border-gray-200 border-l-0 rounded-r-md px-2 text-xs font-medium focus:outline-none" />
                          </div>
                        </div>
                        <div className="flex flex-col flex-1">
-                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Texte / Icône</label>
+                         <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Texte / Icône</label>
                          <div className="flex">
                            <input type="color" title="Couleur du texte" value={link.textColor || '#000000'} onChange={(e) => updateLink(index, 'textColor', e.target.value)} className="h-8 w-10 border-0 p-0 rounded-l-md cursor-pointer shrink-0" />
                            <input type="text" value={link.textColor || ''} onChange={(e) => updateLink(index, 'textColor', e.target.value)} placeholder="Défaut" className="flex-1 border border-gray-200 border-l-0 rounded-r-md px-2 text-xs font-medium focus:outline-none" />
@@ -458,7 +458,7 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
         <div className="bg-white rounded-[32px] p-6 sm:p-8 shadow-sm border border-gray-100 mt-6 box-border">
           <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
             <h3 className="text-xl font-black text-[#1A1A1A]">Modules Additionnels</h3>
-            <span className="bg-gradient-to-r from-indigo-500 to-pink-500 text-white text-[10px] uppercase font-black px-2 py-0.5 rounded-full tracking-wider">Premium</span>
+            <span className="bg-gradient-to-r from-indigo-500 to-pink-500 text-white text-xs uppercase font-black px-2 py-0.5 rounded-full tracking-wider">Premium</span>
           </div>
 
           <div className="space-y-6">

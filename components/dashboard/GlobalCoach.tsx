@@ -15,7 +15,13 @@ export default function GlobalCoach() {
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isPinging, setIsPinging] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPinging(false), 3000)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -76,14 +82,14 @@ export default function GlobalCoach() {
             className="group relative flex items-center justify-center p-4 rounded-full bg-gradient-to-r from-emerald-600 to-[#0F7A60] text-white shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
           >
             <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-10 transition-opacity"></div>
-            <Bot size={28} className="animate-pulse" />
+            <Bot size={28} className="motion-safe:animate-pulse" />
             <div className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              {isPinging && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>}
               <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500"></span>
             </div>
           </button>
         ) : (
-          <div className="w-[350px] sm:w-[400px] h-[500px] bg-white rounded-3xl shadow-2xl flex flex-col border border-gray-100 overflow-hidden animate-in slide-in-from-bottom-5">
+          <div className="w-[90vw] sm:w-[400px] h-[500px] bg-white rounded-3xl shadow-2xl flex flex-col border border-gray-100 overflow-hidden animate-in slide-in-from-bottom-5 translate-x-[-10px] sm:translate-x-0">
             {/* Header */}
             <div className="bg-[#0A0A0A] p-4 text-white flex justify-between items-center shrink-0 rounded-t-3xl relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
@@ -94,7 +100,7 @@ export default function GlobalCoach() {
                 </div>
                 <div>
                   <h3 className="font-black text-sm">Le Coach Yayyam</h3>
-                  <p className="text-[10px] text-emerald-400 font-bold flex items-center gap-1">
+                  <p className="text-xs text-emerald-400 font-bold flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Arme Ultime en ligne
                   </p>
                 </div>
@@ -152,7 +158,7 @@ export default function GlobalCoach() {
             </div>
             
             <div className="text-center pb-2 bg-white">
-               <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest flex items-center justify-center gap-1">
+               <span className="text-xs text-gray-400 font-bold uppercase tracking-widest flex items-center justify-center gap-1">
                  <Sparkles size={10} className="text-gold" /> Powered by Claude 3.5 Haiku
                </span>
             </div>

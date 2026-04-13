@@ -94,7 +94,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
               <Clock size={12} className="text-slate" />
-              <p className="text-[10px] md:text-xs font-bold text-slate uppercase tracking-wider">
+              <p className="text-xs md:text-xs font-bold text-slate uppercase tracking-wider">
                 {new Date(order.created_at).toLocaleDateString('fr-FR', {
                   day: 'numeric', month: 'long', year: 'numeric',
                   hour: '2-digit', minute: '2-digit'
@@ -102,7 +102,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               </p>
             </div>
           </div>
-          <span className={`text-[10px] md:text-xs font-black uppercase px-3 py-1.5 rounded-full border ${status.color} shadow-sm`}>
+          <span className={`text-xs md:text-xs font-black uppercase px-3 py-1.5 rounded-full border ${status.color} shadow-sm`}>
             {status.label}
           </span>
         </div>
@@ -133,7 +133,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                     </p>
                   )}
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="px-2 py-0.5 rounded-lg bg-emerald/5 text-emerald text-[10px] font-black border border-emerald/10 uppercase">
+                    <span className="px-2 py-0.5 rounded-lg bg-emerald/5 text-emerald text-xs font-black border border-emerald/10 uppercase">
                       Qté: {order.quantity}
                     </span>
                     <span className="text-sm font-black text-ink">
@@ -153,7 +153,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                     )}
                   </div>
                   <div className="flex-1 min-w-0 justify-center flex flex-col">
-                    <p className="text-[10px] font-black uppercase text-emerald mb-0.5 tracking-wider">Order Bump</p>
+                    <p className="text-xs font-black uppercase text-emerald mb-0.5 tracking-wider">Order Bump</p>
                     <p className="font-bold text-ink text-sm line-clamp-1">{bump_product.name}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-sm font-black text-ink">
@@ -177,11 +177,11 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-[10px] font-black text-slate uppercase tracking-wider mb-1">Nom complet</p>
+                    <p className="text-xs font-black text-slate uppercase tracking-wider mb-1">Nom complet</p>
                     <p className="font-bold text-ink">{order.buyer_name}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-black text-slate uppercase tracking-wider mb-1">Téléphone</p>
+                    <p className="text-xs font-black text-slate uppercase tracking-wider mb-1">Téléphone</p>
                     <div className="flex items-center gap-2">
                       <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} aria-label="Appeler le client" title="Appeler le client" className="p-2 bg-cream rounded-lg text-ink hover:text-emerald transition-colors">
                         <Phone size={14} />
@@ -208,7 +208,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 </div>
 
                 <div>
-                  <p className="text-[10px] font-black text-slate uppercase tracking-wider mb-1">Adresse de livraison</p>
+                  <p className="text-xs font-black text-slate uppercase tracking-wider mb-1">Adresse de livraison</p>
                   <div className="flex gap-2">
                     <div className="p-2 bg-cream rounded-lg text-slate h-fit">
                       <MapPin size={14} />
@@ -244,15 +244,15 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
 
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate font-bold uppercase text-[10px]">Méthode</span>
-                  <span className="font-black text-ink bg-cream px-2 py-1 rounded-lg uppercase text-[10px]">
+                  <span className="text-slate font-bold uppercase text-xs">Méthode</span>
+                  <span className="font-black text-ink bg-cream px-2 py-1 rounded-lg uppercase text-xs">
                     {isCod ? 'Cash on Delivery' : order.payment_method}
                   </span>
                 </div>
                 {order.payment_ref && (
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate font-bold uppercase text-[10px]">Référence</span>
-                    <span className="font-mono text-[10px] text-slate truncate max-w-[120px]">{order.payment_ref}</span>
+                    <span className="text-slate font-bold uppercase text-xs">Référence</span>
+                    <span className="font-mono text-xs text-slate truncate max-w-[120px]">{order.payment_ref}</span>
                   </div>
                 )}
               </div>
@@ -267,7 +267,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                   <span className="text-red-500">− {order.platform_fee.toLocaleString('fr-FR')} F</span>
                 </div>
                 <div className="p-4 bg-emerald/5 rounded-2xl border border-emerald/10 mt-2">
-                  <p className="text-[10px] font-black text-emerald uppercase tracking-widest mb-1">Net pour vous</p>
+                  <p className="text-xs font-black text-emerald uppercase tracking-widest mb-1">Net pour vous</p>
                   <p className="text-2xl font-black text-emerald">
                     {order.vendor_amount.toLocaleString('fr-FR')} <span className="text-sm">FCFA</span>
                   </p>

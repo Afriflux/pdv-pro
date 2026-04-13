@@ -22,7 +22,7 @@ export function MobileSimulator({ children, title = "Aperçu mobile" }: MobileSi
           {/* Header (Optional simulator header) */}
           {title && (
              <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-100 text-center py-3 pt-8 shadow-sm">
-               <span className="text-[10px] font-black tracking-widest uppercase text-gray-500">{title}</span>
+               <span className="text-xs font-black tracking-widest uppercase text-gray-500">{title}</span>
              </div>
           )}
           

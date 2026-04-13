@@ -217,16 +217,16 @@ export default function MarketplaceClient({ walletBalance, apps, themes, workflo
                       {/* Overlay gradient pour lisibilité */}
                       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
 
-                      <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-ink text-[10px] font-black px-3 py-1.5 rounded-xl z-10 uppercase tracking-widest shadow-sm">
+                      <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm text-ink text-xs font-black px-3 py-1.5 rounded-xl z-10 uppercase tracking-widest shadow-sm">
                         {item.category || typeLabel}
                       </div>
 
                       {item.is_premium ? (
-                        <div className="absolute bottom-3 right-3 bg-amber-400 text-amber-950 text-[11px] font-black px-3 py-1.5 rounded-xl z-10 shadow-lg flex items-center gap-1.5 border border-amber-300">
+                        <div className="absolute bottom-3 right-3 bg-amber-400 text-amber-950 text-xs font-black px-3 py-1.5 rounded-xl z-10 shadow-lg flex items-center gap-1.5 border border-amber-300">
                            ⭐ {item.price} FCFA
                         </div>
                       ) : (
-                        <div className="absolute bottom-3 right-3 bg-emerald-50 text-[#0F7A60] border border-[#0F7A60]/30 text-[11px] font-black px-3 py-1.5 rounded-xl z-10 shadow-lg">
+                        <div className="absolute bottom-3 right-3 bg-emerald-50 text-[#0F7A60] border border-[#0F7A60]/30 text-xs font-black px-3 py-1.5 rounded-xl z-10 shadow-lg">
                            ⚡ GRATUIT
                         </div>
                       )}

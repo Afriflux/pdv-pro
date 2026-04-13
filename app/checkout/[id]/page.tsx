@@ -35,13 +35,18 @@ export async function generateMetadata({ params }: CheckoutPageProps): Promise<M
   return {
     title,
     description,
+    robots: 'noindex, nofollow',
     alternates: {
       canonical: `https://yayyam.com/checkout/${params.id}`
     },
     openGraph: {
       title,
       description,
-      images: image ? [{ url: image }] : [],
+      url: `https://yayyam.com/checkout/${params.id}`,
+      siteName: storeName || 'Yayyam',
+      images: image ? [{ url: image, width: 800, height: 800, alt: product.name }] : [],
+      locale: 'fr_FR',
+      type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
@@ -155,7 +160,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
   const vendorPlan = subData && subData.length > 0 ? 'pro' : 'gratuit'
 
   // Récupérer les zones de livraison de la boutique
-  const deliveryZones = await prisma.deliveryZone.findMany({
+  const deliveryZones = await prisma.deliveryZone.findMany({ take: 50, 
     where: { store_id: store.id, active: true },
     orderBy: { created_at: 'asc' }
   })
@@ -178,13 +183,13 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
   const bookedSlots: Record<string, number> = {}
 
   if (product.type === 'coaching') {
-    coachingSlots = await prisma.coachingSlot.findMany({
+    coachingSlots = await prisma.coachingSlot.findMany({ take: 50, 
       where: { store_id: store.id, active: true },
       orderBy: [{ day_of_week: 'asc' }, { start_time: 'asc' }]
     })
 
     const todayDateStr = new Date().toISOString().split('T')[0]
-    const existingBookings = await prisma.booking.findMany({
+    const existingBookings = await prisma.booking.findMany({ take: 50, 
       where: { 
         product_id: product.id,
         status: { in: ['pending', 'confirmed'] },
@@ -200,7 +205,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
       bookedSlots[key] = (bookedSlots[key] || 0) + 1
     })
 
-    blockedDates = await prisma.blockedDate.findMany({
+    blockedDates = await prisma.blockedDate.findMany({ take: 50, 
       where: { store_id: store.id },
       select: { date: true, start_time: true, end_time: true }
     })

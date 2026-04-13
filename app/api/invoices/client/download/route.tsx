@@ -204,7 +204,7 @@ const InvoiceDocument = ({ order }: { order: InvoiceOrderProps }) => {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             {/* eslint-disable-next-line jsx-a11y/alt-text */}
-            {store.logo_url && <Image src={store.logo_url} style={styles.logo} />}
+            {store.logo_url && <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={store.logo_url} style={styles.logo} />}
             <Text style={styles.storeName}>{store.name}</Text>
             <Text style={styles.storeLabel}>Partenaire certifié Yayyam</Text>
           </View>

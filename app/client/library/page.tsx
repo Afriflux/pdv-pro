@@ -19,7 +19,7 @@ export default async function LibraryPage() {
   }
 
   // Récupérer les accès digitaux liés aux commandes de l'utilisateur
-  const dbDigitalAccesses = await prisma.digitalAccess.findMany({
+  const dbDigitalAccesses = await prisma.digitalAccess.findMany({ take: 50, 
     where: {
       order: {
         buyer_id: user.id
@@ -84,7 +84,7 @@ export default async function LibraryPage() {
                  <div key={access.id} className="group flex flex-col bg-white border border-gray-100 rounded-[2rem] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:border-[#0F7A60]/30 hover:shadow-xl hover:shadow-[#0F7A60]/10 hover:-translate-y-1 transition-all duration-300">
                    {/* COVER */}
                    <div className="relative aspect-video w-full bg-gray-100 overflow-hidden">
-                     <Image 
+                     <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
                        src={image} 
                        alt={product.name} 
                        fill 

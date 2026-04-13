@@ -448,7 +448,7 @@ export default function ProductPage({
           <Link href="/" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-emerald-600 transition-all font-bold" aria-label="Accueil">
             <Home size={20} strokeWidth={2.5} />
           </Link>
-          <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+          <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
             Accueil
           </span>
         </div>
@@ -457,7 +457,7 @@ export default function ProductPage({
           <Link href="/vendeurs" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-emerald-600 transition-all font-bold" aria-label="Marketplace">
              <Compass size={20} strokeWidth={2.5} />
           </Link>
-          <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+          <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
             Marketplace
           </span>
         </div>
@@ -468,7 +468,7 @@ export default function ProductPage({
           <Link href={`/${product.store.slug}`} className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-gray-900 transition-all font-bold" aria-label="Boutique">
              <Store size={20} strokeWidth={2.5} />
           </Link>
-          <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+          <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
             Boutique
           </span>
         </div>
@@ -761,7 +761,7 @@ export default function ProductPage({
               <div className="flex items-center gap-3 bg-red-50 border border-red-100 p-3 rounded-xl max-w-max">
                 <Timer className="w-5 h-5 text-red-500 animate-pulse" />
                 <div>
-                  <p className="text-[10px] font-black uppercase text-red-500 tracking-widest leading-tight">L'offre expire dans</p>
+                  <p className="text-xs font-black uppercase text-red-500 tracking-widest leading-tight">L'offre expire dans</p>
                   <div className="text-red-700 font-black flex items-center gap-1 text-sm">
                     {timeLeft.d > 0 && <span>{timeLeft.d}j</span>}
                     <span className="w-7 text-center bg-white rounded shadow-sm">{timeLeft.h.toString().padStart(2, '0')}</span> h
@@ -870,7 +870,7 @@ export default function ProductPage({
                           {...{ style: { width: `${progress}%` } }}
                         />
                       </div>
-                      <p className={`text-[11px] font-bold text-center mt-1 ${isFree ? 'text-emerald-600' : 'text-gray-500'}`}>
+                      <p className={`text-xs font-bold text-center mt-1 ${isFree ? 'text-emerald-600' : 'text-gray-500'}`}>
                         {isFree ? 
                           '🎉 Félicitations ! Vous avez débloqué la livraison gratuite.' : 
                           `Plus que ${(remaining).toLocaleString('fr-FR')} FCFA pour la livraison gratuite !`
@@ -960,25 +960,25 @@ export default function ProductPage({
             <div className="grid grid-cols-3 gap-2">
               <div className="flex flex-col items-center justify-center gap-1.5 bg-white rounded-xl p-3 border border-gray-100 text-center shadow-sm">
                 <Lock className="w-5 h-5 text-gray-400" />
-                <span className="text-[10px] font-bold text-gray-500 leading-tight">Paiement sécurisé</span>
+                <span className="text-xs font-bold text-gray-500 leading-tight">Paiement sécurisé</span>
               </div>
               <div className="flex flex-col items-center justify-center gap-1.5 bg-white rounded-xl p-3 border border-gray-100 text-center shadow-sm">
                 <Truck className="w-5 h-5 text-gray-400" />
-                <span className="text-[10px] font-bold text-gray-500 leading-tight">Livraison suivie</span>
+                <span className="text-xs font-bold text-gray-500 leading-tight">Livraison suivie</span>
               </div>
               <div className="flex flex-col items-center justify-center gap-1.5 bg-white rounded-xl p-3 border border-gray-100 text-center shadow-sm">
                 <ShieldCheck className="w-5 h-5 text-gray-400" />
-                <span className="text-[10px] font-bold text-gray-500 leading-tight">Satisfait ou remboursé 7j</span>
+                <span className="text-xs font-bold text-gray-500 leading-tight">Satisfait ou remboursé 7j</span>
               </div>
               {product.store.kyc_status === 'verified' && (
                 <div className="flex flex-col items-center justify-center gap-1.5 bg-white rounded-xl p-3 border border-[#0F7A60]/20 text-center shadow-sm bg-[#0F7A60]/5">
                   <BadgeCheck className="w-5 h-5 text-[#0F7A60]" />
-                  <span className="text-[10px] font-bold text-[#0F7A60] leading-tight">Vendeur vérifié</span>
+                  <span className="text-xs font-bold text-[#0F7A60] leading-tight">Vendeur vérifié</span>
                 </div>
               )}
               <div className="flex flex-col items-center justify-center gap-1.5 bg-white rounded-xl p-3 border border-gray-100 text-center shadow-sm">
                 <MessageCircle className="w-5 h-5 text-gray-400" />
-                <span className="text-[10px] font-bold text-gray-500 leading-tight">Support WhatsApp</span>
+                <span className="text-xs font-bold text-gray-500 leading-tight">Support WhatsApp</span>
               </div>
             </div>
 
@@ -1195,7 +1195,7 @@ export default function ProductPage({
                         </div>
                       )}
                       {p.computedPrice.hasDiscount && (
-                        <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] sm:text-xs font-black px-2 py-1 rounded-full shadow-sm">
+                        <div className="absolute top-2 right-2 bg-red-500 text-white text-xs sm:text-xs font-black px-2 py-1 rounded-full shadow-sm">
                           {discountValue}
                         </div>
                       )}
@@ -1204,10 +1204,10 @@ export default function ProductPage({
                       <h3 className="text-sm font-bold text-gray-800 line-clamp-2 leading-snug group-hover:opacity-80 transition-opacity">{p.name}</h3>
                       <div className="mt-3 flex items-center flex-wrap gap-2">
                          <p className="font-black text-base sm:text-lg" {...{ style: { color: accent } }}>
-                           {p.computedPrice.finalPrice.toLocaleString('fr-FR')} <span className="text-[10px] sm:text-xs opacity-70">FCFA</span>
+                           {p.computedPrice.finalPrice.toLocaleString('fr-FR')} <span className="text-xs sm:text-xs opacity-70">FCFA</span>
                          </p>
                          {p.computedPrice.hasDiscount && (
-                            <p className="text-[10px] sm:text-xs text-gray-400 line-through">
+                            <p className="text-xs sm:text-xs text-gray-400 line-through">
                               {p.price.toLocaleString('fr-FR')} F
                             </p>
                          )}
@@ -1231,13 +1231,13 @@ export default function ProductPage({
           </div>
           <div>
             <p className="text-xs font-black text-emerald-800">Yayyamtect</p>
-            <p className="text-[10px] text-emerald-600">Transaction sécurisée · Données chiffrées · Achat garanti</p>
+            <p className="text-xs text-emerald-600">Transaction sécurisée · Données chiffrées · Achat garanti</p>
           </div>
         </div>
 
         {/* KYC Verified Badge */}
         {product.store.kyc_status === 'verified' && (
-          <div className="flex items-center justify-center gap-2 text-[11px] text-gray-500 font-bold">
+          <div className="flex items-center justify-center gap-2 text-xs text-gray-500 font-bold">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg>
             Vendeur vérifié par Yayyam
           </div>
@@ -1263,12 +1263,12 @@ export default function ProductPage({
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-2xl px-4 py-3 safe-area-inset-bottom">
           
           {variantStock < 15 && variantStock > 0 && (
-            <div className={`absolute -top-7 left-1/2 -translate-x-1/2 px-4 py-1 rounded-t-xl text-[10px] font-bold text-white shadow-lg whitespace-nowrap ${variantStock < 5 ? 'bg-red-500 animate-pulse' : 'bg-orange-500'}`}>
+            <div className={`absolute -top-7 left-1/2 -translate-x-1/2 px-4 py-1 rounded-t-xl text-xs font-bold text-white shadow-lg whitespace-nowrap ${variantStock < 5 ? 'bg-red-500 animate-pulse' : 'bg-orange-500'}`}>
               {variantStock < 5 ? `🔥 Vite ! Plus que ${variantStock} en stock` : `⚠️ Stock limité : ${variantStock}`}
             </div>
           )}
           {variantStock === 0 && (
-            <div className="absolute -top-7 left-1/2 -translate-x-1/2 px-4 py-1 rounded-t-xl text-[10px] font-bold text-white bg-gray-500 shadow-lg whitespace-nowrap">
+            <div className="absolute -top-7 left-1/2 -translate-x-1/2 px-4 py-1 rounded-t-xl text-xs font-bold text-white bg-gray-500 shadow-lg whitespace-nowrap">
               ❌ Rupture de stock
             </div>
           )}
@@ -1277,7 +1277,7 @@ export default function ProductPage({
             {/* Prix */}
             <div className="flex-shrink-0">
               {computedPrice.hasDiscount && (
-                <p className="text-[10px] text-gray-400 line-through leading-none">
+                <p className="text-xs text-gray-400 line-through leading-none">
                   {product.price.toLocaleString('fr-FR')} F
                 </p>
               )}

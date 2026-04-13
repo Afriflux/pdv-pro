@@ -2,7 +2,9 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 
-import CloserDashboardClient from './CloserDashboardClient'
+import nextDynamic from 'next/dynamic'
+
+const CloserDashboardClient = nextDynamic(() => import('./CloserDashboardClient'), { ssr: false, loading: () => <div className="animate-pulse h-screen bg-gray-50"/> })
 
 export const dynamic = 'force-dynamic'
 
@@ -13,7 +15,7 @@ export default async function CloserDashboardPage() {
   if (!user) redirect('/login')
 
   // Récupération des stats du Closer
-  const myLeads = await prisma.lead.findMany({
+  const myLeads = await prisma.lead.findMany({ take: 50, 
     where: { closer_id: user.id },
     include: { Product: true }
   })

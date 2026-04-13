@@ -19,7 +19,7 @@ async function checkAdmin() {
 
 export async function getThemeTemplates() {
   try {
-    const templates = await prisma.themeTemplate.findMany({
+    const templates = await prisma.themeTemplate.findMany({ take: 50, 
       where: { is_global: true },
       orderBy: { created_at: 'desc' }
     })

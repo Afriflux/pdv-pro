@@ -123,7 +123,7 @@ export default function GenerateCampaignModal({ isOpen, onClose }: Props) {
                    </div>
                 </label>
              </div>
-             <p className="text-[11px] text-gray-400 font-medium mt-3 italic">
+             <p className="text-xs text-gray-400 font-medium mt-3 italic">
                Si aucune liste n'est sélectionnée, la campagne ciblera 0 contact et restera à l'état de brouillon vierge sur Brevo.
              </p>
           </div>

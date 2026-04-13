@@ -32,7 +32,7 @@ export const viewport: Viewport = {
   themeColor: '#0F7A60',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
 }
 
 export const revalidate = 60 // Refresh cache every minute to apply admin SEO changes
@@ -113,6 +113,7 @@ import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
 import { Suspense } from 'react'
 import AffiliateTracker from '@/components/affiliation/AffiliateTracker'
 import MaintenanceScreen from '@/components/MaintenanceScreen'
+import { ToastProvider } from '@/components/ui/Toast'
 import { headers } from 'next/headers'
 
 
@@ -151,6 +152,7 @@ export default async function RootLayout({
           <MaintenanceScreen message={kv['maintenance_message']} />
         ) : (
           <>
+            <ToastProvider>
             <OrganizationJsonLd />
             <WebSiteJsonLd />
             <Suspense fallback={null}>
@@ -159,6 +161,7 @@ export default async function RootLayout({
             {children}
             <FooterWrapper />
             <WhatsAppFloatingButton dynamicAgents={dynamicAgents} />
+            </ToastProvider>
           </>
         )}
 

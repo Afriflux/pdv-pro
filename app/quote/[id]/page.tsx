@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import QuoteClient from './QuoteClient'
+import Image from 'next/image'
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const quote = await prisma.quote.findUnique({
@@ -35,12 +36,12 @@ export default async function QuotePage({ params }: { params: { id: string } }) 
       <div className="w-full max-w-4xl bg-white shadow-2xl overflow-hidden print:shadow-none print:max-w-none">
         
         {/* En-tête de Facture */}
-        <div className="flex flex-col sm:flex-row justify-between items-start p-10 lg:p-14 border-b-8" style={{ borderBottomColor: quote.store.primary_color || '#0F7A60' }}>
+        <div className="flex flex-col sm:flex-row justify-between items-start p-10 lg:p-14 border-b-8" {...{ style: { borderBottomColor: quote.store.primary_color || '#0F7A60' } }}>
            <div>
              {quote.store.logo_url ? (
-                <img src={quote.store.logo_url} alt={quote.store.name} className="h-16 object-contain mb-4" />
+                 <Image src={quote.store.logo_url} alt={quote.store.name} width={200} height={64} className="h-16 w-auto object-contain mb-4" />
              ) : (
-                <h1 className="text-3xl font-black mb-4" style={{ color: quote.store.primary_color || '#0F7A60' }}>{quote.store.name}</h1>
+                <h1 className="text-3xl font-black mb-4" {...{ style: { color: quote.store.primary_color || '#0F7A60' } }}>{quote.store.name}</h1>
              )}
              <p className="text-gray-500 font-medium">{quote.store.name}</p>
            </div>

@@ -154,7 +154,7 @@ export default function IntegrationItem({
             <h3 className="text-sm font-black text-gray-900 truncate group-hover:text-emerald-700 transition-colors flex items-center gap-2">
               {label}
               {formattedDate && (
-                <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-medium text-gray-400 font-normal">
+                <span className="hidden md:inline-flex items-center gap-1 text-xs font-medium text-gray-400 font-normal">
                   <Clock className="w-3 h-3" /> {formattedDate}
                 </span>
               )}
@@ -169,7 +169,7 @@ export default function IntegrationItem({
              
              {/* Section Valeur + Révéler */}
              <div className="flex items-center gap-1">
-               <code className={`font-mono text-[10px] ${rawRevealed ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-gray-500 bg-gray-50 border-gray-100'} font-bold px-2.5 py-1 rounded-lg border transition-colors`}>
+               <code className={`font-mono text-xs ${rawRevealed ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-gray-500 bg-gray-50 border-gray-100'} font-bold px-2.5 py-1 rounded-lg border transition-colors`}>
                  {displayValue}
                </code>
                {isConfigured && (
@@ -251,12 +251,12 @@ export default function IntegrationItem({
         {/* Badge statut */}
         {!editing && (
           isConfigured ? (
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-600 uppercase border border-emerald-100">
+            <span className="inline-flex items-center gap-1.5 text-xs font-black px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-600 uppercase border border-emerald-100">
               <CheckCircle2 className="w-3 h-3 shrink-0" />
               <span className="hidden sm:inline">Connecté</span>
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-lg bg-red-50 text-red-500 uppercase border border-red-100">
+            <span className="inline-flex items-center gap-1.5 text-xs font-black px-2.5 py-1 rounded-lg bg-red-50 text-red-500 uppercase border border-red-100">
               <XCircle className="w-3 h-3 shrink-0" />
               <span className="hidden sm:inline">Erreur</span>
             </span>
@@ -272,7 +272,7 @@ export default function IntegrationItem({
         <p className="text-xs font-medium text-gray-500 mt-1.5 leading-relaxed line-clamp-2">{description}</p>
         
         {formattedDate && (
-           <p className="text-[10px] text-gray-400 mt-2 flex items-center gap-1 font-medium">
+           <p className="text-xs text-gray-400 mt-2 flex items-center gap-1 font-medium">
              <Clock className="w-3 h-3" /> Mis à jour le {formattedDate}
            </p>
         )}
@@ -285,7 +285,7 @@ export default function IntegrationItem({
         {!editing && (
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 min-w-0">
-               <code className={`font-mono text-[10px] sm:text-xs truncate ${rawRevealed ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-gray-500 bg-gray-50 border-gray-100'} font-bold px-2.5 py-1.5 rounded-lg border transition-colors`}>
+               <code className={`font-mono text-xs sm:text-xs truncate ${rawRevealed ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-gray-500 bg-gray-50 border-gray-100'} font-bold px-2.5 py-1.5 rounded-lg border transition-colors`}>
                  {displayValue}
                </code>
                {isConfigured && (
@@ -301,13 +301,13 @@ export default function IntegrationItem({
         {!editing && (
           <div className="flex items-center justify-end gap-1.5">
              {webhookUrl && (
-               <button onClick={handleCopyWebhook} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-blue-50/50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition-all text-[10px] font-bold" title="Copier ce webhook pour configurer le partenaire">
+               <button onClick={handleCopyWebhook} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-blue-50/50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition-all text-xs font-bold" title="Copier ce webhook pour configurer le partenaire">
                  <Copy className="w-3.5 h-3.5" /> Webhook
                </button>
              )}
              
              {pingType && isConfigured && (
-               <button onClick={handlePing} disabled={pinging} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-purple-50/50 text-purple-600 hover:bg-purple-100 hover:text-purple-700 transition-all text-[10px] font-bold" title="Vérifier la connexion">
+               <button onClick={handlePing} disabled={pinging} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-purple-50/50 text-purple-600 hover:bg-purple-100 hover:text-purple-700 transition-all text-xs font-bold" title="Vérifier la connexion">
                  {pinging ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Activity className="w-3.5 h-3.5" />} Tester
                </button>
              )}

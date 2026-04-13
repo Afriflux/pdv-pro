@@ -86,8 +86,8 @@ export default function MarketingStats({ links }: MarketingStatsProps) {
           <p className="text-3xl lg:text-4xl font-black text-gray-300 leading-none tracking-tight">{stats.conversionRate}</p>
         </div>
         <div className="mt-4 pt-4 border-t border-gray-50 relative z-10 w-full">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Statut</p>
-          <span className="inline-block mt-1 text-[11px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-lg">À venir bientôt</span>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Statut</p>
+          <span className="inline-block mt-1 text-xs font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-lg">À venir bientôt</span>
         </div>
       </div>
 
@@ -103,8 +103,8 @@ export default function MarketingStats({ links }: MarketingStatsProps) {
           <p className="text-lg font-black text-[#1A1A1A] leading-tight truncate" title={stats.bestLink}>{stats.bestLink}</p>
         </div>
         <div className="mt-4 pt-4 border-t border-gray-50 relative z-10 w-full flex items-center justify-between">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Trafic Récents</span>
-          <span className="text-[11px] font-bold text-[#C9A84C] bg-[#C9A84C]/10 px-2.5 py-1 rounded-lg">Top Engagement</span>
+          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Trafic Récents</span>
+          <span className="text-xs font-bold text-[#C9A84C] bg-[#C9A84C]/10 px-2.5 py-1 rounded-lg">Top Engagement</span>
         </div>
       </div>
     </div>

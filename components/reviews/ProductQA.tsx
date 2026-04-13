@@ -156,7 +156,7 @@ export function ProductQA({ productId }: { productId: string }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                        <span className="text-sm font-bold text-gray-900">Acheteur</span>
-                       <span className="text-[10px] text-gray-400">
+                       <span className="text-xs text-gray-400">
                          {formatDistanceToNow(new Date(q.created_at), { addSuffix: true, locale: fr })}
                        </span>
                     </div>

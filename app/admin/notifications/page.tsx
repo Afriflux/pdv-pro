@@ -109,7 +109,7 @@ export default async function NotificationsPage() {
             <div key={kpi.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col">
               <div className="flex items-center gap-2 mb-2">
                 <kpi.icon size={14} className="text-white/40" />
-                <span className="text-white/50 text-[10px] font-black uppercase tracking-widest">{kpi.label}</span>
+                <span className="text-white/50 text-xs font-black uppercase tracking-widest">{kpi.label}</span>
               </div>
               <span className="text-2xl font-black text-white">{kpi.value}</span>
             </div>
@@ -132,14 +132,14 @@ export default async function NotificationsPage() {
                     <span className="text-2xl">{ch.icon}</span>
                     <h3 className="font-black text-gray-900 text-sm">{ch.name}</h3>
                   </div>
-                  <span className={`text-[10px] font-black px-2 py-1 rounded-full ${ch.statusColor}`}>
+                  <span className={`text-xs font-black px-2 py-1 rounded-full ${ch.statusColor}`}>
                     {ch.statusLabel}
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mb-4">{ch.description}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {ch.features.map(f => (
-                    <span key={f} className="text-[10px] bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full font-bold border border-gray-100">
+                    <span key={f} className="text-xs bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full font-bold border border-gray-100">
                       {f}
                     </span>
                   ))}
@@ -163,11 +163,11 @@ export default async function NotificationsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-[#FAFAF7]">
-                  <th className="text-left px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Automatisation</th>
-                  <th className="text-left px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Déclencheur</th>
-                  <th className="text-left px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Canal</th>
-                  <th className="text-center px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Délai</th>
-                  <th className="text-center px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Statut</th>
+                  <th className="text-left px-8 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Automatisation</th>
+                  <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Déclencheur</th>
+                  <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Canal</th>
+                  <th className="text-center px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Délai</th>
+                  <th className="text-center px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Statut</th>
                 </tr>
               </thead>
               <tbody>
@@ -182,7 +182,7 @@ export default async function NotificationsPage() {
                       </span>
                     </td>
                     <td className="px-4 py-4 text-center">
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full ${
+                      <span className={`inline-flex items-center gap-1 text-xs font-black px-2 py-1 rounded-full ${
                         auto.active ? 'text-emerald-700 bg-emerald-50' : 'text-gray-400 bg-gray-50'
                       }`}>
                         {auto.active ? '✅ Active' : '⏸️ Inactive'}

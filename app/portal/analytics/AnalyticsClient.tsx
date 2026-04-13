@@ -191,7 +191,7 @@ export default function AnalyticsClient({ data }: { data: AnalyticsData }) {
         
         <div className="overflow-x-auto">
           <table className="w-full text-left whitespace-nowrap">
-            <thead className="bg-gray-50/50 text-gray-400 text-[10px] font-bold uppercase tracking-wider">
+            <thead className="bg-gray-50/50 text-gray-400 text-xs font-bold uppercase tracking-wider">
               <tr>
                 <th className="px-6 py-4 rounded-tl-xl border-b border-gray-100">Source (ID)</th>
                 <th className="px-6 py-4 border-b border-gray-100 text-center">Clics</th>
@@ -218,7 +218,7 @@ export default function AnalyticsClient({ data }: { data: AnalyticsData }) {
                     <td className="px-6 py-4 text-center font-mono font-medium text-gray-600">{src.clicks}</td>
                     <td className="px-6 py-4 text-center font-mono font-medium text-gray-600">{src.sales}</td>
                     <td className="px-6 py-4 text-center">
-                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${src.cr >= 2 ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${src.cr >= 2 ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
                         {src.cr.toFixed(1)}%
                       </span>
                     </td>
@@ -247,7 +247,7 @@ function StatsCard({ title, value, icon, trend, trendUp, colorClass }: { title: 
         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border transition-transform duration-500 group-hover:scale-110 ${colorClass}`}>
           {icon}
         </div>
-        <div className={`flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-full ${trendUp ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+        <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${trendUp ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
           {trendUp ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
           {trend}
         </div>

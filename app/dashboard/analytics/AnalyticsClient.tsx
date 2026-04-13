@@ -175,7 +175,7 @@ export default function AnalyticsClient({
 
         {/* Filtres Optionnels */}
         <div className="space-y-5 pt-6 border-t border-slate-200">
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
             <Filter size={12} /> Filtres Analytiques
           </h3>
           
@@ -196,7 +196,7 @@ export default function AnalyticsClient({
 
           <div className="space-y-2 relative">
             <label className="text-xs font-bold text-slate-600 flex items-center justify-between mb-1">
-              Canal d'acquisition <span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded uppercase">Bientôt</span>
+              Canal d'acquisition <span className="text-xs bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded uppercase">Bientôt</span>
             </label>
             <select aria-label="Canal d'acquisition" title="Canal d'acquisition" disabled className="w-full bg-slate-50 border border-slate-200 text-sm font-bold text-slate-400 rounded-xl px-3 py-2.5 opacity-60 cursor-not-allowed">
               <option>Tous les canaux</option>
@@ -205,7 +205,7 @@ export default function AnalyticsClient({
 
           <div className="space-y-2 relative">
             <label className="text-xs font-bold text-slate-600 flex items-center justify-between mb-1">
-              Appareil <span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded uppercase">Bientôt</span>
+              Appareil <span className="text-xs bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded uppercase">Bientôt</span>
             </label>
             <select aria-label="Appareil d'acquisition" title="Appareil d'acquisition" disabled className="w-full bg-slate-50 border border-slate-200 text-sm font-bold text-slate-400 rounded-xl px-3 py-2.5 opacity-60 cursor-not-allowed">
               <option>Mobiles & Desktops</option>
@@ -310,7 +310,7 @@ export default function AnalyticsClient({
                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                  {/* Jauge score */}
                  <div className="lg:col-span-4 bg-white/80 backdrop-blur-2xl overflow-hidden relative group transition-all duration-500 rounded-[32px] border border-white shadow-xl shadow-slate-200/50 p-8 flex flex-col items-center gap-6">
-                   <p className="text-[11px] font-black text-[#0F7A60] uppercase tracking-widest bg-emerald-50 border border-emerald-100/50 px-3 py-1 rounded-full flex items-center gap-2">
+                   <p className="text-xs font-black text-[#0F7A60] uppercase tracking-widest bg-emerald-50 border border-emerald-100/50 px-3 py-1 rounded-full flex items-center gap-2">
                      <Brain size={14} /> Score Santé IA
                    </p>
                    <div className="relative w-40 h-40 flex items-center justify-center">
@@ -330,7 +330,7 @@ export default function AnalyticsClient({
                        <p className={`text-4xl font-black drop-shadow-sm transition-colors duration-1000 ${scoreColorTextClass(insights.score)}`}>
                          {insights.score}
                        </p>
-                       <p className="text-[10px] text-slate-400 font-bold">/ 100</p>
+                       <p className="text-xs text-slate-400 font-bold">/ 100</p>
                      </div>
                    </div>
                    <p className="text-sm text-center text-slate-500 font-bold px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-50">
@@ -365,7 +365,7 @@ export default function AnalyticsClient({
                                 <p className={`font-black text-sm mb-1 ${style.text}`}>{insight.title}</p>
                                 <p className="text-xs text-slate-500 font-medium leading-relaxed">{insight.message}</p>
                                 {insight.action && (
-                                  <p className={`inline-flex items-center gap-1 mt-3 text-[10px] font-bold ${style.text} hover:opacity-80 cursor-pointer`}>
+                                  <p className={`inline-flex items-center gap-1 mt-3 text-xs font-bold ${style.text} hover:opacity-80 cursor-pointer`}>
                                     {insight.action} <ArrowUpRight size={12} />
                                   </p>
                                 )}
@@ -580,7 +580,7 @@ export default function AnalyticsClient({
                 <div className="overflow-x-auto relative z-10">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                      <tr className="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
                         <th className="pb-4 pl-2">Page</th>
                         <th className="pb-4 text-center">Vues</th>
                         <th className="pb-4 text-right pr-2">Conv.</th>
@@ -592,7 +592,7 @@ export default function AnalyticsClient({
                           <td className="py-4 pl-2 font-bold text-sm text-[#1A1A1A] group-hover/row:text-[#C9A84C] transition-colors">{page.name}</td>
                           <td className="py-4 text-center text-sm font-black tabular-nums">{page.views.toLocaleString('fr-FR')}</td>
                           <td className="py-4 text-right pr-2">
-                            <span className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-black shadow-sm group-hover/row:bg-emerald-500 group-hover/row:text-white group-hover/row:border-emerald-600 transition-all">
+                            <span className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-black shadow-sm group-hover/row:bg-emerald-500 group-hover/row:text-white group-hover/row:border-emerald-600 transition-all">
                               {page.conversion.toFixed(1)}%
                             </span>
                           </td>
@@ -616,7 +616,7 @@ export default function AnalyticsClient({
                 <div className="overflow-x-auto relative z-10">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                      <tr className="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
                         <th className="pb-4 pl-2">Produit</th>
                         <th className="pb-4 text-center">Ventes</th>
                         <th className="pb-4 text-right pr-2">Revenus</th>
@@ -627,7 +627,7 @@ export default function AnalyticsClient({
                         <tr key={p.id} className="group/row hover:bg-white transition-colors cursor-default rounded-xl">
                           <td className="py-4 pl-2">
                             <p className="font-bold text-sm text-[#1A1A1A] group-hover/row:text-emerald-700 transition-colors">{p.name}</p>
-                            <p className="text-[10px] text-slate-400 font-bold font-mono tracking-wider mt-0.5">ID: {p.id.slice(0, 8)}</p>
+                            <p className="text-xs text-slate-400 font-bold font-mono tracking-wider mt-0.5">ID: {p.id.slice(0, 8)}</p>
                           </td>
                           <td className="py-4 text-center text-sm font-black tabular-nums">{p.sales}</td>
                           <td className="py-4 text-right text-sm font-black text-emerald-700 group-hover/row:text-emerald-500 transition-colors pr-2 tabular-nums">
@@ -734,7 +734,7 @@ export default function AnalyticsClient({
             <div className="lg:col-span-4 bg-gradient-to-br from-[#0F7A60] to-[#0D6B53] rounded-[32px] border border-[#0F7A60]/20 shadow-2xl p-8 md:p-10 relative overflow-hidden flex flex-col justify-between">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
               <div className="relative z-10">
-                <div className="inline-flex items-center gap-2 bg-emerald-900/50 border border-emerald-400/30 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-emerald-200 mb-6">
+                <div className="inline-flex items-center gap-2 bg-emerald-900/50 border border-emerald-400/30 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest text-emerald-200 mb-6">
                   <Sparkles size={12} /> Exclusivité Pro+
                 </div>
                 <h3 className="text-2xl font-black text-white mb-3 tracking-tight">
@@ -802,7 +802,7 @@ function StatCard({
           {icon}
         </div>
         {trend !== undefined && (
-          <div className={`flex items-center text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md transition-all duration-500
+          <div className={`flex items-center text-xs font-black px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md transition-all duration-500
             ${trend >= 0 ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 group-hover:bg-emerald-500/20' : 'bg-red-500/10 text-red-700 border border-red-500/20 group-hover:bg-red-500/20'}`}
           >
             {trend >= 0
@@ -815,9 +815,9 @@ function StatCard({
       </div>
       
       <div className="space-y-1.5 relative z-10">
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{title}</p>
+        <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{title}</p>
         <p className={`text-3xl font-black tracking-tighter ${highlight ? 'text-[#C9A84C]' : 'text-[#1A1A1A]'}`}>{value}</p>
-        <p className="text-[11px] text-slate-500 font-bold tracking-tight">{label}</p>
+        <p className="text-xs text-slate-500 font-bold tracking-tight">{label}</p>
       </div>
       
       {highlight && (

@@ -69,7 +69,7 @@ export default function TipsAccordion({ articles }: TipsAccordionProps) {
                       key={tip.number}
                       className="flex items-start gap-3 bg-[#FAFAF7] rounded-xl p-4 border border-gray-100"
                     >
-                      <span className="w-7 h-7 flex-shrink-0 rounded-full bg-[#0F7A60] text-white text-[11px] font-black flex items-center justify-center">
+                      <span className="w-7 h-7 flex-shrink-0 rounded-full bg-[#0F7A60] text-white text-xs font-black flex items-center justify-center">
                         {tip.number}
                       </span>
                       <div className="flex-1 min-w-0">

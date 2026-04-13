@@ -26,7 +26,7 @@ export async function getDeliveriesDataAction() {
     if (!store) return { error: 'Non autorisé' }
 
     // On récupère les commandes de type livraison (confirmed, preparing, shipped)
-    const orders = await prisma.order.findMany({
+    const orders = await prisma.order.findMany({ take: 50, 
       where: { 
         store_id: store.id,
         status: { in: ['confirmed', 'preparing', 'shipped'] }
@@ -45,7 +45,7 @@ export async function getDeliveriesDataAction() {
     // Attention: deliveryZone n'est pas lié formellement dans le schéma actuel via @relation
     // (Dans schema.prisma, delivery_zone_id est juste un champ String)
     // Nous utiliserons le mapping manuel si nécessaire, mais pour un premier temps:
-    const deliveryZones = await prisma.deliveryZone.findMany({
+    const deliveryZones = await prisma.deliveryZone.findMany({ take: 50, 
       where: { store_id: store.id },
       select: { id: true, name: true }
     })
@@ -60,7 +60,7 @@ export async function getDeliveriesDataAction() {
     }))
 
     // On fetch les livreurs
-    const deliverers = await prisma.deliverer.findMany({
+    const deliverers = await prisma.deliverer.findMany({ take: 50, 
       where: { store_id: store.id, active: true },
       orderBy: { created_at: 'desc' },
       select: { id: true, name: true, phone: true }

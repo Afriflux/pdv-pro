@@ -59,7 +59,7 @@ function StatusBadge({ status }: { status: string }) {
   }
   const item = map[status] ?? { label: status, cls: 'bg-gray-100 text-gray-500 border-gray-200' }
   return (
-    <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase border ${item.cls}`}>
+    <span className={`px-2.5 py-1 rounded-full text-xs font-black uppercase border ${item.cls}`}>
       {item.label}
     </span>
   )
@@ -76,7 +76,7 @@ function MethodBadge({ method }: { method: string | null }) {
   }
   const item = map[method ?? ''] ?? { label: method ?? 'N/A', cls: 'bg-gray-100 text-gray-500 border-gray-200' }
   return (
-    <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase border ${item.cls}`}>
+    <span className={`px-2 py-0.5 rounded-lg text-xs font-black uppercase border ${item.cls}`}>
       {item.label}
     </span>
   )
@@ -90,7 +90,7 @@ function KanbanCard({ order, storeName }: { order: OrderRow, storeName: string }
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-1.5">
             <Package className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#0F7A60] transition-colors" />
-            <span className="font-mono text-[11px] font-black text-gray-500 group-hover:text-gray-900 transition-colors">
+            <span className="font-mono text-xs font-black text-gray-500 group-hover:text-gray-900 transition-colors">
               #{order.id.slice(0, 8).toUpperCase()}
             </span>
           </div>
@@ -99,7 +99,7 @@ function KanbanCard({ order, storeName }: { order: OrderRow, storeName: string }
         
         <div className="mb-4">
           <p className="text-sm font-black text-[#1A1A1A] truncate">{storeName}</p>
-          <p className="text-[11px] font-semibold text-gray-500 truncate mt-0.5">
+          <p className="text-xs font-semibold text-gray-500 truncate mt-0.5">
             👤 {order.buyer_name || 'Client Inconnu'}
           </p>
         </div>
@@ -108,7 +108,7 @@ function KanbanCard({ order, storeName }: { order: OrderRow, storeName: string }
           <span className="text-xs font-black text-[#C9A84C]">
             {order.total.toLocaleString('fr-FR')} FCFA
           </span>
-          <span className="text-[10px] font-bold text-gray-400">
+          <span className="text-xs font-bold text-gray-400">
             {format(new Date(order.created_at), 'dd MMM', { locale: fr })}
           </span>
         </div>
@@ -219,7 +219,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 mb-4">
-              <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-black tracking-widest uppercase">
+              <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-black tracking-widest uppercase">
                 Gouvernance & Opérations
               </span>
             </div>
@@ -242,7 +242,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
               <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:rotate-6">
                 <ShoppingCart className="w-24 h-24" />
               </div>
-              <p className="text-[11px] font-black uppercase text-gray-400 tracking-widest mb-1 relative z-10">Total Commandes</p>
+              <p className="text-xs font-black uppercase text-gray-400 tracking-widest mb-1 relative z-10">Total Commandes</p>
               <div className="flex items-baseline gap-2 relative z-10">
                  <h3 className="text-4xl font-black text-gray-900 tracking-tight">{total}</h3>
               </div>
@@ -253,7 +253,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
               <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:-rotate-6">
                 <Clock className="w-24 h-24" />
               </div>
-              <p className="text-[11px] font-black uppercase text-amber-500/80 tracking-widest mb-1 relative z-10">En Attente</p>
+              <p className="text-xs font-black uppercase text-amber-500/80 tracking-widest mb-1 relative z-10">En Attente</p>
               <div className="flex items-baseline gap-2 relative z-10">
                  <h3 className="text-4xl font-black text-amber-500 tracking-tight">{countPending}</h3>
               </div>
@@ -264,7 +264,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
               <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:rotate-6">
                 <CheckCircle2 className="w-24 h-24 text-[#0F7A60]" />
               </div>
-              <p className="text-[11px] font-black uppercase text-[#0F7A60]/80 tracking-widest mb-1 relative z-10">Livrées</p>
+              <p className="text-xs font-black uppercase text-[#0F7A60]/80 tracking-widest mb-1 relative z-10">Livrées</p>
               <div className="flex items-baseline gap-2 relative z-10">
                  <h3 className="text-4xl font-black text-[#0F7A60] tracking-tight">{countCompleted}</h3>
               </div>
@@ -275,7 +275,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
               <div className="absolute top-0 right-0 p-4 opacity-10 transition-transform group-hover:scale-110 group-hover:-rotate-6">
                 <TrendingUp className="w-24 h-24 text-blue-500" />
               </div>
-              <p className="text-[11px] font-black uppercase text-blue-500/80 tracking-widest mb-1 relative z-10">Volume d'Affaire Global</p>
+              <p className="text-xs font-black uppercase text-blue-500/80 tracking-widest mb-1 relative z-10">Volume d'Affaire Global</p>
               <div className="flex flex-col relative z-10">
                  <h3 className="text-2xl font-black text-gray-900 tracking-tight">{totalRevenue >= 1_000_000 ? (totalRevenue/1_000_000).toFixed(2) + ' M' : (totalRevenue/1000).toFixed(0) + ' K'}</h3>
                  <span className="text-xs text-blue-600 font-bold mt-1">FCFA</span>
@@ -288,7 +288,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
 
           {/* ── ONGLETS LATÉRAUX ── */}
           <aside className="w-full lg:w-56 flex-shrink-0 sticky top-24 z-10">
-            <h2 className="text-[10px] font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Filtrer par statut</h2>
+            <h2 className="text-xs font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Filtrer par statut</h2>
             <nav className="bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl p-3 flex flex-col gap-1 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               {STATUS_TABS.map((tab) => {
                 const isActive = statusFilter === tab.value
@@ -306,7 +306,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                     {isActive && <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 ease-in-out -skew-x-12 -translate-x-full pointer-events-none" />}
                     <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 relative z-10 shadow-sm ${isActive ? 'bg-white' : tab.dot}`} />
                     <span className="flex-1 text-sm tracking-tight relative z-10">{tab.label}</span>
-                    <span className={`text-[10px] font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100/80 text-gray-500'}`}>
+                    <span className={`text-xs font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100/80 text-gray-500'}`}>
                       {n}
                     </span>
                   </Link>
@@ -362,7 +362,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                       <div className="flex items-center gap-3 px-2 mb-4">
                         <span className={`w-2.5 h-2.5 rounded-full ${column.dot}`} />
                         <h3 className="text-xs font-black uppercase tracking-widest text-[#1A1A1A] flex-1">{column.label}</h3>
-                        <span className="text-[10px] font-black text-gray-500 bg-white/60 px-2 py-0.5 rounded-lg shadow-sm border border-white">
+                        <span className="text-xs font-black text-gray-500 bg-white/60 px-2 py-0.5 rounded-lg shadow-sm border border-white">
                           {columnOrders.length}
                         </span>
                       </div>
@@ -379,7 +379,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                         {columnOrders.length === 0 && (
                           <div className="flex flex-col items-center justify-center py-10 px-4 bg-white/30 rounded-2xl border border-dashed border-gray-200">
                             <Package className="w-8 h-8 text-gray-300 mb-2" />
-                            <p className="text-[11px] font-bold text-gray-400 text-center uppercase tracking-wider">Aucune commande</p>
+                            <p className="text-xs font-bold text-gray-400 text-center uppercase tracking-wider">Aucune commande</p>
                           </div>
                         )}
                       </div>
@@ -396,7 +396,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                 <div className="overflow-x-auto relative z-10 w-full">
                   <table className="w-full text-left">
                     {/* En-tête émeraude subtil */}
-                    <thead className="bg-[#0F7A60]/[0.02] border-b border-white/40 text-gray-500 uppercase text-[10px] font-black tracking-widest">
+                    <thead className="bg-[#0F7A60]/[0.02] border-b border-white/40 text-gray-500 uppercase text-xs font-black tracking-widest">
                       <tr>
                         <th className="px-5 py-5 whitespace-nowrap">Référence</th>
                         <th className="px-5 py-5 whitespace-nowrap">Boutique</th>
@@ -439,7 +439,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                                   {order.buyer_name ?? '—'}
                                 </span>
                                 {order.buyer_phone && (
-                                  <span className="text-[10px] text-gray-400 font-medium whitespace-nowrap">{order.buyer_phone}</span>
+                                  <span className="text-xs text-gray-400 font-medium whitespace-nowrap">{order.buyer_phone}</span>
                                 )}
                               </div>
                             </td>

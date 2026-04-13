@@ -40,12 +40,29 @@ export async function generateMetadata({ params }: StorePageProps): Promise<Meta
 
   if (!store) return { title: 'Espace introuvable' }
 
+  const storeName = store.store_name || store.name
+  const title = store.seo_title || `${storeName} — Yayyam`
+  const description = store.seo_description || store.description || `Découvrez l'espace de vente de ${storeName} sur Yayyam`
+  const storeUrl = `https://yayyam.com/${params.slug}`
+
   return {
-    title: store.seo_title || `${store.store_name || store.name} — Yayyam`,
-    description: store.seo_description || store.description || `Découvrez l'espace de vente de ${store.store_name || store.name}`,
+    title,
+    description,
     openGraph: {
-      title: store.seo_title || (store.store_name || store.name),
-      description: store.seo_description || store.description || '',
+      title: store.seo_title || storeName,
+      description,
+      url: storeUrl,
+      siteName: 'Yayyam',
+      images: store.logo_url
+        ? [{ url: store.logo_url, width: 400, height: 400, alt: storeName }]
+        : [{ url: 'https://yayyam.com/og-image.svg', width: 1200, height: 630, alt: 'Yayyam' }],
+      locale: 'fr_FR',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title: store.seo_title || storeName,
+      description,
       images: store.logo_url ? [store.logo_url] : [],
     },
   }
@@ -106,6 +123,8 @@ export default async function StorePage({ params }: StorePageProps) {
       .from('Review')
       .select('*')
       .eq('store_id', store.id)
+      .order('created_at', { ascending: false })
+      .limit(20)
   ])
 
   const avgRating = reviews && reviews.length > 0

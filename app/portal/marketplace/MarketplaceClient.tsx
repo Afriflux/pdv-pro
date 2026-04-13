@@ -319,7 +319,7 @@ export default function MarketplaceClient({ items, affiliations }: MarketplaceCl
                           /* eslint-disable-next-line @next/next/no-img-element */
                           <img src={item.storeLogo} alt="Logo" className="w-5 h-5 rounded border border-line object-cover" />
                        ) : (
-                          <div className="w-5 h-5 rounded bg-emerald text-white flex items-center justify-center text-[10px] font-bold">
+                          <div className="w-5 h-5 rounded bg-emerald text-white flex items-center justify-center text-xs font-bold">
                              {item.storeName[0]}
                           </div>
                        )}

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { BioLinkClientModules, TrackedLink } from './BioLinkClientModules'
+import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
 
@@ -80,9 +81,11 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
             'bg-white ring-white text-[#0F7A60]'
           }`}>
             {bioLink.avatar_url ? (
-              <img 
+              <Image 
                 src={bioLink.avatar_url} 
                 alt={bioLink.title || 'Profile'} 
+                width={96}
+                height={96}
                 className="w-full h-full object-cover"
               />
             ) : (

@@ -11,7 +11,7 @@ export async function getTemplates(storeId: string, userRole: string, vendorType
     // Determine the roles to filter by. "all" is always included.
     const roles = ['all', userRole, vendorType]
 
-    const templates = await prisma.themeTemplate.findMany({
+    const templates = await prisma.themeTemplate.findMany({ take: 50, 
       where: {
         active: true,
         OR: [

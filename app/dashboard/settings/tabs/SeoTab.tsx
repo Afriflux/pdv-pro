@@ -94,7 +94,7 @@ export function SeoTab({ store }: { store: Record<string, any> }) {
              {/* Filigrane Google Desktop */}
              <div className="w-full bg-white rounded-xl shadow-sm border border-gray-200/80 p-5 font-sans relative z-10">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-[10px] text-gray-500">G</div>
+                  <div className="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-500">G</div>
                   <div className="flex flex-col">
                     <span className="text-[13px] text-[#202124] leading-none">yayyam.com</span>
                     <span className="text-[12px] text-[#202124] leading-none mt-1 opacity-70">https://yayyam.com/{store?.slug || 'boutique'}</span>

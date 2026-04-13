@@ -107,7 +107,7 @@ export default function AdminOrderFilters() {
         {/* ── FILTRE COD (RISQUE) ── */}
         <button
           onClick={() => setCodOnly(!codOnly)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${
             codOnly 
               ? 'bg-amber-100 text-amber-700 border border-amber-200 shadow-sm' 
               : 'bg-white border border-gray-100 text-gray-500 hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200'

@@ -7,6 +7,7 @@ import { Mail, Trophy, Home, Briefcase, MapPinned } from 'lucide-react'
 import { PromotionData } from '@/lib/promotions/promotionType'
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector'
 import LocalPaymentBadges from '@/components/widgets/LocalPaymentBadges'
+import { trackInitiateCheckout, trackAddToCart } from '@/lib/tracking/pixel-events'
 
 // ----------------------------------------------------------------
 // Types
@@ -134,6 +135,9 @@ export function CheckoutForm({
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string | null>(null)
   const [selectedZoneId, setSelectedZoneId] = useState<string>('')
+  // Sub-step wizard pour produits physiques : 'info' = coordonnées, 'delivery' = livraison + extras
+  const [formSubStep, setFormSubStep] = useState<'info' | 'delivery'>('info')
+  const isPhysicalWizard = product.type === 'physical'
 
   // ── Adresses sauvegardées (lookup checkout) ──────────────────────
   type SavedAddr = { label: string; name: string; phone: string; address: string; city: string | null; delivery_notes: string | null; latitude: number | null; longitude: number | null; is_default: boolean }
@@ -254,6 +258,7 @@ export function CheckoutForm({
   const [appliedPromo, setAppliedPromo] = useState<{ id: string; discount: number; code: string } | null>(null)
   const [promoLoading, setPromoLoading] = useState(false)
   const [promoError, setPromoError] = useState<string | null>(null)
+  const [promoExpanded, setPromoExpanded] = useState(false)
 
   // ── États Coaching ──────────────────────────────────────────────
   const [selectedDate, setSelectedDate] = useState<string>('')
@@ -281,7 +286,14 @@ export function CheckoutForm({
   const [activeViewers, setActiveViewers] = useState(12)
   useEffect(() => {
     setActiveViewers(Math.floor(Math.random() * 35) + 12)
-  }, [])
+    // Pixel: fire InitiateCheckout on mount
+    trackInitiateCheckout({
+      content_name: product.name,
+      content_id: product.id,
+      value: product.price,
+      currency: 'XOF',
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Calculs prix ──────────────────────────────────────────────
   const baseProductPrice = computedPrice.hasDiscount ? computedPrice.finalPrice : product.price
@@ -467,6 +479,14 @@ export function CheckoutForm({
 
     setLoading(true)
 
+    // Pixel: fire AddToCart when user clicks submit
+    trackAddToCart({
+      content_name: product.name,
+      content_id: product.id,
+      value: total,
+      currency: 'XOF',
+    })
+
     try {
       // ── Lecture du Token d'Affiliation & Sub-ID ──
       const refMatch = document.cookie.match(/(?:^|; )yayyam_affiliate_ref=([^;]*)/)
@@ -560,9 +580,9 @@ export function CheckoutForm({
         <div className="flex items-center gap-3 pt-2">
           {product.store.logo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={product.store.logo_url} alt={product.store.name || "Logo boutique"} className="w-10 h-10 rounded-full object-cover" />
+            <img src={product.store.logo_url} alt={product.store.name || "Logo boutique"} className="w-11 h-11 rounded-full object-cover" />
           ) : (
-            <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-[color-mix(in_srgb,var(--accent)_11%,transparent)] text-[var(--accent)]">
+            <div className="w-11 h-11 rounded-full flex items-center justify-center font-bold bg-[color-mix(in_srgb,var(--accent)_11%,transparent)] text-[var(--accent)]">
               {product.store.name[0]}
             </div>
           )}
@@ -621,7 +641,7 @@ export function CheckoutForm({
                   <Trophy size={14} className="text-orange-600"/> 
                   Vos points fidélité
                 </p>
-                <p className="text-orange-800/80 text-[11px] font-medium mt-0.5">
+                <p className="text-orange-800/80 text-xs font-medium mt-0.5">
                   Solde : {loyaltyData.account.balance} points ({loyaltyData.account.tier})
                 </p>
               </div>
@@ -636,17 +656,17 @@ export function CheckoutForm({
                 max={Math.min(loyaltyData.account?.balance || 0, maxAllowedPoints)}
                 value={redeemPoints}
                 onChange={e => setRedeemPoints(Math.min(Number(e.target.value), loyaltyData.account?.balance || 0, maxAllowedPoints))}
-                className="w-20 px-2 py-1.5 text-sm font-bold border border-orange-200 outline-none rounded bg-white text-gray-800"
+                className="w-24 px-3 py-3 text-sm font-bold border border-orange-200 outline-none rounded bg-white text-gray-800 min-h-[44px]"
               />
               <button 
                 type="button"
                 onClick={() => setRedeemPoints(Math.min(loyaltyData.account?.balance || 0, maxAllowedPoints))}
-                className="text-[10px] font-bold text-orange-600 bg-white border border-gray-100 px-2 py-1.5 rounded uppercase tracking-wide shadow-sm hover:bg-orange-600 hover:text-white transition"
+                className="text-xs font-bold text-orange-600 bg-white border border-gray-100 px-3 py-2.5 min-h-[44px] rounded uppercase tracking-wide shadow-sm hover:bg-orange-600 hover:text-white transition"
               >
                 Max ({Math.min(loyaltyData.account?.balance || 0, maxAllowedPoints)})
               </button>
             </div>
-            <p className="text-[10px] text-orange-700 mt-2 font-medium">Vous économisez {loyaltyDiscount} FCFA sur cette commande (Max {loyaltyData.config?.maxPerc || 0}%).</p>
+            <p className="text-xs text-orange-700 mt-2 font-medium">Vous économisez {loyaltyDiscount} FCFA sur cette commande (Max {loyaltyData.config?.maxPerc || 0}%).</p>
           </div>
         )}
 
@@ -673,7 +693,7 @@ export function CheckoutForm({
           ← Modifier mes informations
         </button>
 
-        <p className="text-center text-[10px] text-gray-400 pb-2 uppercase tracking-widest font-bold">
+        <p className="text-center text-xs text-gray-400 pb-2 uppercase tracking-widest font-bold">
           🔒 Sécurisé par YAYYAM
         </p>
       </div>
@@ -689,9 +709,9 @@ export function CheckoutForm({
       <div className="flex items-center gap-3 pt-2">
         {product.store.logo_url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={product.store.logo_url} alt={product.store.name || "Logo boutique"} className="w-10 h-10 rounded-full object-cover" />
+          <img src={product.store.logo_url} alt={product.store.name || "Logo boutique"} className="w-11 h-11 rounded-full object-cover" />
         ) : (
-          <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold bg-[color-mix(in_srgb,var(--accent)_11%,transparent)] text-[var(--accent)]">
+          <div className="w-11 h-11 rounded-full flex items-center justify-center font-bold bg-[color-mix(in_srgb,var(--accent)_11%,transparent)] text-[var(--accent)]">
             {product.store.name[0]}
           </div>
         )}
@@ -732,8 +752,24 @@ export function CheckoutForm({
       </div>
 
       <form onSubmit={(e) => handleSubmit(e)} className="space-y-5">
+        {/* Step indicator for physical products */}
+        {isPhysicalWizard && (
+          <div className="flex items-center gap-2 px-1">
+            <button type="button" onClick={() => setFormSubStep('info')} className={`flex items-center gap-1.5 text-sm font-bold transition-colors ${formSubStep === 'info' ? 'text-[var(--accent)]' : 'text-gray-400'}`}>
+              <span className={`w-11 h-11 rounded-full flex items-center justify-center text-sm font-black border-2 transition-all ${formSubStep === 'info' ? 'border-[var(--accent)] bg-[var(--accent)] text-white' : formSubStep === 'delivery' ? 'border-[var(--accent)] bg-[var(--accent)] text-white' : 'border-gray-300 text-gray-400'}`}>
+                {formSubStep === 'delivery' ? '✓' : '1'}
+              </span>
+              Infos
+            </button>
+            <div className={`flex-1 h-0.5 rounded transition-colors ${formSubStep === 'delivery' ? 'bg-[var(--accent)]' : 'bg-gray-200'}`} />
+            <span className={`flex items-center gap-1.5 text-sm font-bold transition-colors ${formSubStep === 'delivery' ? 'text-[var(--accent)]' : 'text-gray-400'}`}>
+              <span className={`w-11 h-11 rounded-full flex items-center justify-center text-sm font-black border-2 transition-all ${formSubStep === 'delivery' ? 'border-[var(--accent)] bg-[var(--accent)] text-white' : 'border-gray-300 text-gray-400'}`}>2</span>
+              Livraison
+            </span>
+          </div>
+        )}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">{error}</div>
+          <div role="alert" aria-live="polite" className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">{error}</div>
         )}
 
         {/* Variantes */}
@@ -767,7 +803,7 @@ export function CheckoutForm({
             <div className="flex justify-between items-center mb-3">
               <h2 className="font-semibold text-gray-800 text-sm">Quantité</h2>
               {volumeDiscountAmount > 0 && (
-                <span className="text-[10px] sm:text-xs font-black bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md uppercase tracking-widest animate-pulse">
+                <span className="text-xs sm:text-xs font-black bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md uppercase tracking-widest animate-pulse">
                   Palier débloqué !
                 </span>
               )}
@@ -775,10 +811,10 @@ export function CheckoutForm({
             
             <div className="flex items-center gap-4">
               <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-10 h-10 rounded-xl border border-gray-200 text-xl font-bold text-gray-600 hover:bg-gray-50 transition">−</button>
+                className="w-11 h-11 rounded-xl border border-gray-200 text-xl font-bold text-gray-600 hover:bg-gray-50 active:scale-95 transition">−</button>
               <span className="text-lg font-bold text-gray-800 min-w-[2rem] text-center">{quantity}</span>
               <button type="button" onClick={() => setQuantity(quantity + 1)}
-                className="w-10 h-10 rounded-xl border border-gray-200 text-xl font-bold text-gray-600 hover:bg-gray-50 transition">+</button>
+                className="w-11 h-11 rounded-xl border border-gray-200 text-xl font-bold text-gray-600 hover:bg-gray-50 active:scale-95 transition">+</button>
             </div>
 
             {/* Widget Volume Discounts B2B */}
@@ -810,7 +846,7 @@ export function CheckoutForm({
                                 Achetez {rule.quantity} articles
                               </span>
                             </div>
-                            <span className={`text-sm font-black px-2 py-1 rounded-md ${isUnlocked ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-100 text-rose-600'}`}>
+                            <span className={`text-sm font-black py-2.5 min-h-[44px] px-2 rounded-md ${isUnlocked ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-100 text-rose-600'}`}>
                               - {rule.discountType === 'percentage' ? `${rule.value}%` : `${rule.value.toLocaleString('fr-FR')} F`}
                             </span>
                           </div>
@@ -860,14 +896,14 @@ export function CheckoutForm({
                   setSelectedDate(e.target.value)
                   setSelectedSlotStr('') // reset time
                 }}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition appearance-none ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
+                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition appearance-none ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
               />
             </div>
 
             {selectedDate && (
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-2">Créneaux horaires disponibles <span className="text-red-500">*</span></label>
-                <p className="text-[11px] text-gray-500 mb-3 bg-gray-50 p-2 rounded-lg border border-gray-100 flex items-start gap-1">
+                <p className="text-xs text-gray-500 mb-3 bg-gray-50 p-2 rounded-lg border border-gray-100 flex items-start gap-1">
                   <span className="text-sm">🌍</span>
                   <span>Les horaires sont affichés à l'heure du vendeur (GMT). 
                   {userTz && <strong> Votre fuseau : {userTz}</strong>}</span>
@@ -992,44 +1028,59 @@ export function CheckoutForm({
 
           {product.type !== 'digital' && (
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Nom complet</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1">Nom complet</label>
               <input
                 type="text" value={name} onChange={e => setName(e.target.value)}
                 onBlur={reportAbandonedCart}
                 placeholder="Votre nom"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
+                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              Adresse email <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-gray-500 mb-1">
+              Adresse email <span className="text-xs text-gray-400 font-normal">(optionnel — pour le reçu)</span>
             </label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
-                type="email" value={email} onChange={e => setEmail(e.target.value)} required
+                type="email" value={email} onChange={e => setEmail(e.target.value)}
                 onBlur={reportAbandonedCart}
-                placeholder="votre@email.com (pour recevoir le reçu)"
-                className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
+                placeholder="votre@email.com"
+                className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
+            <label className="block text-sm font-medium text-gray-500 mb-1">
               Téléphone WhatsApp <span className="text-red-500">*</span>
             </label>
             <input
               type="tel" value={phone} onChange={e => setPhone(e.target.value)} required
               onBlur={reportAbandonedCart}
               placeholder="+221 77 ..."
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
             />
           </div>
 
-          {product.type === 'physical' && (
+          {/* Pour les produits physiques en sub-step 'info', on montre le bouton Continuer au lieu des champs livraison */}
+          {isPhysicalWizard && formSubStep === 'info' && (
+            <button
+              type="button"
+              onClick={() => {
+                if (!phone.trim()) { setError('Le numéro de téléphone est obligatoire.'); return }
+                setError(null)
+                setFormSubStep('delivery')
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+              className="w-full text-white font-black py-3.5 rounded-2xl transition text-sm shadow-lg uppercase bg-[var(--accent)] active:scale-[0.98]">
+              Continuer → Livraison
+            </button>
+          )}
+
+          {(!isPhysicalWizard || formSubStep === 'delivery') && product.type === 'physical' && (
             <div className="space-y-4">
               {deliveryZones && deliveryZones.length > 0 && (
                 <div>
@@ -1041,7 +1092,7 @@ export function CheckoutForm({
                     title="Sélectionnez votre zone de livraison"
                     value={selectedZoneId}
                     onChange={(e) => setSelectedZoneId(e.target.value)}
-                    className="w-full border border-gray-200 bg-white rounded-xl px-4 py-3 text-gray-800 focus:ring-2 outline-none text-sm transition appearance-none ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
+                    className="w-full border border-gray-200 bg-white rounded-xl px-4 py-3.5 text-gray-800 focus:ring-2 outline-none text-sm transition appearance-none ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
                   >
                     <option value="" disabled>Sélectionnez votre zone</option>
                     {deliveryZones.map(z => (
@@ -1061,7 +1112,7 @@ export function CheckoutForm({
                 {/* Sélecteur d'adresses sauvegardées */}
                 {savedAddresses.length > 0 && (
                   <div className="mb-3">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Vos adresses enregistrées</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Vos adresses enregistrées</p>
                     <div className="flex flex-wrap gap-2">
                       {savedAddresses.map((sa) => {
                         const isSelected = selectedSavedAddr === sa.label
@@ -1075,7 +1126,7 @@ export function CheckoutForm({
                             key={sa.label}
                             type="button"
                             onClick={() => handleSelectSavedAddress(sa)}
-                            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border-2 transition-all ${
+                            className={`flex items-center gap-1.5 px-3 py-3 min-h-[44px] rounded-xl text-xs font-bold border-2 transition-all ${
                               isSelected
                                 ? 'border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)] text-[var(--accent)] shadow-sm'
                                 : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
@@ -1083,7 +1134,7 @@ export function CheckoutForm({
                           >
                             {iconMap[sa.label] || <MapPinned size={13} />}
                             {sa.label}
-                            {sa.is_default && <span className="text-[9px] bg-amber-100 text-amber-700 px-1 py-0.5 rounded font-black">★</span>}
+                            {sa.is_default && <span className="text-xs bg-amber-100 text-amber-700 px-1 py-0.5 rounded font-black">★</span>}
                             {isSelected && <span className="text-[var(--accent)] ml-0.5">✓</span>}
                           </button>
                         )
@@ -1098,12 +1149,12 @@ export function CheckoutForm({
                   value={address}
                   onChange={(e) => { setAddress(e.target.value); setSelectedSavedAddr(null) }}
                   placeholder="Quartier, ville..."
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-28 text-gray-800 placeholder:text-gray-400 focus:ring-2 outline-none text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3.5 pr-20 text-gray-800 placeholder:text-gray-400 focus:ring-2 outline-none text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
                 />
                 <button
                   type="button"
                   onClick={detectLocation}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] px-2.5 py-1.5 rounded-lg transition flex items-center gap-1 font-bold italic bg-[color-mix(in_srgb,var(--accent)_11%,transparent)] text-[var(--accent)] border border-[color-mix(in_srgb,var(--accent)_22%,transparent)]"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-sm px-4 py-3 min-h-[44px] rounded-lg transition flex items-center gap-1 font-bold italic bg-[color-mix(in_srgb,var(--accent)_11%,transparent)] text-[var(--accent)] border border-[color-mix(in_srgb,var(--accent)_22%,transparent)]"
                 >
                   {locating ? (
                     <span className="animate-pulse">LOC...</span>
@@ -1119,39 +1170,56 @@ export function CheckoutForm({
           )}
         </section>
 
+        {/* Wizard: sections suivantes cachées en sub-step 'info' pour produits physiques */}
+        {(!isPhysicalWizard || formSubStep === 'delivery') && (
+          <>
         {/* Code Promo */}
         {!computedPrice.hasDiscount && (
-          <section className="bg-white rounded-2xl shadow-sm p-4 space-y-3 border border-gray-100">
-            <h2 className="font-semibold text-gray-800 text-sm">Code promo ?</h2>
-
+          <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             {appliedPromo ? (
-              <div className="flex items-center justify-between p-3 rounded-xl border bg-[color-mix(in_srgb,var(--accent)_5%,transparent)] border-[color-mix(in_srgb,var(--accent)_11%,transparent)]">
-                <div>
-                  <p className="text-sm font-bold text-[var(--accent)]">{appliedPromo.code}</p>
-                  <p className="text-[10px] opacity-70">Réduction active : -{appliedPromo.discount.toLocaleString('fr-FR')} FCFA</p>
+              <div className="p-4">
+                <div className="flex items-center justify-between p-3 rounded-xl border bg-[color-mix(in_srgb,var(--accent)_5%,transparent)] border-[color-mix(in_srgb,var(--accent)_11%,transparent)]">
+                  <div>
+                    <p className="text-sm font-bold text-[var(--accent)]">{appliedPromo.code}</p>
+                    <p className="text-xs opacity-70">Réduction active : -{appliedPromo.discount.toLocaleString('fr-FR')} FCFA</p>
+                  </div>
+                  <button type="button" onClick={removePromo} className="opacity-40 hover:opacity-100 p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center">✕</button>
                 </div>
-                <button type="button" onClick={removePromo} className="opacity-40 hover:opacity-100 p-1">✕</button>
               </div>
             ) : (
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="CODE"
-                  value={promoCodeInput}
-                  onChange={e => setPromoCodeInput(e.target.value)}
-                  className="flex-1 uppercase font-mono px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)]"
-                />
+              <>
                 <button
                   type="button"
-                  onClick={handleApplyPromo}
-                  disabled={promoLoading || !promoCodeInput.trim()}
-                  className="text-white px-4 rounded-xl text-sm font-black transition disabled:opacity-30 bg-[var(--accent)]"
+                  onClick={() => setPromoExpanded(v => !v)}
+                  className="w-full flex items-center justify-between p-4 text-sm font-semibold text-gray-600 hover:text-gray-800 transition active:scale-[0.99]"
                 >
-                  {promoLoading ? '...' : 'OK'}
+                  <span>J’ai un code promo</span>
+                  <svg className={`w-4 h-4 transition-transform duration-200 ${promoExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                 </button>
-              </div>
+                {promoExpanded && (
+                  <div className="px-4 pb-4 space-y-2 animate-[fade-slice-down_0.2s_ease-out]">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="CODE"
+                        value={promoCodeInput}
+                        onChange={e => setPromoCodeInput(e.target.value)}
+                        className="flex-1 uppercase font-mono px-4 py-3.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 text-sm transition ring-[color-mix(in_srgb,var(--accent)_33%,transparent)] min-h-[44px]"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleApplyPromo}
+                        disabled={promoLoading || !promoCodeInput.trim()}
+                        className="text-white px-4 py-3 min-h-[44px] rounded-xl text-sm font-black transition disabled:opacity-30 bg-[var(--accent)]"
+                      >
+                        {promoLoading ? '...' : 'OK'}
+                      </button>
+                    </div>
+                    {promoError && <p className="text-xs text-red-500">{promoError}</p>}
+                  </div>
+                )}
+              </>
             )}
-            {promoError && <p className="text-xs text-red-500">{promoError}</p>}
           </section>
         )}
 
@@ -1161,17 +1229,17 @@ export function CheckoutForm({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold text-gray-800">💵 Paiement à la livraison</p>
-                <p className="text-[10px] text-gray-500">Payez une fois le colis reçu</p>
+                <p className="text-xs text-gray-500">Payez une fois le colis reçu</p>
               </div>
               <div
                 onClick={() => setUseCOD(v => !v)}
-                className={`w-12 h-7 rounded-full transition-colors cursor-pointer relative ${useCOD ? "bg-[var(--accent)]" : "bg-[#eee]"}`}
+                className={`w-16 h-11 rounded-full transition-colors cursor-pointer relative ${useCOD ? "bg-[var(--accent)]" : "bg-[#eee]"}`}
               >
-                <div className={`absolute top-1.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${useCOD ? 'left-7' : 'left-1.5'}`} />
+                <div className={`absolute top-2.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${useCOD ? 'left-8' : 'left-2'}`} />
               </div>
             </div>
             {codWarning && !codBlocked && (
-              <p className="text-[10px] text-orange-600 bg-orange-50 rounded-lg px-3 py-2 mt-2 font-medium border border-orange-100">
+              <p className="text-xs text-orange-600 bg-orange-50 rounded-lg px-3 py-2 mt-2 font-medium border border-orange-100">
                 ⚠️ {codWarning}
               </p>
             )}
@@ -1182,7 +1250,7 @@ export function CheckoutForm({
         {codBlocked && product.cash_on_delivery && (
           <section className="rounded-2xl border border-red-200 p-4 bg-red-50">
             <p className="text-sm font-bold text-red-700">🚫 Paiement à la livraison indisponible</p>
-            <p className="text-[10px] text-red-600 mt-1">
+            <p className="text-xs text-red-600 mt-1">
               {codWarning || 'Le paiement à la livraison n\'est pas disponible pour ce numéro. Veuillez payer en ligne.'}
             </p>
           </section>
@@ -1226,9 +1294,9 @@ export function CheckoutForm({
                         checked={bumpAccepted}
                         onChange={() => setBumpAccepted(!bumpAccepted)}
                       />
-                      <div className={`block w-6 h-6 rounded border-2 transition-colors ${bumpAccepted ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-gray-300 bg-transparent'}`}>
+                      <div className={`flex items-center justify-center w-11 h-11 rounded border-2 transition-colors ${bumpAccepted ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-gray-300 bg-transparent'}`}>
                         {bumpAccepted && (
-                          <svg className="w-4 h-4 text-white mx-auto mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                           </svg>
                         )}
@@ -1257,11 +1325,11 @@ export function CheckoutForm({
             </p>
           </div>
           {variant?.stock !== undefined ? (
-            <p className="text-[11px] md:text-xs text-amber-700 font-bold mb-4 text-center">
+            <p className="text-xs md:text-xs text-amber-700 font-bold mb-4 text-center">
                ⏳ Il ne reste que {variant.stock > 0 ? variant.stock : 3} exemplaires disponibles
             </p>
           ) : (
-            <p className="text-[11px] md:text-xs text-amber-700 font-bold mb-4 text-center">
+            <p className="text-xs md:text-xs text-amber-700 font-bold mb-4 text-center">
                ⏳ Il ne reste que 3 exemplaires disponibles
             </p>
           )}
@@ -1270,7 +1338,7 @@ export function CheckoutForm({
         <section className="bg-gray-50 rounded-2xl shadow-sm p-5 space-y-3 border-2 border-dashed border-gray-200">
           <h2 className="font-extrabold text-gray-800 text-lg mb-4 text-center">Récapitulatif de votre commande</h2>
           
-          <div className="flex justify-between text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-2">
+          <div className="flex justify-between text-xs text-gray-400 font-bold uppercase tracking-wider mb-2">
             <span>Détails</span>
             <span>Prix</span>
           </div>
@@ -1308,7 +1376,7 @@ export function CheckoutForm({
           className="w-full text-white font-black py-4 rounded-2xl transition text-base shadow-xl uppercase bg-[var(--accent)] disabled:opacity-50"
         >
           {loading
-            ? 'CHARGEMENT...'
+            ? (<span className="flex items-center justify-center gap-2"><svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>En cours...</span>)
             : useCOD
               ? 'COMMANDER SANS PAYER'
               : product.payment_type === 'recurring'
@@ -1316,13 +1384,26 @@ export function CheckoutForm({
                 : `CONTINUER → PAIEMENT`}
         </button>
 
+        {/* Bouton retour en mode wizard */}
+        {isPhysicalWizard && formSubStep === 'delivery' && (
+          <button
+            type="button"
+            onClick={() => setFormSubStep('info')}
+            className="w-full text-gray-400 py-3 text-sm min-h-[44px] font-bold hover:text-gray-600 transition active:scale-[0.98]"
+          >
+            ← Modifier mes informations
+          </button>
+        )}
+          </> /* Fin du wrapper wizard delivery */
+        )}
+
         {/* Badges de Paiement Sécurisé Ouest-Africains */}
         <div className="mt-8 pt-6 border-t border-gray-100">
           <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
             GARANTIE ACHETEUR YAYYAM
           </p>
           <LocalPaymentBadges />
-          <p className="text-center text-[10px] text-gray-400 font-medium mt-4">
+          <p className="text-center text-xs text-gray-400 font-medium mt-4">
             Vos fonds sont sécurisés par nos partenaires jusqu'à la livraison.
           </p>
         </div>

@@ -181,7 +181,7 @@ export default function NewsletterWidget({
       )}
 
       {/* Note de confidentialité */}
-      <p className="mt-3 text-[11px] text-gray-400 leading-relaxed">
+      <p className="mt-3 text-xs text-gray-400 leading-relaxed">
         Pas de spam. Désabonnement en un clic à tout moment.
       </p>
     </div>

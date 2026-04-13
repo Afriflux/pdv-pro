@@ -51,7 +51,7 @@ export function FlashCountdown({ promoId, endsAt, title }: FlashCountdownProps) 
 
   return (
     <div className="bg-red-500 text-white rounded-lg p-2 text-center shadow-sm w-full animate-pulse-slow">
-      <p className="text-[10px] font-bold uppercase tracking-wider mb-1 opacity-90">{title}</p>
+      <p className="text-xs font-bold uppercase tracking-wider mb-1 opacity-90">{title}</p>
       <div className="flex justify-center gap-2 text-sm font-black font-mono">
         {timeLeft.d > 0 && <span>{timeLeft.d}j</span>}
         <span>{format(timeLeft.h)}h</span>

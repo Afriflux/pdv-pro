@@ -49,7 +49,7 @@ function KycProgress({ current, total }: { current: number; total: number }) {
               }`}>
                 {n < current ? '✓' : icons[i]}
               </div>
-              <span className={`text-[10px] font-bold hidden sm:block ${n === current ? 'text-[#0F7A60]' : 'text-gray-400'}`}>
+              <span className={`text-xs font-bold hidden sm:block ${n === current ? 'text-[#0F7A60]' : 'text-gray-400'}`}>
                 {label}
               </span>
             </div>
@@ -225,7 +225,7 @@ export default function KYCForm({ storeId, initialStatus, rejectionReason }: KYC
                   : state === 'error'   ? 'Échec — réessayez'
                   : 'Cliquez pour uploader'}
               </p>
-              <p className="text-[11px] text-gray-300">JPG, PNG, PDF — max 5 MB</p>
+              <p className="text-xs text-gray-300">JPG, PNG, PDF — max 5 MB</p>
             </>
           )}
         </div>
@@ -302,7 +302,7 @@ export default function KYCForm({ storeId, initialStatus, rejectionReason }: KYC
                   >
                     <span className="text-xl">{opt.icon}</span>
                     <p className="text-xs font-bold text-[#1A1A1A] mt-1">{opt.label}</p>
-                    <p className="text-[10px] text-gray-400">{opt.sub}</p>
+                    <p className="text-xs text-gray-400">{opt.sub}</p>
                   </button>
                 ))}
               </div>

@@ -55,7 +55,7 @@ export default function OrderCard({ order }: OrderCardProps) {
           <div className="w-full h-full flex items-center justify-center text-4xl text-gray-200">📦</div>
         )}
         <div className="absolute top-3 right-3">
-          <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-lg shadow-sm ${statusConfig.color}`}>
+          <span className={`text-xs font-black uppercase px-2 py-1 rounded-lg shadow-sm ${statusConfig.color}`}>
             {statusConfig.label}
           </span>
         </div>
@@ -64,7 +64,7 @@ export default function OrderCard({ order }: OrderCardProps) {
       {/* Content */}
       <div className="p-4 flex flex-col flex-1">
         <div className="mb-3">
-          <p className="text-[10px] text-dust font-bold uppercase tracking-wider mb-0.5">{dateStr}</p>
+          <p className="text-xs text-dust font-bold uppercase tracking-wider mb-0.5">{dateStr}</p>
           <h3 className="font-bold text-ink leading-tight line-clamp-1">{order.buyer_name}</h3>
           <p className="text-xs text-slate truncate">{order.product?.name ?? 'Produit supprimé'}</p>
         </div>

@@ -120,7 +120,7 @@ export default async function DigitalDeliveryPage({ params }: PageProps) {
               </div>
             </div>
             <div className="mt-4 pt-4 border-t border-gray-100/60">
-              <p className="text-[11px] uppercase tracking-widest text-gray-400 font-bold">Acheté par : <span className="text-[#0F7A60]">{order.buyer_name}</span></p>
+              <p className="text-xs uppercase tracking-widest text-gray-400 font-bold">Acheté par : <span className="text-[#0F7A60]">{order.buyer_name}</span></p>
             </div>
           </div>
         </div>
@@ -130,7 +130,7 @@ export default async function DigitalDeliveryPage({ params }: PageProps) {
           {remaining !== null && (
             <>
               <div className="flex items-center justify-between">
-                <span className="text-[11px] uppercase tracking-wider font-bold text-gray-500 flex items-center gap-1.5">
+                <span className="text-xs uppercase tracking-wider font-bold text-gray-500 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                   Téléchargements restants
                 </span>

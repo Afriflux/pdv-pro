@@ -244,7 +244,7 @@ export function UniversalWallet({
             
             <div className="flex flex-col items-start text-left relative z-10">
               <span className="text-sm font-black leading-none mb-1">Recharger le solde</span>
-              <span className="text-[10px] text-emerald-200 font-bold uppercase tracking-widest leading-none flex items-center gap-1">
+              <span className="text-xs text-emerald-200 font-bold uppercase tracking-widest leading-none flex items-center gap-1">
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.65 2 6.32 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM13.707 8.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
@@ -266,7 +266,7 @@ export function UniversalWallet({
             
             <div className="flex flex-col items-start text-left relative z-10">
               <span className="text-sm font-black leading-none mb-1">Demander un retrait</span>
-              <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest leading-none flex items-center gap-1">
+              <span className="text-xs text-gray-300 font-bold uppercase tracking-widest leading-none flex items-center gap-1">
                 Reçu instantanément
               </span>
             </div>
@@ -351,12 +351,12 @@ export function UniversalWallet({
               <div className="mt-4 pt-4 border-t border-gray-50 relative z-10 w-full animate-in fade-in">
                 <div className="flex justify-between items-center mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Objectif 🎯</span>
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Objectif 🎯</span>
                     {!isEditingGoal && (
-                      <button onClick={() => { setIsEditingGoal(true); setEditGoalValue(activeGoal.toString()) }} className="text-[9px] text-gray-400 border px-2 border-gray-100 rounded hover:bg-gray-50">Modifier</button>
+                      <button onClick={() => { setIsEditingGoal(true); setEditGoalValue(activeGoal.toString()) }} className="text-xs text-gray-400 border px-2 border-gray-100 rounded hover:bg-gray-50">Modifier</button>
                     )}
                   </div>
-                  <span className="text-[11px] font-black text-[#0F7A60]">
+                  <span className="text-xs font-black text-[#0F7A60]">
                     {Math.min(100, (totalEarned / Math.max(1, activeGoal)) * 100).toFixed(0)}%
                   </span>
                 </div>
@@ -436,7 +436,7 @@ export function UniversalWallet({
              <div className="overflow-x-auto">
                <table className="w-full text-left whitespace-nowrap">
                  <thead>
-                   <tr className="bg-gray-50/50 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                   <tr className="bg-gray-50/50 text-xs font-bold text-gray-400 uppercase tracking-wider">
                      <th className="px-6 py-4 border-b border-gray-100">Libellé</th>
                      <th className="px-6 py-4 border-b border-gray-100">Date</th>
                      <th className="px-6 py-4 border-b border-gray-100">Statut</th>
@@ -454,7 +454,7 @@ export function UniversalWallet({
                        </td>
                        <td className="px-6 py-4 text-gray-500 text-[13px]">{formatDateLabel(tx.created_at)}</td>
                        <td className="px-6 py-4">
-                         <span className={`inline-flex px-2 py-1 rounded-lg text-[11px] font-bold ${tx.status === 'paid' || tx.status === 'completed' || tx.status === 'approved' ? 'bg-green-100 text-green-700' : tx.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
+                         <span className={`inline-flex px-2 py-1 rounded-lg text-xs font-bold ${tx.status === 'paid' || tx.status === 'completed' || tx.status === 'approved' ? 'bg-green-100 text-green-700' : tx.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
                            {tx.status}
                          </span>
                        </td>
@@ -505,7 +505,7 @@ export function UniversalWallet({
                      <div className="space-y-2 py-3">
                        <span className="text-3xl">🔒</span>
                        <p className="text-sm font-bold text-gray-600">Solde insuffisant</p>
-                       <p className="text-[11px] text-gray-400 leading-relaxed">
+                       <p className="text-xs text-gray-400 leading-relaxed">
                          Il vous manque <strong className="text-gray-600 font-bold">{formatAmount(5000 - balance)} FCFA</strong> pour atteindre le seuil de retrait minimum.
                        </p>
                      </div>
@@ -531,10 +531,10 @@ export function UniversalWallet({
                          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">FCFA</span>
                        </div>
                        <div className="flex items-center justify-between mt-1.5 px-0.5">
-                         <p className={`text-[11px] font-medium ${withdrawAmount < 5000 && withdrawAmount > 0 ? 'text-red-400' : 'text-gray-400'}`}>
+                         <p className={`text-xs font-medium ${withdrawAmount < 5000 && withdrawAmount > 0 ? 'text-red-400' : 'text-gray-400'}`}>
                            Min : 5 000 FCFA
                          </p>
-                         <p className={`text-[11px] font-medium ${withdrawAmount > balance ? 'text-red-400' : 'text-gray-400'}`}>
+                         <p className={`text-xs font-medium ${withdrawAmount > balance ? 'text-red-400' : 'text-gray-400'}`}>
                            Disponible : <strong>{formatAmount(balance)} FCFA</strong>
                          </p>
                        </div>
@@ -542,7 +542,7 @@ export function UniversalWallet({
 
                      {/* ── Boutons rapides ── */}
                      <div>
-                       <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Montants rapides</p>
+                       <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Montants rapides</p>
                        <div className="grid grid-cols-4 gap-2">
                          {QUICK_AMOUNTS.map((val, i) => {
                            const isDisabled = val > balance
@@ -565,7 +565,7 @@ export function UniversalWallet({
                      {/* ── Compte de destination (readonly) ── */}
                      <div className="bg-[#FAFAF7] rounded-xl p-4 border border-gray-100">
                        <div className="flex items-center justify-between mb-2">
-                         <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Compte de destination</p>
+                         <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Compte de destination</p>
                        </div>
                        <div className="flex items-center gap-3">
                          <span className="text-xl">💳</span>
@@ -574,7 +574,7 @@ export function UniversalWallet({
                            <p className="text-xs text-gray-500 font-mono truncate">{withdrawPhone || 'Non spécifié'}</p>
                          </div>
                        </div>
-                       <p className="text-[10px] text-gray-400 mt-2 italic">Non modifiable ici — modifier dans les Paramètres</p>
+                       <p className="text-xs text-gray-400 mt-2 italic">Non modifiable ici — modifier dans les Paramètres</p>
                      </div>
 
                      <button
@@ -608,7 +608,7 @@ export function UniversalWallet({
                  </p>
                  
                  <div>
-                   <label className="text-[10px] font-mono font-bold text-gray-500 uppercase tracking-wider block mb-2">Montant à recharger (FCFA)</label>
+                   <label className="text-xs font-mono font-bold text-gray-500 uppercase tracking-wider block mb-2">Montant à recharger (FCFA)</label>
                    <input
                      title="Montant à recharger"
                      type="number"
@@ -620,7 +620,7 @@ export function UniversalWallet({
                  </div>
 
                  <div>
-                   <label className="text-[10px] font-mono font-bold text-gray-500 uppercase tracking-wider block mb-2">Choisir une passerelle</label>
+                   <label className="text-xs font-mono font-bold text-gray-500 uppercase tracking-wider block mb-2">Choisir une passerelle</label>
                    <div className="grid grid-cols-1 gap-2">
                      {DEPOSIT_GATEWAYS.map((g) => (
                        <button
@@ -636,7 +636,7 @@ export function UniversalWallet({
                            <span className="text-xl">{g.icon}</span>
                            <span className="text-sm font-bold text-[#1A1A1A]">{g.name}</span>
                          </div>
-                         <span className="text-[10px] font-mono text-gray-500">+{g.fee * 100}%</span>
+                         <span className="text-xs font-mono text-gray-500">+{g.fee * 100}%</span>
                        </button>
                      ))}
                    </div>
@@ -667,7 +667,7 @@ export function UniversalWallet({
                    {isPending ? 'Validation...' : '🚀 Recharger maintenant'}
                  </button>
                  
-                 <p className="text-[10px] text-center text-gray-400 font-light leading-relaxed mt-4">
+                 <p className="text-xs text-center text-gray-400 font-light leading-relaxed mt-4">
                    Les frais de transaction sont à votre charge. Traitement instantané.
                  </p>
                </div>

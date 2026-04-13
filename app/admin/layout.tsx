@@ -47,7 +47,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#FAFAF7] font-sans overflow-hidden">
+    <div className="flex min-h-screen bg-gray-50 font-sans overflow-hidden">
       
       {/* ─────────────────────────────────────────────────────────
           SIDEBAR DYNAMIQUE — Gestion des états desktop/mobile
@@ -62,7 +62,7 @@ export default async function AdminLayout({
       {/* ─────────────────────────────────────────────────────────
           CONTENU PRINCIPAL
       ───────────────────────────────────────────────────────── */}
-      <main className="relative flex-1 min-w-0 bg-[#FAFAF7] h-screen overflow-y-auto overflow-x-hidden relative flex flex-col pt-14 lg:pt-0">
+      <main className="relative flex-1 min-w-0 bg-gray-50 h-screen overflow-y-auto overflow-x-hidden relative flex flex-col pt-14 lg:pt-0">
         <GlobalHomeButton />
 
         {/* ── HEADER DESKTOP ── Fond blanc / Glassmorphism */}
@@ -74,7 +74,7 @@ export default async function AdminLayout({
               <input
                 type="text"
                 placeholder="Rechercher..."
-                className="w-full bg-[#FAFAF7] border border-gray-200 rounded-full py-1.5 pl-10 pr-4 text-xs
+                className="w-full bg-gray-50 border border-gray-200 rounded-full py-1.5 pl-10 pr-4 text-xs
                   focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all"
               />
             </div>

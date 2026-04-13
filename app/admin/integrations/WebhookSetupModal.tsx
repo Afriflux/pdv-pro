@@ -78,13 +78,13 @@ export default function WebhookSetupModal({ isOpen, onClose, serviceName, webhoo
         <div className="p-6 space-y-6 bg-[#FAFAF7]/50">
           <div className="space-y-4">
             <h4 className="text-sm font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px] font-black">ℹ️</span>
+              <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-black">ℹ️</span>
               Instructions
             </h4>
             <ul className="space-y-3">
               {getInstructions().map((step, idx) => (
                 <li key={idx} className="flex gap-3 text-sm font-medium text-gray-600 leading-snug">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-gray-200 border border-gray-300 shadow-inner text-gray-600 flex items-center justify-center text-[10px] font-black">{idx + 1}</span>
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-gray-200 border border-gray-300 shadow-inner text-gray-600 flex items-center justify-center text-xs font-black">{idx + 1}</span>
                   {step}
                 </li>
               ))}

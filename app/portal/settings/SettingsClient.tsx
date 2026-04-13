@@ -163,7 +163,7 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
                     <div className="w-32 h-32 sm:w-44 sm:h-44 rounded-[2rem] sm:rounded-[2.5rem] bg-white p-2 shadow-2xl relative z-10 rotate-3 group-hover:rotate-0 transition-transform duration-500">
                       <div className="w-full h-full rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden bg-gray-50 flex items-center justify-center relative border border-gray-100">
                         {avatarPreview ? (
-                          <Image src={avatarPreview} alt="Avatar" fill unoptimized className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                          <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={avatarPreview} alt="Avatar" fill unoptimized className="object-cover transition-transform duration-700 group-hover:scale-110" />
                         ) : (
                           <span className="text-gray-300 font-bold flex flex-col items-center justify-center text-4xl">
                             {(userProfile.name as string)?.[0] || 'U'}
@@ -267,7 +267,7 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
                           defaultValue={userProfile.email as string}
                           className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-[1rem] text-gray-500 font-bold cursor-not-allowed shadow-inner outline-none pr-32"
                         />
-                        <div className="absolute top-1/2 -translate-y-1/2 right-4 flex items-center gap-1.5 text-[11px] font-black uppercase text-gray-500 bg-gray-200 px-2.5 py-1.5 rounded-lg border border-gray-300">
+                        <div className="absolute top-1/2 -translate-y-1/2 right-4 flex items-center gap-1.5 text-xs font-black uppercase text-gray-500 bg-gray-200 px-2.5 py-1.5 rounded-lg border border-gray-300">
                           🔒 Verrouillé
                         </div>
                       </div>

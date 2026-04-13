@@ -12,7 +12,7 @@ export default async function ClientSettingsPage() {
   const supabaseAdmin = createAdminClient()
   const { data: profile } = await supabaseAdmin.from('User').select('*').eq('id', user.id).single()
 
-  const addresses = await prisma.deliveryAddress.findMany({
+  const addresses = await prisma.deliveryAddress.findMany({ take: 50, 
     where: { user_id: user.id },
     orderBy: { created_at: 'desc' }
   })

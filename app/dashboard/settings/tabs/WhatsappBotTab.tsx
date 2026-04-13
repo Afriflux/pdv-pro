@@ -123,7 +123,7 @@ export function WhatsappBotTab({ store }: { store: Record<string, unknown> & { i
 
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">Intelligence Artificielle <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Bêta</span></h4>
+                <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">Intelligence Artificielle <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Bêta</span></h4>
                 <p className="text-xs text-gray-500 mt-1">Utilise Claude 3.5 pour répondre aux questions complexes.</p>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">

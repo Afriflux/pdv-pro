@@ -99,7 +99,7 @@ export default function CloserAnalyticsClient({ stats, chartData, recentActivity
                  <Percent size={24} className="text-white" />
                </div>
                <div>
-                 <p className="text-white/60 font-black tracking-widest text-[11px] uppercase mb-1">Taux de Conversion Actif</p>
+                 <p className="text-white/60 font-black tracking-widest text-xs uppercase mb-1">Taux de Conversion Actif</p>
                  <div className="flex items-baseline gap-2">
                    <h3 className="text-5xl font-black">{stats.conversionRate}<span className="text-2xl opacity-50">%</span></h3>
                  </div>
@@ -113,7 +113,7 @@ export default function CloserAnalyticsClient({ stats, chartData, recentActivity
                  <PhoneCall size={24} />
                </div>
                <div>
-                 <p className="text-gray-400 font-black tracking-widest text-[11px] uppercase mb-1">Total Leads Traités</p>
+                 <p className="text-gray-400 font-black tracking-widest text-xs uppercase mb-1">Total Leads Traités</p>
                  <div className="flex items-baseline gap-2">
                    <h3 className="text-4xl font-black text-gray-900">{stats.totalLeads}</h3>
                    <span className="text-sm font-bold text-gray-400">cibles</span>
@@ -127,10 +127,10 @@ export default function CloserAnalyticsClient({ stats, chartData, recentActivity
                  <Trophy size={24} />
                </div>
                <div>
-                 <p className="text-gray-400 font-black tracking-widest text-[11px] uppercase mb-1">Ventes Conclues (Win)</p>
+                 <p className="text-gray-400 font-black tracking-widest text-xs uppercase mb-1">Ventes Conclues (Win)</p>
                  <div className="flex items-baseline gap-2">
                    <h3 className="text-4xl font-black text-gray-900">{stats.wonLeads}</h3>
-                   <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">+12%</span>
+                   <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">+12%</span>
                  </div>
                </div>
              </motion.div>
@@ -141,7 +141,7 @@ export default function CloserAnalyticsClient({ stats, chartData, recentActivity
                  <Flame size={24} />
                </div>
                <div>
-                 <p className="text-gray-400 font-black tracking-widest text-[11px] uppercase mb-1">Passés en Échec</p>
+                 <p className="text-gray-400 font-black tracking-widest text-xs uppercase mb-1">Passés en Échec</p>
                  <div className="flex items-baseline gap-2">
                    <h3 className="text-4xl font-black text-gray-900">{stats.lostLeads}</h3>
                  </div>

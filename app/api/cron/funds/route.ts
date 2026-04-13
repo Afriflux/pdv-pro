@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { verifyCronSecret, cronResponse } from '@/lib/cron/cron-helpers'
 import { prisma } from '@/lib/prisma'
 
@@ -59,21 +58,24 @@ async function handleFundsCron(request: Request) {
       take: 100, // Limiter le batch par exécution
     })
 
+    // Batch query for existing transactions to avoid N+1
+    const walletIds = Array.from(new Set(uncreditedOrders.map(o => o.store?.wallet?.id).filter(Boolean))) as string[];
+    
+    const existingTxs = await prisma.transaction.findMany({ 
+      where: {
+        wallet_id: { in: walletIds },
+        type: 'deposit',
+      },
+      take: 500
+    });
+
     // Pour chaque commande, vérifier si une Transaction correspondante existe
     for (const order of uncreditedOrders) {
       if (!order.store?.wallet?.id) continue
 
-      // Chercher une transaction déjà faite pour cet order
-      const existingTx = await prisma.transaction.findFirst({
-        where: {
-          wallet_id: order.store.wallet.id,
-          label: { contains: order.id },
-          type: 'deposit',
-        }
-      })
-
       // Si aucune transaction n'existe pour ce paiement → anomalie, on corrige
-      if (!existingTx) {
+      const hasTx = existingTxs.some(tx => tx.wallet_id === order.store?.wallet?.id && tx.label?.includes(order.id));
+      if (!hasTx) {
         try {
           await prisma.$transaction([
             prisma.wallet.update({
@@ -102,7 +104,7 @@ async function handleFundsCron(request: Request) {
     }
 
     // ── 2. Détection de wallets à solde négatif (anomalie critique) ──────
-    const negativeWallets = await prisma.wallet.findMany({
+    const negativeWallets = await prisma.wallet.findMany({ 
       where: {
         OR: [
           { balance: { lt: 0 } },
@@ -114,7 +116,8 @@ async function handleFundsCron(request: Request) {
         vendor_id: true,
         balance: true,
         pending: true,
-      }
+      },
+      take: 100
     })
 
     for (const w of negativeWallets) {

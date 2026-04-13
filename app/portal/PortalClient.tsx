@@ -212,7 +212,7 @@ export default function PortalClient({ affiliate, recentOrders, thisMonthEarning
         <div className="bg-[#0F7A60] rounded-[32px] p-6 lg:p-8 shadow-xl shadow-[#0F7A60]/20 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
           <div className="flex justify-between items-start mb-4 relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/80">
+            <p className="text-xs font-black uppercase tracking-widest text-white/80">
               Gains du Mois
             </p>
             <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-white/80">
@@ -234,7 +234,7 @@ export default function PortalClient({ affiliate, recentOrders, thisMonthEarning
         {/* Carte 2: Total Gagné */}
         <div className="bg-white border border-gray-100 rounded-[32px] p-6 lg:p-8 shadow-sm hover:shadow-md hover:border-[#0F7A60]/30 transition-all duration-300 group">
           <div className="flex justify-between items-start mb-4 relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+            <p className="text-xs font-black uppercase tracking-widest text-gray-500">
               Total Gagné
             </p>
             <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:text-gold group-hover:border-gold/30 transition-colors">
@@ -255,7 +255,7 @@ export default function PortalClient({ affiliate, recentOrders, thisMonthEarning
         {/* Carte 3: Clics Générés */}
         <div className="bg-white border border-gray-100 rounded-[32px] p-6 lg:p-8 shadow-sm hover:shadow-md hover:border-[#0F7A60]/30 transition-all duration-300 group">
           <div className="flex justify-between items-start mb-4 relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+            <p className="text-xs font-black uppercase tracking-widest text-gray-500">
               Clics Générés
             </p>
             <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:text-blue-500 group-hover:border-blue-500/30 transition-colors">
@@ -275,7 +275,7 @@ export default function PortalClient({ affiliate, recentOrders, thisMonthEarning
         {/* Carte 4: Taux de Conversion */}
         <div className="bg-white border border-gray-100 rounded-[32px] p-6 lg:p-8 shadow-sm hover:shadow-md hover:border-[#0F7A60]/30 transition-all duration-300 group">
           <div className="flex justify-between items-start mb-4 relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+            <p className="text-xs font-black uppercase tracking-widest text-gray-500">
               Conversion
             </p>
             <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-hover:text-[#0F7A60] group-hover:border-[#0F7A60]/30 transition-colors">

@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     // 1. Utilisateurs créés il y a plus de 3 jours
     const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
 
-    const usersToRemind = await prisma.user.findMany({
+    const usersToRemind = await prisma.user.findMany({ 
       where: {
         created_at: {
           lte: threeDaysAgo

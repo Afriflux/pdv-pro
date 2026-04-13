@@ -10,11 +10,9 @@ export async function createBictorysPayment(payload: PaymentRequestPayload): Pro
 
     const baseUrl = payload.env === 'test' ? 'https://api.test.bictorys.com' : 'https://api.bictorys.com'
     
-    // Possibilité d'acheminer directement vers le mode de paiement (ex: '?payment_type=orange_money')
+    // Acheminer directement vers le mode Wave si la méthode est 'wave'
     let endpointUrl = `${baseUrl}/pay/v1/charges`
-    if (payload.method === 'orange_money') {
-      endpointUrl += '?payment_type=orange_money'
-    } else if (payload.method === 'wave') {
+    if (payload.method === 'wave') {
       endpointUrl += '?payment_type=wave'
     }
 

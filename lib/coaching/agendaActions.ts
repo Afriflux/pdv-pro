@@ -16,7 +16,7 @@ export async function getAgendaSlots() {
 
   if (!store) throw new Error("Boutique introuvable");
 
-  const slots = await prisma.coachingSlot.findMany({
+  const slots = await prisma.coachingSlot.findMany({ take: 50, 
     where: { store_id: store.id },
     orderBy: [{ day_of_week: 'asc' }, { start_time: 'asc' }]
   });
@@ -67,7 +67,7 @@ export async function getBlockedDates() {
 
   if (!store) throw new Error("Boutique introuvable");
 
-  const blocked = await prisma.blockedDate.findMany({
+  const blocked = await prisma.blockedDate.findMany({ take: 50, 
     where: { store_id: store.id },
     orderBy: { date: 'asc' }
   });
@@ -206,7 +206,7 @@ export async function getUpcomingBookings() {
 
   if (!store) throw new Error("Boutique introuvable");
 
-  const bookings = await prisma.booking.findMany({
+  const bookings = await prisma.booking.findMany({ take: 50, 
     where: { store_id: store.id },
     orderBy: [{ booking_date: 'asc' }, { start_time: 'asc' }],
     include: {

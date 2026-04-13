@@ -387,7 +387,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                <ClipboardList size={26} className="group-hover:scale-110 transition-transform duration-300" />
             </div>
             <div className="relative z-10">
-              <p className="text-[10px] md:text-xs font-black text-dust uppercase tracking-wider mb-1">Total à gérer</p>
+              <p className="text-xs md:text-xs font-black text-dust uppercase tracking-wider mb-1">Total à gérer</p>
               <p className="font-display font-black text-ink text-2xl md:text-3xl">{stats.totalActive}</p>
             </div>
          </div>
@@ -397,7 +397,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                <Target size={26} className="group-hover:scale-110 transition-transform duration-300" />
             </div>
             <div className="relative z-10">
-              <p className="text-[10px] md:text-xs font-black text-dust uppercase tracking-wider mb-1">Confirmées</p>
+              <p className="text-xs md:text-xs font-black text-dust uppercase tracking-wider mb-1">Confirmées</p>
               <p className="font-display font-black text-ink text-2xl md:text-3xl">{stats.nbConfirmed}</p>
             </div>
          </div>
@@ -407,7 +407,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                <Package size={26} className="group-hover:scale-110 transition-transform duration-300" />
             </div>
             <div className="relative z-10">
-              <p className="text-[10px] md:text-xs font-black text-dust uppercase tracking-wider mb-1">En Préparation</p>
+              <p className="text-xs md:text-xs font-black text-dust uppercase tracking-wider mb-1">En Préparation</p>
               <p className="font-display font-black text-ink text-2xl md:text-3xl">{stats.nbPreparing}</p>
             </div>
          </div>
@@ -417,7 +417,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                <MapPin size={26} className="group-hover:scale-110 transition-transform duration-300 animate-bounce" />
             </div>
             <div className="relative z-10">
-              <p className="text-[10px] md:text-xs font-black text-dust uppercase tracking-wider mb-1">Expédiées</p>
+              <p className="text-xs md:text-xs font-black text-dust uppercase tracking-wider mb-1">Expédiées</p>
               <p className="font-display font-black text-ink text-2xl md:text-3xl">{stats.nbShipped}</p>
             </div>
          </div>
@@ -512,7 +512,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
         <div className="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
         <div className="overflow-x-auto relative z-10">
           <table className="w-full text-left whitespace-nowrap">
-            <thead className="bg-[#FAFAF7]/80 backdrop-blur-md border-b border-line text-[10px] font-black text-slate uppercase tracking-wider">
+            <thead className="bg-[#FAFAF7]/80 backdrop-blur-md border-b border-line text-xs font-black text-slate uppercase tracking-wider">
               <tr>
               <th className="px-4 py-4 w-10 text-center">
                 <button onClick={toggleAll} className={`text-slate hover:text-ink transition-colors ${selectedIds.size > 0 && selectedIds.size === filteredOrders.length ? 'text-[#0F7A60]' : ''}`} title="Tout sélectionner">
@@ -566,7 +566,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-xs font-bold text-ink bg-cream px-2 py-1 rounded-md">#{order.id.split('-')[0].toUpperCase()}</span>
                     </div>
-                    <div className="text-[10px] uppercase font-bold text-slate mt-1.5 flex items-center gap-1">
+                    <div className="text-xs uppercase font-bold text-slate mt-1.5 flex items-center gap-1">
                       <ClockIcon size={10} /> {getTimeAgo(order.created_at)}
                     </div>
                   </td>
@@ -574,8 +574,8 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                     <div className="flex flex-col gap-1">
                       <span className="font-black text-ink text-sm truncate max-w-[150px]">{order.buyer_name}</span>
                       <div className="flex items-center gap-2 mt-1">
-                        <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} onClick={e => e.stopPropagation()} className="text-[11px] text-slate hover:text-[#0F7A60] font-bold flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md transition-colors"><PhoneIcon size={10}/>{order.buyer_phone || 'N/A'}</a>
-                        <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1 text-white bg-[#25D366] hover:bg-[#1EBE5C] p-1 font-bold text-[10px] rounded-md shadow-sm transition-transform active:scale-95" title="Contacter par WhatsApp">
+                        <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} onClick={e => e.stopPropagation()} className="text-xs text-slate hover:text-[#0F7A60] font-bold flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md transition-colors"><PhoneIcon size={10}/>{order.buyer_phone || 'N/A'}</a>
+                        <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1 text-white bg-[#25D366] hover:bg-[#1EBE5C] p-1 font-bold text-xs rounded-md shadow-sm transition-transform active:scale-95" title="Contacter par WhatsApp">
                           <WhatsAppIcon className="w-3.5 h-3.5" />
                         </a>
                       </div>
@@ -584,27 +584,27 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                   <td className="px-4 py-4">
                     <div className="flex flex-col gap-0.5 max-w-[200px]">
                       <span className="font-bold text-sm text-ink truncate">{order.deliveryZone?.name || 'Zone non spécifiée'}</span>
-                      <span className="text-[11px] font-medium text-slate truncate" title={order.delivery_address}>{order.delivery_address || 'Aucune adresse'}</span>
+                      <span className="text-xs font-medium text-slate truncate" title={order.delivery_address}>{order.delivery_address || 'Aucune adresse'}</span>
                     </div>
                   </td>
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 rounded-lg bg-cream flex-shrink-0 border border-line overflow-hidden hidden sm:flex items-center justify-center">
                         {order.product?.images?.[0] ? (
-                          <Image src={order.product.images[0]} alt={order.product?.name || "Image produit"} fill className="object-cover" unoptimized />
+                          <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={order.product.images[0]} alt={order.product?.name || "Image produit"} fill className="object-cover" unoptimized />
                         ) : (
                           <Package size={14} className="text-gray-400" />
                         )}
                       </div>
                       <div className="flex flex-col gap-0.5 min-w-[100px]">
                         <span className="font-black text-[#0F7A60] text-sm">{order.total.toLocaleString('fr-FR')} F</span>
-                        <span className="text-[11px] font-bold text-slate truncate max-w-[150px]" title={order.product?.name ?? ''}>{order.product?.name ?? '—'}</span>
+                        <span className="text-xs font-bold text-slate truncate max-w-[150px]" title={order.product?.name ?? ''}>{order.product?.name ?? '—'}</span>
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-4">
                     <div className="flex flex-col items-start gap-2">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${statusConf.badgeBg} ${statusConf.color}`}>
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider ${statusConf.badgeBg} ${statusConf.color}`}>
                         <span className={`w-1.5 h-1.5 rounded-full bg-current mr-1.5 ${order.status !== 'delivered' ? 'animate-pulse' : ''}`}></span>
                         {statusConf.label}
                       </span>
@@ -613,7 +613,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                         onChange={(e) => handleAssignDeliverer(order.id, e.target.value)}
                         value={order.deliverer_id || 'none'}
                         onClick={e => e.stopPropagation()}
-                        className="bg-cream border border-line text-ink text-[10px] font-bold rounded-md px-2 py-1 outline-none focus:border-[#0F7A60]/50"
+                        className="bg-cream border border-line text-ink text-xs font-bold rounded-md px-2 py-1 outline-none focus:border-[#0F7A60]/50"
                       >
                         <option value="none">Assigner un Livreur...</option>
                         {(deliverers || []).map(d => (
@@ -655,7 +655,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                <div key={columnStatus} className="min-w-[320px] lg:min-w-0 w-[320px] lg:w-full shrink-0 flex flex-col snap-center">
                  <div className={`p-4 rounded-t-2xl border-x border-t border-line ${colConf.badgeBg} flex items-center justify-between`}>
                    <h3 className={`font-black uppercase tracking-wider text-xs flex items-center gap-2 ${colConf.color}`}>
-                     {colConf.label} <span className="bg-white px-2 py-0.5 rounded-full text-[10px] shadow-sm">{colOrders.length}</span>
+                     {colConf.label} <span className="bg-white px-2 py-0.5 rounded-full text-xs shadow-sm">{colOrders.length}</span>
                    </h3>
                  </div>
                  <div className="bg-[#FAFAF7] border-x border-b border-line rounded-b-2xl p-3 flex flex-col gap-3 min-h-[400px]">
@@ -680,14 +680,14 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                          <div key={order.id} className={`bg-white p-4 rounded-xl border border-line shadow-sm flex flex-col group transition ${isSelected ? 'ring-2 ring-[#0F7A60]' : 'hover:border-[#0F7A60]/30 cursor-pointer'}`} onClick={() => toggleSelection(order.id)}>
                            <div className="flex items-start justify-between mb-3 border-b border-line pb-3">
                              <div>
-                               <span className="font-mono text-[10px] font-black text-ink bg-cream px-2 py-1 rounded-md">#{order.id.split('-')[0].toUpperCase()}</span>
+                               <span className="font-mono text-xs font-black text-ink bg-cream px-2 py-1 rounded-md">#{order.id.split('-')[0].toUpperCase()}</span>
                                <p className="font-black text-ink text-sm mt-1">{order.buyer_name}</p>
                              </div>
                              <div className="flex flex-col items-end gap-2">
                                <button className={`transition-colors ${isSelected ? 'text-[#0F7A60]' : 'text-slate hover:text-ink'}`} onClick={(e) => { e.stopPropagation(); toggleSelection(order.id) }}>
                                  {isSelected ? <CheckSquare size={16} /> : <Square size={16} />}
                                </button>
-                               <div className="text-[9px] uppercase font-bold text-slate flex items-center gap-1">
+                               <div className="text-xs uppercase font-bold text-slate flex items-center gap-1">
                                   <ClockIcon size={9} /> {getTimeAgo(order.created_at)}
                                </div>
                              </div>
@@ -731,12 +731,12 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                              <button
                                onClick={(e) => { e.stopPropagation(); handleSingleUpdate(order.id, order.status) }}
                                disabled={isUpdating}
-                               className="w-full justify-center flex items-center gap-2 bg-[#FAFAF7] border border-line text-ink hover:text-[#0F7A60] hover:border-[#0F7A60] font-black px-4 py-2.5 rounded-lg text-[11px] transition active:scale-95 disabled:opacity-50 mt-auto shadow-sm"
+                               className="w-full justify-center flex items-center gap-2 bg-[#FAFAF7] border border-line text-ink hover:text-[#0F7A60] hover:border-[#0F7A60] font-black px-4 py-2.5 rounded-lg text-xs transition active:scale-95 disabled:opacity-50 mt-auto shadow-sm"
                              >
                                Passer en '{STATUS_CONFIG[nextSt]?.label}' <ArrowRightCircle size={14} />
                              </button>
                            ) : (
-                             <div className="w-full justify-center flex items-center gap-2 bg-emerald/10 text-[#0F7A60] font-black px-4 py-2.5 rounded-lg text-[11px] mt-auto">
+                             <div className="w-full justify-center flex items-center gap-2 bg-emerald/10 text-[#0F7A60] font-black px-4 py-2.5 rounded-lg text-xs mt-auto">
                                <CheckCircle2 size={14} /> Terminé
                              </div>
                            )}
@@ -886,7 +886,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                          <div className="flex gap-2">
                            <button 
                              onClick={() => copyMagicLink(d.id)}
-                             className="bg-[#FAFAF7] hover:bg-[#0F7A60]/10 border border-line hover:border-[#0F7A60]/30 text-[#0F7A60] px-3 py-1.5 rounded-lg text-[11px] font-black transition flex items-center gap-1 shadow-sm"
+                             className="bg-[#FAFAF7] hover:bg-[#0F7A60]/10 border border-line hover:border-[#0F7A60]/30 text-[#0F7A60] px-3 py-1.5 rounded-lg text-xs font-black transition flex items-center gap-1 shadow-sm"
                            >
                              <LinkIcon size={12} /> Copier Portail
                            </button>
@@ -918,7 +918,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                </div>
                <div>
                  <h1 className="font-black text-lg uppercase tracking-wider leading-none">Acheminement</h1>
-                 <p className="text-white/70 text-[10px] font-bold tracking-widest mt-0.5">MODE LIVRAISON YAYYAM</p>
+                 <p className="text-white/70 text-xs font-bold tracking-widest mt-0.5">MODE LIVRAISON YAYYAM</p>
                </div>
              </div>
              <button onClick={() => setIsDeliveryMode(false)} title="Fermer mode livraison" className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center active:scale-95 transition">
@@ -932,13 +932,13 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                 onClick={() => setDeliveryModeTab('pending')}
                 className={`flex-1 py-4 text-sm tracking-widest uppercase font-black transition border-b-2 ${deliveryModeTab === 'pending' ? 'text-[#0F7A60] border-[#0F7A60]' : 'text-slate border-transparent'}`}
               >
-                 En Route <span className="ml-1 bg-ink text-white px-2 py-0.5 rounded-full text-[10px]">{orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}</span>
+                 En Route <span className="ml-1 bg-ink text-white px-2 py-0.5 rounded-full text-xs">{orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length}</span>
               </button>
               <button 
                 onClick={() => setDeliveryModeTab('delivered')}
                 className={`flex-1 py-4 text-sm tracking-widest uppercase font-black transition border-b-2 ${deliveryModeTab === 'delivered' ? 'text-ink border-ink' : 'text-slate border-transparent'}`}
               >
-                 Livrées <span className="ml-1 bg-cream text-ink px-2 py-0.5 rounded-full text-[10px] shadow-sm">{orders.filter(o => o.status === 'delivered').length}</span>
+                 Livrées <span className="ml-1 bg-cream text-ink px-2 py-0.5 rounded-full text-xs shadow-sm">{orders.filter(o => o.status === 'delivered').length}</span>
               </button>
            </div>
 
@@ -958,20 +958,20 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
                          <div>
                            <div className="flex items-center gap-2 mb-1">
                              <span className="font-mono text-xs font-black text-ink bg-cream px-2.5 py-1 rounded-lg">#{order.id.split('-')[0].toUpperCase()}</span>
-                             <span className="text-[10px] font-black uppercase text-dust">{getTimeAgo(order.created_at)}</span>
+                             <span className="text-xs font-black uppercase text-dust">{getTimeAgo(order.created_at)}</span>
                            </div>
                            <h3 className="font-black tracking-tight text-xl text-ink leading-none mt-2">{order.buyer_name}</h3>
                          </div>
                          <div className="text-right">
                            <p className="font-black text-2xl tracking-tighter text-[#0F7A60]">{order.total.toLocaleString('fr-FR')}</p>
-                           <p className="text-[10px] font-black text-slate uppercase">FCFA À PERCEVOIR</p>
+                           <p className="text-xs font-black text-slate uppercase">FCFA À PERCEVOIR</p>
                          </div>
                        </div>
 
                        <div className="bg-[#fcfcfc] border border-line rounded-2xl p-3 flex gap-3 items-center">
                           <div className="w-12 h-12 rounded-xl bg-white shadow-sm border border-line overflow-hidden shrink-0 flex items-center justify-center">
                              {order.product?.images?.[0] ? (
-                               <Image src={order.product.images[0]} alt="img" width={48} height={48} className="object-cover" />
+                               <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={order.product.images[0]} alt="img" width={48} height={48} className="object-cover" />
                              ) : <Package size={20} className="text-slate" />}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -981,7 +981,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
 
                        <div className="flex gap-2 border-y border-line py-3">
                          <div className="flex-1">
-                           <p className="text-[10px] uppercase font-black text-slate mb-0.5">📍 Zone & Adresse</p>
+                           <p className="text-xs uppercase font-black text-slate mb-0.5">📍 Zone & Adresse</p>
                            <p className="text-xs font-bold text-ink line-clamp-2 leading-tight">
                              {order.deliveryZone?.name ? <span className="text-[#0F7A60]">{order.deliveryZone.name} — </span> : ''}
                              {order.delivery_address || 'Adresse introuvable'}

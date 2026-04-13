@@ -163,7 +163,7 @@ export function SecurityTab({ profile }: { profile: any }) {
             {/* Séparateur pour nouveau mdp */}
             <div className="flex items-center gap-4 py-2">
               <div className="h-px bg-gray-200 flex-1"></div>
-              <span className="text-[11px] font-black uppercase tracking-widest text-gray-400">Nouveau Mot de passe</span>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-400">Nouveau Mot de passe</span>
               <div className="h-px bg-gray-200 flex-1"></div>
             </div>
 

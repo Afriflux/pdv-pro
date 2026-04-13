@@ -26,7 +26,7 @@ export async function checkUserQuota(userId: string, feature: QuotaFeature): Pro
 
     // 3. Charger les limites configurées par l'Admin (Fallback local si non trouvées)
     const keys = ['freemium_link_bio', 'freemium_telegram_vip', 'freemium_workflows']
-    const configRows = await prisma.platformConfig.findMany({ where: { key: { in: keys } } })
+    const configRows = await prisma.platformConfig.findMany({ take: 50,  where: { key: { in: keys } } })
     
     const getConfigMap = (k: string, fallback: number) => {
        const row = configRows.find(r => r.key === k)

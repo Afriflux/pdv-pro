@@ -190,7 +190,7 @@ export default function QuestionsDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-5 rounded-[2rem] border border-slate-200 shadow-sm flex items-center justify-between gap-4 group hover:border-[#0DE0A1]/30 hover:shadow-md transition-all">
               <div>
-                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Questions</p>
+                <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Total Questions</p>
                 <p className="text-3xl font-extrabold text-slate-900 tracking-tight">{totalQuestions}</p>
               </div>
               <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-3xl flex items-center justify-center text-slate-400 group-hover:scale-110 transition-transform">
@@ -199,7 +199,7 @@ export default function QuestionsDashboard() {
             </div>
             <div className="bg-white p-5 rounded-[2rem] border border-slate-200 shadow-sm flex items-center justify-between gap-4 group hover:border-amber-200 hover:shadow-md transition-all">
               <div>
-                <p className="text-[11px] font-black text-amber-500/80 uppercase tracking-widest mb-1">À Traiter</p>
+                <p className="text-xs font-black text-amber-500/80 uppercase tracking-widest mb-1">À Traiter</p>
                 <p className="text-3xl font-extrabold text-amber-600 tracking-tight">{pendingQuestions}</p>
               </div>
               <div className="w-14 h-14 bg-amber-50 border border-amber-100 rounded-3xl flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
@@ -208,7 +208,7 @@ export default function QuestionsDashboard() {
             </div>
             <div className={`bg-white p-5 rounded-[2rem] border border-slate-200 shadow-sm flex items-center justify-between gap-4 group hover:shadow-md transition-all ${responseRate > 80 ? 'hover:border-[#0DE0A1]/50' : ''}`}>
               <div>
-                <p className={`text-[11px] font-black uppercase tracking-widest mb-1 ${responseRate > 80 ? 'text-[#0F7A60]/80' : 'text-slate-400'}`}>Taux de Réponse</p>
+                <p className={`text-xs font-black uppercase tracking-widest mb-1 ${responseRate > 80 ? 'text-[#0F7A60]/80' : 'text-slate-400'}`}>Taux de Réponse</p>
                 <p className={`text-3xl font-extrabold tracking-tight ${responseRate > 80 ? 'text-[#0F7A60]' : 'text-slate-700'}`}>{responseRate}%</p>
               </div>
               <div className={`w-14 h-14 rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform ${responseRate > 80 ? 'bg-emerald-50 border-emerald-100 text-[#0F7A60]' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
@@ -269,23 +269,23 @@ export default function QuestionsDashboard() {
                       
                       {/* Badges */}
                       <div className="flex items-center gap-3 flex-wrap">
-                        <span className="px-3 py-1 bg-slate-100 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-lg border border-slate-200">
+                        <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-black uppercase tracking-widest rounded-lg border border-slate-200">
                           {q.product_name}
                         </span>
-                        <span className="text-[11px] text-slate-400 font-bold flex items-center gap-1.5 uppercase tracking-wide">
+                        <span className="text-xs text-slate-400 font-bold flex items-center gap-1.5 uppercase tracking-wide">
                           <Clock className="w-3.5 h-3.5" />
                           {new Date(q.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </span>
                         {q.answer ? (
-                           <span className="px-2.5 py-1 bg-emerald-50 text-[#0F7A60] rounded-lg text-[11px] font-black uppercase tracking-widest flex items-center gap-1 border border-emerald-100 shadow-sm truncate">
+                           <span className="px-2.5 py-1 bg-emerald-50 text-[#0F7A60] rounded-lg text-xs font-black uppercase tracking-widest flex items-center gap-1 border border-emerald-100 shadow-sm truncate">
                              <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" /> Répondu
                            </span>
                         ) : isUrgent(q.created_at, !!q.answer) ? (
-                           <span className="px-2.5 py-1 bg-red-50 text-red-600 rounded-lg text-[11px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-red-200 shadow-sm animate-pulse">
+                           <span className="px-2.5 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-black uppercase tracking-widest flex items-center gap-1.5 border border-red-200 shadow-sm animate-pulse">
                              <AlertCircle className="w-3.5 h-3.5" /> Urgent ({Math.ceil(Math.abs(new Date().getTime() - new Date(q.created_at).getTime()) / (1000 * 60 * 60))}h)
                            </span>
                         ) : (
-                           <span className="px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg text-[11px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-amber-200 shadow-sm">
+                           <span className="px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg text-xs font-black uppercase tracking-widest flex items-center gap-1.5 border border-amber-200 shadow-sm">
                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-[pulse_2s_infinite]"></span> En attente
                            </span>
                         )}
@@ -302,7 +302,7 @@ export default function QuestionsDashboard() {
                       {/* Zone Réponse */}
                       {q.answer ? (
                         <div className="mt-6 pl-5 border-l-4 border-emerald-400 py-2">
-                          <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                          <p className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                             <CheckCircle2 className="w-4 h-4 text-[#0DE0A1]" /> Votre réponse publique
                           </p>
                           <p className="text-slate-900 text-[14px] font-medium leading-relaxed whitespace-pre-wrap">{q.answer}</p>
@@ -348,7 +348,7 @@ export default function QuestionsDashboard() {
                                <button
                                  key={idx}
                                  onClick={() => appendQuickReply(q.id, reply)}
-                                 className="text-[11px] font-bold text-slate-500 bg-slate-50 hover:bg-emerald-50 hover:text-[#0F7A60] border border-slate-200 hover:border-[#0DE0A1]/50 px-3 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm"
+                                 className="text-xs font-bold text-slate-500 bg-slate-50 hover:bg-emerald-50 hover:text-[#0F7A60] border border-slate-200 hover:border-[#0DE0A1]/50 px-3 py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm"
                                >
                                  <Zap size={12} className="text-amber-500"/> {reply.length > 35 ? reply.substring(0, 35) + '...' : reply}
                                </button>

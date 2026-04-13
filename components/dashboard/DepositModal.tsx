@@ -41,7 +41,7 @@ export function DepositModal() {
         
         <div className="flex flex-col items-start text-left relative z-10">
           <span className="text-sm font-black leading-none mb-1">Recharger le solde</span>
-          <span className="text-[10px] text-emerald-200 font-bold uppercase tracking-widest leading-none flex items-center gap-1">
+          <span className="text-xs text-emerald-200 font-bold uppercase tracking-widest leading-none flex items-center gap-1">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.65 2 6.32 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM13.707 8.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
@@ -61,7 +61,7 @@ export function DepositModal() {
 
               <div className="space-y-4 overflow-y-auto flex-1 pr-2">
                 <div>
-                  <label className="text-[10px] font-mono font-bold text-dust uppercase tracking-wider block mb-2">Montant à recharger (FCFA)</label>
+                  <label className="text-xs font-mono font-bold text-dust uppercase tracking-wider block mb-2">Montant à recharger (FCFA)</label>
                   <input
                     type="number"
                     value={amount || ''}
@@ -72,7 +72,7 @@ export function DepositModal() {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-mono font-bold text-dust uppercase tracking-wider block mb-2">Choisir une passerelle</label>
+                  <label className="text-xs font-mono font-bold text-dust uppercase tracking-wider block mb-2">Choisir une passerelle</label>
                   <div className="grid grid-cols-1 gap-2">
                     {GATEWAYS.map((g) => (
                       <button
@@ -88,7 +88,7 @@ export function DepositModal() {
                           <span className="text-xl">{g.icon}</span>
                           <span className="text-sm font-bold text-ink">{g.name}</span>
                         </div>
-                        <span className="text-[10px] font-mono text-dust">+{g.fee * 100}%</span>
+                        <span className="text-xs font-mono text-dust">+{g.fee * 100}%</span>
                       </button>
                     ))}
                   </div>
@@ -119,7 +119,7 @@ export function DepositModal() {
                   🚀 Recharger maintenant
                 </button>
                 
-                <p className="text-[10px] text-center text-slate font-light leading-relaxed mt-4">
+                <p className="text-xs text-center text-slate font-light leading-relaxed mt-4">
                   Les frais de transaction sont à la charge du vendeur pour les recharges de solde. 
                   Le traitement est instantané.
                 </p>

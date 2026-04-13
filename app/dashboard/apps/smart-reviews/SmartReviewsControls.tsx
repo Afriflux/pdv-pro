@@ -120,7 +120,7 @@ export default function SmartReviewsControls({ isActive, reviews, products }: Pr
                <Star size={24} className="text-amber-500 fill-amber-500" />
             </div>
             <div>
-               <p className="text-[11px] uppercase font-black text-gray-400 tracking-wider">Note Moyenne</p>
+               <p className="text-xs uppercase font-black text-gray-400 tracking-wider">Note Moyenne</p>
                <h3 className="text-3xl font-black text-gray-900 leading-none mt-1">{avgRating} <span className="text-lg text-gray-400">/ 5</span></h3>
             </div>
          </div>
@@ -129,7 +129,7 @@ export default function SmartReviewsControls({ isActive, reviews, products }: Pr
                <MessageSquare size={24} className="text-emerald-500" />
             </div>
             <div>
-               <p className="text-[11px] uppercase font-black text-gray-400 tracking-wider">Total Avis</p>
+               <p className="text-xs uppercase font-black text-gray-400 tracking-wider">Total Avis</p>
                <h3 className="text-3xl font-black text-gray-900 leading-none mt-1">{reviews.length}</h3>
             </div>
          </div>
@@ -138,7 +138,7 @@ export default function SmartReviewsControls({ isActive, reviews, products }: Pr
                <Check size={24} className="text-indigo-500" />
             </div>
             <div>
-               <p className="text-[11px] uppercase font-black text-gray-400 tracking-wider">Avis 5 Étoiles</p>
+               <p className="text-xs uppercase font-black text-gray-400 tracking-wider">Avis 5 Étoiles</p>
                <h3 className="text-3xl font-black text-gray-900 leading-none mt-1">{count5Stars}</h3>
             </div>
          </div>
@@ -237,7 +237,7 @@ export default function SmartReviewsControls({ isActive, reviews, products }: Pr
                      <tr key={rev.id} className="hover:bg-gray-50 transition-colors">
                        <td className="px-6 py-4">
                           <div className="font-bold text-gray-900">{rev.buyer_name}</div>
-                          {rev.verified && <div className="text-[10px] text-emerald-600 font-black uppercase flex items-center gap-1 mt-0.5"><Check size={10} /> Achat Vérifié</div>}
+                          {rev.verified && <div className="text-xs text-emerald-600 font-black uppercase flex items-center gap-1 mt-0.5"><Check size={10} /> Achat Vérifié</div>}
                        </td>
                        <td className="px-6 py-4 text-gray-500 font-medium">
                          {targetedProduct ? targetedProduct.name.substring(0, 25) + '...' : 'Global'}

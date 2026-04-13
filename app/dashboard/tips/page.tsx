@@ -24,13 +24,13 @@ export default async function TipsPage() {
   const dbArticles = await getMasterclassArticles(false, 'vendor')
 
   // Simulation de la progression pour la gamification remplacée par les vraies stats
-  const completedProgresses = await prisma.masterclassProgress.findMany({
+  const completedProgresses = await prisma.masterclassProgress.findMany({ take: 50, 
     where: { user_id: user.id },
     select: { article_id: true }
   })
   const completedIds = completedProgresses.map(p => p.article_id)
 
-  const assetPurchases = await prisma.assetPurchase.findMany({
+  const assetPurchases = await prisma.assetPurchase.findMany({ take: 50, 
     where: { store_id: store?.id, asset_type: 'MASTERCLASS' },
     select: { asset_id: true }
   })

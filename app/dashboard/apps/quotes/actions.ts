@@ -16,7 +16,7 @@ export async function getQuotesAction() {
     })
     if (!store) return { success: false, error: 'Boutique introuvable' }
 
-    const quotes = await prisma.quote.findMany({
+    const quotes = await prisma.quote.findMany({ take: 50, 
       where: { store_id: store.id },
       orderBy: { created_at: 'desc' }
     })

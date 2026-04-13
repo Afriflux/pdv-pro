@@ -62,7 +62,7 @@ export default function AmbassadorDetailsDrawer({ isOpen, onClose, ambassadorId,
           
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-2">
-               <div className="px-2 py-1 bg-white/20 text-white backdrop-blur-md rounded border border-white/30 text-[10px] font-black uppercase tracking-widest shadow-sm inline-block">
+               <div className="px-2 py-1 bg-white/20 text-white backdrop-blur-md rounded border border-white/30 text-xs font-black uppercase tracking-widest shadow-sm inline-block">
                  Code: {ambassadorCode}
                </div>
             </div>
@@ -145,15 +145,15 @@ export default function AmbassadorDetailsDrawer({ isOpen, onClose, ambassadorId,
                                  {store?.name ?? 'Boutique introuvable'}
                                  <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-[#0F7A60] transition-colors" />
                                </Link>
-                               <p className="text-[10px] text-gray-400 font-mono mt-0.5">Inscription : {format(new Date(ref.created_at), 'dd MMM yyyy', { locale: fr })}</p>
+                               <p className="text-xs text-gray-400 font-mono mt-0.5">Inscription : {format(new Date(ref.created_at), 'dd MMM yyyy', { locale: fr })}</p>
                             </div>
                             <div className="text-right">
                               {ref.is_qualified ? (
-                                <span className="inline-flex items-center px-2 py-1 rounded bg-emerald-50 border border-emerald-200 font-black text-[10px] uppercase tracking-wider text-emerald-600">
+                                <span className="inline-flex items-center px-2 py-1 rounded bg-emerald-50 border border-emerald-200 font-black text-xs uppercase tracking-wider text-emerald-600">
                                   Qualifié
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center px-2 py-1 rounded bg-amber-50 border border-amber-200 font-black text-[10px] uppercase tracking-wider text-amber-600">
+                                <span className="inline-flex items-center px-2 py-1 rounded bg-amber-50 border border-amber-200 font-black text-xs uppercase tracking-wider text-amber-600">
                                   En test ({ref.ca_in_registration_month} FCFA)
                                 </span>
                               )}
@@ -194,7 +194,7 @@ export default function AmbassadorDetailsDrawer({ isOpen, onClose, ambassadorId,
                             </div>
                             <div>
                               <p className="text-xs font-black uppercase tracking-wider text-gray-900">{tx.type === 'commission' ? 'Gain (+)' : 'Retrait (-)'}</p>
-                              <p className="text-[10px] text-gray-400">{format(new Date(tx.created_at), 'dd/MM/yyyy HH:mm', { locale: fr })}</p>
+                              <p className="text-xs text-gray-400">{format(new Date(tx.created_at), 'dd/MM/yyyy HH:mm', { locale: fr })}</p>
                               {tx.description && <p className="text-xs text-gray-500 mt-1">{tx.description}</p>}
                             </div>
                          </div>
@@ -202,7 +202,7 @@ export default function AmbassadorDetailsDrawer({ isOpen, onClose, ambassadorId,
                            <p className={`text-sm font-black ${tx.type === 'commission' ? 'text-emerald-600' : 'text-gray-800'}`}>
                              {tx.amount.toLocaleString()} F
                            </p>
-                           <span className={`text-[10px] uppercase font-bold ${tx.status === 'completed' ? 'text-blue-500' : 'text-amber-500'}`}>
+                           <span className={`text-xs uppercase font-bold ${tx.status === 'completed' ? 'text-blue-500' : 'text-amber-500'}`}>
                              {tx.status}
                            </span>
                          </div>

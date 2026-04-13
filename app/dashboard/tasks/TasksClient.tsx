@@ -293,14 +293,14 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between px-2">
-          <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${colorClass}`}>
+          <span className={`text-xs font-black uppercase tracking-[0.2em] ${colorClass}`}>
             {title} ({colTasks.length})
           </span>
         </div>
         
         {colTasks.length === 0 ? (
           <div className="bg-cream/50 rounded-2xl p-6 border border-dashed border-line text-center space-y-2">
-            <p className="text-[11px] text-dust font-bold italic">Aucune tâche</p>
+            <p className="text-xs text-dust font-bold italic">Aucune tâche</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -348,17 +348,17 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
                           {(task.client_name || task.client_phone || task.order_id) && (
                             <div className="flex flex-wrap gap-2 mt-1 mb-2">
                               {task.client_phone ? (
-                                <a suppressHydrationWarning href={`https://wa.me/${task.client_phone.replace(/\+/g, '')}?text=Bonjour${task.client_name ? ` ${task.client_name}` : ''}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded text-[10px] font-bold hover:bg-green-100 transition border border-green-200">
+                                <a suppressHydrationWarning href={`https://wa.me/${task.client_phone.replace(/\+/g, '')}?text=Bonjour${task.client_name ? ` ${task.client_name}` : ''}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded text-xs font-bold hover:bg-green-100 transition border border-green-200">
                                   <Phone size={10} /> {task.client_name || task.client_phone}
                                 </a>
                               ) : task.client_name ? (
-                                <span className="flex items-center gap-1 bg-slate-50 text-slate-600 px-2 py-1 rounded text-[10px] font-bold border border-line">
+                                <span className="flex items-center gap-1 bg-slate-50 text-slate-600 px-2 py-1 rounded text-xs font-bold border border-line">
                                   <Users size={10} /> {task.client_name}
                                 </span>
                               ) : null}
 
                               {task.order_id && (
-                                <span className="flex items-center gap-1 bg-cream text-ink px-2 py-1 rounded text-[10px] font-bold border border-line">
+                                <span className="flex items-center gap-1 bg-cream text-ink px-2 py-1 rounded text-xs font-bold border border-line">
                                   # {task.order_id.slice(-6)}
                                 </span>
                               )}
@@ -369,11 +369,11 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
                     )}
                     
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md ${PRIORITY_COLORS[task.priority]}`}>
+                      <span className={`text-xs font-black uppercase px-2 py-0.5 rounded-md ${PRIORITY_COLORS[task.priority]}`}>
                         {task.priority === 'low' ? 'Basse' : task.priority === 'medium' ? 'Moyenne' : 'Haute'}
                       </span>
                       {task.dueDate && (
-                        <span className="text-[10px] font-bold text-dust flex items-center gap-1">
+                        <span className="text-xs font-bold text-dust flex items-center gap-1">
                           <Calendar size={10} />
                           {new Date(task.dueDate).toLocaleDateString('fr-FR')}
                         </span>
@@ -411,7 +411,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
               <stat.icon size={20} className={stat.color} />
               <span className={`text-2xl font-display font-black ${stat.color}`}>{stat.value}</span>
             </div>
-            <p className="text-[10px] font-black uppercase text-dust tracking-widest">{stat.label}</p>
+            <p className="text-xs font-black uppercase text-dust tracking-widest">{stat.label}</p>
           </div>
         ))}
       </div>
@@ -500,7 +500,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
             </div>
             
             <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-5 border-b border-line/50">
-              <label className="text-[10px] font-black uppercase tracking-widest text-indigo-800 mb-2 flex items-center gap-1.5"><Sparkles size={12}/> Magic Input IA</label>
+              <label className="text-xs font-black uppercase tracking-widest text-indigo-800 mb-2 flex items-center gap-1.5"><Sparkles size={12}/> Magic Input IA</label>
               <div className="relative">
                 <input 
                   title="Magic Input IA"
@@ -525,7 +525,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
             <form onSubmit={handleCreateTask} className="p-6 space-y-5">
               
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-widest text-dust">Titre de la tâche</label>
+                <label className="text-xs font-black uppercase tracking-widest text-dust">Titre de la tâche</label>
                 <input 
                   title="Titre de la tâche"
                   type="text" required autoFocus
@@ -536,7 +536,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black uppercase tracking-widest text-dust">Description (Optionnel)</label>
+                <label className="text-xs font-black uppercase tracking-widest text-dust">Description (Optionnel)</label>
                 <textarea 
                   value={newTask.description} onChange={e => setNewTask({...newTask, description: e.target.value})}
                   placeholder="Détails, notes, contexte..."
@@ -547,7 +547,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-dust">Type de tâche</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-dust">Type de tâche</label>
                   <select 
                     title="Type de tâche"
                     value={newTask.taskType} onChange={e => setNewTask({...newTask, taskType: e.target.value as any})}
@@ -569,7 +569,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-dust">Priorité</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-dust">Priorité</label>
                   <select 
                     title="Priorité"
                     value={newTask.priority} onChange={e => setNewTask({...newTask, priority: e.target.value as any})}
@@ -585,7 +585,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
               {['call', 'email', 'meeting', 'issue'].includes(newTask.taskType) && (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5 relative" ref={dropdownRef}>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-dust">Client @ (Opt.)</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-dust">Client @ (Opt.)</label>
                     <div className="relative">
                       <UserCircle2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dust" />
                       <input 
@@ -627,7 +627,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
                   </div>
                   
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-dust">Téléphone (Opt.)</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-dust">Téléphone (Opt.)</label>
                     <input 
                       title="Téléphone du client"
                       type="text"
@@ -640,7 +640,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
               )}
 
               <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-dust">Date d'échéance (Opt.)</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-dust">Date d'échéance (Opt.)</label>
                   <input 
                     title="Date d'échéance"
                     type="date"
@@ -688,7 +688,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
                     className="w-full h-64 border border-line bg-[#FAFAF7] font-medium p-4 rounded-2xl text-sm text-ink focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none resize-none custom-scrollbar"
                   />
                   <div className="pt-4 flex justify-between items-center">
-                    <span className="text-[10px] uppercase font-bold text-dust">
+                    <span className="text-xs uppercase font-bold text-dust">
                       Ce brouillon peut être copié et utilisé directement.
                     </span>
                     <button 

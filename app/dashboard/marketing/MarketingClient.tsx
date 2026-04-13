@@ -61,7 +61,7 @@ export default function MarketingClient({ store, links, products, domain }: Mark
                   <div className="truncate">
                     <h4 className="font-bold text-[#1A1A1A] truncate text-sm">{product.name}</h4>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{product.type}</span>
+                      <span className="text-xs font-black text-gray-400 uppercase tracking-widest">{product.type}</span>
                       <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
                       <span className="text-xs text-gray-500 font-medium">{(product.views || 0)} vues</span>
                     </div>
@@ -115,7 +115,7 @@ export default function MarketingClient({ store, links, products, domain }: Mark
           <h3 className="text-lg font-black text-[#1A1A1A] flex items-center gap-2">
             <BarChart3 size={18} className="text-gray-400" /> Trafic des liens courts
           </h3>
-          <span className="bg-blue-50 text-blue-600 text-[10px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest">
+          <span className="bg-blue-50 text-blue-600 text-xs font-black px-3 py-1.5 rounded-lg uppercase tracking-widest">
             {totalClicks} clics totaux
           </span>
         </div>

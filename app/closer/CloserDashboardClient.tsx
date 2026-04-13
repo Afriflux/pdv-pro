@@ -244,7 +244,7 @@ export default function CloserDashboardClient({
                     <div key={lead.id} className={`group relative overflow-hidden border rounded-[1.5rem] p-5 cursor-pointer transition-all duration-300 ${index === 0 ? 'bg-gradient-to-br from-amber-50 to-orange-50/50 border-amber-200/50 hover:shadow-md hover:-translate-y-0.5' : 'bg-white border-gray-100 hover:border-[#0F7A60]/30 hover:shadow-md hover:-translate-y-0.5'}`}>
                       {index === 0 && <div className="absolute top-0 left-0 w-1 h-full bg-amber-400" />}
                       <div className="flex justify-between items-start mb-3">
-                        <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg ${index === 0 ? 'text-amber-700 bg-amber-200/50' : 'text-gray-500 bg-gray-100'}`}>
+                        <span className={`text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-lg ${index === 0 ? 'text-amber-700 bg-amber-200/50' : 'text-gray-500 bg-gray-100'}`}>
                           {index === 0 ? '🔥 Chaud' : 'En cours'}
                         </span>
                         <div className={`p-1.5 rounded-lg ${index === 0 ? 'bg-amber-100 text-amber-600' : 'bg-gray-50 text-gray-400 group-hover:bg-emerald-50 group-hover:text-[#0F7A60]'} transition-colors`}>

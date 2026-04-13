@@ -199,7 +199,7 @@ export default function MultiProductGrid() {
           >
             {/* Header Carte */}
             <div className="flex items-center justify-between mb-6">
-              <span className="bg-gray-50 text-gray-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest leading-none">
+              <span className="bg-gray-50 text-gray-400 text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest leading-none">
                 Produit #{index + 1}
               </span>
               
@@ -218,7 +218,7 @@ export default function MultiProductGrid() {
             <div className="space-y-4">
               {/* Nom */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Nom du produit</label>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Nom du produit</label>
                 <input
                   type="text"
                   value={draft.name}
@@ -229,7 +229,7 @@ export default function MultiProductGrid() {
                   `}
                 />
                 {draft.errors.name && (
-                  <p className="flex items-center gap-1 text-[10px] font-bold text-red-500 px-1 mt-1">
+                  <p className="flex items-center gap-1 text-xs font-bold text-red-500 px-1 mt-1">
                     <AlertCircle className="w-3 h-3" /> {draft.errors.name}
                   </p>
                 )}
@@ -238,7 +238,7 @@ export default function MultiProductGrid() {
               {/* Prix & Stock */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Prix (FCFA)</label>
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Prix (FCFA)</label>
                   <input
                     type="number"
                     value={draft.price}
@@ -251,7 +251,7 @@ export default function MultiProductGrid() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Stock</label>
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Stock</label>
                   <input
                     type="number"
                     value={draft.stock}
@@ -265,7 +265,7 @@ export default function MultiProductGrid() {
 
               {/* Description */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Description courte</label>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Description courte</label>
                 <textarea
                   value={draft.description}
                   onChange={(e) => handleUpdateCard(draft.id, 'description', e.target.value)}
@@ -276,7 +276,7 @@ export default function MultiProductGrid() {
 
               {/* Catégorie */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Catégorie</label>
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest px-1">Catégorie</label>
                 <input
                   type="text"
                   value={draft.category}

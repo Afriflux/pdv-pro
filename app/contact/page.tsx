@@ -179,7 +179,7 @@ export default async function ContactPage() {
               <div className="relative z-10 pt-8 border-t border-white/10 mt-8">
                 <div className="flex items-center gap-2 text-[#C9A84C] mb-2">
                   <MapPin size={16} />
-                  <span className="text-[11px] font-bold uppercase tracking-widest">Opérations</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">Opérations</span>
                 </div>
                 <p className="text-white text-lg font-bold">{address}</p>
                 {phone && <p className="text-white/50 text-sm mt-1">{phone}</p>}

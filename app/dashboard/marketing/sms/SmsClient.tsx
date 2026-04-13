@@ -138,9 +138,9 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-sm font-bold text-gray-700">Message ({message.length}/160 caractères)</label>
                 <div className="flex gap-2">
-                   <button onClick={() => insertVar('{prenom}')} className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded">{"{prenom}"}</button>
-                   <button onClick={() => insertVar('{boutique}')} className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded">{"{boutique}"}</button>
-                   <button onClick={() => insertVar('{lien}')} className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded">{"{lien}"}</button>
+                   <button onClick={() => insertVar('{prenom}')} className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded">{"{prenom}"}</button>
+                   <button onClick={() => insertVar('{boutique}')} className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded">{"{boutique}"}</button>
+                   <button onClick={() => insertVar('{lien}')} className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded">{"{lien}"}</button>
                 </div>
               </div>
               <textarea 
@@ -198,7 +198,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
                 className={`bg-emerald-500 h-full rounded-full transition-all duration-1000 w-[${Math.round(usagePercent/10)*10}%]`} 
               />
             </div>
-            <p className="text-[10px] text-gray-500 font-medium">Vous avez envoyé un total de {data.used} messages WhatsApp.</p>
+            <p className="text-xs text-gray-500 font-medium">Vous avez envoyé un total de {data.used} messages WhatsApp.</p>
           </div>
 
           <button 
@@ -231,7 +231,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
                 <div key={String(camp.id)} className="group p-4 border border-gray-100 rounded-2xl hover:border-emerald-100 hover:bg-emerald-50/50 transition-colors">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-bold text-sm text-gray-900 group-hover:text-emerald-800 transition-colors">{camp.name}</h4>
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase ${
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full uppercase ${
                        camp.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
                        camp.status === 'sending' ? 'bg-amber-100 text-amber-700' :
                        'bg-gray-100 text-gray-600'

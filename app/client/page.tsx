@@ -120,7 +120,7 @@ export default async function ClientDashboardOverview() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 blur-3xl rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none opacity-50 group-hover:opacity-100 group-hover:bg-teal-500/30 transition-all duration-700"></div>
             
             <div className="relative z-10">
-               <p className="text-[11px] font-black uppercase tracking-widest text-emerald-400/80 mb-2 flex items-center gap-2">
+               <p className="text-xs font-black uppercase tracking-widest text-emerald-400/80 mb-2 flex items-center gap-2">
                  <Package size={14} /> Total des achats
                </p>
                <h3 className="text-4xl lg:text-5xl font-black text-white tracking-tighter flex items-end gap-1.5 mt-2">
@@ -212,14 +212,14 @@ export default async function ClientDashboardOverview() {
                       <a href={product.digital_link || product.digital_file_url || '#'} target={product.digital_link ? "_blank" : "_self"} key={access.id} className="group flex items-center gap-4 bg-white/5 hover:bg-white/10 p-3 rounded-[1.5rem] transition-all duration-300 border border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:shadow-xl hover:-translate-y-1 relative overflow-hidden">
                         <div className="w-20 h-20 rounded-[1rem] bg-[#2A2A2A] overflow-hidden relative flex-shrink-0">
                           {product.images?.[0] ? (
-                             <Image src={product.images[0]} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                             <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={product.images[0]} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                           ) : (
                              <div className="w-full h-full flex items-center justify-center bg-[#2A2A2A] text-gray-500"><FileText size={24}/></div>
                           )}
                         </div>
                         <div className="flex-1 pr-2">
                            <h4 className="font-bold text-white text-sm line-clamp-2 group-hover:text-emerald-400 transition-colors">{product.name}</h4>
-                           <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase text-emerald-400 mt-2 tracking-wider bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-lg">
+                           <span className="inline-flex items-center gap-1 text-xs font-black uppercase text-emerald-400 mt-2 tracking-wider bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-lg">
                              {isVideo ? <PlayCircle size={12}/> : <Download size={12}/>}
                              {isVideo ? 'Vidéo' : 'E-Book'}
                            </span>

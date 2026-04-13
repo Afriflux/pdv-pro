@@ -100,7 +100,7 @@ export default function IntegrationsClient({ configMap, statsMap, configuredCoun
         {/* -- SECONDAIRE SIDEBAR -- */}
         <aside className="w-full lg:w-[280px] flex-shrink-0 sticky top-[100px] z-10 bg-white border border-gray-100 p-5 rounded-3xl shadow-xl shadow-black-[0.02] flex flex-col gap-6 animate-in slide-in-from-bottom-2 duration-300">
           <div>
-            <h2 className="text-[10px] items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">
+            <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">
               <Filter size={14} /> Intégrations & API
             </h2>
             

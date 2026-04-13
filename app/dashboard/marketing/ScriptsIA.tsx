@@ -56,7 +56,7 @@ export default function ScriptsIA() {
 
       <div className="space-y-5">
         <div>
-          <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">
+          <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">
             Que vendez-vous ?
           </label>
           <input

@@ -309,7 +309,7 @@ export default function TelegramDashboard({
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0DE0A1] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0DE0A1]"></span>
               </span>
-              <span className="text-[10px] font-black text-white uppercase tracking-widest">Connecteur Telegram Actif</span>
+              <span className="text-xs font-black text-white uppercase tracking-widest">Connecteur Telegram Actif</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-black text-white tracking-tight flex items-center gap-3">
               <Send className="text-[#0DE0A1] drop-shadow-[0_0_15px_rgba(13,224,161,0.5)]" fill="currentColor" size={40} />
@@ -345,7 +345,7 @@ export default function TelegramDashboard({
         
         {/* Barre Latérale des Onglets */}
         <div className="w-full md:w-64 shrink-0 bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col gap-2 relative z-10 md:sticky md:top-8">
-          <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest pl-2 mb-2">Modules</h3>
+          <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2 mb-2">Modules</h3>
           <button
             onClick={() => setActiveTab('alerts')}
             className={`w-full text-left px-4 py-3.5 rounded-xl text-[14px] font-bold transition-all flex items-center gap-3 ${
@@ -608,13 +608,13 @@ export default function TelegramDashboard({
                             <h3 className="font-black text-xl text-[#1A1A1A] leading-tight tracking-tight">{c.chat_title}</h3>
                             <button
                               onClick={() => setBroadcastTarget(c.id)}
-                              className="text-white bg-[#0F7A60] hover:bg-[#0D5C4A] px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap"
+                              className="text-white bg-[#0F7A60] hover:bg-[#0D5C4A] px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-sm whitespace-nowrap"
                             >
                               <Megaphone size={12} /> Diffuser
                             </button>
                           </div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg uppercase tracking-wider">
+                            <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg uppercase tracking-wider">
                               {c.chat_type}
                             </span>
                             <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg">
@@ -729,7 +729,7 @@ export default function TelegramDashboard({
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0DE0A1] opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0DE0A1]"></span>
                     </span>
-                    <span className="text-[10px] font-black text-emerald-800 uppercase tracking-widest">Nouveau Fonctionnement</span>
+                    <span className="text-xs font-black text-emerald-800 uppercase tracking-widest">Nouveau Fonctionnement</span>
                   </div>
                   
                   <h2 className="text-3xl md:text-5xl font-black text-[#1A1A1A] tracking-tight leading-tight">
@@ -840,7 +840,7 @@ export default function TelegramDashboard({
                 <Clock size={16} className="text-[#0F7A60]" /> Derniers Accès
               </h2>
               <div className="flex items-center gap-2">
-                <span className="bg-emerald-50 text-emerald-600 text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider">{recentAccess.length} Pilotes</span>
+                <span className="bg-emerald-50 text-emerald-600 text-xs font-black px-2 py-1 rounded-lg uppercase tracking-wider">{recentAccess.length} Pilotes</span>
               </div>
             </div>
             
@@ -857,7 +857,7 @@ export default function TelegramDashboard({
                   <div key={a.id} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors group">
                     <div>
                       <p className="text-sm font-black text-[#1A1A1A] mb-0.5 group-hover:text-[#0F7A60] transition-colors">{a.buyer_phone}</p>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">
                         {new Date(a.sent_at).toLocaleDateString('fr-FR', {
                           day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
                         })}
@@ -867,7 +867,7 @@ export default function TelegramDashboard({
                       <button 
                         onClick={() => handleBan(a.id)}
                         disabled={banningId === a.id}
-                        className="text-[10px] font-bold text-red-500 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg border border-red-100 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1 disabled:opacity-50"
+                        className="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg border border-red-100 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1 disabled:opacity-50"
                       >
                         {banningId === a.id ? '...' : 'Bannir'}
                       </button>

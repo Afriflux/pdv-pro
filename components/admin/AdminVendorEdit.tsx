@@ -86,7 +86,7 @@ export default function AdminVendorEdit({ storeId, userId, initialData }: AdminV
   }
 
   const inputCls = "w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-700 outline-none focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 transition-all"
-  const labelCls = "block text-[11px] font-black uppercase tracking-widest text-gray-400 mb-2"
+  const labelCls = "block text-xs font-black uppercase tracking-widest text-gray-400 mb-2"
 
   return (
     <>
@@ -125,7 +125,7 @@ export default function AdminVendorEdit({ storeId, userId, initialData }: AdminV
               
               {/* ── SECTION 1 : Profil Utilisateur ── */}
               <div>
-                <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <h4 className="text-xs font-black text-emerald-600 uppercase tracking-widest mb-4 flex items-center gap-2">
                   <span className="w-5 h-5 bg-emerald-50 rounded-md flex items-center justify-center">👤</span>
                   Profil Utilisateur
                 </h4>
@@ -189,7 +189,7 @@ export default function AdminVendorEdit({ storeId, userId, initialData }: AdminV
 
               {/* ── SECTION 2 : Boutique ── */}
               <div>
-                <h4 className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <h4 className="text-xs font-black text-indigo-600 uppercase tracking-widest mb-4 flex items-center gap-2">
                   <span className="w-5 h-5 bg-indigo-50 rounded-md flex items-center justify-center">🏪</span>
                   Boutique
                 </h4>
@@ -243,7 +243,7 @@ export default function AdminVendorEdit({ storeId, userId, initialData }: AdminV
 
               {/* ── SECTION 3 : Système ── */}
               <div>
-                <h4 className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <h4 className="text-xs font-black text-amber-600 uppercase tracking-widest mb-4 flex items-center gap-2">
                   <span className="w-5 h-5 bg-amber-50 rounded-md flex items-center justify-center">⚙️</span>
                   Système
                 </h4>
@@ -287,13 +287,13 @@ export default function AdminVendorEdit({ storeId, userId, initialData }: AdminV
                       <KeyRound className="w-4 h-4 text-gray-400" />
                       Mot de passe
                     </p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">Envoie un email avec un lien de réinitialisation.</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Envoie un email avec un lien de réinitialisation.</p>
                   </div>
                   <button
                     type="button"
                     onClick={handleResetPassword}
                     disabled={resetLoading}
-                    className="px-4 py-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 text-[11px] font-black rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5"
+                    className="px-4 py-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 text-xs font-black rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5"
                   >
                     {resetLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <KeyRound className="w-3 h-3" />}
                     Envoyer le lien
@@ -304,7 +304,7 @@ export default function AdminVendorEdit({ storeId, userId, initialData }: AdminV
               {/* Warning */}
               <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
                 <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-[10px] text-amber-700 font-medium leading-relaxed">
+                <p className="text-xs text-amber-700 font-medium leading-relaxed">
                   Modifier l&apos;email changera les identifiants de connexion. Modifier le slug changera l&apos;URL de la boutique.
                 </p>
               </div>

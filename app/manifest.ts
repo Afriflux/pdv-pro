@@ -5,9 +5,9 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Yayyam',
     short_name: 'Yayyam',
     description: 'Créez votre boutique en ligne en 10 minutes. Vendez sur WhatsApp et encaissez par Mobile Money.',
-    start_url: '/',
+    start_url: '/dashboard',
     display: 'standalone',
-    background_color: '#ffffff',
+    background_color: '#F9FAFB',
     theme_color: '#0F7A60',
     orientation: 'portrait-primary',
     icons: [

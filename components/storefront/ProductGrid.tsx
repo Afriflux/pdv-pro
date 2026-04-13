@@ -181,10 +181,9 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
                  onClick={() => setFilterCategory(cat)}
                  className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${
                    filterCategory === cat
-                     ? 'text-white shadow-sm'
+                     ? 'border-gray-900 bg-gray-900 text-white shadow-sm'
                      : 'border-gray-200 text-gray-500 hover:border-gray-400 bg-white'
                  }`}
-                 style={filterCategory === cat ? { backgroundColor: accent, borderColor: accent } : undefined}
                >
                  {cat}
                </button>
@@ -198,7 +197,7 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
           <div className="col-span-full py-12 text-center text-gray-500 bg-white rounded-2xl border border-gray-100">
              Aucun produit ne correspond à votre recherche.
           </div>
-        ) : visibleProducts.map(product => {
+        ) : visibleProducts.map((product, idx) => {
           const computed = computeProductPrice(product.price, product.id, promotions)
           const isWishlisted = wishlist.includes(product.id)
           return (
@@ -208,7 +207,7 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
                  {/* Image Section */}
                  <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
                     {product.images?.[0] ? (
-                      <Image src={product.images[0]} alt={product.name} fill sizes="(max-width: 768px) 50vw, 25vw"
+                      <Image src={product.images[0]} alt={product.name} fill sizes="(max-width: 640px) 50vw, 25vw" priority={idx < 4}
                            className="object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center text-5xl opacity-40"
@@ -239,7 +238,7 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
 
                     {/* Badges Overlay */}
                     <div className="absolute top-3 left-3 flex flex-col gap-2 z-10 pointer-events-none">
-                       <span className="text-[10px] sm:text-xs font-black bg-white/95 backdrop-blur-md text-gray-800 px-2.5 py-1 rounded-md shadow-sm uppercase tracking-widest border border-gray-200/50">
+                       <span className="text-xs font-black bg-white/95 backdrop-blur-md text-gray-800 px-3 py-1.5 rounded-md shadow-sm uppercase tracking-widest border border-gray-200/50">
                          {TYPE_LABELS[product.type] ?? product.type}
                        </span>
                     </div>
@@ -258,12 +257,12 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
                          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-white' : ''}`} />
                        </button>
                        {product.cash_on_delivery && (
-                         <span className="text-[10px] sm:text-xs font-black bg-amber-500 text-white px-2.5 py-1 rounded-md shadow-sm uppercase tracking-widest pointer-events-none">
+                         <span className="text-xs font-black bg-amber-500 text-white px-3 py-1.5 rounded-md shadow-sm uppercase tracking-widest pointer-events-none">
                            COD
                          </span>
                        )}
                        {computed.hasDiscount && (
-                         <span className="text-[10px] sm:text-xs font-black bg-[#E23636] text-white px-2.5 py-1 rounded-md shadow-sm pointer-events-none">
+                         <span className="text-xs font-black bg-[#E23636] text-white px-3 py-1.5 rounded-md shadow-sm pointer-events-none">
                            - {Math.round((1 - computed.finalPrice / product.price) * 100)}%
                          </span>
                        )}
@@ -279,11 +278,17 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
                     
                     {computed.activePromo?.type === 'flash' && computed.activePromo.ends_at && (
                       <div className="mb-3">
-                        <FlashCountdown 
-                          promoId={computed.activePromo.id} 
-                          title={computed.activePromo.title} 
-                          endsAt={computed.activePromo.ends_at} 
-                        />
+                        <div className="hidden md:block">
+                          <FlashCountdown 
+                            promoId={computed.activePromo.id} 
+                            title={computed.activePromo.title} 
+                            endsAt={computed.activePromo.ends_at} 
+                          />
+                        </div>
+                        <div className="md:hidden inline-flex items-center gap-1.5 bg-red-50 text-red-600 px-3 py-1.5 rounded-lg border border-red-100">
+                          <span className="animate-pulse">⚡</span>
+                          <span className="text-xs font-black uppercase tracking-wider">Flash</span>
+                        </div>
                       </div>
                     )}
                     
@@ -342,7 +347,7 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
                     <X className="w-4 h-4" />
                   </button>
                   
-                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
+                  <span className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">
                     {TYPE_LABELS[quickViewProduct.type] ?? quickViewProduct.type}
                   </span>
                   <h2 className="text-xl font-black text-gray-900 mb-3 leading-tight">{quickViewProduct.name}</h2>

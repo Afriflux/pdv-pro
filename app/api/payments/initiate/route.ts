@@ -6,8 +6,9 @@ import {
   calculateFees,
   calculateVendorAmount,
   initiateWavePayment,
-  initiateOrangeMoneyPayment,
   initiateCardPayment,
+  initiateBictorysPayment,
+  initiateMonerooPayment,
   type PaymentMethod,
   type PaymentIntent,
 } from '@/lib/payments/payment-service'
@@ -32,7 +33,7 @@ interface OrderRow {
 
 // ─── Validation méthode ───────────────────────────────────────────────────────
 
-const VALID_METHODS: PaymentMethod[] = ['wave', 'orange_money', 'card_cinetpay', 'card_paytech', 'bictorys', 'kkiapay']
+const VALID_METHODS: PaymentMethod[] = ['wave', 'bictorys', 'paytech', 'cinetpay', 'moneroo']
 
 function isValidMethod(value: unknown): value is PaymentMethod {
   return VALID_METHODS.includes(value as PaymentMethod)
@@ -124,11 +125,10 @@ export async function POST(req: Request) {
   // Détermine le chemin webhook selon la méthode (routes canoniques dans /api/webhooks/)
   const webhookMap: Record<string, string> = {
     wave: '/api/webhooks/wave',
-    orange_money: '/api/webhooks/wave', // fallback — Orange Money pas encore intégré en webhook
-    card_cinetpay: '/api/webhooks/cinetpay',
-    card_paytech: '/api/webhooks/paytech',
     bictorys: '/api/webhooks/bictorys',
-    kkiapay: '/api/webhooks/cinetpay', // fallback
+    paytech: '/api/webhooks/paytech',
+    cinetpay: '/api/webhooks/cinetpay',
+    moneroo: '/api/webhooks/moneroo',
   }
   const webhookPath = webhookMap[method] ?? '/api/webhooks/wave'
 
@@ -155,26 +155,24 @@ export async function POST(req: Request) {
         checkoutUrl = result.checkoutUrl
         break
       }
-      case 'orange_money': {
-        const result = await initiateOrangeMoneyPayment(intent)
+      case 'cinetpay': {
+        const result = await initiateCardPayment(intent)
         checkoutUrl = result.checkoutUrl
         break
       }
-      case 'card_cinetpay':
-      case 'card_paytech': {
+      case 'paytech': {
+        // PayTech uses same CinetPay-like flow for now
         const result = await initiateCardPayment(intent)
         checkoutUrl = result.checkoutUrl
         break
       }
       case 'bictorys': {
-        const { initiateBictorysPayment } = await import('@/lib/payments/payment-service')
         const result = await initiateBictorysPayment(intent)
         checkoutUrl = result.checkoutUrl
         break
       }
-      case 'kkiapay': {
-        const { initiateKKiapayPayment } = await import('@/lib/payments/payment-service')
-        const result = await initiateKKiapayPayment(intent)
+      case 'moneroo': {
+        const result = await initiateMonerooPayment(intent)
         checkoutUrl = result.checkoutUrl
         break
       }

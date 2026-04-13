@@ -211,7 +211,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                       <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-[2rem] bg-white p-2 shadow-xl border border-gray-100 relative z-10 hover:shadow-2xl transition-all duration-500">
                         <div className="w-full h-full rounded-[1.5rem] sm:rounded-[1.5rem] overflow-hidden bg-gray-50 flex items-center justify-center relative border border-gray-100">
                           {avatarPreview ? (
-                            <Image src={avatarPreview} alt="Avatar" fill unoptimized className="object-cover transition-transform duration-700 group-hover/avatar:scale-105" />
+                            <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={avatarPreview} alt="Avatar" fill unoptimized className="object-cover transition-transform duration-700 group-hover/avatar:scale-105" />
                           ) : (
                             <span className="text-gray-300 font-bold flex flex-col items-center justify-center text-4xl">
                               {profile?.name?.[0] || 'U'}
@@ -220,7 +220,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                           
                           <label htmlFor="avatar-upload" className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center transition-all duration-300 backdrop-blur-sm cursor-pointer scale-110 group-hover/avatar:scale-100">
                             <Camera size={28} className="text-white mb-2" strokeWidth={2} />
-                            <span className="text-white text-[11px] font-bold tracking-widest uppercase">Modifier</span>
+                            <span className="text-white text-xs font-bold tracking-widest uppercase">Modifier</span>
                             <input title="Avatar" id="avatar-upload" type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={handleFileChange} />
                           </label>
                         </div>
@@ -320,7 +320,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                       <div>
                         <h2 className="text-2xl font-black text-gray-900 tracking-tight">Portefeuille & Retraits</h2>
                         <div className="flex items-center gap-2 mt-1 hidden sm:flex">
-                          <span className="inline-flex items-center px-2 py-0.5 bg-emerald-50 text-emerald-700 font-bold text-[10px] rounded-full border border-emerald-100 uppercase tracking-wide">
+                          <span className="inline-flex items-center px-2 py-0.5 bg-emerald-50 text-emerald-700 font-bold text-xs rounded-full border border-emerald-100 uppercase tracking-wide">
                             Commissions Closer
                           </span>
                           <span className="text-[13px] text-gray-500 font-medium">Moyen de paiement de vos commissions.</span>
@@ -480,7 +480,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                         
                         {autoWithdrawEnabled && (
                           <div className="mt-6 pt-6 border-t border-gray-50 flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Seuil de déclenchement (FCFA)</label>
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Seuil de déclenchement (FCFA)</label>
                             <div className="flex items-center gap-2 max-w-xs">
                               <input 
                                 title="Numéro de compte (IBAN ou Mobile)"
@@ -491,7 +491,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                                 className="flex-1 min-w-0 bg-[#FAFAF7] border border-gray-200 text-sm font-black text-[#1A1A1A] rounded-xl px-4 py-2.5 outline-none focus:border-[#0F7A60] transition-colors"
                               />
                             </div>
-                            <p className="text-[10px] text-gray-400 mt-1 italic">Vos paiements s'effectueront lorsque vous atteindrez ce montant.</p>
+                            <p className="text-xs text-gray-400 mt-1 italic">Vos paiements s'effectueront lorsque vous atteindrez ce montant.</p>
                           </div>
                         )}
                       </div>

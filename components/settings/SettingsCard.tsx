@@ -42,7 +42,7 @@ export function SettingsCard({ title, description, children, footer, onSubmit, i
 
       {footer && (
         <div className="mt-12 pt-8 border-t-2 border-white/50 flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
-          <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest text-center sm:text-left">{footer.text}</p>
+          <p className="text-xs font-black text-gray-400 uppercase tracking-widest text-center sm:text-left">{footer.text}</p>
           {footer.buttonText && (
             <button
               disabled={footer.disabled || footer.loading}

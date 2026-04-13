@@ -2,6 +2,31 @@ import { prisma } from '@/lib/prisma'
 import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
 import { sendTransactionalEmail } from '@/lib/brevo/brevo-service'
 
+// ─── Workflow Config Types ──────────────────────────────────────────────────
+interface WorkflowCondition {
+  active: boolean;
+  field: string;
+  operator: string;
+  value: string | number;
+}
+
+interface WorkflowDelay {
+  active: boolean;
+  amount: number;
+  unit: string;
+}
+
+interface WorkflowAction {
+  type: string;
+  payload?: { message?: string; [key: string]: string | undefined };
+}
+
+interface WorkflowConfig {
+  condition?: WorkflowCondition;
+  delay?: WorkflowDelay;
+  actions?: WorkflowAction[];
+}
+
 // Définitions des types
 export type WorkflowTriggerType = 
   | 'Nouvelle Commande (Validée COD)'
@@ -19,13 +44,13 @@ export interface WorkflowEventPayload {
   customer_city?: string;
   telegram_link?: string; // Si généré par ailleurs
   store_name?: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export async function executeWorkflows(storeId: string, triggerType: WorkflowTriggerType, payload: WorkflowEventPayload) {
   try {
     // 0. Exécution des Webhooks App Store (Notion, Zapier, Make)
-    const activeWebhooks = await prisma.webhook.findMany({
+    const activeWebhooks = await prisma.webhook.findMany({ take: 50, 
       where: { store_id: storeId, active: true }
     });
 
@@ -41,7 +66,7 @@ export async function executeWorkflows(storeId: string, triggerType: WorkflowTri
     }
 
     // 1. Récupérer tous les workflows actifs pour cet événement
-    const workflows = await prisma.workflow.findMany({
+    const workflows = await prisma.workflow.findMany({ take: 50, 
       where: { 
         store_id: storeId, 
         triggerType: triggerType,
@@ -52,7 +77,7 @@ export async function executeWorkflows(storeId: string, triggerType: WorkflowTri
     if (!workflows || workflows.length === 0) return;
 
     for (const wf of workflows) {
-      const config = wf.config as any;
+      const config = wf.config as WorkflowConfig | null;
       if (!config) continue;
 
       // 2. Traiter le filtre / Condition optionnelle
@@ -142,9 +167,40 @@ export async function executeWorkflows(storeId: string, triggerType: WorkflowTri
 
             case 'telegram_group':
             case 'telegram_vip':
-              // Logique de Telegram, si on a un chatId ou bot, on appelle l'API Telegram.
-              // Le lien VIP Gateway est généré en amont par GatewayBot (géré dans le cron ou route).
-              console.log(`[Workflow Engine] Action Telegram déclenchée: ${finalMessage}`);
+              // Real Telegram message sending
+              try {
+                const { sendMessage } = await import('@/lib/telegram/bot-service')
+                const { createAdminClient } = await import('@/lib/supabase/admin')
+                
+                if (type === 'telegram_vip') {
+                  // Send to the store's own Telegram chat
+                  const storeData = await prisma.store.findUnique({
+                    where: { id: storeId },
+                    select: { telegram_chat_id: true }
+                  })
+                  if (storeData?.telegram_chat_id) {
+                    await sendMessage(storeData.telegram_chat_id, finalMessage)
+                    console.log(`[Workflow Engine] Telegram VIP envoyé au store ${storeId}`)
+                  }
+                } else {
+                  // telegram_group: Send to all active communities for this store
+                  const supabaseAdmin = createAdminClient()
+                  const { data: communities } = await supabaseAdmin
+                    .from('TelegramCommunity')
+                    .select('chat_id')
+                    .eq('store_id', storeId)
+                    .eq('is_active', true)
+                  
+                  for (const c of communities || []) {
+                    if (c.chat_id) {
+                      await sendMessage(String(c.chat_id), finalMessage)
+                    }
+                  }
+                  console.log(`[Workflow Engine] Telegram Group envoyé à ${(communities || []).length} communautés`)
+                }
+              } catch (tgErr) {
+                console.error(`[Workflow Engine] Erreur Telegram:`, tgErr)
+              }
               break;
 
             case 'create_task':

@@ -21,14 +21,14 @@ export async function getMarketplaceResourcesAction() {
   const isSuper = await checkIsSuperAdmin()
   if (!isSuper) return { success: false, error: 'Non autorisé' }
 
-  const templates = await prisma.themeTemplate.findMany({ orderBy: { created_at: 'desc' } })
-  const workflows = await prisma.workflow.findMany({ where: { store_id: 'system' } }) // Assuming standard workflows are system ? Wait, user workflows don't have is_premium maybe, or maybe we have a system table for them. Wait, let's just fetch all workflows that are marked as templates, or maybe all workflows.
+  const templates = await prisma.themeTemplate.findMany({  orderBy: { created_at: 'desc' }, take: 50 })
+  const workflows = await prisma.workflow.findMany({  where: { store_id: 'system' }, take: 50 }) // Assuming standard workflows are system ? Wait, user workflows don't have is_premium maybe, or maybe we have a system table for them. Wait, let's just fetch all workflows that are marked as templates, or maybe all workflows.
   // Wait, the user mentioned workflows. The workflows might not have a generic global template. 
   // Let's check how workflows are handled later. For now, fetch them all or we may need to filter by global templates.
   // Actually, standard Workflows have store_id. Some might have no store_id or store_id = 'system'. 
   // Let's query all templates and workflows for now, but Masterclass is definitely global.
   
-  const masterclasses = await prisma.masterclassArticle.findMany({ orderBy: { created_at: 'desc' } })
+  const masterclasses = await prisma.masterclassArticle.findMany({  orderBy: { created_at: 'desc' }, take: 50 })
 
   return { success: true, templates, masterclasses, workflows }
 }

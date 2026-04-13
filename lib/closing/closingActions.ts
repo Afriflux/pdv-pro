@@ -132,7 +132,7 @@ export async function getClosingHistory(requestId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Non authentifié')
 
-  return await prisma.closingRequestHistory.findMany({
+  return await prisma.closingRequestHistory.findMany({ take: 50, 
     where: { closing_request_id: requestId },
     orderBy: { created_at: 'desc' }
   })

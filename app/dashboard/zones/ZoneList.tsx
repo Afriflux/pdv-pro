@@ -159,7 +159,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
               }`}
             >
               Toutes
-              <span className="bg-line px-1.5 py-0.5 rounded-md text-[10px]">{zones.length}</span>
+              <span className="bg-line px-1.5 py-0.5 rounded-md text-xs">{zones.length}</span>
               {activeTab === 'all' && (
                 <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-ink rounded-t-full" />
               )}
@@ -240,7 +240,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
                 </div>
                 
                 {/* Status Pill */}
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${zone.active ? 'bg-emerald/10 text-[#0F7A60]' : 'bg-slate-200 text-slate'}`}>
+                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${zone.active ? 'bg-emerald/10 text-[#0F7A60]' : 'bg-slate-200 text-slate'}`}>
                   {zone.active && <span className="w-2 h-2 rounded-full bg-[#0F7A60] animate-pulse"></span>}
                   {zone.active ? 'Active' : 'Désactivée'}
                 </div>
@@ -256,13 +256,13 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
               </div>
 
               {zone.free_shipping_threshold && (
-                <div className={`mt-3 flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg w-fit transition-colors ${zone.active ? 'text-emerald bg-emerald/10' : 'text-dust bg-line/50 grayscale'}`}>
+                <div className={`mt-3 flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg w-fit transition-colors ${zone.active ? 'text-emerald bg-emerald/10' : 'text-dust bg-line/50 grayscale'}`}>
                   🎁 Gratuit dès {zone.free_shipping_threshold.toLocaleString('fr-FR')} F
                 </div>
               )}
               
               {zone.note && (
-                <div className="mt-2 text-[11px] italic text-slate font-medium line-clamp-2" title={zone.note}>
+                <div className="mt-2 text-xs italic text-slate font-medium line-clamp-2" title={zone.note}>
                   ℹ️ {zone.note}
                 </div>
               )}
@@ -313,7 +313,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
-                <tr className="border-b border-line bg-cream text-[10px] font-black uppercase tracking-widest text-dust">
+                <tr className="border-b border-line bg-cream text-xs font-black uppercase tracking-widest text-dust">
                   <th className="px-6 py-5">Secteur</th>
                   <th className="px-6 py-5">Frais (FCFA)</th>
                   <th className="px-6 py-5">Délai estimé</th>
@@ -332,7 +332,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
                         </div>
                         <div className="flex flex-col">
                           <span className={`font-display font-black text-[17px] tracking-tight ${zone.active ? 'text-ink' : 'text-slate line-through'}`}>{zone.name}</span>
-                          {zone.note && <span className="text-[11px] text-slate mt-1 line-clamp-1 italic font-medium" title={zone.note}>ℹ️ {zone.note}</span>}
+                          {zone.note && <span className="text-xs text-slate mt-1 line-clamp-1 italic font-medium" title={zone.note}>ℹ️ {zone.note}</span>}
                         </div>
                       </div>
                     </td>
@@ -347,7 +347,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
                     </td>
                     <td className="px-6 py-4">
                       {zone.free_shipping_threshold ? (
-                        <span className={`text-[11px] font-black uppercase tracking-wider px-2 py-1.5 rounded-lg ${zone.active ? 'text-emerald bg-emerald/10' : 'text-dust bg-line/50 grayscale'}`}>
+                        <span className={`text-xs font-black uppercase tracking-wider px-2 py-1.5 rounded-lg ${zone.active ? 'text-emerald bg-emerald/10' : 'text-dust bg-line/50 grayscale'}`}>
                           🎁 Dès {zone.free_shipping_threshold.toLocaleString('fr-FR')}
                         </span>
                       ) : (
@@ -356,7 +356,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center">
-                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${zone.active ? 'bg-emerald/10 text-[#0F7A60]' : 'bg-slate-100 text-slate'}`}>
+                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${zone.active ? 'bg-emerald/10 text-[#0F7A60]' : 'bg-slate-100 text-slate'}`}>
                           {zone.active && <span className="w-1.5 h-1.5 rounded-full bg-[#0F7A60] animate-pulse"></span>}
                           {zone.active ? 'Active' : 'Off'}
                         </div>
@@ -409,7 +409,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
             <form onSubmit={handleSubmit} className="px-10 pb-10 space-y-6 relative z-10">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="block text-[11px] uppercase tracking-wider font-black text-dust pl-1">Nom de la zone <span className="text-red-500">*</span></label>
+                  <label className="block text-xs uppercase tracking-wider font-black text-dust pl-1">Nom de la zone <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <MapPin size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-dust pointer-events-none" />
                     <input
@@ -425,7 +425,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="block text-[11px] uppercase tracking-wider font-black text-dust pl-1">Frais (FCFA) <span className="text-red-500">*</span></label>
+                    <label className="block text-xs uppercase tracking-wider font-black text-dust pl-1">Frais (FCFA) <span className="text-red-500">*</span></label>
                     <div className="relative">
                       <DollarSign size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-dust pointer-events-none" />
                       <input
@@ -441,7 +441,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[11px] uppercase tracking-wider font-black text-dust pl-1">Gratuit dès (FCFA)</label>
+                    <label className="block text-xs uppercase tracking-wider font-black text-dust pl-1">Gratuit dès (FCFA)</label>
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-dust pointer-events-none">🎁</span>
                       <input
@@ -458,7 +458,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-[11px] uppercase tracking-wider font-black text-dust pl-1">Délai estimé (Optionnel)</label>
+                  <label className="block text-xs uppercase tracking-wider font-black text-dust pl-1">Délai estimé (Optionnel)</label>
                   <div className="relative">
                     <ClockIcon size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-dust pointer-events-none" />
                     <input
@@ -472,7 +472,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-[11px] uppercase tracking-wider font-black text-dust pl-1">Note Client (Instructions)</label>
+                  <label className="block text-xs uppercase tracking-wider font-black text-dust pl-1">Note Client (Instructions)</label>
                   <textarea
                     placeholder="Ex: Livraison l'après-midi, paiement à la réception..."
                     rows={2}

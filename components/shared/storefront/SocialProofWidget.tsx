@@ -105,10 +105,10 @@ export function SocialProofWidget({ storeId }: { storeId: string }) {
               <div className="text-[12px] font-black text-[#1A1A1A] leading-tight truncate">
                 {currentItem.name}{currentItem.city && currentItem.city !== "En ligne" ? ` (${currentItem.city})` : ''} {message}
               </div>
-              <div className="text-[11px] text-gray-500 truncate mb-0.5">
+              <div className="text-xs text-gray-500 truncate mb-0.5">
                 {currentItem.productName}
               </div>
-              <div className="text-[9px] font-bold text-rose-500 tracking-wider uppercase">
+              <div className="text-xs font-bold text-rose-500 tracking-wider uppercase">
                 {getTimeAgoString(currentItem.time)}
               </div>
             </div>

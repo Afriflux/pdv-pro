@@ -83,10 +83,10 @@ export default function OrderAuditLogs({ logs }: OrderAuditLogsProps) {
                 {/* Carte de Date/Motif */}
                 <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white/60 backdrop-blur-sm p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-100 transition-all">
                   <div className="flex items-center justify-between mb-2">
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${config.color} px-2 py-1 ${config.bg} rounded-md`}>
+                    <span className={`text-xs font-black uppercase tracking-widest ${config.color} px-2 py-1 ${config.bg} rounded-md`}>
                       {log.action === 'UPDATE_STATUS' ? 'Statut actualisé' : config.label}
                     </span>
-                    <time className="text-[11px] font-bold text-gray-400 font-mono">
+                    <time className="text-xs font-bold text-gray-400 font-mono">
                       {format(new Date(log.created_at), 'dd MMM yyyy • HH:mm', { locale: fr })}
                     </time>
                   </div>
@@ -94,7 +94,7 @@ export default function OrderAuditLogs({ logs }: OrderAuditLogsProps) {
                   {log.details?.new_status && (
                      <div className="mb-2">
                         <span className="text-xs font-bold text-gray-700">Nouveau statut : </span>
-                        <span className={`text-[10px] uppercase font-black px-1.5 py-0.5 rounded ${config.bg} ${config.color}`}>{config.label}</span>
+                        <span className={`text-xs uppercase font-black px-1.5 py-0.5 rounded ${config.bg} ${config.color}`}>{config.label}</span>
                      </div>
                   )}
 
@@ -105,7 +105,7 @@ export default function OrderAuditLogs({ logs }: OrderAuditLogsProps) {
                     </div>
                   )}
 
-                  <div className="mt-3 flex items-center justify-end gap-1.5 text-[10px] text-gray-400 font-medium">
+                  <div className="mt-3 flex items-center justify-end gap-1.5 text-xs text-gray-400 font-medium">
                     <span>Par:</span>
                     <span className="text-gray-600 font-bold truncate max-w-[150px]">{log.admin?.email ?? 'Système'}</span>
                   </div>

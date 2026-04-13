@@ -99,7 +99,7 @@ function StoreAvatar({ name, logo, size = 'md', className = '' }: { name: string
   if (logo) {
     return (
       <div className={`relative ${sizes[size]} rounded-full overflow-hidden flex-shrink-0 border-2 border-white shadow-sm ${className}`}>
-        <Image
+        <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           src={logo} alt={name}
           fill
           unoptimized
@@ -232,7 +232,7 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
             <div>
               <p className="font-extrabold tracking-tight text-base text-slate-900 truncate hover:text-[#0F7A60] transition-colors cursor-pointer">{post.store_name}</p>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className={`inline-flex items-center gap-1 text-[11px] font-black px-2.5 py-1 rounded-lg ${cat.color}`}>
+                <span className={`inline-flex items-center gap-1 text-xs font-black px-2.5 py-1 rounded-lg ${cat.color}`}>
                   {cat.emoji} {cat.label}
                 </span>
                 <span className="text-xs text-slate-400 font-medium">{timeAgo(post.created_at)}</span>
@@ -262,7 +262,7 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
       {post.image_url && (
         <div className="px-5 pb-4">
           <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-sm relative group/img">
-            <Image
+            <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               src={post.image_url} alt="Image du post"
               width={800} height={600}
               unoptimized
@@ -332,7 +332,7 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
                   <div className="flex-1 bg-white rounded-2xl px-4 py-3 border border-slate-200 shadow-sm relative group/c">
                     <p className="text-xs font-black text-[#1A1A1A] mb-1">{c.store_name}</p>
                     <p className="text-[13px] text-slate-700 leading-snug">{c.content}</p>
-                    <span className="text-[10px] font-bold text-slate-400 mt-2 block">{timeAgo(c.created_at)}</span>
+                    <span className="text-xs font-bold text-slate-400 mt-2 block">{timeAgo(c.created_at)}</span>
                   </div>
                 </div>
               ))}
@@ -553,7 +553,7 @@ export default function CommunautesClient({
                <div>
                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 mb-3 shadow-sm">
                     <span className="w-2 h-2 rounded-full bg-[#0DE0A1] animate-[pulse_2s_infinite]"></span>
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-[#0F7A60]">En ligne</span>
+                    <span className="text-xs uppercase font-bold tracking-widest text-[#0F7A60]">En ligne</span>
                  </div>
                  <h1 className="text-3xl lg:text-[40px] font-extrabold text-slate-900 tracking-tight leading-tight">Centre des Vendeurs</h1>
                  <p className="text-slate-500 font-medium mt-2 text-sm lg:text-[15px] leading-relaxed max-w-lg">Plongez dans l'écosystème, trouvez l'inspiration et dominez vos ventes avec la communauté. 🔥</p>
@@ -563,9 +563,9 @@ export default function CommunautesClient({
             {/* Quick Stats in Header */}
             <div className="hidden xl:flex gap-4">
               <div className="bg-white border border-slate-200 backdrop-blur-md rounded-2xl p-4 min-w-[130px] flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-shadow duration-300">
-                 <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Impact Vendeur</p>
+                 <p className="text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Impact Vendeur</p>
                  <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500">Élite 🚀</p> 
-                 <p className="text-[10px] text-[#0F7A60] font-bold mt-1">+12% ce mois</p>
+                 <p className="text-xs text-[#0F7A60] font-bold mt-1">+12% ce mois</p>
               </div>
             </div>
          </div>
@@ -581,7 +581,7 @@ export default function CommunautesClient({
             
             <div className="mb-6 px-2">
                <h2 className="text-xl font-black text-[#1A1A1A] tracking-tight">Navigation</h2>
-               <p className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Hub Social Yayyam</p>
+               <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Hub Social Yayyam</p>
             </div>
 
             {/* Menu */}
@@ -735,7 +735,7 @@ export default function CommunautesClient({
                         </div>
                         <div>
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/10">Annonce Officielle</span>
+                            <span className="text-xs font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/10">Annonce Officielle</span>
                           </div>
                           <p className="font-medium text-[13px] leading-relaxed mb-4 text-emerald-50">
                             Bienvenue dans le nouveau <b>Hub Communautaire Yayyam !</b> Restez engagé, vendez plus, et connectez vos groupes Telegram pour notifier automatiquement vos membres. 🚀
@@ -820,7 +820,7 @@ export default function CommunautesClient({
                           </p>
                         </div>
                         <div className="w-full md:w-1/3 flex-shrink-0">
-                          <div className="flex justify-between text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">
+                          <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">
                             <span>Progression</span>
                             <span>{next}</span>
                           </div>
@@ -895,14 +895,14 @@ export default function CommunautesClient({
                                  <div className="relative z-10 w-full text-center space-y-1">
                                    <p className="font-black text-xs md:text-sm text-[#1A1A1A] truncate w-full px-1">{entry.store_name}</p>
                                    <div className="flex justify-center">
-                                     <span className="text-[10px] md:text-xs font-bold text-slate-600 bg-white/50 px-2 py-0.5 rounded-full whitespace-nowrap">
+                                     <span className="text-xs md:text-xs font-bold text-slate-600 bg-white/50 px-2 py-0.5 rounded-full whitespace-nowrap">
                                        {entry.level_emoji} {entry.level}
                                      </span>
                                    </div>
                                    <p className="text-xs md:text-sm font-black mt-2 text-[#1A1A1A]">
-                                     {Math.round(entry.total_revenue).toLocaleString('fr-FR')} <span className="text-[10px]">F</span>
+                                     {Math.round(entry.total_revenue).toLocaleString('fr-FR')} <span className="text-xs">F</span>
                                    </p>
-                                   {isMe && <span className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-[10px] font-black text-white bg-[#0F7A60] px-2 py-0.5 rounded-full shadow-sm">Vous</span>}
+                                   {isMe && <span className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-xs font-black text-white bg-[#0F7A60] px-2 py-0.5 rounded-full shadow-sm">Vous</span>}
                                  </div>
                                  
                                  <div className="absolute bottom-0 w-full h-1 bg-black/5"></div>
@@ -934,7 +934,7 @@ export default function CommunautesClient({
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <p className="font-black text-[15px] text-[#1A1A1A] truncate">{entry.store_name}</p>
-                                {isMe && <span className="text-[10px] font-black text-white bg-[#0F7A60] px-2 py-0.5 rounded-full shadow-sm">Vous</span>}
+                                {isMe && <span className="text-xs font-black text-white bg-[#0F7A60] px-2 py-0.5 rounded-full shadow-sm">Vous</span>}
                               </div>
                               <p className="text-[12px] font-medium text-slate-500">{entry.level_emoji} {entry.level} <span className="mx-1">•</span> {entry.order_count} ventes</p>
                             </div>
@@ -960,7 +960,7 @@ export default function CommunautesClient({
                 
                 <div className="relative z-10 md:w-1/2 space-y-6">
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md shadow-inner">
-                    <span className="text-[10px] font-bold text-white uppercase tracking-widest pl-1">Monétisation VIP</span>
+                    <span className="text-xs font-bold text-white uppercase tracking-widest pl-1">Monétisation VIP</span>
                   </div>
                   <h2 className="text-3xl md:text-[40px] font-extrabold text-white tracking-tight leading-tight">
                     Gérez vos <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0DE0A1] to-emerald-400">Communautés Telegram</span>
@@ -1065,7 +1065,7 @@ export default function CommunautesClient({
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/10">Nouveauté</span>
+                      <span className="text-xs font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-md border border-white/10">Nouveauté</span>
                     </div>
                     <p className="font-medium text-[13px] leading-relaxed mb-4 text-emerald-50">
                       Bienvenue dans le nouveau <b>Hub Communautaire Yayyam !</b> Restez engagé, vendez plus, et connectez vos groupes Telegram pour notifier automatiquement vos membres. 🚀

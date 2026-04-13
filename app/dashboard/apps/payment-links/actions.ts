@@ -16,7 +16,7 @@ export async function getPaymentLinksAction() {
     })
     if (!store) return { success: false, error: 'Boutique introuvable' }
 
-    const links = await prisma.paymentLink.findMany({
+    const links = await prisma.paymentLink.findMany({ take: 50, 
       where: { store_id: store.id },
       orderBy: { created_at: 'desc' }
     })

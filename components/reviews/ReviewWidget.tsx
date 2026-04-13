@@ -196,7 +196,7 @@ export function ReviewWidget({ storeId, productId, showForm = false }: ReviewWid
             <X className="w-6 h-6" />
           </button>
           <div className="relative w-full max-w-4xl h-[90vh]">
-            <Image 
+            <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
               src={selectedImage} 
               alt="Review zoomée" 
               fill
@@ -282,7 +282,7 @@ export function ReviewWidget({ storeId, productId, showForm = false }: ReviewWid
                           onClick={() => setSelectedImage(r.image_url!)}
                           className="relative w-20 h-20 rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:opacity-90 hover:scale-105 transition-all cursor-zoom-in"
                         >
-                          <Image src={r.image_url} alt="Photo du client" fill className="object-cover" />
+                          <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={r.image_url} alt="Photo du client" fill className="object-cover" />
                         </button>
                       </div>
                     )}
@@ -290,12 +290,12 @@ export function ReviewWidget({ storeId, productId, showForm = false }: ReviewWid
                   <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-50">
                     <span className="text-xs font-bold text-gray-900">{r.buyer_name}</span>
                     {r.verified && (
-                      <span className="inline-flex items-center gap-0.5 text-[10px] font-black text-[#0F7A60] uppercase tracking-wide bg-[#0F7A60]/10 px-1.5 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-0.5 text-xs font-black text-[#0F7A60] uppercase tracking-wide bg-[#0F7A60]/10 px-1.5 py-0.5 rounded-full">
                         <CheckCircle2 className="w-3 h-3" /> Achat vérifié
                       </span>
                     )}
-                    <span className="text-[10px] text-gray-300">·</span>
-                    <span className="text-[10px] text-gray-500 font-medium">
+                    <span className="text-xs text-gray-300">·</span>
+                    <span className="text-xs text-gray-500 font-medium">
                       {formatDistanceToNow(new Date(r.created_at), { addSuffix: true, locale: fr })}
                     </span>
                   </div>
@@ -397,11 +397,11 @@ export function ReviewWidget({ storeId, productId, showForm = false }: ReviewWid
                 {file ? (
                   <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
                     <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                      <Image src={URL.createObjectURL(file)} alt="preview" fill className="object-cover" unoptimized />
+                      <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={URL.createObjectURL(file)} alt="preview" fill className="object-cover" unoptimized />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-bold text-gray-700 truncate">{file.name}</p>
-                      <p className="text-[10px] text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                     </div>
                     <button 
                       type="button"

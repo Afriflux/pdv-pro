@@ -90,11 +90,11 @@ export function DailyDigestWidget({ storeId }: { storeId: string }) {
         <div>
           <h3 className="font-black text-sm uppercase tracking-wider flex items-center gap-2">
             Coach Quotidien
-            <span className="text-[9px] font-bold bg-yellow-400/20 text-yellow-200 px-2 py-0.5 rounded-md border border-yellow-300/20">
+            <span className="text-xs font-bold bg-yellow-400/20 text-yellow-200 px-2 py-0.5 rounded-md border border-yellow-300/20">
               IA
             </span>
           </h3>
-          <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider">
+          <p className="text-xs text-white/50 font-bold uppercase tracking-wider">
             {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
           </p>
         </div>
@@ -103,11 +103,11 @@ export function DailyDigestWidget({ storeId }: { storeId: string }) {
       {/* Metrics Row */}
       <div className="grid grid-cols-3 gap-3 mb-4 relative z-10">
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/5">
-          <p className="text-[9px] font-bold text-white/50 uppercase tracking-wider">Commandes</p>
+          <p className="text-xs font-bold text-white/50 uppercase tracking-wider">Commandes</p>
           <div className="flex items-center gap-1.5 mt-1">
             <p className="text-xl font-black">{metrics.orders}</p>
             {orderChange !== null && (
-              <span className={`text-[10px] font-black flex items-center gap-0.5 px-1.5 py-0.5 rounded ${isUp ? 'bg-green-400/20 text-green-200' : 'bg-red-400/20 text-red-200'}`}>
+              <span className={`text-xs font-black flex items-center gap-0.5 px-1.5 py-0.5 rounded ${isUp ? 'bg-green-400/20 text-green-200' : 'bg-red-400/20 text-red-200'}`}>
                 {isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
                 {isUp ? '+' : ''}{orderChange}%
               </span>
@@ -115,20 +115,20 @@ export function DailyDigestWidget({ storeId }: { storeId: string }) {
           </div>
         </div>
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/5">
-          <p className="text-[9px] font-bold text-white/50 uppercase tracking-wider">Revenue</p>
+          <p className="text-xs font-bold text-white/50 uppercase tracking-wider">Revenue</p>
           <p className="text-xl font-black mt-1 truncate">
             {metrics.revenue >= 1000
               ? `${Math.round(metrics.revenue / 1000)}K`
               : metrics.revenue
             }
-            <span className="text-[10px] font-bold text-white/40"> F</span>
+            <span className="text-xs font-bold text-white/40"> F</span>
           </p>
         </div>
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/5">
-          <p className="text-[9px] font-bold text-white/50 uppercase tracking-wider">Score</p>
+          <p className="text-xs font-bold text-white/50 uppercase tracking-wider">Score</p>
           <div className="flex items-center gap-1 mt-1">
             <p className="text-xl font-black">{score}</p>
-            <span className="text-[10px] text-white/30">/100</span>
+            <span className="text-xs text-white/30">/100</span>
           </div>
         </div>
       </div>
@@ -139,9 +139,9 @@ export function DailyDigestWidget({ storeId }: { storeId: string }) {
           {suggestions.slice(0, 2).map((s, i) => (
             <div key={i} className="flex items-start gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/5">
               <span className="text-yellow-300 text-sm mt-0.5">💡</span>
-              <p className="text-[11px] text-white/80 font-medium leading-relaxed flex-1">{s.text}</p>
+              <p className="text-xs text-white/80 font-medium leading-relaxed flex-1">{s.text}</p>
               {s.action_url && s.action_url !== '/dashboard' && (
-                <Link href={s.action_url} className="text-[10px] font-black text-yellow-300 hover:text-yellow-200 whitespace-nowrap flex items-center gap-0.5">
+                <Link href={s.action_url} className="text-xs font-black text-yellow-300 hover:text-yellow-200 whitespace-nowrap flex items-center gap-0.5">
                   Agir <ChevronRight size={10} />
                 </Link>
               )}
@@ -152,11 +152,11 @@ export function DailyDigestWidget({ storeId }: { storeId: string }) {
 
       {/* AI Summary (expandable) */}
       <details className="relative z-10 group/details">
-        <summary className="text-[10px] font-bold text-white/40 cursor-pointer hover:text-white/60 transition-colors flex items-center gap-1">
+        <summary className="text-xs font-bold text-white/40 cursor-pointer hover:text-white/60 transition-colors flex items-center gap-1">
           <Eye size={10} />
           Voir le rapport complet
         </summary>
-        <div className="mt-3 p-3 bg-black/20 rounded-xl border border-white/10 text-[11px] text-white/70 leading-relaxed whitespace-pre-line">
+        <div className="mt-3 p-3 bg-black/20 rounded-xl border border-white/10 text-xs text-white/70 leading-relaxed whitespace-pre-line">
           {summary}
         </div>
       </details>

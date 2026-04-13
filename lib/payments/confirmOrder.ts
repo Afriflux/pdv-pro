@@ -260,7 +260,7 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
           }),
         })
 
-        console.log('[confirmOrder] DigitalAccess créé:', access.token, '→ WhatsApp envoyé')
+        console.log('[confirmOrder] DigitalAccess créé → WhatsApp envoyé')
       } catch (err) {
         console.error('[confirmOrder] Erreur livraison digitale:', err)
       }

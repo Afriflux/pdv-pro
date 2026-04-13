@@ -14,7 +14,7 @@ export default function LocalPaymentBadges({ className = '', showLock = true }: 
         {/* WAVE */}
         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1CBEF0]/10 border border-[#1CBEF0]/20 rounded-lg">
           <div className="w-5 h-5 rounded-full bg-[#1CBEF0] flex items-center justify-center shrink-0">
-            <span className="text-white text-[10px] font-black">W</span>
+            <span className="text-white text-xs font-black">W</span>
           </div>
           <span className="text-[#1CBEF0] text-xs font-black tracking-tight">Wave</span>
         </div>
@@ -30,7 +30,7 @@ export default function LocalPaymentBadges({ className = '', showLock = true }: 
         {/* MTN MoMo */}
         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FFCC00]/10 border border-[#FFCC00]/20 rounded-lg">
           <div className="w-5 h-5 rounded-full bg-[#FFCC00] flex items-center justify-center shrink-0">
-            <span className="text-[#004A7F] text-[9px] font-black tracking-tighter">MTN</span>
+            <span className="text-[#004A7F] text-xs font-black tracking-tighter">MTN</span>
           </div>
           <span className="text-[#004A7F] text-xs font-black tracking-tight">MoMo</span>
         </div>
@@ -38,14 +38,14 @@ export default function LocalPaymentBadges({ className = '', showLock = true }: 
         {/* FREE MONEY */}
         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#E60000]/10 border border-[#E60000]/20 rounded-lg">
           <div className="w-5 h-5 rounded-full bg-[#E60000] flex items-center justify-center shrink-0">
-            <span className="text-white text-[10px] font-black">Free</span>
+            <span className="text-white text-xs font-black">Free</span>
           </div>
           <span className="text-[#E60000] text-xs font-black tracking-tight">Money</span>
         </div>
       </div>
 
       {showLock && (
-        <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1.5 cursor-default mt-1">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1.5 cursor-default mt-1">
           <Lock className="w-3.5 h-3.5 text-[#0F7A60]" />
           Paiement 100% Sécurisé
         </p>

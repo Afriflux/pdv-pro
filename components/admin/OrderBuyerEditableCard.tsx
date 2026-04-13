@@ -58,7 +58,7 @@ export default function OrderBuyerEditableCard({
     if (isEditing) {
       return (
         <div className={`bg-white border-2 border-[#0F7A60]/40 rounded-xl p-2.5 shadow-sm transition-all animate-in fade-in duration-200 ${isMultiline ? 'flex-1' : ''}`}>
-          <p className="text-[10px] font-bold text-[#0F7A60] uppercase tracking-widest mb-1.5">{label}</p>
+          <p className="text-xs font-bold text-[#0F7A60] uppercase tracking-widest mb-1.5">{label}</p>
           {isMultiline ? (
             <textarea
               className="w-full bg-gray-50/50 border border-gray-200 rounded-lg p-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#0F7A60]/30 min-h-[80px]"
@@ -99,7 +99,7 @@ export default function OrderBuyerEditableCard({
 
     return (
       <div className={`group relative bg-gray-50 rounded-xl p-3 border border-gray-100 hover:border-[#0F7A60]/30 transition-all ${isMultiline ? 'flex-1' : ''}`}>
-        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{label}</p>
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">{label}</p>
         <p className={`text-sm font-bold text-[#1A1A1A] ${isMultiline ? 'whitespace-pre-wrap' : 'truncate'}`}>
           {currentValue || <span className="text-gray-400 font-medium italic">Non renseigné</span>}
         </p>

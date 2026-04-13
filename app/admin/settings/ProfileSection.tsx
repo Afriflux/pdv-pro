@@ -20,7 +20,7 @@ function RoleBadge({ role }: { role: string }) {
     support:      'Support',
   }
   return (
-    <span className={`px-2.5 py-1 border rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm ${styles[role] ?? styles.support}`}>
+    <span className={`px-2.5 py-1 border rounded-full text-xs font-black uppercase tracking-wider shadow-sm ${styles[role] ?? styles.support}`}>
       {labels[role] ?? role}
     </span>
   )
@@ -168,7 +168,7 @@ export default function ProfileSection({
             className="hidden"
             disabled={uploading}
           />
-          <p className="mt-1 text-[10px] text-gray-400 font-medium">JPG, PNG — Max 2 MB</p>
+          <p className="mt-1 text-xs text-gray-400 font-medium">JPG, PNG — Max 2 MB</p>
         </div>
       </div>
 

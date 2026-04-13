@@ -13,16 +13,19 @@ import { validateAmbassadorCode, linkVendorToAmbassador } from '@/lib/ambassador
 export async function signUp(formData: FormData): Promise<{ success?: boolean; error?: string; msg?: string; url?: string }> {
   const supabase = await createClient()
 
-  const email          = formData.get('email') as string
+  const rawEmail       = (formData.get('email') as string)?.trim() || null
   const name           = formData.get('name') as string
   const role           = (formData.get('role') as string) || 'vendeur'
   const password       = formData.get('password') as string
   const phone          = (formData.get('phone') as string) || null
   const ambassadorCode = (formData.get('ambassadorCode') as string) || null
 
-  if (!email || !name || !password) {
-    return { error: 'champs_requis', msg: 'Veuillez remplir tous les champs.' }
+  if (!name || !password || !phone) {
+    return { error: 'champs_requis', msg: 'Veuillez remplir tous les champs obligatoires.' }
   }
+
+  // Générer un email proxy si aucun email fourni (Supabase Auth requiert un email)
+  const email = rawEmail || `${phone.replace(/[^0-9]/g, '')}@yayyam.local`
 
   // ── Validation du code ambassadeur (OPTIONNEL pour vendeur) ──
   let validAmbassadorCode: string | null = null
@@ -44,15 +47,17 @@ export async function signUp(formData: FormData): Promise<{ success?: boolean; e
 
   // ── Double vérification préalable (Email & Téléphone) ──────────
 
-  // A. Vérifier email
-  const { data: existingEmail } = await supabaseAdmin
-    .from('User')
-    .select('id')
-    .eq('email', email)
-    .maybeSingle()
+  // A. Vérifier email (sauf proxy email)
+  if (rawEmail) {
+    const { data: existingEmail } = await supabaseAdmin
+      .from('User')
+      .select('id')
+      .eq('email', rawEmail)
+      .maybeSingle()
 
-  if (existingEmail) {
-    return { error: 'email_taken', msg: 'Cette adresse email est déjà liée à un compte.' }
+    if (existingEmail) {
+      return { error: 'email_taken', msg: 'Cette adresse email est déjà liée à un compte.' }
+    }
   }
 
   // B. Vérifier téléphone (si fourni)

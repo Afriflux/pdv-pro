@@ -31,7 +31,7 @@ export default async function NewSalePagePage({ searchParams }: { searchParams: 
   }
 
   // Load global templates
-  const globalTemplatesRaw = await prisma.themeTemplate.findMany({
+  const globalTemplatesRaw = await prisma.themeTemplate.findMany({ take: 50, 
     where: { type: 'sale_page', is_global: true },
     orderBy: { name: 'asc' }
   })
@@ -47,7 +47,7 @@ export default async function NewSalePagePage({ searchParams }: { searchParams: 
     ...(typeof t.data === 'object' && t.data !== null ? t.data : {})
   }))
 
-  const assetPurchases = await prisma.assetPurchase.findMany({
+  const assetPurchases = await prisma.assetPurchase.findMany({ take: 50, 
     where: { store_id: store.id, asset_type: 'TEMPLATE' },
     select: { asset_id: true }
   })

@@ -74,7 +74,7 @@ export default function AbonnementsClient({
         <div className="w-full">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 bg-white border border-[#0F7A60]/20 text-[#0F7A60] font-black text-[10px] uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm">
+              <div className="inline-flex items-center gap-2 bg-white border border-[#0F7A60]/20 text-[#0F7A60] font-black text-xs uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm">
                 <Sparkles size={14} className="text-amber-500" /> Modèle Gagnant-Gagnant
               </div>
               <h1 className="text-4xl md:text-6xl font-display font-black text-ink tracking-tight">
@@ -153,7 +153,7 @@ export default function AbonnementsClient({
                       <p className="text-4xl md:text-5xl font-display font-black text-amber-500 tracking-tight">{rate}%</p>
                       <div className="flex items-baseline gap-1.5 pb-2 border-b-2 border-amber-200/50 border-dotted mb-1">
                         <p className="text-base font-bold text-amber-600/60">Environ {fmt(commissionAmt)}</p>
-                        <p className="text-[10px] font-bold text-amber-600/50 uppercase tracking-widest">FCFA</p>
+                        <p className="text-xs font-bold text-amber-600/50 uppercase tracking-widest">FCFA</p>
                       </div>
                     </div>
                   </div>
@@ -184,7 +184,7 @@ export default function AbonnementsClient({
 
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 relative z-10 gap-4">
                   <div>
-                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 font-black text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full mb-3 border border-emerald-500/20">
+                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 font-black text-xs uppercase tracking-widest px-3 py-1.5 rounded-full mb-3 border border-emerald-500/20">
                       <Sparkles size={14} /> Votre évolution sur Yayyam
                     </div>
                     <h3 className="text-3xl md:text-5xl font-display font-black text-white tracking-tight">Feuille de Route</h3>
@@ -246,10 +246,10 @@ export default function AbonnementsClient({
                               <span className={`text-3xl font-display font-black ${isFuture ? "text-white/30" : "text-white"}`}>{tier.rate}%</span>
                             </div>
                             
-                            <h4 className={`font-black uppercase tracking-widest text-[11px] mb-1 ${isCurrent ? "text-emerald-300" : isPast ? "text-white" : "text-white/40"}`}>
+                            <h4 className={`font-black uppercase tracking-widest text-xs mb-1 ${isCurrent ? "text-emerald-300" : isPast ? "text-white" : "text-white/40"}`}>
                               {tier.name}
                             </h4>
-                            <p className={`text-[10px] font-medium leading-tight px-4 ${isCurrent ? "text-emerald-100/80" : "text-white/40"}`}>
+                            <p className={`text-xs font-medium leading-tight px-4 ${isCurrent ? "text-emerald-100/80" : "text-white/40"}`}>
                               {tier.label}
                             </p>
                           </div>
@@ -271,7 +271,7 @@ export default function AbonnementsClient({
                                   {/* Progress to next */}
                                   {nextTier ? (
                                     <div className="space-y-2 mt-4">
-                                      <div className="flex justify-between text-[9px] font-bold text-emerald-200/60 uppercase tracking-widest">
+                                      <div className="flex justify-between text-xs font-bold text-emerald-200/60 uppercase tracking-widest">
                                         <span>{fmt(currentMonthCA)} FCFA</span>
                                         <span>Objectif : {fmt(nextTier.min)} FCFA</span>
                                       </div>
@@ -283,14 +283,14 @@ export default function AbonnementsClient({
                                           className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-400 to-green-300 rounded-full shadow-[0_0_10px_rgba(167,243,208,0.8)]" 
                                         />
                                       </div>
-                                      <p className="text-[10px] text-center text-emerald-100/70 leading-relaxed pt-2">
+                                      <p className="text-xs text-center text-emerald-100/70 leading-relaxed pt-2">
                                         Plus que <strong className="text-emerald-300">+ {fmt(missingForNextTier)} FCFA</strong> ce mois pour profiter du <span className="text-white font-black">{nextTier.rate}%</span>
                                       </p>
                                     </div>
                                   ) : (
                                     <div className="text-center text-emerald-100 mt-2">
                                       <Trophy size={24} className="mx-auto mb-2 text-yellow-400 drop-shadow-[0_0_15px_rgba(253,224,71,0.5)]" />
-                                      <p className="text-[10px] font-bold uppercase tracking-widest">Meilleur Palier Atteint</p>
+                                      <p className="text-xs font-bold uppercase tracking-widest">Meilleur Palier Atteint</p>
                                     </div>
                                   )}
                                 </div>
@@ -303,7 +303,7 @@ export default function AbonnementsClient({
                                   <ShieldCheck size={20} />
                                 </div>
                                 <span className="text-xs font-bold uppercase tracking-widest text-white/80">Palier Dépassé</span>
-                                <span className="text-[10px] text-white/40 mt-1 block">Succès validé ce mois.</span>
+                                <span className="text-xs text-white/40 mt-1 block">Succès validé ce mois.</span>
                               </div>
                             )}
 
@@ -314,7 +314,7 @@ export default function AbonnementsClient({
                                 </div>
                                 <span className="text-xs font-bold uppercase tracking-widest text-white/30">En attente</span>
                                 {idx === currentTierIdx + 1 && (
-                                  <span className="text-[10px] font-bold text-emerald-400 mt-3 block bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(52,211,153,0.1)]">
+                                  <span className="text-xs font-bold text-emerald-400 mt-3 block bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(52,211,153,0.1)]">
                                     Prochain Palier
                                   </span>
                                 )}
@@ -338,7 +338,7 @@ export default function AbonnementsClient({
                       <div>
                         <div className="flex items-center gap-3 mb-1">
                           <h4 className="font-display font-black text-white text-xl">Service Cash on Delivery</h4>
-                          <span className="text-[9px] bg-amber-500/20 border border-amber-500/30 text-amber-400 px-2 py-0.5 rounded-full font-black uppercase tracking-widest flex items-center gap-1">
+                          <span className="text-xs bg-amber-500/20 border border-amber-500/30 text-amber-400 px-2 py-0.5 rounded-full font-black uppercase tracking-widest flex items-center gap-1">
                             Exception <Lock size={10} />
                           </span>
                         </div>
@@ -362,7 +362,7 @@ export default function AbonnementsClient({
           {activeTab === 'simulator' && (
             <motion.div key="simulator" variants={scaleUp} initial="hidden" animate="visible" exit="exit" className="w-full py-8">
                <div className="text-center mb-10">
-                  <span className="inline-flex items-center gap-2 bg-[#0F7A60]/10 text-[#0F7A60] font-black text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full mb-4">
+                  <span className="inline-flex items-center gap-2 bg-[#0F7A60]/10 text-[#0F7A60] font-black text-xs uppercase tracking-widest px-3 py-1.5 rounded-full mb-4">
                     Outil de prévision
                   </span>
                   <h3 className="text-3xl md:text-5xl font-display font-black text-ink mb-3 tracking-tight">Simulateur de revenus</h3>
@@ -401,24 +401,24 @@ export default function AbonnementsClient({
                        {/* Stats Row */}
                        <div className="flex-1 flex items-center justify-between gap-6 flex-wrap bg-white rounded-2xl p-4 border border-gray-100 shadow-sm group-hover:border-[#0F7A60]/20 transition-colors">
                           <div>
-                            <p className="text-[10px] uppercase tracking-widest text-slate mb-1 font-bold">CA Ligne</p>
-                            <p className="font-bold text-ink">{fmt(stat.ca)} <span className="text-[10px] font-medium text-gray-400 uppercase">FCFA</span></p>
+                            <p className="text-xs uppercase tracking-widest text-slate mb-1 font-bold">CA Ligne</p>
+                            <p className="font-bold text-ink">{fmt(stat.ca)} <span className="text-xs font-medium text-gray-400 uppercase">FCFA</span></p>
                           </div>
                           <ChevronRight className="text-gray-200 hidden sm:block" size={16} />
                           <div>
-                            <p className="text-[10px] uppercase tracking-widest text-slate mb-1 font-bold">Taux Appliqué</p>
+                            <p className="text-xs uppercase tracking-widest text-slate mb-1 font-bold">Taux Appliqué</p>
                             <span className="inline-block bg-[#0F7A60]/10 text-[#0F7A60] font-black text-xs px-2 py-0.5 rounded-md">{stat.rate}%</span>
                           </div>
                           <ChevronRight className="text-gray-200 hidden sm:block" size={16} />
                           <div>
-                            <p className="text-[10px] uppercase tracking-widest text-amber-600/70 mb-1 font-bold">Frais Yayyam</p>
-                            <p className="font-bold text-amber-600">- {fmt(stat.commission)} <span className="text-[10px] font-medium text-amber-400 uppercase">FCFA</span></p>
+                            <p className="text-xs uppercase tracking-widest text-amber-600/70 mb-1 font-bold">Frais Yayyam</p>
+                            <p className="font-bold text-amber-600">- {fmt(stat.commission)} <span className="text-xs font-medium text-amber-400 uppercase">FCFA</span></p>
                           </div>
                        </div>
 
                        {/* Result */}
                        <div className="text-right min-w-[150px] pl-4 lg:border-l border-gray-100">
-                          <p className="text-[10px] uppercase tracking-widest text-[#0F7A60] mb-1 font-black">Net Encaissé</p>
+                          <p className="text-xs uppercase tracking-widest text-[#0F7A60] mb-1 font-black">Net Encaissé</p>
                           <p className="font-black font-display text-[#0F7A60] text-3xl tracking-tight">{fmt(stat.net)}</p>
                           <p className="text-xs text-[#0F7A60]/60 font-medium">FCFA</p>
                        </div>

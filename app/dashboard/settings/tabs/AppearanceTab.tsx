@@ -154,14 +154,14 @@ export function AppearanceTab({ store }: { store: Record<string, any> }) {
 
               <div className="mt-auto relative w-full h-40 rounded-2xl border-2 border-dashed border-gray-200/80 bg-white/50 hover:bg-white/80 transition-all flex flex-col items-center justify-center overflow-hidden group/upload">
                 {logoPreview ? (
-                  <Image src={logoPreview} alt="Logo" fill unoptimized className="object-contain p-4 mix-blend-multiply transition-transform duration-500 group-hover/upload:scale-105" />
+                  <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={logoPreview} alt="Logo" fill unoptimized className="object-contain p-4 mix-blend-multiply transition-transform duration-500 group-hover/upload:scale-105" />
                 ) : (
                   <>
                     <div className="w-14 h-14 bg-gray-50 shadow-sm rounded-full flex items-center justify-center text-gray-400 mb-3 group-hover/upload:scale-110 transition-transform duration-500">
                       <Camera size={24} strokeWidth={1.5} />
                     </div>
                     <p className="text-[14px] font-bold text-gray-600">Choisir un fichier</p>
-                    <p className="text-[11px] font-bold text-gray-400 mt-1 uppercase tracking-widest">Max 2MB</p>
+                    <p className="text-xs font-bold text-gray-400 mt-1 uppercase tracking-widest">Max 2MB</p>
                   </>
                 )}
                 
@@ -252,7 +252,7 @@ export function AppearanceTab({ store }: { store: Record<string, any> }) {
 
               <div className="relative w-full h-48 sm:h-64 rounded-[1.5rem] border-2 border-dashed border-gray-300/80 bg-gradient-to-br from-gray-50/50 to-white hover:bg-gray-50/80 transition-all flex flex-col items-center justify-center overflow-hidden group/upload shadow-inner">
                 {bannerPreview ? (
-                  <Image src={bannerPreview} alt="Bannière" fill unoptimized className="object-cover transition-transform duration-700 group-hover/upload:scale-105" />
+                  <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={bannerPreview} alt="Bannière" fill unoptimized className="object-cover transition-transform duration-700 group-hover/upload:scale-105" />
                 ) : (
                   <div className="flex flex-col items-center justify-center pointer-events-none">
                     <div className="w-16 h-16 bg-white shadow-sm rounded-full flex items-center justify-center text-gray-400 mb-4 group-hover/upload:scale-110 group-hover/upload:-translate-y-2 transition-all duration-500">

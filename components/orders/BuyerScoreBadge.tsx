@@ -78,7 +78,7 @@ export function BuyerScoreBadge({ phone, storeId, compact = false }: BuyerScoreB
 
   if (loading) {
     return (
-      <span className="inline-flex items-center gap-1 text-[9px] font-bold text-gray-400">
+      <span className="inline-flex items-center gap-1 text-xs font-bold text-gray-400">
         <Loader2 size={10} className="animate-spin" /> Score...
       </span>
     )
@@ -97,7 +97,7 @@ export function BuyerScoreBadge({ phone, storeId, compact = false }: BuyerScoreB
 
   if (compact) {
     return (
-      <span className={`inline-flex items-center gap-1 text-[9px] font-black px-1.5 py-0.5 rounded-md border ${info.color}`}>
+      <span className={`inline-flex items-center gap-1 text-xs font-black px-1.5 py-0.5 rounded-md border ${info.color}`}>
         <Icon size={10} /> {info.score}
       </span>
     )
@@ -108,7 +108,7 @@ export function BuyerScoreBadge({ phone, storeId, compact = false }: BuyerScoreB
       <button
         type="button"
         onClick={() => setShowDetails(!showDetails)}
-        className={`inline-flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-lg border transition-all ${info.color}`}
+        className={`inline-flex items-center gap-1.5 text-xs font-black px-2.5 py-1 rounded-lg border transition-all ${info.color}`}
       >
         <Icon size={12} className={iconColor} />
         {info.emoji} {info.label} — Score {info.score}/100
@@ -118,15 +118,15 @@ export function BuyerScoreBadge({ phone, storeId, compact = false }: BuyerScoreB
         <div className="mt-2 p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
-              <p className="text-[10px] text-gray-400 font-bold uppercase">Commandes</p>
+              <p className="text-xs text-gray-400 font-bold uppercase">Commandes</p>
               <p className="text-sm font-black text-gray-800">{info.totalOrders}</p>
             </div>
             <div>
-              <p className="text-[10px] text-gray-400 font-bold uppercase">Livrées</p>
+              <p className="text-xs text-gray-400 font-bold uppercase">Livrées</p>
               <p className="text-sm font-black text-emerald-600">{info.successOrders}</p>
             </div>
             <div>
-              <p className="text-[10px] text-gray-400 font-bold uppercase">Refusées</p>
+              <p className="text-xs text-gray-400 font-bold uppercase">Refusées</p>
               <p className="text-sm font-black text-red-600">{info.refusedOrders}</p>
             </div>
           </div>
@@ -151,7 +151,7 @@ export function BuyerScoreBadge({ phone, storeId, compact = false }: BuyerScoreB
                 type="button"
                 onClick={handleUnflag}
                 disabled={flagging}
-                className="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 flex items-center gap-1 transition-colors"
+                className="text-xs font-bold text-emerald-600 hover:text-emerald-800 flex items-center gap-1 transition-colors"
               >
                 <ShieldCheck size={12} />
                 {flagging ? 'En cours...' : 'Retirer de la blacklist'}
@@ -161,7 +161,7 @@ export function BuyerScoreBadge({ phone, storeId, compact = false }: BuyerScoreB
                 type="button"
                 onClick={handleFlag}
                 disabled={flagging}
-                className="text-[10px] font-bold text-red-500 hover:text-red-700 flex items-center gap-1 transition-colors"
+                className="text-xs font-bold text-red-500 hover:text-red-700 flex items-center gap-1 transition-colors"
               >
                 <Flag size={12} />
                 {flagging ? 'En cours...' : '🚫 Signaler ce numéro'}

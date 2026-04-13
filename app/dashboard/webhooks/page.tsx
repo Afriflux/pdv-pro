@@ -201,7 +201,7 @@ export default function WebhooksPage() {
                             ) : (
                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black ${selectedPlatform === p.id ? 'bg-[#0F7A60] text-white' : 'bg-gray-200 text-gray-500'}`}>A</div>
                             )}
-                            <span className={`text-[10px] font-bold text-center ${selectedPlatform === p.id ? 'text-[#0F7A60]' : 'text-gray-500'}`}>{p.name}</span>
+                            <span className={`text-xs font-bold text-center ${selectedPlatform === p.id ? 'text-[#0F7A60]' : 'text-gray-500'}`}>{p.name}</span>
                          </div>
                       ))}
                     </div>
@@ -311,12 +311,12 @@ export default function WebhooksPage() {
                                  <h4 className="text-base font-black text-ink mb-2">{platform.name}</h4>
                                  <div className="flex flex-wrap items-center gap-2">
                                     {whEvents.map((evtName: string) => (
-                                       <span key={evtName} className="bg-ink text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-sm">
+                                       <span key={evtName} className="bg-ink text-white text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-sm">
                                           {evtName}
                                        </span>
                                     ))}
                                     {wh.active && (
-                                      <span className="flex items-center gap-1.5 text-[10px] font-black text-[#0F7A60] uppercase tracking-widest bg-[#0F7A60]/10 px-2 py-1 rounded-md">
+                                      <span className="flex items-center gap-1.5 text-xs font-black text-[#0F7A60] uppercase tracking-widest bg-[#0F7A60]/10 px-2 py-1 rounded-md">
                                         <div className="w-1.5 h-1.5 bg-[#0F7A60] rounded-full animate-pulse"></div> En Ligne
                                       </span>
                                     )}
@@ -349,7 +349,7 @@ export default function WebhooksPage() {
                            <p className="font-mono text-xs sm:text-sm text-gray-600 truncate bg-[#FAFAF7] px-5 py-4 rounded-xl border border-line flex-1 relative group/copy cursor-pointer transition-colors hover:bg-gray-50" onClick={() => copyToClipboard(wh.url, wh.id)}>
                              {wh.url.replace('&_via=zapier', '').replace('_via=zapier', '').replace('?_via=make', '').replace('&_via=make', '')} {/* Clean display */}
                              <span className="absolute right-3 top-1/2 -translate-y-1/2 sm:w-8 sm:h-8 px-2 sm:px-0 flex items-center justify-center bg-white border border-line rounded-lg shadow-sm opacity-0 group-hover/copy:opacity-100 transition-opacity whitespace-nowrap">
-                               {copiedId === wh.id ? <><CheckCircle2 size={14} className="text-emerald-500 sm:mr-0 mr-1" /><span className="sm:hidden text-[10px] font-bold text-emerald-600">Copié</span></> : <><Copy size={14} className="text-gray-400 sm:mr-0 mr-1" /><span className="sm:hidden text-[10px] font-bold text-gray-500">Copier</span></>}
+                               {copiedId === wh.id ? <><CheckCircle2 size={14} className="text-emerald-500 sm:mr-0 mr-1" /><span className="sm:hidden text-xs font-bold text-emerald-600">Copié</span></> : <><Copy size={14} className="text-gray-400 sm:mr-0 mr-1" /><span className="sm:hidden text-xs font-bold text-gray-500">Copier</span></>}
                              </span>
                            </p>
                         </div>

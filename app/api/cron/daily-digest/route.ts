@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
   try {
     // 1. Get all active stores (with at least 1 product) that have coach-ia installed
-    const stores = await prisma.store.findMany({
+    const stores = await prisma.store.findMany({ take: 50, 
       where: {
         is_active: true,
         products: { some: { active: true } },
@@ -53,7 +53,7 @@ export async function GET(request: Request) {
 
         // 2. Get yesterday's metrics
         const [ordersYesterday, ordersAllTime, cancelledYesterday] = await Promise.all([
-          prisma.order.findMany({
+          prisma.order.findMany({ take: 50, 
             where: {
               store_id: store.id,
               created_at: { gte: yesterday, lte: yesterdayEnd },

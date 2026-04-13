@@ -62,7 +62,7 @@ export default async function PayLinkPage({ params }: { params: { id: string } }
              {link.description && <p className="text-sm text-gray-500 mb-6 leading-relaxed">{link.description}</p>}
              
              <div className="py-6 my-2 rounded-2xl border border-dashed" {...{ style: { borderColor: accent + '30', backgroundColor: accent + '08' } }}>
-                <span className="block text-[10px] uppercase tracking-[0.2em] font-black mb-2" {...{ style: { color: accent } }}>Montant à Payer</span>
+                <span className="block text-xs uppercase tracking-[0.2em] font-black mb-2" {...{ style: { color: accent } }}>Montant à Payer</span>
                 <p className="text-4xl font-black text-gray-900 tracking-tight">
                   {link.amount.toLocaleString('fr-FR')} <span className="text-base text-gray-400 font-bold">{link.currency}</span>
                 </p>
@@ -75,17 +75,17 @@ export default async function PayLinkPage({ params }: { params: { id: string } }
         
         {/* Badges de confiance sous la card */}
         <div className="mt-6 flex items-center justify-center gap-6 text-gray-400">
-          <span className="flex items-center gap-1.5 text-[11px] font-bold">
+          <span className="flex items-center gap-1.5 text-xs font-bold">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Sécurisé
           </span>
           <span className="w-1 h-1 bg-gray-300 rounded-full" />
-          <span className="flex items-center gap-1.5 text-[11px] font-bold">
+          <span className="flex items-center gap-1.5 text-xs font-bold">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             Protégé
           </span>
           <span className="w-1 h-1 bg-gray-300 rounded-full" />
-          <span className="flex items-center gap-1.5 text-[11px] font-bold">
+          <span className="flex items-center gap-1.5 text-xs font-bold">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             Yayyam
           </span>

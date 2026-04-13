@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useTransition } from 'react'
 import Link from 'next/link'
 import { signIn, signInWithGoogle } from '@/app/auth/actions'
 import {
@@ -8,7 +8,8 @@ import {
   Lock,
   User,
   AlertTriangle,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from 'lucide-react'
 import { PasswordInput } from '@/components/ui/PasswordInput'
 
@@ -24,6 +25,7 @@ const errorMessages: Record<string, string> = {
 export default function LoginPage({ searchParams }: LoginPageProps) {
   const errorKey = searchParams.error
   const errorMsg = errorKey ? (errorMessages[errorKey] ?? 'Une erreur est survenue.') : null
+  const [isPending, startTransition] = useTransition()
 
   return (
     <main className="min-h-screen relative flex items-center justify-center font-body bg-[#02120C] overflow-hidden px-4 md:px-0">
@@ -89,13 +91,18 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
 
           <div className="flex items-center gap-4 mb-6 opacity-60 animate-[fade-slide-up_0.6s_ease-out_0.35s_both]">
             <div className="h-px bg-gradient-to-r from-transparent to-white/20 flex-1"></div>
-            <span className="text-[10px] text-white/50 uppercase tracking-[0.2em] font-black">ou identifiants</span>
+            <span className="text-xs text-white/50 uppercase tracking-[0.2em] font-black">ou identifiants</span>
             <div className="h-px bg-gradient-to-l from-transparent to-white/20 flex-1"></div>
           </div>
 
-          <form action={signIn} className="space-y-4 relative z-10">
+          <form className="space-y-4 relative z-10" onSubmit={(e) => {
+            e.preventDefault()
+            const formData = new FormData(e.currentTarget)
+            startTransition(() => signIn(formData))
+          }}>
+            <fieldset disabled={isPending} className="space-y-4">
             <div className="group/input animate-[fade-slide-up_0.6s_ease-out_0.4s_both]">
-              <label htmlFor="emailOrPhone" className="block text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
+              <label htmlFor="emailOrPhone" className="block text-xs font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
                 Identifiant
               </label>
               <div className="relative">
@@ -108,15 +115,15 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
                   type="text"
                   placeholder="Email ou Téléphone"
                   required
-                  className="w-full pl-11 pr-4 py-4 rounded-xl bg-black/40 border border-white/5 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/50 transition-all text-sm shadow-inner hover:border-white/10 hover:bg-black/50"
+                  className="w-full pl-11 pr-4 py-4 rounded-xl bg-black/40 border border-white/5 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/50 transition-all text-sm shadow-inner hover:border-white/10 hover:bg-black/50 disabled:opacity-50"
                 />
               </div>
             </div>
 
             <div className="group/input animate-[fade-slide-up_0.6s_ease-out_0.48s_both]">
-              <label htmlFor="password" className="flex items-center justify-between text-[11px] font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
+              <label htmlFor="password" className="flex items-center justify-between text-xs font-black text-emerald-400/70 mb-1.5 uppercase tracking-widest group-focus-within/input:text-emerald-400 transition-colors">
                 <span>Mot de passe</span>
-                <Link href="/auth/reset-password" className="text-[10px] text-white/40 hover:text-white transition-colors uppercase tracking-wider">Oublié ?</Link>
+                <Link href="/auth/reset-password" className="text-xs text-white/40 hover:text-white transition-colors uppercase tracking-wider">Oublié ?</Link>
               </label>
               <PasswordInput
                 id="password"
@@ -124,17 +131,32 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
                 placeholder="••••••••"
                 required
                 iconLeft={<Lock className="w-5 h-5 text-white/30 group-focus-within/input:text-emerald-400 transition-colors" />}
-                className="w-full py-4 rounded-xl bg-black/40 border border-white/5 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/50 transition-all text-sm shadow-inner hover:border-white/10 hover:bg-black/50"
+                className="w-full py-4 rounded-xl bg-black/40 border border-white/5 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-400/50 focus:ring-1 focus:ring-emerald-400/50 transition-all text-sm shadow-inner hover:border-white/10 hover:bg-black/50 disabled:opacity-50"
               />
             </div>
+            </fieldset>
 
             <div className="pt-2 animate-[fade-slide-up_0.6s_ease-out_0.56s_both]">
                <button
                  type="submit"
-                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-[#021f15] font-black uppercase tracking-widest py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)] hover:shadow-[0_0_40px_rgba(52,211,153,0.5)] transform active:scale-[0.98] group/btn"
+                 disabled={isPending}
+                 className={`w-full flex items-center justify-center gap-2 font-black uppercase tracking-widest py-4 rounded-xl transition-all transform active:scale-[0.98] group/btn ${
+                   isPending
+                     ? 'bg-white/5 text-white/30 cursor-wait shadow-none border border-white/5'
+                     : 'bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-[#021f15] shadow-[0_0_20px_rgba(52,211,153,0.3)] hover:shadow-[0_0_40px_rgba(52,211,153,0.5)]'
+                 }`}
                >
-                 Accéder au système
-                 <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+                 {isPending ? (
+                   <>
+                     <Loader2 className="w-5 h-5 animate-spin" />
+                     Connexion en cours…
+                   </>
+                 ) : (
+                   <>
+                     Se connecter
+                     <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+                   </>
+                 )}
                </button>
             </div>
           </form>

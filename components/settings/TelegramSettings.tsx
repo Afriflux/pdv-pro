@@ -158,7 +158,7 @@ export function TelegramSettings({
         
         {/* Colonne de Gauche : Le Pitch */}
         <div className="p-8 sm:p-12 md:w-5/12 lg:w-1/3 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 bg-white/[0.01]">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-full text-[11px] font-black tracking-widest border border-emerald-500/20 w-fit mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-full text-xs font-black tracking-widest border border-emerald-500/20 w-fit mb-6">
             <Send size={14} /> TÉLÉGRAM BOT
           </div>
           
@@ -206,7 +206,7 @@ export function TelegramSettings({
               ) : (
                 <div className="bg-black/40 border border-gray-700/50 rounded-[2rem] p-8 space-y-8 relative overflow-hidden backdrop-blur-md">
                    <div className="text-center space-y-3 relative z-10">
-                    <p className="text-[11px] font-black text-emerald-400 uppercase tracking-widest">Votre code unique</p>
+                    <p className="text-xs font-black text-emerald-400 uppercase tracking-widest">Votre code unique</p>
                     <div className="font-mono text-5xl sm:text-6xl font-black text-white tracking-widest py-2">
                       {token}
                     </div>
@@ -223,8 +223,8 @@ export function TelegramSettings({
                   <div className="space-y-6 pt-2 relative z-10">
                     <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
                       <p className="text-[13px] text-gray-300 font-medium leading-loose">
-                        <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-[10px] font-black mr-2">1</span> Ouvrez <b className="text-white">@Yayyam_bot</b> sur Telegram<br/>
-                        <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-[10px] font-black mr-2">2</span> Envoyez : <code className="bg-black/50 px-2 py-1 rounded-lg border border-[#2A2A2A] text-emerald-400 font-mono shadow-inner select-all">/start {token}</code>
+                        <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-xs font-black mr-2">1</span> Ouvrez <b className="text-white">@Yayyam_bot</b> sur Telegram<br/>
+                        <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-xs font-black mr-2">2</span> Envoyez : <code className="bg-black/50 px-2 py-1 rounded-lg border border-[#2A2A2A] text-emerald-400 font-mono shadow-inner select-all">/start {token}</code>
                       </p>
                     </div>
                     
@@ -256,7 +256,7 @@ export function TelegramSettings({
                   <Bell size={18} className="text-emerald-400" /> Flux d'informations
                 </h4>
                 {saveSuccess && (
-                  <span className="text-[11px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full animate-in fade-in duration-300">
+                  <span className="text-xs font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full animate-in fade-in duration-300">
                     SAUVEGARDÉ ✓
                   </span>
                 )}
@@ -340,7 +340,7 @@ function ToggleOptionDark({ icon, label, description, checked, onChange }: Toggl
         </div>
         <div>
           <p className={`text-[14px] font-bold leading-tight mb-0.5 ${checked ? 'text-white' : 'text-gray-300'}`}>{label}</p>
-          <p className="text-[11px] text-gray-500 font-medium leading-normal">{description}</p>
+          <p className="text-xs text-gray-500 font-medium leading-normal">{description}</p>
         </div>
       </div>
       

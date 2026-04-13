@@ -260,12 +260,12 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
 
           <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl shadow-xl">
              <div className="flex flex-col">
-               <span className="text-[10px] font-black tracking-widest text-emerald-200 uppercase">Actifs</span>
+               <span className="text-xs font-black tracking-widest text-emerald-200 uppercase">Actifs</span>
                <span className="text-2xl font-black text-white">{publishedCount} <span className="text-sm font-medium text-emerald-200">cours</span></span>
              </div>
              <div className="w-[1px] h-8 bg-white/20 mx-2"></div>
              <div className="flex flex-col">
-               <span className="text-[10px] font-black tracking-widest text-emerald-200 uppercase">Total</span>
+               <span className="text-xs font-black tracking-widest text-emerald-200 uppercase">Total</span>
                <span className="text-2xl font-black text-white">{articles.length}</span>
              </div>
           </div>
@@ -347,7 +347,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
           <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-[#FAFAF7] text-gray-400 border-b border-gray-100 uppercase tracking-widest text-[10px] font-black">
+                <thead className="bg-[#FAFAF7] text-gray-400 border-b border-gray-100 uppercase tracking-widest text-xs font-black">
                   <tr>
                     <th className="px-6 py-5">Titre du module</th>
                     <th className="px-6 py-5 text-center">Catégorie</th>
@@ -391,7 +391,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                         <td className="px-6 py-4 text-center">
                           <div className="flex flex-col items-center">
                              <div className="text-xs font-bold text-gray-900">{tipsLength} étapes</div>
-                             <div className="text-[10px] font-medium text-gray-400">{article.readTime}</div>
+                             <div className="text-xs font-medium text-gray-400">{article.readTime}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
@@ -402,7 +402,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                         <td className="px-6 py-4">
                           <button 
                             onClick={() => handleToggleActive(article.id, article.is_active)}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black transition-all ${article.is_active ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-gray-100 text-gray-500'}`}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black transition-all ${article.is_active ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-gray-100 text-gray-500'}`}
                           >
                             {article.is_active ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
                             {article.is_active ? 'Publié' : 'Brouillon'}
@@ -460,17 +460,17 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                              <div className="text-6xl transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 z-10 drop-shadow-md">
                                {article.emoji}
                              </div>
-                             <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-gray-900 text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
+                             <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-gray-900 text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
                                👁️ {simulatedViews}
                              </div>
-                             <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md text-gray-900 text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
+                             <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md text-gray-900 text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
                                <Clock size={12} className="text-gray-400" /> {article.readTime}
                              </div>
-                             <div className="absolute top-3 left-3 bg-[#0F7A60] text-white text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm">
+                             <div className="absolute top-3 left-3 bg-[#0F7A60] text-white text-xs font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm">
                                {article.category}
                              </div>
                              {article.is_premium && (
-                               <div className="absolute bottom-3 left-3 bg-amber-400 text-amber-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm flex items-center gap-1">
+                               <div className="absolute bottom-3 left-3 bg-amber-400 text-amber-900 text-xs font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm flex items-center gap-1">
                                  ⭐ {article.price}F
                                </div>
                              )}
@@ -482,7 +482,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                                {(article.allowed_roles || ['all']).map((r: string) => {
                                  const roleName = r === 'all' ? 'TOUS' : r === 'vendor' ? 'VENDEUR' : r === 'closer' ? 'CLOSER' : r === 'client' ? 'ACHETEUR' : r === 'affiliate' ? 'AFFILIÉ' : r;
                                  return (
-                                   <span key={r} className="text-[9px] font-bold uppercase tracking-widest text-[#0D5C4A] bg-[#0F7A60]/10 px-2 py-0.5 rounded-full border border-[#0F7A60]/20 shadow-sm">
+                                   <span key={r} className="text-xs font-bold uppercase tracking-widest text-[#0D5C4A] bg-[#0F7A60]/10 px-2 py-0.5 rounded-full border border-[#0F7A60]/20 shadow-sm">
                                      {roleName}
                                    </span>
                                  )
@@ -495,7 +495,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                              <div className="flex items-center justify-between gap-2 mt-auto pt-4 border-t border-gray-50" onClick={e => e.stopPropagation()}>
                                <button 
                                  onClick={() => handleToggleActive(article.id, article.is_active)}
-                                 className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 rounded-xl text-[11px] font-black tracking-wide uppercase transition-all border ${article.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'}`}
+                                 className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 rounded-xl text-xs font-black tracking-wide uppercase transition-all border ${article.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'}`}
                                >
                                  {article.is_active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                                  {article.is_active ? 'Publié' : 'Brouillon'}
@@ -753,7 +753,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
               
               <div className="flex items-center justify-between p-4 px-6 border-b border-gray-100 bg-white/95 backdrop-blur-xl absolute top-1.5 left-0 w-full z-40">
                 <div className="flex items-center gap-3">
-                  <span className="bg-gray-100 text-gray-600 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wide">
+                  <span className="bg-gray-100 text-gray-600 text-xs font-black px-2.5 py-1 rounded-lg uppercase tracking-wide">
                     {previewArticle.category}
                   </span>
                   <span className="text-xs font-bold text-gray-400 hidden sm:inline-block">

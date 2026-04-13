@@ -198,15 +198,15 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
     switch (status) {
       case 'approved':
       case 'paid':
-        return <span className="flex items-center w-fit gap-1.5 px-2.5 py-1 bg-emerald-500/10 text-emerald-600 rounded-md text-[10px] sm:text-xs font-black uppercase tracking-wider"><CheckCircle2 className="w-3.5 h-3.5" /> Payé</span>
+        return <span className="flex items-center w-fit gap-1.5 px-2.5 py-1 bg-emerald-500/10 text-emerald-600 rounded-md text-xs sm:text-xs font-black uppercase tracking-wider"><CheckCircle2 className="w-3.5 h-3.5" /> Payé</span>
       case 'pending':
-        return <span className="flex items-center w-fit gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-600 rounded-md text-[10px] sm:text-xs font-black uppercase tracking-wider"><Clock className="w-3.5 h-3.5" /> En attente</span>
+        return <span className="flex items-center w-fit gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-600 rounded-md text-xs sm:text-xs font-black uppercase tracking-wider"><Clock className="w-3.5 h-3.5" /> En attente</span>
       case 'rejected':
-        return <span className="flex items-center w-fit gap-1.5 px-2.5 py-1 bg-red-500/10 text-red-600 rounded-md text-[10px] sm:text-xs font-black uppercase tracking-wider"><XCircle className="w-3.5 h-3.5" /> Rejeté</span>
+        return <span className="flex items-center w-fit gap-1.5 px-2.5 py-1 bg-red-500/10 text-red-600 rounded-md text-xs sm:text-xs font-black uppercase tracking-wider"><XCircle className="w-3.5 h-3.5" /> Rejeté</span>
       case 'insufficient_funds':
-        return <span className="flex items-center w-fit gap-1.5 px-2.5 py-1 bg-orange-600/10 text-orange-600 rounded-md text-[10px] sm:text-xs font-black uppercase tracking-wider"><AlertCircle className="w-3.5 h-3.5" /> Insuffisant</span>
+        return <span className="flex items-center w-fit gap-1.5 px-2.5 py-1 bg-orange-600/10 text-orange-600 rounded-md text-xs sm:text-xs font-black uppercase tracking-wider"><AlertCircle className="w-3.5 h-3.5" /> Insuffisant</span>
       default:
-        return <span className="px-2.5 py-1 bg-gray-500/10 text-gray-600 rounded-md text-[10px] sm:text-xs font-black uppercase tracking-wider">{status}</span>
+        return <span className="px-2.5 py-1 bg-gray-500/10 text-gray-600 rounded-md text-xs sm:text-xs font-black uppercase tracking-wider">{status}</span>
     }
   }
 
@@ -223,7 +223,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
       {/* ── ONGLETS LATÉRAUX (ACCOLÉS À LA SIDEBAR PRINCIPALE) ── */}
       <aside className="w-full lg:w-[300px] flex-shrink-0 sticky top-[64px] z-10 lg:h-[calc(100vh-64px)] overflow-y-auto bg-white/80 backdrop-blur-3xl border-r border-gray-200 p-5 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col gap-6">
         <div>
-          <h2 className="text-[10px] items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">
+          <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">
             <Filter size={14} /> Filtres Rapides
           </h2>
           <nav className="flex flex-col gap-1.5">
@@ -244,7 +244,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
                   <span>{tab.label}</span>
                 </div>
                 {tab.count > 0 && (
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{tab.count}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{tab.count}</span>
                 )}
               </button>
             ))}
@@ -349,7 +349,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
         ) : viewMode === 'TABLE' ? (
           <div className="bg-white/80 backdrop-blur-xl border border-white/50 rounded-[32px] overflow-x-auto shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
              <table className="w-full text-left whitespace-nowrap">
-                <thead className="bg-[#0F7A60]/[0.02] border-b border-gray-100 text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                <thead className="bg-[#0F7A60]/[0.02] border-b border-gray-100 text-xs font-black text-gray-500 uppercase tracking-widest">
                    <tr>
                       <th className="px-6 py-5 rounded-tl-[32px] w-12">
                         <button title="Sélectionner tout" onClick={handleSelectAll} className="p-1 hover:text-[#0F7A60] transition-colors">
@@ -378,7 +378,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
                             <td className="px-3 py-5">
                               <Link href={`/admin/vendeurs/${wr.store_id}`} className="flex flex-col group/link">
                                 <span className="font-bold text-sm group-hover/link:text-[#0F7A60] transition-colors text-gray-900">{wr.Store?.name || 'N/A'}</span>
-                                <span className="text-[10px] font-mono text-gray-400 group-hover/link:text-gray-500 flex items-center gap-1 mt-0.5">ID: {wr.id.slice(0, 8)} <ExternalLink size={10}/></span>
+                                <span className="text-xs font-mono text-gray-400 group-hover/link:text-gray-500 flex items-center gap-1 mt-0.5">ID: {wr.id.slice(0, 8)} <ExternalLink size={10}/></span>
                               </Link>
                             </td>
                             <td className="px-6 py-5">
@@ -387,7 +387,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
                               </span>
                             </td>
                             <td className="px-6 py-5">
-                              <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md border ${getMethodColor(wr.payment_method)}`}>
+                              <span className={`text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-md border ${getMethodColor(wr.payment_method)}`}>
                                 {wr.payment_method || 'N/A'}
                               </span>
                             </td>
@@ -397,7 +397,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
                             <td className="px-6 py-5">
                               <div className="flex flex-col border-l-2 border-emerald-500/20 pl-3">
                                 <span className="text-xs font-bold text-gray-900">{wr.requested_at ? format(new Date(wr.requested_at), 'dd MMM yyyy') : 'N/A'}</span>
-                                <span className="text-[10px] text-gray-500 font-semibold uppercase">{wr.requested_at ? format(new Date(wr.requested_at), 'HH:mm') : ''}</span>
+                                <span className="text-xs text-gray-500 font-semibold uppercase">{wr.requested_at ? format(new Date(wr.requested_at), 'HH:mm') : ''}</span>
                               </div>
                             </td>
                             <td className="px-6 py-5">
@@ -407,7 +407,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
                               {wr.status === 'pending' ? (
                                 <WithdrawalActions withdrawalId={wr.id} status={wr.status} />
                               ) : (
-                                <span className="text-[10px] font-bold text-gray-400 italic">Traitée</span>
+                                <span className="text-xs font-bold text-gray-400 italic">Traitée</span>
                               )}
                             </td>
                          </tr>
@@ -435,7 +435,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
 
                   <div className="flex justify-between items-start pl-8 mb-4">
                     <Link href={`/admin/vendeurs/${wr.store_id}`} className="hover:opacity-80 transition-opacity">
-                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-wider">BOUTIQUE Vendeur</p>
+                      <p className="text-xs uppercase font-black text-gray-400 tracking-wider">BOUTIQUE Vendeur</p>
                       <h3 className="font-black text-lg text-gray-900 line-clamp-1">{wr.Store?.name || 'N/A'}</h3>
                     </Link>
                     {renderBadge(wr.status)}
@@ -443,7 +443,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
 
                   <div className="bg-gray-50/80 rounded-2xl p-4 border border-gray-100 flex flex-col gap-3 mb-5">
                     <div className="flex items-end justify-between">
-                      <span className="text-[11px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1.5"><CreditCard size={14}/> Montant</span>
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-1.5"><CreditCard size={14}/> Montant</span>
                       <span className="font-black text-2xl text-gray-900">{wr.amount.toLocaleString()} <span className="text-sm text-gray-400">F</span></span>
                     </div>
                     <div className="h-px bg-gray-200 w-full" />
@@ -463,7 +463,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
                          <WithdrawalActions withdrawalId={wr.id} status={wr.status} />
                       </div>
                     ) : (
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200">Demande Traitée</span>
+                      <span className="text-xs font-bold text-gray-400 uppercase tracking-widest bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200">Demande Traitée</span>
                     )}
                   </div>
                 </div>

@@ -15,7 +15,7 @@ export async function getTerminalLeads() {
     }
 
     // Récupérer les leads "new" (non assignés) OU les leads assignés à ce closer
-    const leads = await prisma.lead.findMany({
+    const leads = await prisma.lead.findMany({ take: 50, 
       where: {
         OR: [
           { status: 'new', closer_id: null }, // Leads disponibles

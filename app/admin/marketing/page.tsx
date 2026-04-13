@@ -48,7 +48,7 @@ export default async function AdminMarketingPage() {
             { label: 'Taux Conversion', value: totalOrders && totalUsers ? `${((totalOrders / totalUsers) * 100).toFixed(1)}%` : '—', icon: Target, color: 'text-cyan-300' },
           ].map(kpi => (
             <div key={kpi.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col">
-              <span className="text-emerald-100/70 text-[10px] font-black uppercase tracking-widest mb-1">{kpi.label}</span>
+              <span className="text-emerald-100/70 text-xs font-black uppercase tracking-widest mb-1">{kpi.label}</span>
               <span className={`text-2xl font-black ${kpi.color}`}>{kpi.value}</span>
             </div>
           ))}

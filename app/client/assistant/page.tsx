@@ -93,7 +93,7 @@ export default function AssistantPage() {
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-black text-white tracking-tight flex items-center gap-2">
-                Yayyam Concierge <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] uppercase tracking-wider font-bold border border-emerald-500/30">Beta</span>
+                Yayyam Concierge <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs uppercase tracking-wider font-bold border border-emerald-500/30">Beta</span>
               </h1>
               <p className="text-gray-400 text-xs md:text-sm font-medium mt-0.5">Votre assistant shopping personnel intelligent.</p>
             </div>
@@ -204,7 +204,7 @@ export default function AssistantPage() {
             </button>
           </form>
           <div className="text-center mt-3">
-             <span className="text-[10px] text-gray-400 font-medium">Yayyam Concierge IA peut faire des erreurs. Vérifiez toujours dans "Mes Achats".</span>
+             <span className="text-xs text-gray-400 font-medium">Yayyam Concierge IA peut faire des erreurs. Vérifiez toujours dans "Mes Achats".</span>
           </div>
         </div>
 

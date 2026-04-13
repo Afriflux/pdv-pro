@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
 
             {/* Email */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-[#7D8590] uppercase tracking-widest">
+              <label className="text-xs font-black text-[#7D8590] uppercase tracking-widest">
                 Email
               </label>
               <input
@@ -86,7 +86,7 @@ export default function AdminLoginPage() {
 
             {/* Mot de passe */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black text-[#7D8590] uppercase tracking-widest">
+              <label className="text-xs font-black text-[#7D8590] uppercase tracking-widest">
                 Mot de passe
               </label>
               <div className="relative">
@@ -142,7 +142,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Badge sécurité */}
-        <p className="text-center text-[10px] text-[#7D8590] mt-4 font-mono uppercase tracking-widest">
+        <p className="text-center text-xs text-[#7D8590] mt-4 font-mono uppercase tracking-widest">
           🔒 Connexion chiffrée · Yayyam © 2025
         </p>
       </div>

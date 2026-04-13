@@ -123,7 +123,7 @@ export default function CreateAmbassadorForm() {
             required
             className={inputClass}
           />
-          <p className="mt-1.5 text-[10px] text-[#484F58]">
+          <p className="mt-1.5 text-xs text-[#484F58]">
             L&apos;utilisateur doit déjà avoir un compte Yayyam.
           </p>
         </div>
@@ -150,7 +150,7 @@ export default function CreateAmbassadorForm() {
               <RefreshCw className="w-4 h-4" />
             </button>
           </div>
-          <p className="mt-1.5 text-[10px] text-[#484F58]">
+          <p className="mt-1.5 text-xs text-[#484F58]">
             Unique, en majuscules. Généré automatiquement depuis le nom.
           </p>
         </div>
@@ -181,7 +181,7 @@ export default function CreateAmbassadorForm() {
             required
             className={inputClass}
           />
-          <p className="mt-1.5 text-[10px] text-[#484F58]">
+          <p className="mt-1.5 text-xs text-[#484F58]">
             Montant crédité à l&apos;ambassadeur quand le vendeur atteint le CA minimum.
           </p>
         </div>
@@ -199,7 +199,7 @@ export default function CreateAmbassadorForm() {
             required
             className={inputClass}
           />
-          <p className="mt-1.5 text-[10px] text-[#484F58]">
+          <p className="mt-1.5 text-xs text-[#484F58]">
             CA que le vendeur doit réaliser le mois de son inscription pour valider la commission.
           </p>
         </div>

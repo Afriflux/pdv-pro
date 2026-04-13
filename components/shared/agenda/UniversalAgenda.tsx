@@ -310,7 +310,7 @@ export function UniversalAgenda({
         >
           <CalendarDays size={18} />
           {role === 'client' ? 'Mes Réservations' : 'Réservations'}
-          <span className="bg-line px-1.5 py-0.5 rounded-md text-[10px] ml-1">{bookings.length}</span>
+          <span className="bg-line px-1.5 py-0.5 rounded-md text-xs ml-1">{bookings.length}</span>
           {mainTab === 'reservations' && (
             <div className="absolute bottom-[-1px] left-0 right-0 h-1 bg-ink rounded-t-full" />
           )}
@@ -353,7 +353,7 @@ export function UniversalAgenda({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-6 rounded-3xl border border-line shadow-sm flex items-center justify-between">
               <div className="flex flex-col">
-                <span className="text-[11px] font-black uppercase text-dust tracking-wider">À venir</span>
+                <span className="text-xs font-black uppercase text-dust tracking-wider">À venir</span>
                 <span className="text-3xl font-display font-black text-ink mt-1">{upcomingCount}</span>
               </div>
               <div className="w-14 h-14 bg-emerald/10 text-[#0F7A60] rounded-2xl flex items-center justify-center">
@@ -362,7 +362,7 @@ export function UniversalAgenda({
             </div>
             <div className="bg-white p-6 rounded-3xl border border-line shadow-sm flex items-center justify-between">
               <div className="flex flex-col">
-                <span className="text-[11px] font-black uppercase text-dust tracking-wider">Terminées</span>
+                <span className="text-xs font-black uppercase text-dust tracking-wider">Terminées</span>
                 <span className="text-3xl font-display font-black text-ink mt-1">{completedCount}</span>
               </div>
               <div className="w-14 h-14 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center">
@@ -455,7 +455,7 @@ export function UniversalAgenda({
                   <div className="flex items-start justify-between mb-6 pb-6 border-b border-line">
                     <div className="flex items-center gap-3">
                       <div className="w-16 h-16 bg-cream border border-line rounded-2xl flex flex-col items-center justify-center overflow-hidden shrink-0">
-                        <div className="bg-[#0F7A60] w-full text-center text-[10px] text-white font-black uppercase py-0.5">
+                        <div className="bg-[#0F7A60] w-full text-center text-xs text-white font-black uppercase py-0.5">
                           {format(new Date(b.booking_date), 'MMM', { locale: fr })}
                         </div>
                         <div className="text-xl font-display font-black text-ink mt-0.5">
@@ -468,7 +468,7 @@ export function UniversalAgenda({
                       </div>
                     </div>
                     
-                    <div className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${STATUS_MAP[b.status]?.bg || 'bg-slate-100'} ${STATUS_MAP[b.status]?.color || 'text-slate'}`}>
+                    <div className={`px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${STATUS_MAP[b.status]?.bg || 'bg-slate-100'} ${STATUS_MAP[b.status]?.color || 'text-slate'}`}>
                       {STATUS_MAP[b.status]?.label || b.status}
                     </div>
                   </div>
@@ -476,11 +476,11 @@ export function UniversalAgenda({
                   {/* Body: Product + Client */}
                   <div className="space-y-4 mb-6">
                     <div>
-                      <h4 className="text-[11px] uppercase tracking-wider font-black text-dust mb-1">Prestation</h4>
+                      <h4 className="text-xs uppercase tracking-wider font-black text-dust mb-1">Prestation</h4>
                       <p className="font-bold text-ink line-clamp-1">{b.product?.name}</p>
                     </div>
                     <div>
-                      <h4 className="text-[11px] uppercase tracking-wider font-black text-dust mb-1.5">Client</h4>
+                      <h4 className="text-xs uppercase tracking-wider font-black text-dust mb-1.5">Client</h4>
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-cream border border-line flex items-center justify-center text-sm font-black text-ink uppercase">
                           {b.order?.buyer?.name?.substring(0, 2) || 'C'}
@@ -489,12 +489,12 @@ export function UniversalAgenda({
                           <span className="font-bold text-sm text-ink">{b.order?.buyer?.name || 'Client Inconnu'}</span>
                           <div className="flex items-center gap-2 mt-0.5">
                             {b.order?.buyer?.phone && (
-                              <a href={`https://wa.me/${b.order?.buyer?.phone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour ${b.order?.buyer?.name}, c'est pour vous rappeler notre session de demain à ${b.start_time}. À très vite !`)}`} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-[#25D366] hover:underline flex items-center gap-1">
+                              <a href={`https://wa.me/${b.order?.buyer?.phone?.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Bonjour ${b.order?.buyer?.name}, c'est pour vous rappeler notre session de demain à ${b.start_time}. À très vite !`)}`} target="_blank" rel="noreferrer" className="text-xs font-bold text-[#25D366] hover:underline flex items-center gap-1">
                                 WhatsApp
                               </a>
                             )}
                             {b.order?.buyer?.email && (
-                              <span className="text-[10px] text-slate truncate max-w-[120px]">{b.order.buyer.email}</span>
+                              <span className="text-xs text-slate truncate max-w-[120px]">{b.order.buyer.email}</span>
                             )}
                           </div>
                         </div>
@@ -557,7 +557,7 @@ export function UniversalAgenda({
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[800px]">
                   <thead>
-                    <tr className="border-b border-line bg-cream text-[10px] font-black uppercase tracking-widest text-dust">
+                    <tr className="border-b border-line bg-cream text-xs font-black uppercase tracking-widest text-dust">
                       <th className="px-6 py-5">Date & Heure</th>
                       <th className="px-6 py-5">Client</th>
                       <th className="px-6 py-5">Prestation</th>
@@ -581,7 +581,7 @@ export function UniversalAgenda({
                             <span className="text-sm font-medium text-slate line-clamp-1">{b.product?.name}</span>
                          </td>
                          <td className="px-6 py-4 text-center">
-                            <span className={`px-2 py-1 inline-flex rounded-full text-[10px] font-black uppercase tracking-wider ${STATUS_MAP[b.status]?.bg || 'bg-slate-100'} ${STATUS_MAP[b.status]?.color || 'text-slate'}`}>
+                            <span className={`px-2 py-1 inline-flex rounded-full text-xs font-black uppercase tracking-wider ${STATUS_MAP[b.status]?.bg || 'bg-slate-100'} ${STATUS_MAP[b.status]?.color || 'text-slate'}`}>
                               {STATUS_MAP[b.status]?.label || b.status}
                             </span>
                          </td>
@@ -661,7 +661,7 @@ export function UniversalAgenda({
               <form onSubmit={handleAddBlockedDate} className="flex flex-wrap gap-3 items-end">
                 {blockedType === 'full_day' && (
                   <div className="space-y-1 w-full sm:w-auto">
-                    <label className="text-[10px] font-black uppercase text-dust">Date à bloquer</label>
+                    <label className="text-xs font-black uppercase text-dust">Date à bloquer</label>
                     <input title="Date de début" type="date" required value={newBlockedDate} onChange={e => setNewBlockedDate(e.target.value)} className="w-full bg-white border border-line rounded-xl px-4 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-red-500" />
                   </div>
                 )}
@@ -669,11 +669,11 @@ export function UniversalAgenda({
                 {blockedType === 'period' && (
                   <>
                     <div className="space-y-1 w-full sm:w-auto">
-                      <label className="text-[10px] font-black uppercase text-dust">Date de début</label>
+                      <label className="text-xs font-black uppercase text-dust">Date de début</label>
                       <input title="Date de début" type="date" required value={newBlockedDate} onChange={e => setNewBlockedDate(e.target.value)} className="w-full bg-white border border-line rounded-xl px-4 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-red-500" />
                     </div>
                     <div className="space-y-1 w-full sm:w-auto">
-                      <label className="text-[10px] font-black uppercase text-dust">Date de fin</label>
+                      <label className="text-xs font-black uppercase text-dust">Date de fin</label>
                       <input title="Date de fin" type="date" required value={newBlockedEndDate} onChange={e => setNewBlockedEndDate(e.target.value)} className="w-full bg-white border border-line rounded-xl px-4 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-red-500" />
                     </div>
                   </>
@@ -682,15 +682,15 @@ export function UniversalAgenda({
                 {blockedType === 'hours' && (
                   <>
                     <div className="space-y-1 w-full sm:w-auto">
-                      <label className="text-[10px] font-black uppercase text-dust">Date</label>
+                      <label className="text-xs font-black uppercase text-dust">Date</label>
                       <input title="Date de début" type="date" required value={newBlockedDate} onChange={e => setNewBlockedDate(e.target.value)} className="w-full bg-white border border-line rounded-xl px-4 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-red-500" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase text-dust">De</label>
+                      <label className="text-xs font-black uppercase text-dust">De</label>
                       <input title="Heure de début" type="time" required value={newBlockedStartTime} onChange={e => setNewBlockedStartTime(e.target.value)} className="w-full bg-white border border-line rounded-xl px-4 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-red-500" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase text-dust">À</label>
+                      <label className="text-xs font-black uppercase text-dust">À</label>
                       <input title="Heure de fin" type="time" required value={newBlockedEndTime} onChange={e => setNewBlockedEndTime(e.target.value)} className="w-full bg-white border border-line rounded-xl px-4 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-red-500" />
                     </div>
                   </>
@@ -868,7 +868,7 @@ export function UniversalAgenda({
                   onChange={(e) => setSettings({...settings, maxPerDay: parseInt(e.target.value) || 0})}
                   title="Sessions maximum par jour"
                 />
-                <p className="text-[11px] font-medium text-slate">
+                <p className="text-xs font-medium text-slate">
                   0 = Illimité. Si la limite est atteinte, la journée sera bloquée.
                 </p>
               </div>
@@ -885,7 +885,7 @@ export function UniversalAgenda({
                   onChange={(e) => setSettings({...settings, minNotice: parseInt(e.target.value) || 0})}
                   title="Délai de préavis minimum en heures"
                 />
-                <p className="text-[11px] font-medium text-slate">
+                <p className="text-xs font-medium text-slate">
                   Ex: 24 bloquera les réservations pour les prochaines 24h.
                 </p>
               </div>
@@ -902,7 +902,7 @@ export function UniversalAgenda({
                   onChange={(e) => setSettings({...settings, maxFutureDays: parseInt(e.target.value) || 60})}
                   title="Fenêtre de réservation maximale en jours"
                 />
-                <p className="text-[11px] font-medium text-slate">
+                <p className="text-xs font-medium text-slate">
                   Jusqu'à combien de jours à l'avance vos clients peuvent-ils réserver.
                 </p>
               </div>
@@ -919,7 +919,7 @@ export function UniversalAgenda({
                   onChange={(e) => setSettings({...settings, bufferTime: parseInt(e.target.value) || 0})}
                   title="Temps de battement automatique en minutes"
                 />
-                <p className="text-[11px] font-medium text-slate">
+                <p className="text-xs font-medium text-slate">
                   S'ajoute avant et après chaque session pour vous laisser respirer.
                 </p>
               </div>
@@ -966,7 +966,7 @@ export function UniversalAgenda({
             
             <form onSubmit={handleAddSlot} className="px-8 py-8 space-y-6 relative z-10">
               <div className="space-y-2">
-                <label className="block text-[11px] uppercase tracking-wider font-black text-dust pl-1">Jours d'application</label>
+                <label className="block text-xs uppercase tracking-wider font-black text-dust pl-1">Jours d'application</label>
                 <div className="flex flex-wrap gap-2">
                   <button title="Action" 
                     type="button" 
@@ -999,7 +999,7 @@ export function UniversalAgenda({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="block text-[11px] uppercase tracking-wider font-black text-dust pl-1">Début</label>
+                  <label className="block text-xs uppercase tracking-wider font-black text-dust pl-1">Début</label>
                   <div className="relative">
                     <Clock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-dust pointer-events-none" />
                     <input
@@ -1013,7 +1013,7 @@ export function UniversalAgenda({
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-[11px] uppercase tracking-wider font-black text-dust pl-1">Fin</label>
+                  <label className="block text-xs uppercase tracking-wider font-black text-dust pl-1">Fin</label>
                   <div className="relative">
                     <Clock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-dust pointer-events-none" />
                     <input
@@ -1029,7 +1029,7 @@ export function UniversalAgenda({
               </div>
 
               <div className="space-y-2 pt-2 border-t border-line">
-                <label className="block text-[11px] uppercase tracking-wider font-black text-dust pl-1">Diviser en sous-créneaux de :</label>
+                <label className="block text-xs uppercase tracking-wider font-black text-dust pl-1">Diviser en sous-créneaux de :</label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { val: 0, label: 'Ne pas diviser' },
@@ -1068,13 +1068,13 @@ export function UniversalAgenda({
                     }}
                   />
                   {slotInterval > 0 && ![15, 30, 45, 60, 90].includes(slotInterval) && (
-                    <span className="text-[10px] font-bold text-white bg-[#0F7A60] px-2 py-1 rounded-md">Sélectionné : {slotInterval}m</span>
+                    <span className="text-xs font-bold text-white bg-[#0F7A60] px-2 py-1 rounded-md">Sélectionné : {slotInterval}m</span>
                   )}
                 </div>
                 
                 {slotInterval > 0 && (
                   <div className="flex items-center gap-2 mt-4 pt-4 border-t border-line/50">
-                    <label className="text-[11px] uppercase tracking-wider font-black text-dust whitespace-nowrap">Temps de pause :</label>
+                    <label className="text-xs uppercase tracking-wider font-black text-dust whitespace-nowrap">Temps de pause :</label>
                     <input
                       type="number"
                       placeholder="min"
@@ -1094,7 +1094,7 @@ export function UniversalAgenda({
                 {slotInterval > 0 && (
                   <div className="mt-4 pt-4 border-t border-line/50 space-y-4">
                     <div className="flex items-center justify-between">
-                      <label className="text-[11px] uppercase tracking-wider font-black text-ink flex items-center gap-2">
+                      <label className="text-xs uppercase tracking-wider font-black text-ink flex items-center gap-2">
                         <Clock className="text-amber-500" size={16} /> Grande Pause (ex: Déjeuner)
                       </label>
                       <input
@@ -1109,11 +1109,11 @@ export function UniversalAgenda({
                     {hasBigBreak && (
                       <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
                         <div className="space-y-1">
-                          <label className="text-[10px] font-black uppercase text-dust">Début de pause</label>
+                          <label className="text-xs font-black uppercase text-dust">Début de pause</label>
                           <input title="Début de la pause" type="time" required={hasBigBreak} value={breakStart} onChange={e => setBreakStart(e.target.value)} className="w-full bg-[#FAFAF7] border-2 border-line text-ink rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[10px] font-black uppercase text-dust">Fin de pause</label>
+                          <label className="text-xs font-black uppercase text-dust">Fin de pause</label>
                           <input title="Fin de la pause" type="time" required={hasBigBreak} value={breakEnd} onChange={e => setBreakEnd(e.target.value)} className="w-full bg-[#FAFAF7] border-2 border-line text-ink rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500" />
                         </div>
                       </div>
@@ -1122,7 +1122,7 @@ export function UniversalAgenda({
                 )}
 
                 {slotInterval > 0 && (
-                  <p className="text-[10px] font-bold text-dust mt-4 bg-cream p-2 rounded-lg leading-relaxed">
+                  <p className="text-xs font-bold text-dust mt-4 bg-cream p-2 rounded-lg leading-relaxed">
                     💡 La plage {newSlot.start_time} - {newSlot.end_time} sera automatiquement coupée en morceaux de {slotInterval} minutes{bufferTime > 0 ? ` avec ${bufferTime} min de battement par session` : ''}{hasBigBreak ? `, en sautant la pause de ${breakStart} à ${breakEnd}` : ''}.
                   </p>
                 )}

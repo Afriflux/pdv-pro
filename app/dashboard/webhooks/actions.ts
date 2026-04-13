@@ -15,7 +15,7 @@ export async function getWebhooksAction() {
   })
   if (!store) return { success: false, error: 'Boutique introuvable' }
 
-  const webhooks = await prisma.webhook.findMany({
+  const webhooks = await prisma.webhook.findMany({ take: 50, 
     where: { store_id: store.id },
     orderBy: { created_at: 'desc' }
   })

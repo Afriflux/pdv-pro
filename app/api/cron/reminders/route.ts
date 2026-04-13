@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     const tmrStart = new Date(tomorrow.setHours(0,0,0,0)).toISOString()
     const tmrEnd = new Date(tomorrow.setHours(23,59,59,999)).toISOString()
 
-    const upcomingBookings = await prisma.booking.findMany({
+    const upcomingBookings = await prisma.booking.findMany({ take: 50, 
       where: {
         booking_date: { gte: tmrStart, lte: tmrEnd },
       },

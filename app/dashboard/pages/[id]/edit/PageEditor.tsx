@@ -605,7 +605,7 @@ export function PageEditor({ page, storeId, products }: PageEditorProps) {
               <div className="pt-4 border-t border-gray-100">
                 <label className="block text-sm font-bold text-gray-700 mb-1.5 flex justify-between items-center">
                    <span>Domaine personnalisé (Optionnel)</span>
-                   <span className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded uppercase tracking-wider">Premium</span>
+                   <span className="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded uppercase tracking-wider">Premium</span>
                 </label>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-gray-400 flex-shrink-0 bg-gray-50 px-3 py-3 rounded-xl border border-gray-100">https://</span>
@@ -859,7 +859,7 @@ export function PageEditor({ page, storeId, products }: PageEditorProps) {
              <div className="flex items-center gap-2 text-gray-400 font-bold text-xs">
                <Smartphone size={16} /> Live Mobile Preview
              </div>
-             <div className="text-[10px] bg-[#0F7A60]/10 text-[#0F7A60] px-2 py-1 rounded font-black tracking-widest uppercase">
+             <div className="text-xs bg-[#0F7A60]/10 text-[#0F7A60] px-2 py-1 rounded font-black tracking-widest uppercase">
                Temps Réel
              </div>
            </div>

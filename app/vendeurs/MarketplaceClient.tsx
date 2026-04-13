@@ -183,7 +183,7 @@ export default function MarketplaceClient({
                   {/* Header/Cover Fake */}
                   <div className="h-28 bg-gradient-to-tr from-pearl to-cream w-full relative">
                     {s.featured && (
-                      <div className="absolute top-4 right-4 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg shadow-emerald-500/20">
+                      <div className="absolute top-4 right-4 bg-emerald-500 text-white text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg shadow-emerald-500/20">
                         Top 1%
                       </div>
                     )}
@@ -207,7 +207,7 @@ export default function MarketplaceClient({
                         {s.name}
                         {s.score >= 50 && <span title="Vendeur Vérifié"><Award size={16} className="text-emerald-500 shrink-0" /></span>}
                       </h3>
-                      <p className="text-dust text-[10px] font-black uppercase tracking-widest line-clamp-1">{s.category || 'Non classé'}</p>
+                      <p className="text-dust text-xs font-black uppercase tracking-widest line-clamp-1">{s.category || 'Non classé'}</p>
                     </div>
 
                     <div className="mt-auto space-y-2 border-t border-pearl/50 pt-4">

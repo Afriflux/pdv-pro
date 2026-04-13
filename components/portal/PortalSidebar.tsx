@@ -109,18 +109,18 @@ function NavLink({ item, active, onClick, collapsed }: { item: NavItem, active: 
         onClick={onClick}
         className={`flex items-center relative overflow-hidden ${collapsed ? 'justify-center px-0 w-11 h-11 mx-auto rounded-xl' : 'px-3 gap-3 py-2.5 rounded-xl'} transition-all duration-300 ${
           active
-            ? 'bg-gradient-to-r from-white/15 to-white/5 text-white font-bold shadow-[0_4px_20px_rgba(0,0,0,0.1)] border border-white/10 backdrop-blur-md'
-            : 'text-white/60 hover:bg-white/10 hover:text-white hover:shadow-sm'
+            ? 'bg-emerald-50 text-[#0F7A60] font-bold shadow-sm border border-emerald-100/50'
+            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
         }`}
       >
         {active && !collapsed && (
-           <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white to-white/30 rounded-l-xl shadow-[0_0_12px_rgba(255,255,255,0.6)]" />
+           <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#0F7A60] rounded-l-xl shadow-[0_0_12px_rgba(255,255,255,0.6)]" />
         )}
         
         <Icon suppressHydrationWarning className={`${collapsed ? 'w-[20px] h-[20px]' : 'w-[18px] h-[18px]'} flex-shrink-0 transition-transform duration-300 ${active ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'group-hover/navitem:scale-110'}`} />
-        {!collapsed && <span className="text-[13px] truncate relative z-10">{item.name}</span>}
+        {!collapsed && <span className="text-[13px] truncate relative z-10 font-medium">{item.name}</span>}
         {!collapsed && item.badge && (
-          <span className="ml-auto text-[9px] font-black bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 px-2 py-0.5 rounded-md shadow-sm relative z-10 uppercase tracking-wider">
+          <span className="ml-auto text-xs font-black bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 px-2 py-0.5 rounded-md shadow-sm relative z-10 uppercase tracking-wider">
             {item.badge}
           </span>
         )}
@@ -128,7 +128,7 @@ function NavLink({ item, active, onClick, collapsed }: { item: NavItem, active: 
       
       {/* Tooltip for collapsed mode */}
       {collapsed && (
-        <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-white/10 backdrop-blur-xl text-white text-[12px] font-bold rounded-xl opacity-0 invisible group-hover/navitem:opacity-100 group-hover/navitem:visible transition-all whitespace-nowrap z-50 shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-white/20">
+        <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-800 backdrop-blur-xl text-white text-[12px] font-bold rounded-xl opacity-0 invisible group-hover/navitem:opacity-100 group-hover/navitem:visible transition-all whitespace-nowrap z-50 shadow-[0_8px_30px_rgba(0,0,0,0.2)] border border-white/20">
           {item.name}
         </div>
       )}
@@ -140,24 +140,24 @@ function SwitchToBuyerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#052e22] border border-white/10 rounded-[2rem] p-8 max-w-sm w-full shadow-2xl relative animate-in fade-in zoom-in duration-300">
+      <div className="bg-white border border-gray-200 rounded-[2rem] p-8 shadow-2xl max-w-sm w-full shadow-2xl relative animate-in fade-in zoom-in duration-300">
         <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
           <ArrowLeftRight size={32} />
         </div>
-        <h3 className="text-xl font-black text-white text-center mb-2">Espace Acheteur</h3>
+        <h3 className="text-xl font-black text-gray-900 text-center mb-2">Espace Acheteur</h3>
         <p className="text-emerald-100/60 text-sm text-center mb-8 leading-relaxed">
           Voulez-vous basculer sur votre Espace Acheteur ? Vous pourrez revenir sur ce tableau de bord à tout moment pour gérer vos affiliations.
         </p>
         <div className="flex items-center gap-3">
           <button 
             onClick={onClose}
-            className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-all text-sm border border-white/10"
+            className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all text-sm border border-gray-200"
           >
             Annuler
           </button>
           <a
             href="/api/dashboard/switch-to-buyer"
-            className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-center font-bold rounded-xl transition-all text-sm shadow-lg shadow-emerald-500/20"
+            className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-gray-900 text-center font-bold rounded-xl transition-all text-sm shadow-lg shadow-emerald-500/20"
           >
             Confirmer
           </a>
@@ -222,7 +222,7 @@ function SidebarContent({
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-1 py-1 rounded-xl group-hover/logo:bg-white/5 transition-colors">
-              <span className="text-2xl font-display font-black text-white tracking-tight drop-shadow-sm">Yayyam</span>
+              <span className="text-2xl font-display font-black text-gray-900 tracking-tight">Yayyam</span>
               <span className="text-2xl font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-emerald-400 tracking-tight drop-shadow-md">Affilié</span>
             </div>
           )}
@@ -236,7 +236,7 @@ function SidebarContent({
           {setCollapsed && (
             <button 
               onClick={() => setCollapsed(!collapsed)} 
-              className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-colors"
+              className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-50 hover:text-gray-900 transition-colors"
               aria-label={collapsed ? "Déplier le menu" : "Réduire le menu"}
             >
               {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
@@ -257,12 +257,12 @@ function SidebarContent({
                   onClick={() => toggleSection(section.title)}
                   className="flex items-center justify-between px-2 mt-4 mb-2 group"
                 >
-                  <span className="text-[10px] font-black text-emerald-100/40 uppercase tracking-[0.2em] group-hover:text-emerald-100/70 transition-colors drop-shadow-sm">
+                  <span className="text-xs font-black text-emerald-100/40 uppercase tracking-[0.2em] group-hover:text-emerald-100/70 transition-colors drop-shadow-sm">
                     {section.title}
                   </span>
                   {isSectionCollapsed ? 
-                    <ChevronDown className="w-3.5 h-3.5 text-white/20 group-hover:text-white/40" /> : 
-                    <ChevronUp className="w-3.5 h-3.5 text-white/30 group-hover:text-white/50" />
+                    <ChevronDown className="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-500" /> : 
+                    <ChevronUp className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
                   }
                 </button>
               ) : (
@@ -287,9 +287,9 @@ function SidebarContent({
 
       {/* Footer / Profile */}
       <div className={`mt-auto ${collapsed ? 'px-2 pb-4 pt-2' : 'px-4 pb-6 pt-2'} flex-shrink-0 transition-all`}>
-        <div className={`relative overflow-hidden ${collapsed ? 'bg-transparent flex flex-col items-center gap-3' : 'bg-white/5 backdrop-blur-xl border border-white/10 rounded-[1.5rem] p-3 shadow-lg hover:bg-white/10 transition-colors duration-300'}`}>
+        <div className={`relative overflow-hidden ${collapsed ? 'bg-transparent flex flex-col items-center gap-3' : 'bg-gray-50 border border-gray-200 rounded-[1.5rem] p-3 shadow-lg hover:bg-white/10 transition-colors duration-300'}`}>
           <div className={`flex items-center ${collapsed ? '' : 'gap-3 mb-3'}`}>
-            <div className="relative w-10 h-10 rounded-full border border-white/20 overflow-hidden bg-white/10 flex items-center justify-center flex-shrink-0 shadow-[0_4px_10px_rgba(0,0,0,0.1)]">
+            <div className="relative w-10 h-10 rounded-full border border-emerald-100 overflow-hidden bg-emerald-50 flex items-center justify-center flex-shrink-0 shadow-[0_4px_10px_rgba(0,0,0,0.1)]">
               {avatarUrl ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
@@ -299,8 +299,8 @@ function SidebarContent({
             </div>
             {!collapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-black text-white truncate leading-tight tracking-tight">{userName}</p>
-                <p className="text-[11px] text-white/50 truncate uppercase tracking-wider font-semibold mt-0.5" title="Membre de la plateforme">Ambassadeur: {storeName}</p>
+                <p className="text-[14px] font-black text-gray-900 truncate leading-tight tracking-tight">{userName}</p>
+                <p className="text-xs text-gray-400 truncate uppercase tracking-wider font-semibold mt-0.5" title="Membre de la plateforme">Ambassadeur: {storeName}</p>
               </div>
             )}
           </div>
@@ -308,13 +308,13 @@ function SidebarContent({
           <form action={signOut} className={`w-full flex items-center`}>
             <button
               type="submit"
-              className={`w-full flex items-center justify-center ${collapsed ? 'px-0 w-10 h-10 rounded-xl bg-white/5 hover:bg-red-500/20 border-transparent' : 'px-4 py-2.5 rounded-xl gap-2 bg-red-500/10'} text-red-200 hover:bg-red-500 hover:text-white border border-red-500/20 hover:shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all duration-300 text-[13px] font-bold group/logout relative`}
+              className={`w-full flex items-center justify-center ${collapsed ? 'px-0 w-10 h-10 rounded-xl bg-gray-50 hover:bg-red-50 border-transparent' : 'px-4 py-2.5 rounded-xl gap-2 bg-red-500/10'} text-red-500 hover:bg-red-500 hover:text-white border border-red-200 hover:shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all duration-300 text-[13px] font-bold group/logout relative`}
             >
               <LogOut className={`${collapsed ? 'w-5 h-5' : 'w-[16px] h-[16px]'}`} strokeWidth={collapsed ? 2 : 2.5} />
               {!collapsed && <span>Déconnexion</span>}
               
               {collapsed && (
-                <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 invisible group-hover/logout:opacity-100 group-hover/logout:visible transition-all whitespace-nowrap z-50 shadow-xl border border-white/10">
+                <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900 text-gray-900 text-xs font-semibold rounded-lg opacity-0 invisible group-hover/logout:opacity-100 group-hover/logout:visible transition-all whitespace-nowrap z-50 shadow-xl border border-white/10">
                   Déconnexion
                   <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
                 </div>
@@ -380,16 +380,16 @@ export function PortalSidebar({
       <SwitchToBuyerModal isOpen={showSwitchModal} onClose={() => setShowSwitchModal(false)} />
       {/* ── DESKTOP : sidebar fixe gauche ── */}
       <aside 
-        className={`hidden lg:flex flex-col flex-shrink-0 bg-[#052e22] h-screen sticky top-0 z-30 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] relative overflow-hidden border-r border-white/5 ${
+        className={`hidden lg:flex flex-col flex-shrink-0 bg-white h-screen sticky top-0 z-30 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] relative overflow-hidden border-r border-gray-200 ${
           collapsed && mounted ? 'w-[80px]' : 'w-[280px]'
         }`}
       >
         {/* Gradients Héroïques et Bruit pour simuler le Verre Premium (Emerald Style) */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#064e3b] via-[#043324] to-[#021f15] z-0 pointer-events-none opacity-95"></div>
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.04] mix-blend-overlay z-0 pointer-events-none"></div>
+        {/* Desktop Noise */}
+        
         {/* Emerald Glow au lieu du Gold pour l'Affilié */}
-        <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-emerald-400/10 rounded-full blur-[100px] -translate-y-1/2 -translate-x-1/4 animate-pulse duration-[8000ms] pointer-events-none z-0"></div>
-        <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-teal-500/10 rounded-full blur-[80px] translate-y-1/4 translate-x-1/4 pointer-events-none z-0"></div>
+        
+        
 
         <div className="relative z-10 flex flex-col h-full w-full">
           <SidebarContent 
@@ -405,11 +405,11 @@ export function PortalSidebar({
       {/* ── MOBILE : bouton hamburger + drawer ── */}
       <div className="lg:hidden">
         {/* Topbar mobile */}
-        <div className="fixed top-0 left-0 right-0 z-40 bg-emerald-deep border-b border-white/5 flex items-center justify-between px-4 h-14">
+        <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-4 h-14">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setMobileOpen(true)}
-              className="text-white/60 hover:text-white transition p-1"
+              className="text-gray-400 hover:text-gray-900 transition p-1"
               aria-label="Ouvrir le menu"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -417,7 +417,7 @@ export function PortalSidebar({
               </svg>
             </button>
             <Link href="/" className="flex items-center gap-1.5 ml-1" onClick={() => setMobileOpen(false)}>
-              <span className="text-lg font-display font-black text-white">Yayyam</span>
+              <span className="text-lg font-display font-black text-gray-900">Yayyam</span>
               <span className="text-lg font-display font-black text-emerald-400">Affilié</span>
             </Link>
           </div>
@@ -441,15 +441,15 @@ export function PortalSidebar({
           }`}
         >
           {/* Gradients Héroïques Mobile */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#064e3b]/95 via-[#043324] to-[#021f15] z-0 pointer-events-none"></div>
-          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.04] mix-blend-overlay z-0 pointer-events-none"></div>
+          {/* Desktop Noise */}
+          
           <div className="absolute top-0 left-0 w-[300px] h-[300px] bg-emerald-400/10 rounded-full blur-[80px] -translate-y-1/2 -translate-x-1/4 pointer-events-none z-0"></div>
 
           <div className="relative z-10 flex flex-col h-full w-full">
             {/* Bouton fermeture */}
             <button
               onClick={() => setMobileOpen(false)}
-              className="absolute top-5 right-5 text-white/50 hover:text-white transition bg-white/5 hover:bg-white/10 rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-md border border-white/10 z-50"
+              className="absolute top-5 right-5 text-gray-400 hover:text-gray-900 transition bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center border border-gray-200 z-50"
               aria-label="Fermer le menu"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -129,7 +129,7 @@ export default function AdminTeamClient({ initialTeam, eligibleUsers }: Props) {
           <div key={member.id} className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 border border-white/50 shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 relative overflow-hidden group flex flex-col h-full">
             
             {member.role === 'super_admin' && (
-              <div className="absolute top-0 right-0 bg-[#0F7A60]/10 text-[#0F7A60] border-b border-l border-[#0F7A60]/20 text-[10px] font-black tracking-widest uppercase px-4 py-1.5 rounded-bl-2xl">
+              <div className="absolute top-0 right-0 bg-[#0F7A60]/10 text-[#0F7A60] border-b border-l border-[#0F7A60]/20 text-xs font-black tracking-widest uppercase px-4 py-1.5 rounded-bl-2xl">
                 SUPER ADMIN
               </div>
             )}
@@ -145,7 +145,7 @@ export default function AdminTeamClient({ initialTeam, eligibleUsers }: Props) {
               <div className="pt-1">
                 <h3 className="text-lg font-bold text-[#1A1A1A] leading-tight group-hover:text-[#0F7A60] transition-colors">{member.name}</h3>
                 <p className="text-xs font-medium text-gray-500 mt-1">{member.email}</p>
-                <span className={`inline-block mt-3 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest border rounded-xl ${
+                <span className={`inline-block mt-3 px-2.5 py-1 text-xs font-black uppercase tracking-widest border rounded-xl ${
                   member.role === 'super_admin' ? 'bg-[#0F7A60]/5 text-[#0F7A60] border-[#0F7A60]/20' : 'bg-[#C9A84C]/5 text-[#C9A84C] border-[#C9A84C]/20'
                 }`}>
                   {member.role.replace('_', ' ')}

@@ -19,7 +19,7 @@ export default async function CustomersPage() {
   if (!store) redirect('/onboarding')
 
   // Récupérer toutes les commandes monétisées
-  const orders = await prisma.order.findMany({
+  const orders = await prisma.order.findMany({ take: 200,
     where: {
       store_id: store.id,
       status: {
@@ -33,7 +33,7 @@ export default async function CustomersPage() {
       total: true,
       created_at: true,
     },
-    orderBy: { created_at: 'desc' }
+    orderBy: { created_at: 'desc' },
   })
 
   // Aggréger en "Clients"

@@ -81,16 +81,16 @@ export default async function AdminAmbassadeursPage() {
             </div>
             <div>
               <div className="flex items-center gap-3 mb-1.5">
-                <span className="px-3 py-1 bg-white/20 text-white backdrop-blur-md border border-white/30 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">
+                <span className="px-3 py-1 bg-white/20 text-white backdrop-blur-md border border-white/30 rounded-full text-xs font-black uppercase tracking-widest shadow-sm">
                   🤝 Programme Affiliation
                 </span>
                 {configMap['ambassador_program_active'] === 'true' ? (
-                  <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#A7F3D0]">
+                  <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#A7F3D0]">
                     <span className="w-2 h-2 rounded-full bg-[#34D399] animate-pulse"></span>
                     Actif
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-red-200">
+                  <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-red-200">
                     <span className="w-2 h-2 rounded-full bg-red-400"></span>
                     En pause
                   </span>

@@ -20,7 +20,7 @@ export default async function AppStorePage() {
       .single()
 
     if (store) {
-      const apps = await prisma.installedApp.findMany({
+      const apps = await prisma.installedApp.findMany({ take: 50, 
         where: { store_id: store.id, status: 'active' },
         select: { app_id: true }
       })
@@ -28,7 +28,7 @@ export default async function AppStorePage() {
     }
   }
 
-  const dbApps = await prisma.marketplaceApp.findMany({
+  const dbApps = await prisma.marketplaceApp.findMany({ take: 50, 
     where: { active: true },
     orderBy: { created_at: 'asc' }
   })

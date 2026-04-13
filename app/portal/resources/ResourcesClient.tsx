@@ -54,7 +54,7 @@ export default function ResourcesClient({ affiliateCode, storeSlug, products, pr
             {promoCodes.map((promo) => (
               <div key={promo.id} className="bg-gradient-to-br from-white to-gray-50 border border-emerald/20 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-emerald/40 transition-all flex justify-between items-center group">
                 <div>
-                  <p className="text-[10px] font-black uppercase text-emerald tracking-widest mb-1">
+                  <p className="text-xs font-black uppercase text-emerald tracking-widest mb-1">
                     Réduction : {promo.type === 'percentage' ? `-${promo.value}%` : `-${promo.value} FCFA`}
                   </p>
                   <p className="font-mono text-xl font-black text-ink tracking-wider">{promo.code}</p>
@@ -157,7 +157,7 @@ export default function ResourcesClient({ affiliateCode, storeSlug, products, pr
                         <LinkIcon size={14} />
                       </div>
                       <div className="flex-1 overflow-hidden">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Votre lien unique</p>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-0.5">Votre lien unique</p>
                         <p className="text-[12px] font-medium text-slate-700 truncate">{affiliateLink}</p>
                       </div>
                       <button 

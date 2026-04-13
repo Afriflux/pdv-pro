@@ -182,10 +182,10 @@ export function StoreLinkTab({ store }: { store: any }) {
                       placeholder="ma-boutique"
                     />
                     <div className="px-5 flex items-center bg-gray-50/50 border-l border-gray-200/80 backdrop-blur-sm min-w-[120px] justify-center">
-                      {slugStatus === 'idle' && <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Neutre</span>}
-                      {slugStatus === 'checking' && <span className="text-[11px] font-black text-emerald-500 animate-pulse flex items-center gap-1.5 uppercase tracking-widest whitespace-nowrap"><Loader2 size={12} className="animate-spin" /> Verif...</span>}
-                      {slugStatus === 'available' && <span className="text-[11px] font-black text-teal-600 flex items-center gap-1.5 uppercase tracking-widest whitespace-nowrap"><CheckCircle2 size={12} /> Libre</span>}
-                      {slugStatus === 'taken' && <span className="text-[11px] font-black text-red-500 flex items-center gap-1.5 uppercase tracking-widest whitespace-nowrap"><XCircle size={12} /> Indisponible</span>}
+                      {slugStatus === 'idle' && <span className="text-xs font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Neutre</span>}
+                      {slugStatus === 'checking' && <span className="text-xs font-black text-emerald-500 animate-pulse flex items-center gap-1.5 uppercase tracking-widest whitespace-nowrap"><Loader2 size={12} className="animate-spin" /> Verif...</span>}
+                      {slugStatus === 'available' && <span className="text-xs font-black text-teal-600 flex items-center gap-1.5 uppercase tracking-widest whitespace-nowrap"><CheckCircle2 size={12} /> Libre</span>}
+                      {slugStatus === 'taken' && <span className="text-xs font-black text-red-500 flex items-center gap-1.5 uppercase tracking-widest whitespace-nowrap"><XCircle size={12} /> Indisponible</span>}
                     </div>
                  </div>
                  

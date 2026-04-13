@@ -12,7 +12,7 @@ export default function SubscriptionsClient() {
         <div className="absolute bottom-0 left-0 w-40 h-40 bg-emerald-rich/30 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
         
         <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-emerald-light font-black text-[10px] uppercase tracking-widest px-4 py-1.5 rounded-full mb-6 border border-white/10">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-emerald-light font-black text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-6 border border-white/10">
             <Zap size={14} className="text-gold" /> Nouveau modèle économique
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-white leading-tight mb-4">

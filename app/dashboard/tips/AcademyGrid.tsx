@@ -111,15 +111,15 @@ export default function AcademyGrid({ articles, completedIds: initialCompletedId
                 </div>
                 
                 {!isLocked && (
-                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-ink text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
+                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-ink text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
                     👁️ {(article.id.toString().charCodeAt(0) * 7) % 80 + 12}
                   </div>
                 )}
                 
-                <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md text-ink text-[10px] font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
+                <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md text-ink text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 z-10 shadow-sm border border-gray-100">
                   <Clock size={12} className="text-gray-400" /> {article.readTime}
                 </div>
-                <div className="absolute top-3 left-3 bg-[#0F7A60] text-white text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm">
+                <div className="absolute top-3 left-3 bg-[#0F7A60] text-white text-xs font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm">
                   {article.category}
                 </div>
                 {localCompletedIds.includes(article.id.toString()) && !isLocked && (
@@ -228,7 +228,7 @@ export default function AcademyGrid({ articles, completedIds: initialCompletedId
               
               <div className="flex items-center justify-between p-4 px-6 border-b border-gray-100 bg-white/95 backdrop-blur-xl absolute top-1.5 left-0 w-full z-40">
                 <div className="flex items-center gap-3">
-                  <span className="bg-gray-100 text-gray-600 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wide">
+                  <span className="bg-gray-100 text-gray-600 text-xs font-black px-2.5 py-1 rounded-lg uppercase tracking-wide">
                     {selectedArticle.category}
                   </span>
                   <span className="text-xs font-bold text-gray-400 hidden sm:inline-block">

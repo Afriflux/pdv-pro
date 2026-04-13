@@ -4,7 +4,7 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { BadgeCheck, Star, ShoppingBag, ExternalLink, Activity, Compass, Home, Store, Sun, Moon } from 'lucide-react'
+import { BadgeCheck, Star, ShoppingBag, ExternalLink, Activity, Compass, Home, Store, Sun, Moon, Share2 } from 'lucide-react'
 import { ProductGrid } from '@/components/storefront/ProductGrid'
 import { PoweredByBadge } from '@/components/branding/PoweredByBadge'
 import NewsletterWidget from '@/components/brevo/NewsletterWidget'
@@ -13,6 +13,7 @@ import StoreSocialLinks from '@/components/storefront/StoreSocialLinks'
 import { PixelTracker } from '@/components/tracking/PixelTracker'
 import { SocialProofWidget } from '@/components/shared/storefront/SocialProofWidget'
 import { HelpdeskWidget } from '@/components/shared/storefront/HelpdeskWidget'
+import { trackViewContent } from '@/lib/tracking/pixel-events'
 import { ReactNode, useState, useEffect } from 'react'
 
 interface StorefrontClientProps {
@@ -71,6 +72,18 @@ export function StorefrontClient({
     })
   }
 
+  // Pixel: fire ViewContent for the first product on mount
+  useEffect(() => {
+    if (products.length > 0) {
+      trackViewContent({
+        content_name: products[0].name,
+        content_id: products[0].id,
+        value: products[0].price,
+        currency: 'XOF',
+      })
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className={`min-h-screen relative overflow-hidden font-body transition-colors duration-300 ${isDark ? 'bg-gray-950 text-gray-100' : 'bg-[#FDFDFD] text-gray-900'}`}>
       {/* Bandeau d'annonce configurable par le vendeur */}
@@ -88,31 +101,31 @@ export function StorefrontClient({
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white/80 backdrop-blur-3xl border border-white p-1.5 rounded-[100px] shadow-[0_8px_30px_rgb(0,0,0,0.1)] flex items-center gap-1.5"
+          className="bg-white/80 backdrop-blur-3xl border border-white p-2 rounded-[100px] shadow-[0_8px_30px_rgb(0,0,0,0.1)] flex items-center gap-1.5"
         >
           <div className="relative group">
-            <Link href="/" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-emerald-600 transition-all font-bold" aria-label="Accueil">
-              <Home size={20} strokeWidth={2.5} />
+            <Link href="/" className="min-w-[44px] min-h-[44px] w-12 h-12 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-emerald-600 transition-all font-bold" aria-label="Accueil">
+              <Home size={22} strokeWidth={2.5} />
             </Link>
-            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
               Accueil
             </span>
           </div>
           
           <div className="relative group">
-            <Link href="/vendeurs" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-emerald-600 transition-all font-bold" aria-label="Marketplace">
-               <Compass size={20} strokeWidth={2.5} />
+            <Link href="/vendeurs" className="min-w-[44px] min-h-[44px] w-12 h-12 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-emerald-600 transition-all font-bold" aria-label="Marketplace">
+               <Compass size={22} strokeWidth={2.5} />
             </Link>
-            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
               Marketplace
             </span>
           </div>
 
           <div className="relative group">
-            <Link href="/track" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-blue-600 transition-all font-bold" aria-label="Suivre ma commande">
-               <ShoppingBag size={20} strokeWidth={2.5} />
+            <Link href="/track" className="min-w-[44px] min-h-[44px] w-12 h-12 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-blue-600 transition-all font-bold" aria-label="Suivre ma commande">
+               <ShoppingBag size={22} strokeWidth={2.5} />
             </Link>
-            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
               Suivi commande
             </span>
           </div>
@@ -120,10 +133,10 @@ export function StorefrontClient({
           <div className="w-px h-6 bg-gray-200 mx-1.5"></div>
 
           <div className="relative group">
-            <Link href="/dashboard" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-gray-900 transition-all font-bold" aria-label="Mon Espace">
-               <Store size={20} strokeWidth={2.5} />
+            <Link href="/dashboard" className="min-w-[44px] min-h-[44px] w-12 h-12 rounded-full flex items-center justify-center text-gray-500 hover:bg-white hover:shadow-md hover:text-gray-900 transition-all font-bold" aria-label="Mon Espace">
+               <Store size={22} strokeWidth={2.5} />
             </Link>
-            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
               Espace Yayyam
             </span>
           </div>
@@ -134,12 +147,12 @@ export function StorefrontClient({
           <div className="relative group">
             <button 
               onClick={toggleDark}
-              className={`w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center transition-all font-bold ${isDark ? 'text-yellow-400 hover:bg-yellow-400/10' : 'text-gray-500 hover:bg-white hover:shadow-md hover:text-gray-900'}`}
+              className={`min-w-[44px] min-h-[44px] w-12 h-12 rounded-full flex items-center justify-center transition-all font-bold ${isDark ? 'text-yellow-400 hover:bg-yellow-400/10' : 'text-gray-500 hover:bg-white hover:shadow-md hover:text-gray-900'}`}
               aria-label={isDark ? 'Mode clair' : 'Mode sombre'}
             >
-              {isDark ? <Sun size={20} strokeWidth={2.5} /> : <Moon size={20} strokeWidth={2.5} />}
+              {isDark ? <Sun size={22} strokeWidth={2.5} /> : <Moon size={22} strokeWidth={2.5} />}
             </button>
-            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
+            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 md:top-full md:mt-2 md:bottom-auto px-3 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-xl pointer-events-none">
               {isDark ? 'Mode clair' : 'Mode sombre'}
             </span>
           </div>
@@ -151,8 +164,8 @@ export function StorefrontClient({
 
       {/* Arrière-plan "Aurora / Glow" dynamique */}
       <div className="fixed top-0 inset-x-0 h-[600px] pointer-events-none z-0 bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_12%,transparent)] to-transparent" />
-      <div className="fixed -top-40 -right-40 w-[500px] h-[500px] rounded-full blur-[100px] opacity-30 pointer-events-none z-0 bg-[var(--accent)]" />
-      <div className="fixed top-40 -left-20 w-[300px] h-[300px] rounded-full blur-[100px] opacity-20 pointer-events-none z-0 bg-[var(--accent)]" />
+      <div className="fixed -top-40 -right-40 w-[500px] h-[500px] rounded-full motion-safe:blur-[100px] opacity-30 pointer-events-none z-0 bg-[var(--accent)]" />
+      <div className="fixed top-40 -left-20 w-[300px] h-[300px] rounded-full motion-safe:blur-[100px] opacity-20 pointer-events-none z-0 bg-[var(--accent)]" />
 
       <motion.div 
         variants={containerVariants} 
@@ -171,11 +184,11 @@ export function StorefrontClient({
              <div className="absolute top-0 left-0 w-full h-32 md:h-40 bg-gradient-to-b from-transparent to-white/60 backdrop-blur-[2px]" />
              
              <div className="relative pt-12 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
-                <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-[6px] border-white shadow-xl bg-white overflow-hidden flex-shrink-0 flex items-center justify-center">
+                <div className="w-16 h-16 md:w-36 md:h-36 rounded-full border-4 md:border-[6px] border-white shadow-xl bg-white overflow-hidden flex-shrink-0 flex items-center justify-center">
                   {store.logo_url ? (
-                    <Image src={store.logo_url} alt={store.store_name || store.name} width={144} height={144} className="object-cover w-full h-full" />
+                    <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={store.logo_url} alt={store.store_name || store.name} width={144} height={144} className="object-cover w-full h-full" />
                   ) : (
-                    <span className="text-4xl font-black text-[var(--accent)]">{(store.store_name || store.name)[0]}</span>
+                    <span className="text-2xl md:text-4xl font-black text-[var(--accent)]">{(store.store_name || store.name)[0]}</span>
                   )}
                 </div>
                 <div className="flex-1 pb-2">
@@ -213,7 +226,7 @@ export function StorefrontClient({
                 <Star className="w-6 h-6 fill-amber-400" />
               </div>
               <p className="text-3xl font-black text-gray-900">{avgRating > 0 ? avgRating.toFixed(1) : '5.0'}</p>
-              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">{reviewCount > 0 ? `${reviewCount} avis` : 'Nouveau'}</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">{reviewCount > 0 ? `${reviewCount} avis` : 'Nouveau'}</p>
             </div>
 
             <div className="bg-white/60 backdrop-blur-2xl rounded-[32px] p-6 shadow-2xl shadow-[rgba(0,0,0,0.03)] border border-white flex flex-col items-center justify-center text-center group transition hover:-translate-y-1">
@@ -221,7 +234,7 @@ export function StorefrontClient({
                 <Activity className="w-6 h-6" />
               </div>
               <p className="text-3xl font-black text-gray-900">{salesCount ?? 0}</p>
-              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">Ventes réalisées</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Ventes réalisées</p>
             </div>
 
           </motion.div>
@@ -229,10 +242,66 @@ export function StorefrontClient({
 
         {/* Social Links Bar */}
         {(socialLinks && Object.keys(socialLinks).length > 0) && (
-          <motion.div variants={itemVariants} className="flex justify-center">
+          <motion.div variants={itemVariants} className="flex flex-col items-center">
             <div className="bg-white/60 backdrop-blur-xl border border-white rounded-full px-6 py-2 shadow-xl shadow-[rgba(0,0,0,0.03)] inline-flex">
                <StoreSocialLinks socialLinks={socialLinks} />
             </div>
+
+            {/* Bouton Partager WhatsApp natif */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(`Découvrez ${store.store_name || store.name} sur Yayyam 👇\nhttps://yayyam.com/${store.slug}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-sm font-bold bg-[#25D366] text-white hover:bg-[#1ebe57] transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 00.917.918l4.462-1.494A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.239 0-4.308-.724-5.99-1.952l-.418-.312-2.65.887.888-2.649-.313-.418A9.96 9.96 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg>
+                Partager
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({ title: store.store_name || store.name, url: `https://yayyam.com/${store.slug}` })
+                  } else {
+                    navigator.clipboard.writeText(`https://yayyam.com/${store.slug}`)
+                  }
+                }}
+                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full text-sm font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all active:scale-95 min-h-[44px]"
+              >
+                <Share2 size={14} />
+                Copier le lien
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Share buttons en standalone si pas de socialLinks */}
+        {(!socialLinks || Object.keys(socialLinks).length === 0) && (
+          <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-3">
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(`Découvrez ${store.store_name || store.name} sur Yayyam 👇\nhttps://yayyam.com/${store.slug}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-sm font-bold bg-[#25D366] text-white hover:bg-[#1ebe57] transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 00.917.918l4.462-1.494A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.239 0-4.308-.724-5.99-1.952l-.418-.312-2.65.887.888-2.649-.313-.418A9.96 9.96 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg>
+              Partager
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({ title: store.store_name || store.name, url: `https://yayyam.com/${store.slug}` })
+                } else {
+                  navigator.clipboard.writeText(`https://yayyam.com/${store.slug}`)
+                }
+              }}
+              className="inline-flex items-center gap-2 px-5 py-3.5 min-h-[44px] rounded-full text-sm font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all active:scale-95"
+            >
+              <Share2 size={14} />
+              Copier le lien
+            </button>
           </motion.div>
         )}
 
@@ -256,7 +325,7 @@ export function StorefrontClient({
                   >
                     {page.cover_url ? (
                         <div className="relative w-full aspect-video overflow-hidden">
-                          <Image src={page.cover_url} alt={page.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                          <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={page.cover_url} alt={page.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
                       ) : (
@@ -322,7 +391,7 @@ export function StorefrontClient({
                    <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
                      <span className="font-black text-gray-900">{review.buyer_name}</span>
                      {review.verified && (
-                       <span className="flex items-center gap-1 text-[10px] uppercase font-black tracking-widest text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
+                       <span className="flex items-center gap-1 text-xs uppercase font-black tracking-widest text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
                          <BadgeCheck size={12} /> Achat Vérifié
                        </span>
                      )}
@@ -358,7 +427,7 @@ export function StorefrontClient({
           <div className="bg-charcoal rounded-[40px] p-10 md:p-14 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center gap-10 text-center md:text-left">
             {/* Éclat lumineux */}
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
-            <div className="absolute -top-40 -left-40 w-[400px] h-[400px] bg-emerald-light rounded-full blur-[140px] opacity-20 pointer-events-none" />
+            <div className="absolute -top-40 -left-40 w-[400px] h-[400px] bg-emerald-light rounded-full motion-safe:blur-[140px] opacity-20 pointer-events-none" />
             
             <div className="absolute -bottom-20 -right-10 opacity-10 pointer-events-none transform -rotate-12">
               <ShoppingBag className="w-72 h-72 text-white" />
@@ -373,7 +442,7 @@ export function StorefrontClient({
               </p>
             </div>
             <div className="relative z-10 w-full md:w-auto shrink-0 flex flex-col items-center">
-              <Link href="/register" className="w-full text-center bg-white text-ink font-black py-5 px-10 rounded-2xl hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-2 text-lg shadow-2xl">
+              <Link href="/register" className="w-full text-center bg-white text-ink font-black py-5 px-10 rounded-2xl hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-2 text-lg shadow-2xl min-h-[44px]">
                 Créer ma boutique
               </Link>
             </div>

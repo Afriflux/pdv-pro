@@ -59,7 +59,7 @@ export default function RefundButton({ storeId, orderId, totalAmount }: {
     <>
       <button
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsOpen(true) }}
-        className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 text-[9px] font-black rounded-lg transition-all flex items-center gap-1 shrink-0"
+        className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 text-xs font-black rounded-lg transition-all flex items-center gap-1 shrink-0"
         title="Rembourser"
       >
         <RotateCcw className="w-3 h-3" />
@@ -78,7 +78,7 @@ export default function RefundButton({ storeId, orderId, totalAmount }: {
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-red-800">Remboursement Intégral</h3>
-                  <p className="text-[10px] text-red-600 font-medium">Action irréversible — tous les fonds seront restitués.</p>
+                  <p className="text-xs text-red-600 font-medium">Action irréversible — tous les fonds seront restitués.</p>
                 </div>
               </div>
               <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/50 rounded-lg transition-colors" title="Fermer">
@@ -89,15 +89,15 @@ export default function RefundButton({ storeId, orderId, totalAmount }: {
             <div className="p-6 space-y-5">
               {/* Montant total */}
               <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-center">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Montant Total de la Commande</p>
+                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Montant Total de la Commande</p>
                 <p className="text-2xl font-black text-[#1A1A1A]">{totalAmount.toLocaleString('fr-FR')} FCFA</p>
-                <p className="text-[9px] text-gray-400 mt-1 font-mono">#{orderId.slice(-8).toUpperCase()}</p>
+                <p className="text-xs text-gray-400 mt-1 font-mono">#{orderId.slice(-8).toUpperCase()}</p>
               </div>
 
               {/* Ce qui sera restitué */}
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
-                <p className="text-[10px] font-black text-amber-700 mb-1">⚠️ Cette action va :</p>
-                <ul className="text-[10px] text-amber-600 space-y-0.5 font-medium">
+                <p className="text-xs font-black text-amber-700 mb-1">⚠️ Cette action va :</p>
+                <ul className="text-xs text-amber-600 space-y-0.5 font-medium">
                   <li>• Retirer le montant vendeur du wallet vendeur</li>
                   <li>• Annuler la commission plateforme</li>
                   <li>• Retirer la commission closer (si applicable)</li>
@@ -108,7 +108,7 @@ export default function RefundButton({ storeId, orderId, totalAmount }: {
 
               {/* Motif */}
               <div>
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5">
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest block mb-1.5">
                   Motif du remboursement <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -122,7 +122,7 @@ export default function RefundButton({ storeId, orderId, totalAmount }: {
 
               {/* Double validation */}
               <div>
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1.5">
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest block mb-1.5">
                   Saisissez le montant exact pour confirmer <span className="text-red-500">*</span>
                 </label>
                 <input

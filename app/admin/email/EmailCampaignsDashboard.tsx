@@ -135,11 +135,11 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
           <div className="relative z-10 flex gap-4 auto-flex items-center shrink-0">
              <div className="flex gap-4 bg-white/60 p-3 rounded-2xl border border-white">
                <div className="text-center px-4 border-r border-emerald-100">
-                  <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest mb-1">Moy. Ouvertures</p>
+                  <p className="text-xs font-black text-emerald-600/70 uppercase tracking-widest mb-1">Moy. Ouvertures</p>
                   <p className="text-2xl font-black text-[#0D5C4A]">{avgOpenRate.toFixed(1)}<span className="text-lg">%</span></p>
                </div>
                <div className="text-center px-4">
-                  <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest mb-1">Moy. Clics</p>
+                  <p className="text-xs font-black text-emerald-600/70 uppercase tracking-widest mb-1">Moy. Clics</p>
                   <p className="text-2xl font-black text-[#0D5C4A]">{avgClickRate.toFixed(1)}<span className="text-lg">%</span></p>
                </div>
              </div>
@@ -255,7 +255,7 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
         ) : (
           <div className="overflow-x-auto relative z-10 w-full">
             <table className="w-full text-left">
-              <thead className="bg-[#0F7A60]/[0.02] border-b border-white/40 text-gray-500 uppercase text-[10px] font-black tracking-widest">
+              <thead className="bg-[#0F7A60]/[0.02] border-b border-white/40 text-gray-500 uppercase text-xs font-black tracking-widest">
                 <tr>
                   <th className="px-5 py-5 whitespace-nowrap">Campagne & Sujet</th>
                   <th className="px-5 py-5 whitespace-nowrap">Statut</th>
@@ -289,17 +289,17 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
                         <p className="font-bold text-gray-900 text-sm truncate max-w-[280px] group-hover:text-[#0D5C4A] transition-colors" title={campaign.name}>
                           {campaign.name}
                         </p>
-                        <p className="text-[11px] font-medium text-gray-400 truncate max-w-[280px] mt-1" title={campaign.subject}>
+                        <p className="text-xs font-medium text-gray-400 truncate max-w-[280px] mt-1" title={campaign.subject}>
                           Sujet : {campaign.subject}
                         </p>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2 bg-gray-100/50 w-max px-2 py-0.5 rounded-md">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-2 bg-gray-100/50 w-max px-2 py-0.5 rounded-md">
                           {formatDate(dateStr)}
                         </p>
                       </td>
 
                       {/* Statut */}
                       <td className="px-6 py-4">
-                        <span className={`text-[10px] font-black tracking-wider uppercase px-2.5 py-1 shadow-sm rounded-lg border ${classes}`}>
+                        <span className={`text-xs font-black tracking-wider uppercase px-2.5 py-1 shadow-sm rounded-lg border ${classes}`}>
                           {label}
                         </span>
                       </td>
@@ -308,7 +308,7 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <span className="font-black text-gray-900">{formatNumber(delivered)}</span>
-                          <span className="text-[10px] font-bold text-gray-400 uppercase">Recip.</span>
+                          <span className="text-xs font-bold text-gray-400 uppercase">Recip.</span>
                         </div>
                       </td>
 
@@ -318,7 +318,7 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
                           <div className="flex flex-col gap-1.5 w-28 lg:w-32">
                             <div className="flex items-center justify-between">
                               <span className="font-black text-gray-900">{openRate.toFixed(1)}%</span>
-                              <span className="text-[10px] font-bold text-gray-400">{formatNumber(opens)} vues</span>
+                              <span className="text-xs font-bold text-gray-400">{formatNumber(opens)} vues</span>
                             </div>
                             <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                               <div className="h-full bg-emerald-500 rounded-full transition-all duration-1000" style={getProgressStyle(openRate)}></div>
@@ -335,7 +335,7 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
                           <div className="flex flex-col gap-1.5 w-28 lg:w-32">
                             <div className="flex items-center justify-between">
                               <span className="font-black text-gray-900">{clickRate.toFixed(1)}%</span>
-                              <span className="text-[10px] font-bold text-gray-400">{formatNumber(clicks)} clics</span>
+                              <span className="text-xs font-bold text-gray-400">{formatNumber(clicks)} clics</span>
                             </div>
                             <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                               <div className="h-full bg-[#0D5C4A] rounded-full transition-all duration-1000" style={getProgressStyle(clickRate)}></div>
@@ -349,19 +349,19 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
                       {/* Désabonnements / Rejets */}
                       <td className="px-6 py-4 text-right">
                         {(unsubscribed === 0 && bounces === 0 && delivered > 0) ? (
-                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded inline-block">Perfect 🎯</span>
+                          <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded inline-block">Perfect 🎯</span>
                         ) : delivered === 0 ? (
-                          <span className="text-[11px] font-bold text-gray-400">-</span>
+                          <span className="text-xs font-bold text-gray-400">-</span>
                         ) : (
                           <div className="flex flex-col items-end gap-1">
                             {unsubscribed > 0 && (
-                              <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-100 whitespace-nowrap">
+                              <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-100 whitespace-nowrap">
                                 {unsubscribed} {unsubscribed > 1 ? 'Désabonnés' : 'Désabonné'}
                               </span>
                             )}
                             
                             {bounces > 0 && (
-                              <span className="text-[11px] font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-100 mt-0.5 whitespace-nowrap">
+                              <span className="text-xs font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-100 mt-0.5 whitespace-nowrap">
                                 {bounces} Bounces
                               </span>
                             )}

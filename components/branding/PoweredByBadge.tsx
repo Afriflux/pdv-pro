@@ -11,7 +11,7 @@ export function PoweredByBadge() {
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-100 rounded-full
-          text-[10px] font-semibold text-gray-400 hover:text-[#0F7A60] hover:border-[#0F7A60]/20
+          text-xs font-semibold text-gray-400 hover:text-[#0F7A60] hover:border-[#0F7A60]/20
           transition-all shadow-sm hover:shadow group"
       >
         {/* Logo émeraude miniature */}

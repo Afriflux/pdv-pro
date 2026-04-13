@@ -1,6 +1,6 @@
 // ─── Types unifiés ────────────────────────────────────────────────────────────
 
-export type PaymentMethod = 'wave' | 'orange_money' | 'card_cinetpay' | 'card_paytech' | 'bictorys' | 'kkiapay'
+export type PaymentMethod = 'wave' | 'bictorys' | 'paytech' | 'cinetpay' | 'moneroo'
 
 export interface PaymentIntent {
   orderId: string
@@ -21,11 +21,7 @@ export interface WavePaymentStatus {
   transactionId: string
 }
 
-export interface OrangePaymentStatus {
-  status: 'completed' | 'pending' | 'failed'
-  amount: number
-  transactionId: string
-}
+
 
 // ─── Réponse Wave Session ──────────────────────────────────────────────────────
 
@@ -64,14 +60,14 @@ interface WaveTransactionDetail {
 
 /**
  * Calcule les frais passerelle selon la méthode de paiement.
- * Wave & Orange Money : 1% fixe
- * Carte (CinetPay / PayTech) : 3%
+ * Wave : 1% fixe
+ * Autres (Bictorys, PayTech, CinetPay, Moneroo) : 3%
  */
 export function calculateFees(amount: number, method: PaymentMethod): number {
-  if (method === 'wave' || method === 'orange_money') {
-    return Math.round(amount * 0.01) // 1% fixe Mobile Money
+  if (method === 'wave') {
+    return Math.round(amount * 0.01) // 1% Wave direct
   }
-  return Math.round(amount * 0.03) // 3% Carte bancaire / Agrégateurs (CinetPay, Bictorys, KKiaPay)
+  return Math.round(amount * 0.03) // 3% Agrégateurs
 }
 
 /**
@@ -159,99 +155,7 @@ export async function verifyWavePayment(transactionId: string): Promise<WavePaym
   }
 }
 
-// ─── Orange Money ──────────────────────────────────────────────────────────────
 
-/**
- * Initie un paiement Orange Money via l'API Orange Money WebPay.
- * Retourne l'URL de paiement à laquelle rediriger l'acheteur.
- */
-export async function initiateOrangeMoneyPayment(
-  intent: PaymentIntent
-): Promise<{ checkoutUrl: string }> {
-  const apiKey = process.env.ORANGE_MONEY_API_KEY
-  const merchantKey = process.env.ORANGE_MONEY_MERCHANT_KEY
-  if (!apiKey) throw new Error('[Orange Money] ORANGE_MONEY_API_KEY non configurée')
-  if (!merchantKey) throw new Error('[Orange Money] ORANGE_MONEY_MERCHANT_KEY non configuré')
-
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://yayyam.com'
-
-  const response = await fetch(
-    'https://api.orange.com/orange-money-webpay/dev/v1/webpayment',
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        merchant_key: merchantKey,
-        currency: intent.currency,
-        order_id: intent.orderId,
-        amount: intent.amount,
-        return_url: intent.redirectUrl,
-        cancel_url: `${baseUrl}/checkout/error?order=${intent.orderId}`,
-        notif_url: intent.webhookUrl,
-        lang: 'fr',
-      }),
-    }
-  )
-
-  if (!response.ok) {
-    const errorBody = await response.text()
-    throw new Error(`[Orange Money] Erreur API (${response.status}) : ${errorBody}`)
-  }
-
-  const result = (await response.json()) as OrangeWebPayResponse
-
-  return { checkoutUrl: result.data.payment_url }
-}
-
-/**
- * Vérifie le statut d'une transaction Orange Money.
- * Utilisé dans le webhook IPN Orange Money.
- * Note : Orange Money n'a pas d'endpoint de vérification unifié en dev,
- * on retourne un statut basé sur le token reçu dans le webhook.
- */
-export async function verifyOrangeMoneyPayment(
-  transactionId: string
-): Promise<OrangePaymentStatus> {
-  const apiKey = process.env.ORANGE_MONEY_API_KEY
-  if (!apiKey) throw new Error('[Orange Money] ORANGE_MONEY_API_KEY non configurée')
-
-  // En production Orange Money, la confirmation vient directement du webhook (notif_url).
-  // Cette fonction est prévue pour une vérification complémentaire si nécessaire.
-  const response = await fetch(
-    `https://api.orange.com/orange-money-webpay/dev/v1/webpayment/${transactionId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        Accept: 'application/json',
-      },
-    }
-  )
-
-  if (!response.ok) {
-    // En cas d'échec de vérification, on renvoie pending pour retry
-    return {
-      status: 'pending',
-      amount: 0,
-      transactionId,
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data = (await response.json()) as Record<string, any>
-
-  // Orange Money envoie status = 200 dans le corps quand c'est réussi
-  const isSuccess = data?.status === 200 || data?.message === 'Accepted'
-
-  return {
-    status: isSuccess ? 'completed' : 'failed',
-    amount: (data?.amount as number) ?? 0,
-    transactionId,
-  }
-}
 
 // ─── CinetPay (Carte bancaire) ────────────────────────────────────────────────
 
@@ -352,41 +256,44 @@ export async function initiateBictorysPayment(
   return { checkoutUrl: url }
 }
 
-// ─── KKiaPay ──────────────────────────────────────────────────────────────────
+// ─── Moneroo (orchestrateur) ─────────────────────────────────────────────────────
 
-export async function initiateKKiapayPayment(
+export async function initiateMonerooPayment(
   intent: PaymentIntent
 ): Promise<{ checkoutUrl: string }> {
-  const apiKey = process.env.KKIAPAY_API_KEY
-  if (!apiKey) throw new Error('[KKiaPay] KKIAPAY_API_KEY non configurée')
+  const secretKey = process.env.MONEROO_SECRET_KEY
+  if (!secretKey) throw new Error('[Moneroo] MONEROO_SECRET_KEY non configurée')
 
-  const response = await fetch('https://api.kkiapay.me/api/v1/payments/request', {
+  const response = await fetch('https://api.moneroo.io/v1/payments/initialize', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey,
+      Authorization: `Bearer ${secretKey}`,
     },
     body: JSON.stringify({
       amount: intent.amount,
-      currency: intent.currency || 'XOF',
-      reason: `Commande Yayyam #${intent.orderId}`,
-      partnerId: intent.orderId,
-      phone: intent.customerPhone,
-      email: intent.customerEmail,
-      callback: intent.redirectUrl,
-      webhook: intent.webhookUrl,
+      currency: intent.currency,
+      description: `Commande Yayyam #${intent.orderId}`,
+      return_url: intent.redirectUrl,
+      customer: {
+        email: intent.customerEmail || 'client@yayyam.com',
+        phone: intent.customerPhone,
+      },
+      metadata: {
+        order_id: intent.orderId,
+      },
     }),
   })
 
   if (!response.ok) {
     const errorBody = await response.text()
-    throw new Error(`[KKiaPay] Erreur API (${response.status}) : ${errorBody}`)
+    throw new Error(`[Moneroo] Erreur API (${response.status}) : ${errorBody}`)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result = (await response.json()) as any
-  const url = result?.url || result?.payment_url
-  if (!url) throw new Error('[KKiaPay] URL de checkout absente')
+  const url = result?.data?.checkout_url || result?.checkout_url
+  if (!url) throw new Error('[Moneroo] URL de checkout absente')
 
   return { checkoutUrl: url }
 }

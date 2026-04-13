@@ -27,10 +27,10 @@ export default async function MarketplacePage() {
 
   // Fetch all active assets
   const [appsRaw, themesRaw, workflowsRaw, masterclassRaw] = await Promise.all([
-    prisma.marketplaceApp.findMany({ where: { active: true }, orderBy: { created_at: 'desc' } }),
-    prisma.themeTemplate.findMany({ where: { active: true, is_global: true }, orderBy: { created_at: 'desc' } }),
-    prisma.workflow.findMany({ where: { store_id: null, user_id: null, status: 'active' }, orderBy: { created_at: 'desc' } }),
-    prisma.masterclassArticle.findMany({ where: { is_active: true }, orderBy: { created_at: 'desc' } }) 
+    prisma.marketplaceApp.findMany({ where: { active: true }, orderBy: { created_at: 'desc' }, take: 50 }),
+    prisma.themeTemplate.findMany({ where: { active: true, is_global: true }, orderBy: { created_at: 'desc' }, take: 50 }),
+    prisma.workflow.findMany({ where: { store_id: null, user_id: null, status: 'active' }, orderBy: { created_at: 'desc' }, take: 50 }),
+    prisma.masterclassArticle.findMany({ where: { is_active: true }, orderBy: { created_at: 'desc' }, take: 50 }) 
   ])
 
   // Filter based on allowed_roles -> user's role or 'all'

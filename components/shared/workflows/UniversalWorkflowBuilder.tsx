@@ -473,7 +473,7 @@ export function UniversalWorkflowBuilder({
             </div>
             
             <div className="ml-6">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#0F7A60] mb-1">Déclencheur (Trigger)</p>
+              <p className="text-xs font-black uppercase tracking-widest text-[#0F7A60] mb-1">Déclencheur (Trigger)</p>
               <h3 className="text-xl font-bold text-ink mb-4">Quand cet événement se produit :</h3>
               
               <select 
@@ -528,7 +528,7 @@ export function UniversalWorkflowBuilder({
                   <Clock size={16} />
                 </div>
                 <div>
-                  <p className={`text-[10px] font-black uppercase tracking-widest ${editingWorkflow?.config?.delay?.active ? 'text-gold' : 'text-slate'}`}>Condition de Temps</p>
+                  <p className={`text-xs font-black uppercase tracking-widest ${editingWorkflow?.config?.delay?.active ? 'text-gold' : 'text-slate'}`}>Condition de Temps</p>
                   <h3 className="font-bold text-ink">Attendre avant d'exécuter la suite</h3>
                 </div>
               </div>
@@ -581,7 +581,7 @@ export function UniversalWorkflowBuilder({
                   <GitMerge size={16} />
                 </div>
                 <div>
-                  <p className={`text-[10px] font-black uppercase tracking-widest ${editingWorkflow?.config?.condition?.active ? 'text-purple-600' : 'text-slate'}`}>Filtre</p>
+                  <p className={`text-xs font-black uppercase tracking-widest ${editingWorkflow?.config?.condition?.active ? 'text-purple-600' : 'text-slate'}`}>Filtre</p>
                   <h3 className="font-bold text-ink">Continuer uniquement si...</h3>
                 </div>
               </div>
@@ -682,7 +682,7 @@ export function UniversalWorkflowBuilder({
                      <Zap size={16} />}
                   </div>
                   <div className="flex-1">
-                    <p className={`text-[10px] font-black uppercase tracking-widest mb-1 text-turquoise`}>
+                    <p className={`text-xs font-black uppercase tracking-widest mb-1 text-turquoise`}>
                       Action (Résultat)
                     </p>
                     <select 
@@ -769,7 +769,7 @@ export function UniversalWorkflowBuilder({
                        placeholder="Ex: Appeler {{client_name}} pour confirmer l'expédition"
                        className="w-full bg-white border border-linemed rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-turquoise focus:ring-2 focus:ring-turquoise/20"
                      />
-                     <div className="text-[11px] text-slate/70 flex gap-2 flex-wrap">
+                     <div className="text-xs text-slate/70 flex gap-2 flex-wrap">
                       <span className="bg-white border border-line px-1.5 py-0.5 rounded text-dust font-mono">{"{{client_name}}"}</span>
                       <span className="bg-white border border-line px-1.5 py-0.5 rounded text-dust font-mono">{"{{order_id}}"}</span>
                     </div>
@@ -807,7 +807,7 @@ export function UniversalWorkflowBuilder({
                             <button
                               key={idx}
                               onClick={() => handleActionChange('message', tpl.text)}
-                              className="text-[10px] bg-white hover:bg-turquoise-pale border border-linemed hover:border-turquoise text-ink hover:text-turquoise px-2 flex-shrink-0 h-6 rounded-md transition-all font-semibold shadow-sm"
+                              className="text-xs bg-white hover:bg-turquoise-pale border border-linemed hover:border-turquoise text-ink hover:text-turquoise px-2 flex-shrink-0 h-6 rounded-md transition-all font-semibold shadow-sm"
                             >
                               + {tpl.label}
                             </button>
@@ -821,7 +821,7 @@ export function UniversalWorkflowBuilder({
                       placeholder={currentAction.type === 'whatsapp_message' ? "Ex: Bonjour {{client_name}}, merci pour votre commande..." : "Entrez votre message ici..."}
                       className="w-full bg-white border border-linemed rounded-lg px-4 py-3 text-sm font-medium outline-none focus:border-turquoise focus:ring-2 focus:ring-turquoise/20 min-h-[120px] resize-y shadow-inner"
                     />
-                    <div className="text-[11px] text-slate/70 flex gap-2 flex-wrap mt-1">
+                    <div className="text-xs text-slate/70 flex gap-2 flex-wrap mt-1">
                       <span className="bg-white border border-line px-1.5 py-0.5 rounded text-dust font-mono">{"{{client_name}}"}</span>
                       <span className="bg-white border border-line px-1.5 py-0.5 rounded text-dust font-mono">{"{{product_name}}"}</span>
                       <span className="bg-white border border-line px-1.5 py-0.5 rounded text-dust font-mono">{"{{store_name}}"}</span>

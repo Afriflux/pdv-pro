@@ -1,7 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
-import AnalyticsClient from './AnalyticsClient'
+import nextDynamic from 'next/dynamic'
+
+const AnalyticsClient = nextDynamic(() => import('./AnalyticsClient'), { ssr: false, loading: () => <div className="animate-pulse h-[500px] w-full bg-gray-50"/> })
 
 export const metadata = {
   title: 'Analytics | Yayyam Affilié',

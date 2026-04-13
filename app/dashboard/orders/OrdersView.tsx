@@ -247,7 +247,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#0F7A60]/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-[#0F7A60]/10 transition-colors duration-500 pointer-events-none" />
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
             <div className="relative z-10 flex flex-col">
-              <p className="text-[11px] font-black text-[#0F7A60] uppercase tracking-wider mb-2">💰 CA Total</p>
+              <p className="text-xs font-black text-[#0F7A60] uppercase tracking-wider mb-2">💰 CA Total</p>
               <p className="font-display text-3xl font-black text-[#1A1A1A]">
                 {stats.totalCa.toLocaleString('fr-FR')} <span className="text-base text-gray-400">F</span>
               </p>
@@ -258,7 +258,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-blue-500/10 transition-colors duration-500 pointer-events-none" />
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
             <div className="relative z-10 flex flex-col">
-              <p className="text-[11px] font-black text-blue-500 uppercase tracking-wider mb-2">📦 Commandes</p>
+              <p className="text-xs font-black text-blue-500 uppercase tracking-wider mb-2">📦 Commandes</p>
               <p className="font-display text-3xl font-black text-[#1A1A1A]">{stats.nbCommandes}</p>
             </div>
           </div>
@@ -267,7 +267,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-purple-500/10 transition-colors duration-500 pointer-events-none" />
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
             <div className="relative z-10 flex flex-col">
-              <p className="text-[11px] font-black text-purple-500 uppercase tracking-wider mb-2">✅ Complétées</p>
+              <p className="text-xs font-black text-purple-500 uppercase tracking-wider mb-2">✅ Complétées</p>
               <div className="flex items-baseline gap-2">
                 <p className="font-display text-3xl font-black text-[#1A1A1A]">{stats.countCompleted}</p>
                 <p className="text-sm font-bold text-gray-400">({stats.txCompletion}%)</p>
@@ -279,7 +279,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#C9A84C]/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-[#C9A84C]/10 transition-colors duration-500 pointer-events-none" />
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
             <div className="relative z-10 flex flex-col">
-              <p className="text-[11px] font-black text-[#C9A84C] uppercase tracking-wider mb-2">⏳ En attente</p>
+              <p className="text-xs font-black text-[#C9A84C] uppercase tracking-wider mb-2">⏳ En attente</p>
               <p className={`font-display text-3xl font-black ${stats.countPending > 0 ? 'text-[#C9A84C]' : 'text-gray-400'}`}>
                 {stats.countPending}
               </p>
@@ -378,7 +378,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
             {/* VUE TABLEAU DE BORD (DATA-GRID) */}
             <div className="bg-white/80 backdrop-blur-xl border border-white shadow-xl shadow-gray-200/50 rounded-[32px] overflow-x-auto">
               <table className="w-full text-left whitespace-nowrap">
-                <thead className="bg-[#FAFAF7] border-b border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                <thead className="bg-[#FAFAF7] border-b border-gray-100 text-xs font-black text-gray-400 uppercase tracking-widest">
                   <tr>
                     <th className="px-5 py-5 w-10 text-center">
                       <button onClick={toggleAll} className={`text-slate hover:text-[#1A1A1A] transition-colors ${selectedIds.size > 0 && selectedIds.size === filteredOrders.length ? 'text-[#0F7A60]' : ''}`} title="Tout sélectionner">
@@ -444,7 +444,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
                             <span className="font-mono text-xs font-bold text-[#1A1A1A] bg-gray-100 px-2.5 py-1 rounded-lg">#{order.id.split('-')[0].toUpperCase()}</span>
                             {isPendingUrgent && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" title="En attente depuis +24h" />}
                           </div>
-                          <div className="text-[10px] uppercase font-bold text-gray-400 mt-2 flex items-center gap-1.5 tracking-wider">
+                          <div className="text-xs uppercase font-bold text-gray-400 mt-2 flex items-center gap-1.5 tracking-wider">
                             <ClockIcon size={12} /> {getTimeAgo(order.created_at)}
                           </div>
                         </td>
@@ -452,8 +452,8 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
                           <div className="flex flex-col gap-1.5">
                             <span className="font-black text-[#1A1A1A] text-[15px]">{order.buyer_name}</span>
                             <div className="flex items-center gap-2 mt-0.5">
-                              <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} onClick={e => e.stopPropagation()} className="font-mono text-[11px] text-gray-500 hover:text-[#0F7A60] font-bold flex items-center gap-1.5 bg-gray-100 hover:bg-emerald-50 px-2 py-1 rounded-md transition-colors"><PhoneIcon size={12}/>{order.buyer_phone}</a>
-                              <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1.5 text-white bg-gradient-to-r from-[#25D366] to-[#1EBE5C] px-2.5 py-1 font-bold text-[10px] rounded-md shadow-sm shadow-[#25D366]/20 transition-transform active:scale-95 hover:shadow-md" title="WhatsApp">
+                              <a suppressHydrationWarning href={`tel:${order.buyer_phone}`} onClick={e => e.stopPropagation()} className="font-mono text-xs text-gray-500 hover:text-[#0F7A60] font-bold flex items-center gap-1.5 bg-gray-100 hover:bg-emerald-50 px-2 py-1 rounded-md transition-colors"><PhoneIcon size={12}/>{order.buyer_phone}</a>
+                              <a suppressHydrationWarning href={waLink} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="inline-flex items-center gap-1.5 text-white bg-gradient-to-r from-[#25D366] to-[#1EBE5C] px-2.5 py-1 font-bold text-xs rounded-md shadow-sm shadow-[#25D366]/20 transition-transform active:scale-95 hover:shadow-md" title="WhatsApp">
                                 <WhatsAppIcon className="w-3.5 h-3.5" /> WhatsApp
                               </a>
                             </div>
@@ -463,19 +463,19 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
                           <div className="flex items-center gap-3">
                             <div className="relative w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden hidden sm:flex items-center justify-center shrink-0">
                               {order.product?.images?.[0] ? (
-                                <Image src={order.product.images[0]} alt={order.product?.name || "Image produit"} fill className="object-cover" unoptimized />
+                                <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={order.product.images[0]} alt={order.product?.name || "Image produit"} fill className="object-cover" unoptimized />
                               ) : (
-                                <span className="text-gray-300 text-[10px]">📦</span>
+                                <span className="text-gray-300 text-xs">📦</span>
                               )}
                             </div>
                             <div className="flex flex-col gap-1 min-w-[120px]">
                               <span className="font-black text-[#0F7A60] text-sm">{order.total.toLocaleString('fr-FR')} F</span>
-                              <span className="text-[11px] font-bold text-gray-500 truncate max-w-[160px]" title={order.product?.name ?? ''}>{order.product?.name ?? '—'}</span>
+                              <span className="text-xs font-bold text-gray-500 truncate max-w-[160px]" title={order.product?.name ?? ''}>{order.product?.name ?? '—'}</span>
                             </div>
                           </div>
                         </td>
                         <td className="px-5 py-4">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest ${statusConfig.color} shadow-sm border border-black/5`}>
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-black uppercase tracking-widest ${statusConfig.color} shadow-sm border border-black/5`}>
                             {statusConfig.label}
                           </span>
                         </td>
@@ -560,7 +560,7 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
                           <p className="text-xs text-dust mb-3">{order.product?.name ?? '—'}</p>
                           <div className="flex items-center justify-between mt-3 pt-3 border-t border-line/50">
                             <span className="font-black text-emerald text-sm">{order.total.toLocaleString('fr-FR')} F</span>
-                            <span className="text-[10px] uppercase font-bold text-dust">
+                            <span className="text-xs uppercase font-bold text-dust">
                               {new Date(order.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                             </span>
                           </div>

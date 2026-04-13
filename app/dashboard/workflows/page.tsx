@@ -22,7 +22,7 @@ export default async function WorkflowsPage() {
   if (!store) redirect('/dashboard')
 
   // Récupération des formulaires
-  const workflows = await prisma.workflow.findMany({
+  const workflows = await prisma.workflow.findMany({ take: 50, 
     where: { store_id: store.id },
     orderBy: { created_at: 'desc' },
   }).catch(() => []) // Catch au cas où la migration Prisma n'est pas encore générée proprement.
@@ -39,7 +39,7 @@ export default async function WorkflowsPage() {
     lastRun: w.last_run ? new Date(w.last_run).toLocaleDateString() : 'Jamais'
   }))
 
-  const globalWorkflowsRaw = await prisma.workflow.findMany({
+  const globalWorkflowsRaw = await prisma.workflow.findMany({ take: 50, 
     where: { store_id: null, user_id: null },
     orderBy: { created_at: 'desc' }
   }).catch(() => [])
@@ -56,7 +56,7 @@ export default async function WorkflowsPage() {
     price: w.price
   }))
 
-  const assetPurchases = await prisma.assetPurchase.findMany({
+  const assetPurchases = await prisma.assetPurchase.findMany({ take: 50, 
     where: { store_id: store.id, asset_type: 'WORKFLOW' },
     select: { asset_id: true }
   }).catch(() => [])

@@ -194,11 +194,11 @@ export default function AdminAuditTable({ logs, count, totalPages, currentPage, 
         <table className="w-full text-left whitespace-nowrap min-w-[900px]">
           <thead>
             <tr className="bg-[#FAFAF7] border-b border-gray-100">
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Date / Heure</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Action</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Auteur (Admin)</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Motif Justificatif</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Cible</th>
+              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Date / Heure</th>
+              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Action</th>
+              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Auteur (Admin)</th>
+              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Motif Justificatif</th>
+              <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-gray-400">Cible</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50 text-sm">
@@ -229,14 +229,14 @@ export default function AdminAuditTable({ logs, count, totalPages, currentPage, 
                     <td className="px-6 py-4">
                       <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 ${config.bg} ${config.color} rounded-lg border border-current/[0.1]`}>
                         <Icon className="w-3.5 h-3.5" />
-                        <span className="text-[10px] uppercase font-black tracking-wider">{config.label}</span>
+                        <span className="text-xs uppercase font-black tracking-wider">{config.label}</span>
                       </div>
                     </td>
 
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="font-bold text-gray-900 group-hover:text-emerald-700 transition-colors">{log.admin.email}</span>
-                        <span className="text-[10px] uppercase font-bold text-gray-400">{log.admin.role}</span>
+                        <span className="text-xs uppercase font-bold text-gray-400">{log.admin.role}</span>
                       </div>
                     </td>
 

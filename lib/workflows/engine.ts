@@ -11,7 +11,7 @@ export async function executeWorkflows(
 ) {
   try {
     // 1. Récupérer les workflows actifs correspondants
-    const activeWorkflows = await prisma.workflow.findMany({
+    const activeWorkflows = await prisma.workflow.findMany({ take: 50, 
       where: {
         store_id: storeId,
         status: 'active',

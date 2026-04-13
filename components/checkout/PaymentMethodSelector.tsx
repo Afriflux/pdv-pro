@@ -1,26 +1,28 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2, Smartphone, CreditCard, CheckCircle2 } from 'lucide-react'
+import { Loader2, CheckCircle2, Shield } from 'lucide-react'
 import { toast } from '@/lib/toast'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type PaymentMethod = 'wave' | 'orange_money' | 'card_cinetpay' | 'card_paytech' | 'bictorys' | 'kkiapay'
+interface AvailableMethod {
+  id: string
+  label: string
+  subtitle: string
+  color: string
+  icon: string
+}
 
 interface PaymentMethodSelectorProps {
   amount: number
   orderId: string
   onSuccess: (checkoutUrl: string) => void
-  clientProfile?: any
-}
-
-// ─── Helpers frais ─────────────────────────────────────────────────────────────
-
-function computeFees(amount: number, method: PaymentMethod): number {
-  return method === 'wave' || method === 'orange_money'
-    ? Math.round(amount * 0.01)
-    : Math.round(amount * 0.03)
+  clientProfile?: {
+    client_payment_method?: string | null
+    client_payment_number?: string | null
+    [key: string]: unknown
+  } | null
 }
 
 // ─── Composant ────────────────────────────────────────────────────────────────
@@ -31,37 +33,46 @@ export default function PaymentMethodSelector({
   onSuccess,
   clientProfile,
 }: PaymentMethodSelectorProps) {
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod | null>(() => {
-    if (clientProfile?.client_payment_method) {
-      if (['wave', 'orange_money', 'card_cinetpay', 'card_paytech', 'bictorys', 'kkiapay'].includes(clientProfile.client_payment_method)) {
-        return clientProfile.client_payment_method as PaymentMethod
-      }
-    }
-    return null
-  })
+  const [methods, setMethods] = useState<AvailableMethod[]>([])
+  const [loadingMethods, setLoadingMethods] = useState(true)
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null)
   const [customerPhone, setCustomerPhone] = useState(clientProfile?.client_payment_number || '')
   const [loading, setLoading] = useState(false)
-  const [displayFees, setDisplayFees] = useState(0)
+  const [payingLabel, setPayingLabel] = useState('')
 
-  // Recalculer les frais en temps réel quand la méthode change
+  // Fetch available methods from the API (reads IntegrationKey)
   useEffect(() => {
-    if (!selectedMethod) {
-      setDisplayFees(0)
-      return
-    }
-    setDisplayFees(computeFees(amount, selectedMethod))
-  }, [selectedMethod, amount])
+    const fetchMethods = async () => {
+      try {
+        const res = await fetch('/api/payments/available')
+        const data = await res.json() as { methods: AvailableMethod[] }
+        setMethods(data.methods || [])
 
-  const isMobileMoney =
-    selectedMethod === 'wave' || selectedMethod === 'orange_money'
+        // Auto-select if client had a previous preference
+        if (clientProfile?.client_payment_method) {
+          const match = data.methods?.find((m: AvailableMethod) => m.id === clientProfile.client_payment_method)
+          if (match) setSelectedMethod(match.id)
+        }
+      } catch {
+        toast.error('Impossible de charger les moyens de paiement.')
+      } finally {
+        setLoadingMethods(false)
+      }
+    }
+    fetchMethods()
+  }, [clientProfile?.client_payment_method])
+
+  const needsPhone = selectedMethod === 'wave'
 
   const canSubmit =
     selectedMethod !== null &&
-    (!isMobileMoney || customerPhone.trim().length >= 8)
+    (!needsPhone || customerPhone.trim().length >= 8)
 
   const handlePay = async () => {
     if (!selectedMethod) return
     setLoading(true)
+    const method = methods.find(m => m.id === selectedMethod)
+    setPayingLabel(method?.label || '')
 
     try {
       const res = await fetch('/api/payments/initiate', {
@@ -70,7 +81,7 @@ export default function PaymentMethodSelector({
         body: JSON.stringify({
           orderId,
           method: selectedMethod,
-          customerPhone: isMobileMoney ? customerPhone.trim() : undefined,
+          customerPhone: needsPhone ? customerPhone.trim() : undefined,
         }),
       })
 
@@ -91,192 +102,153 @@ export default function PaymentMethodSelector({
       toast.error(message)
     } finally {
       setLoading(false)
+      setPayingLabel('')
     }
   }
 
-  // ── Bouton méthode générique ─────────────────────────────────────────────────
-  const MethodButton = ({
-    id,
-    label,
-    emoji,
-    subtitle,
-  }: {
-    id: PaymentMethod
-    label: string
-    emoji: string
-    subtitle?: string
-  }) => {
-    const isSelected = selectedMethod === id
+  // ── Loading skeleton ──
+  if (loadingMethods) {
     return (
-      <button
-        type="button"
-        onClick={() => setSelectedMethod(id)}
-        className={`flex-1 flex flex-col items-center gap-1.5 py-4 px-3 rounded-2xl border-2 transition-all duration-150 ${
-          isSelected
-            ? 'border-[#0F7A60] bg-[#0F7A60]/5 shadow-sm'
-            : 'border-gray-100 bg-white hover:border-gray-200'
-        }`}
-      >
-        <span className="text-2xl">{emoji}</span>
-        <span
-          className={`text-xs font-black uppercase tracking-wide ${
-            isSelected ? 'text-[#0F7A60]' : 'text-gray-600'
-          }`}
-        >
-          {label}
-        </span>
-        {subtitle && (
-          <span className="text-[10px] text-gray-400 font-medium">{subtitle}</span>
-        )}
-        {isSelected && (
-          <CheckCircle2 className="w-4 h-4 text-[#0F7A60] mt-0.5" />
-        )}
-      </button>
+      <div className="space-y-3 animate-pulse">
+        <div className="h-16 bg-gray-100 rounded-2xl" />
+        <div className="h-16 bg-gray-100 rounded-2xl" />
+        <div className="h-12 bg-gray-100 rounded-2xl" />
+      </div>
+    )
+  }
+
+  // ── No methods available ──
+  if (methods.length === 0) {
+    return (
+      <div role="alert" className="bg-red-50 border border-red-100 rounded-2xl p-5 text-center">
+        <p className="text-sm font-bold text-red-800 mb-1">Paiement indisponible</p>
+        <p className="text-xs text-red-600">
+          Aucun processeur de paiement n&apos;est configuré pour le moment. Contactez le support.
+        </p>
+      </div>
+    )
+  }
+
+  // ── Redirect loading state ──
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 gap-4 animate-[fade-in_0.3s_ease-out]">
+        <div className="w-14 h-14 rounded-full bg-[#0F7A60]/10 flex items-center justify-center">
+          <Loader2 className="w-7 h-7 text-[#0F7A60] animate-spin" />
+        </div>
+        <p className="text-sm font-bold text-gray-700">
+          Redirection vers {payingLabel}…
+        </p>
+        <p className="text-xs text-gray-400">Ne fermez pas cette page.</p>
+      </div>
     )
   }
 
   return (
-    <div className="space-y-4">
-      {/* ── Section Mobile Money ── */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 bg-[#0F7A60]/5 border-b border-[#0F7A60]/10">
-          <div className="flex items-center gap-2">
-            <Smartphone className="w-4 h-4 text-[#0F7A60]" />
-            <span className="text-sm font-black text-gray-800">Mobile Money</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black uppercase tracking-wider text-[#0F7A60] bg-[#0F7A60]/10 px-2 py-0.5 rounded-full">
-              Recommandé
-            </span>
-            <span className="text-[10px] font-bold text-gray-400">Frais : 1%</span>
-          </div>
-        </div>
-
-        {/* Boutons Wave + Orange */}
-        <div className="flex gap-3 p-3">
-          <MethodButton id="wave" label="Wave" emoji="🌊" subtitle="Wave Sénégal" />
-          <MethodButton
-            id="orange_money"
-            label="Orange Money"
-            emoji="🟠"
-            subtitle="Orange Money"
-          />
-        </div>
-
-        {/* Champ téléphone (visible si méthode mobile) */}
-        {isMobileMoney && (
-          <div className="px-3 pb-3">
-            <label className="block text-[10px] font-black uppercase text-gray-400 mb-1.5 ml-1">
-              {selectedMethod === 'wave'
-                ? 'Numéro Wave'
-                : 'Numéro Orange Money'}
-            </label>
-            <input
-              type="tel"
-              value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
-              placeholder="Ex: 77 123 45 67"
-              className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 px-4 text-sm font-bold focus:border-[#0F7A60] focus:bg-white outline-none transition-all placeholder:text-gray-300"
-              autoFocus
-            />
-          </div>
-        )}
+    <div className="space-y-3">
+      {/* ── Amount display ── */}
+      <div className="text-center pb-1">
+        <p className="text-xs text-gray-400 font-medium">Vous payez</p>
+        <p className="text-2xl font-black text-gray-900 tracking-tight">
+          {amount.toLocaleString('fr-FR')} <span className="text-base font-bold text-gray-500">FCFA</span>
+        </p>
       </div>
 
-      {/* ── Section Carte Bancaire ── */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
-          <div className="flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-gray-500" />
-            <span className="text-sm font-black text-gray-800">Cartes & Panafricains</span>
-          </div>
-          <span className="text-[10px] font-bold text-gray-400">Frais : 3%</span>
-        </div>
+      {/* ── Method buttons ── */}
+      <div className="space-y-2.5">
+        {methods.map((method, index) => {
+          const isSelected = selectedMethod === method.id
+          const isFirst = index === 0
 
-        {/* Boutons Agrégateurs */}
-        <div className="grid grid-cols-2 gap-3 p-3">
-          <MethodButton
-            id="card_cinetpay"
-            label="CinetPay"
-            emoji="💳"
-            subtitle="Visa / Mastercard"
-          />
-          <MethodButton
-            id="card_paytech"
-            label="PayTech"
-            emoji="🏦"
-            subtitle="Mobile + Carte"
-          />
-          <MethodButton
-            id="bictorys"
-            label="Bictorys"
-            emoji="🌍"
-            subtitle="Afrique & Cartes"
-          />
-          <MethodButton
-            id="kkiapay"
-            label="KKiaPay"
-            emoji="🚀"
-            subtitle="Cartes & Mobile"
-          />
-        </div>
+          return (
+            <button
+              key={method.id}
+              type="button"
+              role="radio"
+              aria-checked={isSelected}
+              onClick={() => setSelectedMethod(method.id)}
+              className={`w-full flex items-center gap-3.5 p-4 rounded-2xl border-2 transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#0F7A60] focus-visible:ring-offset-2 outline-none ${
+                isSelected
+                  ? 'border-[#0F7A60] bg-[#0F7A60]/5 shadow-md'
+                  : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
+              }`}
+            >
+              {/* Icon */}
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-gray-50"
+              >
+                {method.icon.startsWith('/') ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={method.icon} alt={method.label} className="w-6 h-6 object-contain" />
+                ) : (
+                  <span className="text-xl">{method.icon}</span>
+                )}
+              </div>
+
+              {/* Label */}
+              <div className="flex-1 text-left">
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm font-black ${isSelected ? 'text-[#0F7A60]' : 'text-gray-900'}`}>
+                    {method.label}
+                  </span>
+                  {isFirst && (
+                    <span className="text-xs font-black uppercase tracking-wider text-[#0F7A60] bg-[#0F7A60]/10 px-1.5 py-0.5 rounded-md">
+                      Recommandé
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-400 font-medium mt-0.5">{method.subtitle}</p>
+              </div>
+
+              {/* Check */}
+              {isSelected ? (
+                <CheckCircle2 className="w-5 h-5 text-[#0F7A60] shrink-0" />
+              ) : (
+                <div className="w-5 h-5 rounded-full border-2 border-gray-200 shrink-0" />
+              )}
+            </button>
+          )
+        })}
       </div>
 
-      {/* ── Récapitulatif frais ── */}
-      {selectedMethod && (
-        <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 space-y-2 text-sm">
-          <div className="flex justify-between text-gray-500">
-            <span>Montant commande</span>
-            <span className="font-bold text-gray-700">
-              {amount.toLocaleString('fr-FR')} FCFA
-            </span>
-          </div>
-          <div className="flex justify-between text-gray-500">
-            <span>
-              Frais passerelle (
-              {isMobileMoney ? '1%' : '3%'})
-            </span>
-            <span className="font-bold text-gray-700">
-              {displayFees.toLocaleString('fr-FR')} FCFA
-            </span>
-          </div>
-          <div className="border-t border-gray-200 pt-2 flex justify-between font-black text-gray-900">
-            <span>Vous payez</span>
-            <span className="text-[#0F7A60]">
-              {amount.toLocaleString('fr-FR')} FCFA
-            </span>
-          </div>
-          <p className="text-[10px] text-gray-400 text-center font-medium pt-1">
-            Les frais passerelle sont à la charge du vendeur.
-          </p>
+      {/* ── Phone input for Wave ── */}
+      {needsPhone && (
+        <div className="animate-[fade-slice-down_0.2s_ease-out]">
+          <label className="block text-xs font-black uppercase text-gray-400 mb-1.5 ml-1 tracking-wider">
+            Numéro Wave
+          </label>
+          <input
+            type="tel"
+            value={customerPhone}
+            onChange={(e) => setCustomerPhone(e.target.value)}
+            placeholder="Ex: 77 123 45 67"
+            className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 px-4 text-sm font-bold focus:border-[#0F7A60] focus:bg-white outline-none transition-all placeholder:text-gray-300"
+            autoFocus
+          />
         </div>
       )}
 
-      {/* ── Bouton Payer ── */}
+      {/* ── Pay button ── */}
       <button
         type="button"
         onClick={handlePay}
-        disabled={!canSubmit || loading}
-        className={`w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl transition-all active:scale-[0.98] ${
-          !canSubmit || loading
-            ? 'bg-gray-300 shadow-none cursor-not-allowed'
-            : 'bg-[#0F7A60] hover:bg-[#0D5C4A] shadow-[#0F7A60]/20'
+        disabled={!canSubmit}
+        className={`w-full py-4 rounded-2xl text-white font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${
+          !canSubmit
+            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            : 'bg-[#0F7A60] hover:bg-[#0D5C4A] shadow-lg shadow-[#0F7A60]/20'
         }`}
       >
-        {loading ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
-        ) : (
-          `Payer ${amount.toLocaleString('fr-FR')} FCFA`
-        )}
+        Payer {amount.toLocaleString('fr-FR')} FCFA
       </button>
 
-      {!selectedMethod && (
-        <p className="text-[10px] text-center text-gray-400 font-medium uppercase tracking-wider">
-          Sélectionnez un moyen de paiement pour continuer.
+      {/* ── Security badge ── */}
+      <div className="flex items-center justify-center gap-1.5 pt-1">
+        <Shield className="w-3 h-3 text-gray-300" />
+        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">
+          Paiement sécurisé
         </p>
-      )}
+      </div>
     </div>
   )
 }

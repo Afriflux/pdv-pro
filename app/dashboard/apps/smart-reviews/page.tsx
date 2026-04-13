@@ -27,7 +27,7 @@ export default async function SmartReviewsPage() {
 
   if (!store) redirect('/dashboard')
 
-  const reviews = await prisma.review.findMany({
+  const reviews = await prisma.review.findMany({ take: 50, 
     where: { store_id: store.id },
     orderBy: { created_at: 'desc' }
   })

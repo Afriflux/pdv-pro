@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { sendWhatsApp, msgOrderShipped, msgOrderDelivered, msgOrderCancelled } from '@/lib/whatsapp/sendWhatsApp'
+import { executeWorkflows } from '@/lib/workflows/execution'
 
 const VALID_STATUSES = [
   'pending', 'confirmed', 'processing', 'preparing',
@@ -78,6 +79,21 @@ export async function bulkUpdateOrdersStatus(
             .catch(e => console.error('[Ambassadeur Hook COD]', e))
         }
       }
+
+      // Trigger "Commande Livrée" workflow for each delivered order
+      if (previousOrders) {
+        for (const old of previousOrders) {
+          if (old.status !== 'delivered') {
+            executeWorkflows(storeId, 'Commande Livrée', {
+              order_id: old.id,
+              client_name: old.buyer_name as string,
+              client_phone: old.buyer_phone as string,
+              product_name: (old.Product as { name?: string } | null)?.name || 'Produit',
+              store_name: store.name,
+            }).catch(e => console.error('[Workflow Commande Livrée]', e))
+          }
+        }
+      }
     }
 
     // 3. Sync Wallet balances (incremental) & Notifications
@@ -103,7 +119,7 @@ export async function bulkUpdateOrdersStatus(
          // 4. Notifications WhatsApp pour Mises à Jour Statut
          const buyerPhone = old.buyer_phone as string;
          const buyerName = old.buyer_name as string;
-         const productName = (old.Product as any)?.name as string || 'votre commande';
+         const productName = (old.Product as { name?: string } | null)?.name || 'votre commande';
          const vendorName = store.name || 'Notre boutique';
          
          if (buyerPhone && old.status !== status) {

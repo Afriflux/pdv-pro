@@ -58,25 +58,24 @@ export default function InstallPWA() {
         onClick={onClick}
         className="group relative flex items-center gap-3 bg-white/70 backdrop-blur-xl border border-white/50 shadow-2xl p-3 pr-5 rounded-full hover:scale-105 active:scale-95 transition-all duration-300"
       >
-        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald text-white shadow-emerald/30 shadow-lg group-hover:rotate-12 transition-transform">
-          <Plus size={20} strokeWidth={3} />
+        <div className="flex items-center justify-center w-11 h-11 rounded-full bg-emerald text-white shadow-emerald/30 shadow-lg group-hover:rotate-12 transition-transform shrink-0">
+          <Plus size={22} strokeWidth={3} />
         </div>
         <div className="text-left">
           <p className="text-xs font-black text-gray-800 uppercase tracking-widest leading-none">Installer</p>
-          <p className="text-[10px] font-bold text-gray-500 mt-0.5">Application Rapide</p>
+          <p className="text-xs font-bold text-gray-500 mt-0.5">Application Rapide</p>
         </div>
         
         {/* Glow effect */}
         <div className="absolute inset-0 bg-emerald/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
       </button>
 
-      {/* Bouton pour fermer/jeter le prompt */}
       <button 
         onClick={dismiss}
-        className="w-8 h-8 rounded-full bg-white/70 backdrop-blur-md border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-white flex items-center justify-center transition shadow-lg shrink-0"
+        className="w-11 h-11 rounded-full bg-white/70 backdrop-blur-md border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-white flex items-center justify-center transition shadow-lg shrink-0"
         aria-label="Fermer"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
   )

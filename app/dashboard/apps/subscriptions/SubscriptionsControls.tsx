@@ -89,14 +89,14 @@ export default function SubscriptionsControls({ subscriptions }: Props) {
             </div>
          </div>
          <div className="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm flex flex-col justify-center">
-            <p className="text-[11px] uppercase font-black text-gray-400 tracking-wider">Abonnés Actifs</p>
+            <p className="text-xs uppercase font-black text-gray-400 tracking-wider">Abonnés Actifs</p>
             <h3 className="text-4xl font-black text-gray-900 mt-2 leading-none">{subscriptions.length}</h3>
             <div className="mt-auto pt-4 flex items-center gap-1.5 text-xs font-bold text-gray-500">
               <Users size={14} /> Total clients
             </div>
          </div>
          <div className="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm flex flex-col justify-center">
-            <p className="text-[11px] uppercase font-black text-rose-400 tracking-wider">En Retard</p>
+            <p className="text-xs uppercase font-black text-rose-400 tracking-wider">En Retard</p>
             <h3 className="text-4xl font-black text-rose-600 mt-2 leading-none">{overdueBilling.length}</h3>
             <div className="mt-auto pt-4 flex items-center gap-1.5 text-xs font-bold text-gray-500">
               <Calendar size={14} /> Paiements échus
@@ -146,14 +146,14 @@ export default function SubscriptionsControls({ subscriptions }: Props) {
                      <tr key={s.id} className="hover:bg-gray-50 transition-colors">
                        <td className="px-6 py-4">
                           <div className="font-bold text-gray-900">{s.buyer_name}</div>
-                          <div className="text-[11px] text-gray-500 font-medium mt-0.5">{s.buyer_phone}</div>
-                          <Link href={`/dashboard/orders/${s.id}`} className="text-[10px] text-blue-500 font-black flex items-center gap-1 mt-1 hover:underline">
+                          <div className="text-xs text-gray-500 font-medium mt-0.5">{s.buyer_phone}</div>
+                          <Link href={`/dashboard/orders/${s.id}`} className="text-xs text-blue-500 font-black flex items-center gap-1 mt-1 hover:underline">
                             Voir commande originelle <ExternalLink size={10} />
                           </Link>
                        </td>
                        <td className="px-6 py-4">
                           <div className="font-bold text-gray-800">{s.product.name}</div>
-                          <div className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded uppercase font-black tracking-widest inline-block mt-1">
+                          <div className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded uppercase font-black tracking-widest inline-block mt-1">
                             Cycle : {s.product.recurring_interval || 'Mois'}
                           </div>
                        </td>

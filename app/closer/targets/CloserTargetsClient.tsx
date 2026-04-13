@@ -140,7 +140,7 @@ export default function CloserTargetsClient({ stores: initialStores }: CloserTar
                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-700 rounded-xl text-xs font-black border border-emerald-100/50 shadow-sm group-hover:shadow-md transition-all">
                               <TrendingUp size={14} /> {(store.closer_margin! * 100).toFixed(0)}%
                            </div>
-                           <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mt-1.5">Comm. Globale</p>
+                           <p className="text-xs uppercase font-black text-gray-400 tracking-widest mt-1.5">Comm. Globale</p>
                          </div>
                        </div>
                        
@@ -152,14 +152,14 @@ export default function CloserTargetsClient({ stores: initialStores }: CloserTar
                          <div className="bg-[#FAFAF7] group-hover:bg-emerald-50/50 transition-colors p-4 rounded-[1.5rem] border border-gray-100/80 group-hover:border-emerald-100/50">
                            <div className="flex items-center gap-1.5 text-gray-500 mb-2">
                              <Inbox size={14} className="text-emerald-500" />
-                             <span className="text-[10px] font-black uppercase tracking-wider">Leads Frais</span>
+                             <span className="text-xs font-black uppercase tracking-wider">Leads Frais</span>
                            </div>
                            <p className="text-3xl font-black text-gray-900">{store.newLeadsCount}</p>
                          </div>
                          <div className="bg-[#FAFAF7] group-hover:bg-emerald-50/50 transition-colors p-4 rounded-[1.5rem] border border-gray-100/80 group-hover:border-emerald-100/50">
                            <div className="flex items-center gap-1.5 text-gray-500 mb-2">
                              <Store size={14} className="text-[#0F7A60]" />
-                             <span className="text-[10px] font-black uppercase tracking-wider">Produits Actifs</span>
+                             <span className="text-xs font-black uppercase tracking-wider">Produits Actifs</span>
                            </div>
                            <p className="text-3xl font-black text-gray-900">{store._count.products}</p>
                          </div>

@@ -19,7 +19,7 @@ export default async function ClosersPage() {
   if (!store) redirect('/dashboard')
 
   // 2. Récupérer les produits pour les exceptions
-  const products = await prisma.product.findMany({
+  const products = await prisma.product.findMany({ take: 50, 
     where: { store_id: store.id },
     select: { id: true, name: true, closer_active: true, closer_margin: true }
   })
@@ -65,7 +65,7 @@ export default async function ClosersPage() {
   // Tenter de récupérer les vrais noms si la table User existe
   const closerIds = Object.keys(performanceMap)
   if (closerIds.length > 0) {
-    const users = await prisma.user.findMany({
+    const users = await prisma.user.findMany({ take: 50, 
       where: { id: { in: closerIds } },
       select: { id: true, name: true }
     })

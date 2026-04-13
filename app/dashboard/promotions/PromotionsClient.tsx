@@ -261,7 +261,7 @@ export default function PromotionsClient({
                <TrendingUp size={24} />
             </div>
             <div>
-               <p className="text-[11px] font-black uppercase text-gray-400 tracking-widest mb-1">Impact Total (Revenus)</p>
+               <p className="text-xs font-black uppercase text-gray-400 tracking-widest mb-1">Impact Total (Revenus)</p>
                <p className="text-3xl font-black text-[#1A1A1A]">{totalRevenue.toLocaleString('fr-FR')} F</p>
             </div>
          </div>
@@ -270,7 +270,7 @@ export default function PromotionsClient({
                <Activity size={24} />
             </div>
             <div>
-               <p className="text-[11px] font-black uppercase text-gray-400 tracking-widest mb-1">Campagnes Actives</p>
+               <p className="text-xs font-black uppercase text-gray-400 tracking-widest mb-1">Campagnes Actives</p>
                <p className="text-3xl font-black text-[#1A1A1A]">{activeCount}</p>
             </div>
          </div>
@@ -279,7 +279,7 @@ export default function PromotionsClient({
                <Zap size={24} />
             </div>
             <div>
-               <p className="text-[11px] font-black uppercase text-gray-400 tracking-widest mb-1">Taux de Conv. Global</p>
+               <p className="text-xs font-black uppercase text-gray-400 tracking-widest mb-1">Taux de Conv. Global</p>
                <p className="text-3xl font-black text-white">+18.4%</p>
             </div>
          </div>
@@ -368,7 +368,7 @@ export default function PromotionsClient({
                           <div className="flex justify-between items-start mb-6">
                             <div className={`px-3 py-1.5 rounded-xl flex items-center gap-1.5 ${active ? (isBundle ? 'bg-purple-500/10 text-purple-600' : 'bg-gold/10 text-gold') : 'bg-gray-200 text-gray-500'}`}>
                               {isBundle ? <ShoppingBag size={14} fill={active ? "currentColor" : "none"} /> : <Zap size={14} fill={active ? "currentColor" : "none"} />}
-                              <span className="text-[10px] font-black uppercase tracking-wider">
+                              <span className="text-xs font-black uppercase tracking-wider">
                                 {PROMO_LABELS[promo.type] || 'Promotion'}
                               </span>
                             </div>
@@ -390,7 +390,7 @@ export default function PromotionsClient({
 
                           <div className={`rounded-2xl p-4 flex items-center justify-between border shadow-sm mb-4 mt-auto ${isBundle ? 'bg-purple-50 border-purple-100/50' : 'bg-white border-gray-100/50'}`}>
                              <div>
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Offre</p>
+                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Offre</p>
                                 <p className="text-xl font-black text-[#1A1A1A]">
                                   {isBundle ? (
                                     bConfig?.rewardType === 'free_item' 
@@ -402,7 +402,7 @@ export default function PromotionsClient({
                                 </p>
                              </div>
                              <div className="text-right">
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Revenus</p>
+                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Revenus</p>
                                 <p className="text-xl font-black text-emerald">+{promo.revenue_generated.toLocaleString('fr-FR')}</p>
                              </div>
                           </div>
@@ -475,7 +475,7 @@ export default function PromotionsClient({
                     {/* Ticket Header */}
                     <div className="p-6 border-b border-dashed border-gray-200 bg-[#FAFAF7] rounded-t-[24px]">
                        <div className="flex justify-between items-start mb-4">
-                         <div className="bg-emerald/10 text-emerald px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                         <div className="bg-emerald/10 text-emerald px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest">
                            Coupon
                          </div>
                          <div className="flex items-center gap-2 bg-white rounded-lg p-1 border border-gray-200/50 shadow-sm">
@@ -515,7 +515,7 @@ export default function PromotionsClient({
                             <Tag size={14} className="text-gray-500" />
                          </div>
                          <div className="flex-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase">Cible</p>
+                            <p className="text-xs font-bold text-gray-400 uppercase">Cible</p>
                             <p className="text-sm font-medium text-ink truncate">
                                {(promo.product_ids && promo.product_ids.length > 0) ? products.find(p=>p.id===promo.product_ids[0])?.name || `${promo.product_ids.length} produits` : 'Toute la boutique'}
                             </p>
@@ -528,7 +528,7 @@ export default function PromotionsClient({
                               <Users size={14} className="text-emerald" />
                            </div>
                            <div className="flex-1">
-                              <p className="text-[10px] font-bold text-gray-400 uppercase">Ambassadeur Assigné</p>
+                              <p className="text-xs font-bold text-gray-400 uppercase">Ambassadeur Assigné</p>
                               <p className="text-sm font-black text-emerald truncate">
                                  {affiliates.find(a => a.id === promo.affiliate_id)?.user?.name || affiliates.find(a => a.id === promo.affiliate_id)?.code || promo.affiliate_id}
                               </p>
@@ -541,7 +541,7 @@ export default function PromotionsClient({
                             <ShoppingBag size={14} className="text-gray-500" />
                          </div>
                          <div className="flex-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase">Utilisations</p>
+                            <p className="text-xs font-bold text-gray-400 uppercase">Utilisations</p>
                             <p className="text-sm font-medium text-ink">
                                <strong className="text-ink">{promo.uses}</strong> / {promo.max_uses || 'Illimité'}
                             </p>
@@ -553,7 +553,7 @@ export default function PromotionsClient({
                             <Calendar size={14} className="text-gray-500" />
                          </div>
                          <div className="flex-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase">Validité</p>
+                            <p className="text-xs font-bold text-gray-400 uppercase">Validité</p>
                             <p className={`text-sm font-medium ${expired ? 'text-red-500' : 'text-ink'}`}>
                                {promo.expires_at ? `Jusqu'au ${new Date(promo.expires_at).toLocaleDateString('fr-FR')}` : 'À vie'}
                             </p>
@@ -654,7 +654,7 @@ export default function PromotionsClient({
                        </div>
                        
                        <div className="space-y-2">
-                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Seuil à atteindre (FCFA)</label>
+                         <label className="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Seuil à atteindre (FCFA)</label>
                          <div className="relative">
                            <input 
                              type="number" min={0}
@@ -664,7 +664,7 @@ export default function PromotionsClient({
                            />
                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-black">FCFA</div>
                          </div>
-                         <p className="text-[10px] text-gray-400 italic">Mettez 0 pour désactiver la jauge sur le checkout.</p>
+                         <p className="text-xs text-gray-400 italic">Mettez 0 pour désactiver la jauge sur le checkout.</p>
                        </div>
                     </div>
 
@@ -693,7 +693,7 @@ export default function PromotionsClient({
                        
                        {bGamificationActive && (
                          <div className="bg-pink-50/50 border border-pink-100 p-4 rounded-xl space-y-3">
-                           <label className="block text-[10px] font-black text-pink-700 uppercase tracking-widest pl-1">Sélectionnez le code à faire gagner</label>
+                           <label className="block text-xs font-black text-pink-700 uppercase tracking-widest pl-1">Sélectionnez le code à faire gagner</label>
                            <select 
                              value={bGamificationPrize} onChange={e => setBGamificationPrize(e.target.value)}
                              title="Sélectionner le code à faire gagner"
@@ -704,7 +704,7 @@ export default function PromotionsClient({
                                <option key={c.id} value={c.code}>{c.code} (-{c.type === 'percentage' ? c.value + '%' : c.value + 'F'})</option>
                              ))}
                            </select>
-                           <p className="text-[10px] text-pink-500 font-medium">Les visiteurs de la boutique pourront gagner ce code en faisant tourner la roue après avoir laissé leur numéro WhatsApp.</p>
+                           <p className="text-xs text-pink-500 font-medium">Les visiteurs de la boutique pourront gagner ce code en faisant tourner la roue après avoir laissé leur numéro WhatsApp.</p>
                          </div>
                        )}
                     </div>
@@ -718,7 +718,7 @@ export default function PromotionsClient({
                          {/* Le Bandeau Preview */}
                          {bandeauActive ? (
                            <div 
-                             className="w-full py-2.5 px-4 text-center text-white text-[10px] font-black tracking-wider shadow-sm transition-colors duration-300"
+                             className="w-full py-2.5 px-4 text-center text-white text-xs font-black tracking-wider shadow-sm transition-colors duration-300"
                              ref={el => { if (el) el.style.backgroundColor = bandeauColor; }}
                            >
                               {bandeauText || "Votre message d'annonce sera ici"}
@@ -737,7 +737,7 @@ export default function PromotionsClient({
                             {bFreeShipping > 0 && (
                                <div className="w-full mb-6 mt-2 p-3 bg-orange-50 rounded-xl border border-orange-100">
                                   <div className="flex justify-between items-center mb-2">
-                                     <span className="text-[10px] font-bold text-orange-600">Plus que {(bFreeShipping / 2).toLocaleString()} F pour la livraison gratuite</span>
+                                     <span className="text-xs font-bold text-orange-600">Plus que {(bFreeShipping / 2).toLocaleString()} F pour la livraison gratuite</span>
                                      <Truck size={12} className="text-orange-500" />
                                   </div>
                                   <div className="w-full h-2 bg-orange-200 rounded-full overflow-hidden">
@@ -765,7 +765,7 @@ export default function PromotionsClient({
                             {bGamificationActive && (
                                <div className="mt-8 p-4 border border-pink-200 bg-pink-50 rounded-2xl flex flex-col items-center text-center">
                                   <Gift size={24} className="text-pink-500 mb-2" />
-                                  <p className="text-[10px] font-black text-pink-700 uppercase mb-1">Faites tourner la roue</p>
+                                  <p className="text-xs font-black text-pink-700 uppercase mb-1">Faites tourner la roue</p>
                                   <p className="text-xs text-pink-600/80 mb-3 font-medium">Gagnez potentiellement le code {bGamificationPrize || 'SURPRISE'}.</p>
                                   <div className="bg-pink-500 text-white w-full py-2 rounded-lg text-xs font-bold">Tourner (WhatsApp requis)</div>
                                </div>
@@ -805,7 +805,7 @@ export default function PromotionsClient({
                <form onSubmit={handleSubmitFlash} className="space-y-6">
                  
                  <div className="space-y-3">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Type d'opération marketing</label>
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Type d'opération marketing</label>
                     <div className="grid grid-cols-2 gap-3">
                        <button
                          type="button"
@@ -833,7 +833,7 @@ export default function PromotionsClient({
                  </div>
 
                  <div className="space-y-1.5">
-                   <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Titre Interne de l'Opération</label>
+                   <label className="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1">Titre Interne de l'Opération</label>
                    <input 
                      type="text" required placeholder={fType === 'bundle' ? "Ex: Promo Saint Valentin (1A = 1O)" : "Ex: Black Friday Flash"}
                      value={fTitle} onChange={e => setFTitle(e.target.value)}
@@ -845,7 +845,7 @@ export default function PromotionsClient({
                  {fType === 'flash' && (
                    <div className="grid grid-cols-2 gap-4 bg-yellow-50/50 p-5 rounded-2xl border border-yellow-100">
                      <div className="space-y-1.5">
-                       <label className="block text-[10px] font-black text-yellow-800 uppercase tracking-widest pl-1">Réduction</label>
+                       <label className="block text-xs font-black text-yellow-800 uppercase tracking-widest pl-1">Réduction</label>
                        <select 
                          value={fDiscountType} onChange={e => setFDiscountType(e.target.value as DiscountType)}
                          title="Type de réduction"
@@ -856,7 +856,7 @@ export default function PromotionsClient({
                        </select>
                      </div>
                      <div className="space-y-1.5">
-                       <label className="block text-[10px] font-black text-yellow-800 uppercase tracking-widest pl-1">Valeur</label>
+                       <label className="block text-xs font-black text-yellow-800 uppercase tracking-widest pl-1">Valeur</label>
                        <input 
                          type="number" required min={1}
                          title="Valeur de la réduction" placeholder="Ex: 10"
@@ -874,7 +874,7 @@ export default function PromotionsClient({
                       
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                          <div className="flex-1 space-y-1.5 w-full">
-                           <label className="block text-[10px] font-black text-purple-800 uppercase tracking-widest pl-1">Quantité Achetée</label>
+                           <label className="block text-xs font-black text-purple-800 uppercase tracking-widest pl-1">Quantité Achetée</label>
                            <div className="relative">
                              <input 
                                type="number" required min={1}
@@ -891,7 +891,7 @@ export default function PromotionsClient({
                       
                       <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
                          <div className="flex-[2] space-y-1.5 w-full">
-                           <label className="block text-[10px] font-black text-purple-800 uppercase tracking-widest pl-1">Récompense (Sur le {bBuyQuantity + 1}ème)</label>
+                           <label className="block text-xs font-black text-purple-800 uppercase tracking-widest pl-1">Récompense (Sur le {bBuyQuantity + 1}ème)</label>
                            <select 
                              value={bRewardType} onChange={e => setBRewardType(e.target.value as 'free_item' | 'percentage_off')}
                              title="Type de récompense"
@@ -903,7 +903,7 @@ export default function PromotionsClient({
                          </div>
                          {bRewardType === 'percentage_off' && (
                            <div className="flex-1 space-y-1.5 w-full">
-                             <label className="block text-[10px] font-black text-purple-800 uppercase tracking-widest pl-1">Réduction (%)</label>
+                             <label className="block text-xs font-black text-purple-800 uppercase tracking-widest pl-1">Réduction (%)</label>
                              <input 
                                type="number" required min={1} max={99}
                                title="Réduction (%)" placeholder="Ex: 50"
@@ -921,7 +921,7 @@ export default function PromotionsClient({
                  )}
 
                  <div className="space-y-1.5">
-                   <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">S'applique au catalogue</label>
+                   <label className="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1">S'applique au catalogue</label>
                    <select 
                      value={fProductId} onChange={e => setFProductId(e.target.value)}
                      title="Produit concerné"
@@ -933,7 +933,7 @@ export default function PromotionsClient({
                  </div>
 
                  <div className="space-y-1.5">
-                   <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest pl-1">Durée et Pression (En Heures)</label>
+                   <label className="block text-xs font-black text-gray-500 uppercase tracking-widest pl-1">Durée et Pression (En Heures)</label>
                    <input 
                      type="number" required min={1} max={720}
                      title="Durée de l'opération (Heures)" placeholder="Ex: 24"
@@ -1048,7 +1048,7 @@ export default function PromotionsClient({
                        </option>
                      ))}
                    </select>
-                   <p className="text-[10px] text-gray-400 font-medium pl-1 leading-tight">
+                   <p className="text-xs text-gray-400 font-medium pl-1 leading-tight">
                      Si assigné, toutes les ventes via ce code seront attribuées à cet affilié, même s'il n'y a pas eu de clic sur son lien d'affiliation.
                    </p>
                  </div>

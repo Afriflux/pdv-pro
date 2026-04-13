@@ -39,9 +39,10 @@ export async function POST(req: Request) {
 
     // Construction du contexte global avec TOUTES les Masterclasses
     const [allMasterclasses, learnedKnowledge] = await Promise.all([
-      prisma.masterclassArticle.findMany({
+      prisma.masterclassArticle.findMany({ 
         where: { is_active: true },
-        select: { title: true, intro: true, tips: true }
+        select: { title: true, intro: true, tips: true },
+        take: 50
       }),
       prisma.aIKnowledgeBase.findMany({
         orderBy: { created_at: 'desc' },

@@ -79,7 +79,7 @@ export default function GenerateMasterclassModal({ isOpen, onClose, onSuccess }:
                placeholder="Ex: Rédige un module d'environ 5 étapes sur 'L'art du closing sur WhatsApp'. Sois précis et donne des conseils applicables immédiatement."
                className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-sm focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all resize-none min-h-[140px] shadow-inner"
              />
-             <p className="text-[11px] text-gray-400 font-medium mt-3 italic flex items-center gap-1.5">
+             <p className="text-xs text-gray-400 font-medium mt-3 italic flex items-center gap-1.5">
                <BookOpen className="w-3.5 h-3.5" /> L'IA structurera le cours avec un Titre, un Emoji, une Intro et des Étapes détaillées.
              </p>
           </div>

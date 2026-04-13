@@ -18,7 +18,7 @@ export class CinetPayProvider implements PaymentGatewayProvider {
    * Fetch secure variables from the database (PlatformConfig)
    */
   private async getCreds() {
-    const keys = await prisma.platformConfig.findMany({
+    const keys = await prisma.platformConfig.findMany({ take: 50, 
       where: { key: { in: ['CINETPAY_API_KEY', 'CINETPAY_SITE_ID'] } }
     });
     

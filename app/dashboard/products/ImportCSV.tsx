@@ -184,7 +184,7 @@ export default function ImportCSV() {
               </button>
             </div>
             
-            <p className="text-[10px] text-gray-400 mt-6 font-mono tracking-wide">
+            <p className="text-xs text-gray-400 mt-6 font-mono tracking-wide">
               COLONNES REQUISES : {CSV_HEADERS.join(', ')}
             </p>
             <input

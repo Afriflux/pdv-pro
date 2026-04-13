@@ -105,11 +105,11 @@ export default function EquityClient({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-zinc-50 border-b border-zinc-100">
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Associé(e)</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Date d'intégration</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Parts (% Equity)</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400 text-right">Gains Actuels Calculés</th>
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400 w-10"></th>
+                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">Associé(e)</th>
+                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">Date d'intégration</th>
+                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">Parts (% Equity)</th>
+                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400 text-right">Gains Actuels Calculés</th>
+                <th className="px-6 py-4 text-xs font-black uppercase tracking-widest text-zinc-400 w-10"></th>
               </tr>
             </thead>
             <tbody>
@@ -134,9 +134,9 @@ export default function EquityClient({
                       <div className="flex flex-col">
                         <span className="text-sm font-bold text-gray-700">Depuis le {format(new Date(shareholder.startDate), 'dd MMM yyyy', { locale: fr })}</span>
                         {!shareholder.endDate ? (
-                           <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600">Durée Indéterminée</span>
+                           <span className="text-xs font-black uppercase tracking-wider text-emerald-600">Durée Indéterminée</span>
                         ) : (
-                           <span className="text-[10px] font-black uppercase tracking-wider text-orange-600">
+                           <span className="text-xs font-black uppercase tracking-wider text-orange-600">
                              Jusqu'au {format(new Date(shareholder.endDate), 'dd MMM yyyy', { locale: fr })}
                            </span>
                         )}
@@ -152,13 +152,13 @@ export default function EquityClient({
                         {calculatedGain > 0 ? (
                           <span className="text-lg font-black text-emerald-600 flex items-center gap-2">
                             {calculatedGain.toLocaleString('fr-FR')} CFA
-                            <span className="text-[9px] uppercase tracking-widest text-emerald-600 bg-emerald-50 px-1.5 rounded">À reverser</span>
+                            <span className="text-xs uppercase tracking-widest text-emerald-600 bg-emerald-50 px-1.5 rounded">À reverser</span>
                           </span>
                         ) : (
                           <span className="text-sm font-black text-gray-300">À jour (Total: {totalGain.toLocaleString('fr-FR')} CFA)</span>
                         )}
                         {shareholder.alreadyPaid > 0 && (
-                          <span className="text-[10px] font-bold text-gray-400 border border-gray-100 bg-gray-50 px-2 py-0.5 rounded-md">
+                          <span className="text-xs font-bold text-gray-400 border border-gray-100 bg-gray-50 px-2 py-0.5 rounded-md">
                             Déjà versé : {shareholder.alreadyPaid.toLocaleString('fr-FR')} CFA
                           </span>
                         )}

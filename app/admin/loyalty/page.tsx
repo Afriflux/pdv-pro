@@ -80,7 +80,7 @@ export default async function LoyaltyPage() {
             <div key={kpi.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col">
               <div className="flex items-center gap-2 mb-2">
                 <kpi.icon size={14} className="text-white/40" />
-                <span className="text-white/50 text-[10px] font-black uppercase tracking-widest">{kpi.label}</span>
+                <span className="text-white/50 text-xs font-black uppercase tracking-widest">{kpi.label}</span>
               </div>
               <span className={`text-2xl font-black ${kpi.color}`}>{kpi.value}</span>
             </div>
@@ -129,10 +129,10 @@ export default async function LoyaltyPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-[#FAFAF7]">
-                  <th className="text-left px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">#</th>
-                  <th className="text-left px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Client</th>
-                  <th className="text-center px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Commandes</th>
-                  <th className="text-center px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Palier</th>
+                  <th className="text-left px-8 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">#</th>
+                  <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Client</th>
+                  <th className="text-center px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Commandes</th>
+                  <th className="text-center px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Palier</th>
                 </tr>
               </thead>
               <tbody>
