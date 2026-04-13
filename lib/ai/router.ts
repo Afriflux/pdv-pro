@@ -6,7 +6,7 @@ export interface AIRouterConfig {
   anthropicKey?: string
   openaiKey?: string
   geminiKey?: string
-  routingPrefs?: any
+  routingPrefs?: Record<string, string[]>
 }
 
 // Revalidate this cache config frequently or fetch directly
@@ -216,7 +216,7 @@ export async function generateAIResponse(req: AIGenerationRequest): Promise<AIGe
   }
 
   // Sequentially try the providers based on the priority chain
-  let lastError: any
+  let lastError: Error | undefined
   
   for (const step of plan) {
     try {
@@ -232,9 +232,10 @@ export async function generateAIResponse(req: AIGenerationRequest): Promise<AIGe
         return await callAnthropic(config.anthropicKey, req, step.model)
       }
 
-    } catch (err: any) {
-      console.warn(`[AI Router] Provider ${step.provider} failed:`, err.message)
-      lastError = err
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err)
+      console.warn(`[AI Router] Provider ${step.provider} failed:`, errMsg)
+      lastError = err instanceof Error ? err : new Error(errMsg)
       // Continue to the next provider in the fallback chain!
     }
   }
