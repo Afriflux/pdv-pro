@@ -157,7 +157,7 @@ export default function WebhooksPage() {
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 Connexions en temps réel
               </div>
-              <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight mb-2">Automatisations & API</h1>
+              <h1 className="text-xl lg:text-3xl font-black text-white tracking-tight mb-2">Automatisations & API</h1>
               <p className="text-gray-400 font-medium text-lg max-w-2xl">Associez votre compte Yayyam aux outils que vous utilisez tous les jours (Make, Zapier, Notion) pour scaler sans effort.</p>
             </div>
           </div>

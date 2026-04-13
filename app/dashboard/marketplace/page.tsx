@@ -48,7 +48,7 @@ export default async function MarketplacePage() {
     <div className="flex flex-col min-h-screen">
       <div className="w-full animate-in fade-in zoom-in-95 duration-700">
         <header className="mb-10 px-4">
-          <h1 className="text-4xl font-black text-ink tracking-tight mb-2">Marketplace & Apps</h1>
+          <h1 className="text-xl lg:text-3xl font-black text-ink tracking-tight mb-2">Marketplace & Apps</h1>
           <p className="text-gray-500 font-medium text-lg">Connectez de nouvelles fonctionnalités, de supers thèmes et vos cours.</p>
         </header>
 

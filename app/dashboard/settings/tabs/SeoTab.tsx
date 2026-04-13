@@ -49,7 +49,7 @@ export function SeoTab({ store }: { store: Record<string, any> }) {
           <div className="w-20 h-20 rounded-[1.5rem] bg-indigo-50 flex items-center justify-center text-indigo-600 mb-6 border border-indigo-100 shadow-inner">
             <Search size={32} strokeWidth={2} />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight leading-tight">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 tracking-tight leading-tight">
             Référencement & Tracking
           </h2>
           <p className="text-[15px] text-gray-500 font-medium">Contrôlez la façon dont votre boutique apparaît sur Google et branchez vos pixels publicitaires.</p>

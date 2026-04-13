@@ -311,7 +311,7 @@ export default function TelegramDashboard({
               </span>
               <span className="text-xs font-black text-white uppercase tracking-widest">Connecteur Telegram Actif</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-display font-black text-white tracking-tight flex items-center gap-3">
+            <h1 className="text-xl lg:text-3xl font-display font-black text-white tracking-tight flex items-center gap-3">
               <Send className="text-[#0DE0A1] drop-shadow-[0_0_15px_rgba(13,224,161,0.5)]" fill="currentColor" size={40} />
               Communautés VIP
             </h1>

@@ -120,7 +120,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
          <div className="bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-[#0F7A60]/5 flex items-center justify-between transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-[#0F7A60]/10">
            <div className="flex flex-col">
              <span className="text-xs font-black uppercase text-dust tracking-wider">Zones Actives</span>
-             <span className="text-3xl font-display font-black text-ink mt-1">{activeZones.length}</span>
+             <span className="text-xl lg:text-3xl font-display font-black text-ink mt-1">{activeZones.length}</span>
            </div>
            <div className="w-14 h-14 bg-emerald/10 text-[#0F7A60] rounded-2xl flex items-center justify-center">
              <Activity size={28} />
@@ -129,7 +129,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
          <div className="bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-[#0F7A60]/5 flex items-center justify-between transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-[#0F7A60]/10">
            <div className="flex flex-col">
              <span className="text-xs font-black uppercase text-dust tracking-wider">Frais Moyen</span>
-             <span className="text-3xl font-display font-black text-ink mt-1">{avgFee.toLocaleString('fr-FR')} F</span>
+             <span className="text-xl lg:text-3xl font-display font-black text-ink mt-1">{avgFee.toLocaleString('fr-FR')} F</span>
            </div>
            <div className="w-14 h-14 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center">
              <DollarSign size={28} />
@@ -138,7 +138,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
          <div className="bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-[#0F7A60]/5 flex items-center justify-between transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-[#0F7A60]/10">
            <div className="flex flex-col">
              <span className="text-xs font-black uppercase text-dust tracking-wider">Zones Inactives</span>
-             <span className="text-3xl font-display font-black text-ink mt-1">{inactiveCount}</span>
+             <span className="text-xl lg:text-3xl font-display font-black text-ink mt-1">{inactiveCount}</span>
            </div>
            <div className="w-14 h-14 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center">
              <Settings2 size={28} />
@@ -271,7 +271,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
             {/* Bottom Section */}
             <div className="mt-8 pt-5 border-t border-line flex items-end justify-between">
               <div className="flex items-baseline gap-1">
-                <span className={`text-4xl font-display font-black tracking-tighter ${zone.active ? 'text-ink' : 'text-dust'}`}>
+                <span className={`text-xl lg:text-3xl font-display font-black tracking-tighter ${zone.active ? 'text-ink' : 'text-dust'}`}>
                   {zone.fee.toLocaleString('fr-FR')} 
                 </span>
                 <span className="text-sm font-bold text-slate ml-1">FCFA</span>
@@ -400,7 +400,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
             <div className="absolute -top-32 -right-32 w-64 h-64 bg-emerald/10 rounded-full blur-3xl pointer-events-none"></div>
 
             <div className="px-10 pt-10 pb-4 relative z-10">
-              <h3 className="text-3xl font-display font-black text-ink tracking-tight">
+              <h3 className="text-xl lg:text-3xl font-display font-black text-ink tracking-tight">
                 {editingZone ? 'Modifier' : 'Nouvelle Zone'}
               </h3>
               <p className="text-sm text-slate font-medium mt-1">Configurez le nom, le tarif et les délais.</p>

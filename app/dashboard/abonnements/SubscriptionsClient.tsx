@@ -15,7 +15,7 @@ export default function SubscriptionsClient() {
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-emerald-light font-black text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-6 border border-white/10">
             <Zap size={14} className="text-gold" /> Nouveau modèle économique
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white leading-tight mb-4">
+          <h1 className="text-xl lg:text-3xl font-black text-white leading-tight mb-4">
             Zéro abonnement.<br/>
             <span className="text-turquoise">100% à la commission.</span>
           </h1>

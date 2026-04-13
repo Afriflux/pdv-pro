@@ -135,7 +135,7 @@ export function ProfileTab({ profile, userId, store }: { profile: any; userId: s
             
           {/* Titre & Statut */}
           <div className="pb-8 space-y-2">
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight leading-tight">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 tracking-tight leading-tight">
               {userName || 'Votre Profil'}
             </h2>
             <div className="flex flex-wrap items-center gap-3">

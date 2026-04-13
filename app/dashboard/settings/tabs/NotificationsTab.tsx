@@ -35,7 +35,7 @@ export function NotificationsTab({ store }: { store: any }) {
       
       {/* En-tête du module */}
       <div className="flex flex-col gap-2 relative z-10 px-2 pt-2">
-        <h2 className="text-3xl font-black text-gray-900 tracking-tight">Centre de Notifications</h2>
+        <h2 className="text-xl lg:text-3xl font-black text-gray-900 tracking-tight">Centre de Notifications</h2>
         <p className="text-[15px] font-medium text-gray-500 max-w-xl leading-relaxed">
           Configurez comment et quand Yayyam communique avec vous. Contrôlez vos alertes système et l'intégration externe.
         </p>

@@ -256,7 +256,7 @@ export default function AcademyGrid({ articles, completedIds: initialCompletedId
                 <div className={`w-28 h-28 mx-auto ${selectedArticle.color} border border-white rounded-[2rem] flex items-center justify-center text-6xl mb-6 shadow-lg shadow-emerald-900/5 transform -rotate-3 hover:rotate-0 transition-transform duration-300`}>
                   {selectedArticle.emoji}
                 </div>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-ink leading-[1.1] tracking-tight mb-6">
+                <h1 className="text-3xl sm:text-xl lg:text-3xl font-black text-ink leading-[1.1] tracking-tight mb-6">
                   {selectedArticle.title}
                 </h1>
                 <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto font-medium">

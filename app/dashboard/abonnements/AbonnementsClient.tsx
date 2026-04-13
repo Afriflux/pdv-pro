@@ -136,7 +136,7 @@ export default function AbonnementsClient({
                     </div>
                     <div className="flex items-baseline gap-1.5 mt-2">
                        {/* Pourrions animer les nombres, mais en SSR simple on utilise fmt */}
-                      <p className="text-4xl md:text-5xl font-display font-black text-ink tracking-tight">{fmt(currentMonthCA)}</p>
+                      <p className="text-xl lg:text-3xl font-display font-black text-ink tracking-tight">{fmt(currentMonthCA)}</p>
                       <p className="text-sm font-bold text-slate uppercase tracking-wider mb-1">FCFA</p>
                     </div>
                   </div>
@@ -150,7 +150,7 @@ export default function AbonnementsClient({
                       <p className="text-xs font-black text-amber-600/70 uppercase tracking-widest">Frais Plateforme</p>
                     </div>
                     <div className="flex items-end gap-3 mt-2">
-                      <p className="text-4xl md:text-5xl font-display font-black text-amber-500 tracking-tight">{rate}%</p>
+                      <p className="text-xl lg:text-3xl font-display font-black text-amber-500 tracking-tight">{rate}%</p>
                       <div className="flex items-baseline gap-1.5 pb-2 border-b-2 border-amber-200/50 border-dotted mb-1">
                         <p className="text-base font-bold text-amber-600/60">Environ {fmt(commissionAmt)}</p>
                         <p className="text-xs font-bold text-amber-600/50 uppercase tracking-widest">FCFA</p>
@@ -168,7 +168,7 @@ export default function AbonnementsClient({
                       <p className="text-xs font-black text-[#0F7A60] uppercase tracking-widest">Votre Net Estimé</p>
                     </div>
                     <div className="flex items-baseline gap-1.5 mt-2">
-                      <p className="text-4xl md:text-5xl font-display font-black text-[#0F7A60] tracking-tight">{fmt(vendorNet)}</p>
+                      <p className="text-xl lg:text-3xl font-display font-black text-[#0F7A60] tracking-tight">{fmt(vendorNet)}</p>
                       <p className="text-sm font-bold text-[#0F7A60]/60 uppercase tracking-wider mb-1">FCFA</p>
                     </div>
                   </div>

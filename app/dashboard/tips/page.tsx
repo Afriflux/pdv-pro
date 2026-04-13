@@ -62,7 +62,7 @@ export default async function TipsPage() {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-6">
               <span className="text-gold font-bold text-xs">✨ Yayyam Académie</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
+            <h1 className="text-xl lg:text-3xl font-black text-white tracking-tight leading-tight mb-4">
               Devenez un maître de la <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold to-yellow-200">vente en ligne.</span>
             </h1>
             <p className="text-gray-400 text-sm md:text-base leading-relaxed mb-8">

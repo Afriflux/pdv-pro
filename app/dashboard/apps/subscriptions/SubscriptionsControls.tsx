@@ -83,7 +83,7 @@ export default function SubscriptionsControls({ subscriptions }: Props) {
          <div className="col-span-1 md:col-span-2 bg-gray-900 rounded-[24px] p-6 text-white shadow-xl relative overflow-hidden">
             <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-500 rounded-full blur-3xl opacity-30"></div>
             <p className="text-xs uppercase font-black tracking-wider text-gray-400">MRR (Revenu Mensuel)</p>
-            <h3 className="text-4xl md:text-5xl font-black mt-2 leading-none">{formatPrice(mrr)}</h3>
+            <h3 className="text-xl lg:text-3xl font-black mt-2 leading-none">{formatPrice(mrr)}</h3>
             <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-300">
               <Activity size={16} className="text-emerald-400" /> Vos revenus sont prédictibles.
             </div>

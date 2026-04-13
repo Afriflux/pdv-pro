@@ -458,7 +458,7 @@ export function Sidebar({
 
       {/* ── MOBILE : top bar compacte (pas de hamburger, nav = BottomTabBar) ── */}
       <div className="lg:hidden">
-        <div className="fixed top-0 left-0 right-0 z-40 bg-white h-screen sticky top-0 z-30 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] relative overflow-hidden border-r border-gray-200 flex items-center justify-between px-4 h-12">
+        <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-4 h-12">
           <Link href="/" className="flex items-center gap-1.5">
             <Logo variant="text" size="sm" textClassName="text-gray-900" />
           </Link>

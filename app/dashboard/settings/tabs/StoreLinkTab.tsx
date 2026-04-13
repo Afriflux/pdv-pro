@@ -113,7 +113,7 @@ export function StoreLinkTab({ store }: { store: any }) {
             
           {/* Titre & Statut */}
           <div className="pb-8 space-y-2">
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight leading-tight">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 tracking-tight leading-tight">
               Lien de Vente
             </h2>
             <div className="flex flex-wrap items-center gap-3">
@@ -131,7 +131,7 @@ export function StoreLinkTab({ store }: { store: any }) {
             <div className="bg-gradient-to-r from-gray-50 to-white backdrop-blur-md rounded-[2rem] border border-gray-200/80 p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-8 hover:shadow-[0_8px_30px_rgb(0,0,0,0.03)] transition-all duration-500 group">
               <div className="flex-1 w-full overflow-hidden">
                 <p className="text-[12px] font-black text-gray-400 uppercase tracking-widest mb-3">Aperçu en direct</p>
-                <div className="flex items-center text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 truncate tracking-tight">
+                <div className="flex items-center text-xl sm:text-2xl lg:text-3xl md:text-5xl font-black text-gray-900 truncate tracking-tight">
                   <span className="text-gray-300 select-none">yayyam.com/</span>
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 drop-shadow-sm truncate">
                     {slug || store?.slug || 'votre-boutique'}

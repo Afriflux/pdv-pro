@@ -196,7 +196,7 @@ function LargeProductCard({ product, baseUrl }: { product: Product; baseUrl: str
         <div className="flex items-end justify-between mt-auto pt-6 border-t border-line">
           <div>
             <p className="text-dust text-xs font-medium uppercase tracking-wider mb-1">Prix de vente</p>
-            <p className="font-display text-3xl font-black text-emerald">
+            <p className="font-display text-xl lg:text-3xl font-black text-emerald">
               {product.price.toLocaleString('fr-FR')} <span className="text-sm font-sans font-normal text-dust">FCFA</span>
             </p>
           </div>

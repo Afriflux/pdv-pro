@@ -62,19 +62,19 @@ export default function CustomersClient({ customers, storeName }: CustomersClien
          <div className="bg-white/80 p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 flex flex-col justify-between hover:-translate-y-1 transition-transform relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
             <p className="text-xs font-black tracking-widest uppercase text-emerald mb-1">Nombre de Clients</p>
-            <p className="font-display font-black text-3xl text-ink">{customers.length}</p>
+            <p className="font-display font-black text-xl lg:text-3xl text-ink">{customers.length}</p>
          </div>
 
          <div className="bg-white/80 p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 flex flex-col justify-between hover:-translate-y-1 transition-transform relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
             <p className="text-xs font-black tracking-widest uppercase text-gold mb-1">Clients VIP (2+ achats)</p>
-            <p className="font-display font-black text-3xl text-ink">{vips} <span className="text-sm text-gray-400 font-bold">/ {customers.length}</span></p>
+            <p className="font-display font-black text-xl lg:text-3xl text-ink">{vips} <span className="text-sm text-gray-400 font-bold">/ {customers.length}</span></p>
          </div>
 
          <div className="bg-white/80 p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 flex flex-col justify-between hover:-translate-y-1 transition-transform relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
             <p className="text-xs font-black tracking-widest uppercase text-blue-500 mb-1">Panier Moyen (LTV)</p>
-            <p className="font-display font-black text-3xl text-ink">
+            <p className="font-display font-black text-xl lg:text-3xl text-ink">
               {Math.round(avgLtv).toLocaleString('fr-FR')} <span className="text-sm font-bold text-gray-400">FCFA</span>
             </p>
          </div>
