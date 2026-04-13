@@ -53,14 +53,14 @@ export default async function PortalLayout({
   const avatarUrl = userProfile.avatar_url || user.user_metadata?.avatar_url || user.user_metadata?.picture || null
 
   return (
-    <div className="flex min-h-screen bg-[#FAFAF7]">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       <PortalSidebar
         storeName={storeName}
         userName={userName}
         avatarUrl={avatarUrl}
       />
 
-      <main className="relative flex-1 bg-[#FAFAF7] min-w-0 min-h-screen overflow-auto">
+      <main className="relative flex-1 bg-gray-50 min-w-0 h-screen overflow-y-auto overflow-x-hidden">
         <GlobalHomeButton />
         {/* Bandeau alerte contrat affilié — affiché uniquement si non signé */}
         {!contractAccepted && (

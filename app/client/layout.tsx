@@ -43,13 +43,13 @@ export default async function ClientLayout({
   const avatarUrl = userProfile.avatar_url || user.user_metadata?.avatar_url || user.user_metadata?.picture || null
 
   return (
-    <div className="flex min-h-screen bg-[#FAFAF7]">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       <ClientSidebar
         userName={userName}
         avatarUrl={avatarUrl}
       />
 
-      <main className="relative flex-1 min-w-0 min-h-screen bg-[#FAFAF7] font-sans relative overflow-x-hidden">
+      <main className="relative flex-1 min-w-0 h-screen bg-gray-50 font-sans overflow-y-auto overflow-x-hidden">
         <GlobalHomeButton />
         {/* Ambient Glows */}
         <div className="absolute top-0 left-10 w-[600px] h-[600px] bg-[#0F7A60]/[0.03] blur-[120px] rounded-full pointer-events-none z-0" />

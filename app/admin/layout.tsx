@@ -47,7 +47,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 font-sans overflow-hidden">
+    <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
       
       {/* ─────────────────────────────────────────────────────────
           SIDEBAR DYNAMIQUE — Gestion des états desktop/mobile

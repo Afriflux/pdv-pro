@@ -42,14 +42,14 @@ export default async function OrdersPage() {
   return (
     <div className="w-full relative z-10 px-6 lg:px-10 pb-20">
       <div className="w-full animate-in fade-in zoom-in-95 duration-700">
-        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 mb-10 border-b border-gray-200/40 relative z-10 pt-8">
-          <div className="flex items-center gap-5">
-            <div className="flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-xl rounded-[1.2rem] text-[#1A1A1A] shadow-[0_8px_30px_rgb(26,26,26,0.12)] border border-white">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-6 border-b border-gray-200/40 relative z-10 pt-6">
+          <div className="flex items-center gap-3 lg:gap-5">
+            <div className="flex items-center justify-center w-10 h-10 lg:w-14 lg:h-14 bg-white/80 backdrop-blur-xl rounded-xl lg:rounded-[1.2rem] text-[#1A1A1A] shadow-sm lg:shadow-[0_8px_30px_rgb(26,26,26,0.12)] border border-gray-100 lg:border-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             </div>
             <div>
-              <h1 className="text-3xl font-black bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent tracking-tight">Vos Commandes</h1>
-              <p className="text-gray-500 text-[15px] font-medium mt-1">Gérez vos expéditions, suivez l'état de vos ventes et téléchargez vos factures.</p>
+              <h1 className="text-xl lg:text-3xl font-black bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent tracking-tight">Vos Commandes</h1>
+              <p className="text-gray-500 text-xs lg:text-[15px] font-medium mt-0.5 lg:mt-1">Gérez vos expéditions, suivez l&apos;état de vos ventes et téléchargez vos factures.</p>
             </div>
           </div>
         </header>

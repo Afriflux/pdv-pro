@@ -55,7 +55,7 @@ export default async function DashboardLayout({
   // true par défaut : ne pas bloquer si le store n'existe pas encore
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       <Sidebar 
         storeName={storeName} 
         userName={vendorName} 
@@ -64,7 +64,7 @@ export default async function DashboardLayout({
         installedApps={installedApps}
       />
 
-      <main className="relative flex-1 bg-gray-50 min-w-0 min-h-screen overflow-auto">
+      <main className="relative flex-1 bg-gray-50 min-w-0 h-screen overflow-y-auto overflow-x-hidden">
         
         {/* 🌟 UNIVERSAL MESH BACKGROUND 🌟 */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">

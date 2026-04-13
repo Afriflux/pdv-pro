@@ -340,7 +340,7 @@ export function AdminSidebar({
     <>
       {/* ── DESKTOP ── */}
       <aside 
-        className={`hidden lg:flex flex-col flex-shrink-0 bg-white border-r border-gray-200 shadow-xl relative overflow-hidden ${
+        className={`hidden lg:flex flex-col flex-shrink-0 bg-white border-r border-gray-200 shadow-xl relative overflow-hidden h-screen sticky top-0 z-30 ${
           collapsed && mounted ? 'w-[80px]' : 'w-[280px]'
         }`}
       >

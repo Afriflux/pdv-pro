@@ -76,31 +76,31 @@ async function DashboardKPIs({ storeId, storeRaw }: { storeId: string, storeRaw:
 
   return (
     <>
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 relative z-10 my-8">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 relative z-10 my-4">
         {/* KPI 1 : CA */}
-        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-4 lg:p-6">
+        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-3 lg:p-4">
           <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">CA Aujourd'hui</p>
-          <p className="text-2xl lg:text-4xl font-black text-gray-900 truncate">
+          <p className="text-xl lg:text-2xl font-black text-gray-900 truncate">
             {caToday.toLocaleString('fr-FR')} <span className="text-sm text-gray-400">F</span>
           </p>
         </div>
         
         {/* KPI 2 : Ventes */}
-        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-4 lg:p-6">
+        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-3 lg:p-4">
           <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Ventes Aujourd'hui</p>
-          <p className="text-2xl lg:text-4xl font-black text-gray-900">{countToday}</p>
+          <p className="text-xl lg:text-2xl font-black text-gray-900">{countToday}</p>
         </div>
 
         {/* KPI 3 : Attente */}
-        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-4 lg:p-6">
+        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-3 lg:p-4">
           <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">En attente</p>
-          <p className="text-2xl lg:text-4xl font-black text-gray-900">{pendingCount} <span className="text-sm font-bold text-gray-400 ml-1">à traiter</span></p>
+          <p className="text-xl lg:text-2xl font-black text-gray-900">{pendingCount} <span className="text-sm font-bold text-gray-400 ml-1">à traiter</span></p>
         </div>
 
         {/* KPI 4 : Wallet */}
-        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-4 lg:p-6">
+        <div className="bg-white shadow-sm border border-gray-100 hover:border-gray-200 transition-all duration-300 rounded-2xl p-3 lg:p-4">
           <p className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Wallet Dispo</p>
-          <p className="text-2xl lg:text-4xl font-black text-gray-900 flex items-center gap-1">
+          <p className="text-xl lg:text-2xl font-black text-gray-900 flex items-center gap-1">
             {wallet.balance.toLocaleString('fr-FR')} <span className="text-sm font-bold text-gray-400 mt-2">F</span>
           </p>
         </div>
@@ -339,11 +339,11 @@ export default async function DashboardPage() {
       <WelcomeGuide />
       
       {/* HEADER */}
-      <header className="bg-white border-b border-gray-200 px-6 lg:px-10 py-8 relative z-10">
+      <header className="bg-white border-b border-gray-200 px-6 lg:px-10 py-5 relative z-10">
         <div className="w-full flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Bonjour, {userName} ! 👋</h1>
-            <p className="text-sm font-medium text-gray-500 mt-2">{capitalizedDate}</p>
+            <h1 className="text-2xl font-black text-gray-900 tracking-tight">Bonjour, {userName} ! 👋</h1>
+            <p className="text-xs font-medium text-gray-500 mt-1">{capitalizedDate}</p>
           </div>
           {!storeRaw.contract_accepted && (
             <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl flex items-center gap-3">

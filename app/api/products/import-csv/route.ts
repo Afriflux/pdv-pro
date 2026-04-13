@@ -52,6 +52,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Fichier CSV requis' }, { status: 400 })
     }
 
+    // Validation taille (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: 'Fichier trop volumineux (max 5MB)' }, { status: 413 })
+    }
+
+    // Validation type
+    const fileName = (file as File).name || ''
+    if (!fileName.endsWith('.csv') && !file.type?.includes('csv')) {
+      return NextResponse.json({ error: 'Format invalide, CSV requis' }, { status: 400 })
+    }
+
     const text  = await file.text()
     const lines = text.split('\n').filter(l => l.trim())
 

@@ -241,46 +241,46 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
       
       {/* 1. STATS RAPIDES */}
       <div className="px-6 pt-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
           
-          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
+          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-4 lg:p-6 rounded-2xl lg:rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#0F7A60]/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-[#0F7A60]/10 transition-colors duration-500 pointer-events-none" />
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
             <div className="relative z-10 flex flex-col">
               <p className="text-xs font-black text-[#0F7A60] uppercase tracking-wider mb-2">💰 CA Total</p>
-              <p className="font-display text-3xl font-black text-[#1A1A1A]">
+              <p className="font-display text-xl lg:text-3xl font-black text-[#1A1A1A]">
                 {stats.totalCa.toLocaleString('fr-FR')} <span className="text-base text-gray-400">F</span>
               </p>
             </div>
           </div>
           
-          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
+          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-4 lg:p-6 rounded-2xl lg:rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-blue-500/10 transition-colors duration-500 pointer-events-none" />
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
             <div className="relative z-10 flex flex-col">
               <p className="text-xs font-black text-blue-500 uppercase tracking-wider mb-2">📦 Commandes</p>
-              <p className="font-display text-3xl font-black text-[#1A1A1A]">{stats.nbCommandes}</p>
+              <p className="font-display text-xl lg:text-3xl font-black text-[#1A1A1A]">{stats.nbCommandes}</p>
             </div>
           </div>
           
-          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
+          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-4 lg:p-6 rounded-2xl lg:rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
             <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-purple-500/10 transition-colors duration-500 pointer-events-none" />
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
             <div className="relative z-10 flex flex-col">
               <p className="text-xs font-black text-purple-500 uppercase tracking-wider mb-2">✅ Complétées</p>
               <div className="flex items-baseline gap-2">
-                <p className="font-display text-3xl font-black text-[#1A1A1A]">{stats.countCompleted}</p>
+                <p className="font-display text-xl lg:text-3xl font-black text-[#1A1A1A]">{stats.countCompleted}</p>
                 <p className="text-sm font-bold text-gray-400">({stats.txCompletion}%)</p>
               </div>
             </div>
           </div>
           
-          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-6 rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
+          <div className="relative overflow-hidden group bg-white/80 backdrop-blur-2xl p-4 lg:p-6 rounded-2xl lg:rounded-[32px] border border-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-1 hover:shadow-gray-200/80 transition-all duration-500">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#C9A84C]/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-[#C9A84C]/10 transition-colors duration-500 pointer-events-none" />
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none" />
             <div className="relative z-10 flex flex-col">
               <p className="text-xs font-black text-[#C9A84C] uppercase tracking-wider mb-2">⏳ En attente</p>
-              <p className={`font-display text-3xl font-black ${stats.countPending > 0 ? 'text-[#C9A84C]' : 'text-gray-400'}`}>
+              <p className={`font-display text-xl lg:text-3xl font-black ${stats.countPending > 0 ? 'text-[#C9A84C]' : 'text-gray-400'}`}>
                 {stats.countPending}
               </p>
             </div>
