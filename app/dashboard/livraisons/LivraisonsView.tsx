@@ -464,7 +464,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
           />
         </div>
         
-        <div className="flex gap-3 shrink-0">
+        <div className="flex gap-2 sm:gap-3 shrink-0 flex-wrap">
           <div className="bg-[#FAFAF7] border border-line rounded-xl p-1 flex items-center shadow-sm">
              <button
                 onClick={() => setViewMode('list')}
@@ -484,24 +484,24 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
 
           <button 
             onClick={() => setShowDeliverersModal(true)}
-            className="bg-[#FAFAF7] border border-line text-ink hover:bg-white hover:border-line font-bold px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
+            className="bg-[#FAFAF7] border border-line text-ink hover:bg-white hover:border-line font-bold px-3 sm:px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap"
           >
-            <Users size={16} /> Gérer Flotte
+            <Users size={16} /> <span className="hidden sm:inline">Gérer Flotte</span>
           </button>
 
           <button 
              onClick={() => setIsDeliveryMode(true)}
-             className="bg-[#0F7A60] border border-[#0F7A60]/30 text-white hover:bg-[#0D6B53] font-bold px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap group animate-pulse hover:animate-none"
+             className="bg-[#0F7A60] border border-[#0F7A60]/30 text-white hover:bg-[#0D6B53] font-bold px-3 sm:px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap group animate-pulse hover:animate-none"
           >
-             🚀 Mode Livraison
+             🚀 <span className="hidden sm:inline">Mode Livraison</span>
           </button>
 
           <button 
             onClick={exportCSV}
             disabled={filteredOrders.length === 0}
-            className="bg-[#FAFAF7] border border-line text-ink hover:bg-white hover:border-[#0F7A60]/30 font-bold px-5 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap disabled:opacity-50"
+            className="bg-[#FAFAF7] border border-line text-ink hover:bg-white hover:border-[#0F7A60]/30 font-bold px-3 sm:px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm text-sm whitespace-nowrap disabled:opacity-50"
           >
-            <Download size={16} /> Exporter Colis
+            <Download size={16} /> <span className="hidden sm:inline">Exporter Colis</span>
           </button>
         </div>
       </div>
@@ -530,7 +530,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
           <tbody className="divide-y divide-line">
           {filteredOrders.length === 0 ? (
             <tr>
-              <td colSpan={6} className="py-24 text-center">
+              <td colSpan={7} className="py-24 text-center">
                 <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
                   <div className="w-24 h-24 bg-gradient-to-br from-[#0F7A60]/10 to-transparent rounded-full flex items-center justify-center mb-6 relative">
                     <div className="absolute inset-0 bg-[#0F7A60]/20 blur-xl rounded-full animate-pulse" />

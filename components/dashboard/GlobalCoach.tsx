@@ -159,7 +159,7 @@ export default function GlobalCoach() {
             
             <div className="text-center pb-2 bg-white">
                <span className="text-xs text-gray-400 font-bold uppercase tracking-widest flex items-center justify-center gap-1">
-                 <Sparkles size={10} className="text-gold" /> Powered by Claude 3.5 Haiku
+                 <Sparkles size={10} className="text-gold" /> Coach IA Yayyam
                </span>
             </div>
             

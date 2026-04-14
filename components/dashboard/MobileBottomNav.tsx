@@ -146,7 +146,7 @@ export function MobileBottomNav({ storeName, userName, avatarUrl }: MobileBottom
       {/* ── Bottom Tab Bar ── */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden pb-safe" role="navigation" aria-label="Navigation principale">
         <div className="bg-white/95 backdrop-blur-xl border-t border-gray-200/60 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-          <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-2">
+          <div className="flex items-center h-16 max-w-lg mx-auto px-1">
             {tabs.map((tab) => {
               const active = isActive(tab.href)
               const Icon = tab.icon
@@ -154,7 +154,7 @@ export function MobileBottomNav({ storeName, userName, avatarUrl }: MobileBottom
                 <Link
                   key={tab.href}
                   href={tab.href}
-                  className={`flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 rounded-xl transition-all duration-200 active:scale-95 ${
+                  className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-200 active:scale-95 ${
                     active
                       ? 'text-[#0F7A60]'
                       : 'text-gray-400 hover:text-gray-600'
@@ -177,7 +177,7 @@ export function MobileBottomNav({ storeName, userName, avatarUrl }: MobileBottom
             <button
               onClick={() => setProfileOpen(true)}
               {...({ 'aria-expanded': profileOpen, 'aria-haspopup': 'dialog' } as any)}
-              className={`flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 rounded-xl transition-all duration-200 active:scale-95 ${
+              className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-200 active:scale-95 ${
                 profileOpen ? 'text-[#0F7A60]' : 'text-gray-400'
               }`}
             >

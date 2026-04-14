@@ -298,8 +298,8 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
 
                     <div className="flex-1">
                       <div className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{app.category}</div>
-                      <h3 className="font-black text-[#1A1A1A] text-lg mb-2 leading-tight">{app.name}</h3>
-                      <p className="text-[13px] text-gray-500 leading-relaxed font-medium">{app.description}</p>
+                      <h3 className="font-black text-[#1A1A1A] text-lg mb-2 leading-tight break-words">{app.name}</h3>
+                      <p className="text-[13px] text-gray-500 leading-relaxed font-medium line-clamp-3">{app.description}</p>
                     </div>
                     
                     <div className="mt-5 space-y-2 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
