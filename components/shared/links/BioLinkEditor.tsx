@@ -619,6 +619,7 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
                           className={`w-full rounded-2xl py-4 px-4 shadow-sm hover:shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold text-sm text-center flex items-center justify-center gap-2 ${
                             link.isPrimary ? 'shadow-lg' : ''
                           } ${link.animation === 'pulse' ? 'animate-pulse' : link.animation === 'bounce' ? 'animate-bounce' : ''}`}
+                          // eslint-disable-next-line react/forbid-dom-props
                           style={{
                             ...(link.isPrimary ? {
                               backgroundColor: link.bgColor ? link.bgColor : (formData.theme === 'glass' ? 'rgba(255, 255, 255, 0.95)' : formData.brand_color),

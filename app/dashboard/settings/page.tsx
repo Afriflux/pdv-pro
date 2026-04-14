@@ -15,7 +15,7 @@ export default async function SettingsPage() {
       updated_at, banner_url,
       notif_new_order, notif_weekly_report, notif_stock_alert,
       social_links,
-      meta_pixel_id, meta_capi_token, tiktok_pixel_id, google_tag_id,
+      meta_pixel_id, meta_capi_token, tiktok_pixel_id, tiktok_capi_token, google_tag_id, google_api_secret,
       seo_title, seo_description,
       telegram_chat_id, telegram_notifications,
       withdrawal_method, withdrawal_number, withdrawal_name,

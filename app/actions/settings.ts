@@ -322,7 +322,9 @@ export async function updateSEO(data: {
   meta_pixel_id?: string
   meta_capi_token?: string
   tiktok_pixel_id?: string
+  tiktok_capi_token?: string
   google_tag_id?: string
+  google_api_secret?: string
 }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -336,7 +338,9 @@ export async function updateSEO(data: {
       meta_pixel_id: data.meta_pixel_id || null,
       meta_capi_token: data.meta_capi_token || null,
       tiktok_pixel_id: data.tiktok_pixel_id || null,
+      tiktok_capi_token: data.tiktok_capi_token || null,
       google_tag_id: data.google_tag_id || null,
+      google_api_secret: data.google_api_secret || null,
       updated_at: new Date().toISOString()
     })
     .eq('user_id', user.id)

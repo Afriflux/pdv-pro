@@ -12,7 +12,9 @@ export function SeoTab({ store }: { store: Record<string, any> }) {
   const [metaPixelId, setMetaPixelId] = useState(store?.meta_pixel_id || '')
   const [metaCapiToken, setMetaCapiToken] = useState(store?.meta_capi_token || '')
   const [tiktokPixelId, setTiktokPixelId] = useState(store?.tiktok_pixel_id || '')
+  const [tiktokCapiToken, setTiktokCapiToken] = useState(store?.tiktok_capi_token || '')
   const [googleTagId, setGoogleTagId] = useState(store?.google_tag_id || '')
+  const [googleApiSecret, setGoogleApiSecret] = useState(store?.google_api_secret || '')
 
   const [loading, setLoading] = useState(false)
 
@@ -26,7 +28,9 @@ export function SeoTab({ store }: { store: Record<string, any> }) {
         meta_pixel_id: metaPixelId,
         meta_capi_token: metaCapiToken,
         tiktok_pixel_id: tiktokPixelId,
-        google_tag_id: googleTagId
+        tiktok_capi_token: tiktokCapiToken,
+        google_tag_id: googleTagId,
+        google_api_secret: googleApiSecret
       })
       toast.success('Paramètres SEO et Tracking mis à jour avec succès')
     } catch (err: any) {
@@ -152,6 +156,13 @@ export function SeoTab({ store }: { store: Record<string, any> }) {
                   value={tiktokPixelId} 
                   onChange={(e) => setTiktokPixelId(e.target.value)} 
                   placeholder="ID du Pixel" 
+                  className="w-full text-center px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-[13px] font-mono focus:outline-none focus:ring-1 focus:ring-gray-800 mb-2"
+                />
+                <input 
+                  type="password" 
+                  value={tiktokCapiToken} 
+                  onChange={(e) => setTiktokCapiToken(e.target.value)} 
+                  placeholder="Access Token (Events API)" 
                   className="w-full text-center px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-[13px] font-mono focus:outline-none focus:ring-1 focus:ring-gray-800"
                 />
               </div>
@@ -168,6 +179,13 @@ export function SeoTab({ store }: { store: Record<string, any> }) {
                   value={googleTagId} 
                   onChange={(e) => setGoogleTagId(e.target.value)} 
                   placeholder="G-XXXXXX" 
+                  className="w-full text-center px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-[13px] font-mono focus:outline-none focus:ring-1 focus:ring-orange-500 mb-2"
+                />
+                <input 
+                  type="password" 
+                  value={googleApiSecret} 
+                  onChange={(e) => setGoogleApiSecret(e.target.value)} 
+                  placeholder="API Secret (Measurement Protocol)" 
                   className="w-full text-center px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-[13px] font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>

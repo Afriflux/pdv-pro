@@ -9,7 +9,7 @@ import {
 import { notifyNewOrder, createNotification } from '@/lib/notifications/createNotification'
 import { createDigitalAccess }   from '@/lib/digital/token'
 import { createAndStoreInvoice } from '@/lib/invoice/createInvoice'
-import { sendMetaCAPIPurchaseEvent } from '@/lib/tracking/capi'
+import { sendMetaCAPIPurchaseEvent, sendTikTokCAPIPurchaseEvent, sendGoogleCAPIPurchaseEvent } from '@/lib/tracking/capi'
 import { 
   triggerNewOrderTelegram, 
   triggerPaymentTelegram 
@@ -101,7 +101,7 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
   // ── 3. Charger la boutique ─────────────────────────────────────────────────
   const { data: storeRaw } = await supabase
     .from('Store')
-    .select('user_id, name, meta_pixel_id, meta_capi_token')
+    .select('user_id, name, meta_pixel_id, meta_capi_token, tiktok_pixel_id, tiktok_capi_token, google_tag_id, google_api_secret')
     .eq('id', order.store_id)
     .single()
 
@@ -315,19 +315,48 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
     }
   }
 
-  // ── 10. Meta CAPI Server-Side Tracking ────────────────────────────────────
-  if (storeRaw && storeRaw.meta_pixel_id && storeRaw.meta_capi_token) {
-    sendMetaCAPIPurchaseEvent({
-      pixelId: storeRaw.meta_pixel_id as string,
-      capiToken: storeRaw.meta_capi_token as string,
+  // ── 10. Server-Side Conversion APIs (Meta + TikTok + Google) ──────────────
+  if (storeRaw) {
+    const sharedParams = {
       eventId: orderId,
-      orderId: orderId,
+      orderId,
       value: order.total,
       currency: 'XOF',
       contentName: product.name,
       customerPhone: order.buyer_phone,
-      customerName: order.buyer_name
-    }).catch(e => console.error('[CAPI IPN Error]', e))
+      customerName: order.buyer_name,
+    }
+
+    // Meta CAPI
+    if (storeRaw.meta_pixel_id && storeRaw.meta_capi_token) {
+      sendMetaCAPIPurchaseEvent({
+        pixelId: storeRaw.meta_pixel_id as string,
+        capiToken: storeRaw.meta_capi_token as string,
+        ...sharedParams,
+      }).catch(e => console.error('[CAPI Meta Error]', e))
+    }
+
+    // TikTok Events API
+    if (storeRaw.tiktok_pixel_id && storeRaw.tiktok_capi_token) {
+      sendTikTokCAPIPurchaseEvent({
+        pixelId: storeRaw.tiktok_pixel_id as string,
+        capiToken: storeRaw.tiktok_capi_token as string,
+        ...sharedParams,
+      }).catch(e => console.error('[CAPI TikTok Error]', e))
+    }
+
+    // Google Measurement Protocol (GA4)
+    if (storeRaw.google_tag_id && storeRaw.google_api_secret) {
+      sendGoogleCAPIPurchaseEvent({
+        measurementId: storeRaw.google_tag_id as string,
+        apiSecret: storeRaw.google_api_secret as string,
+        eventId: orderId,
+        orderId,
+        value: order.total,
+        currency: 'XOF',
+        contentName: product.name,
+      }).catch(e => console.error('[CAPI Google Error]', e))
+    }
   }
 
   return { confirmed: true, status: newStatus }

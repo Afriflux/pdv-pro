@@ -134,7 +134,9 @@ model Store {
   meta_pixel_id                                       String?
   meta_capi_token                                     String?
   tiktok_pixel_id                                     String?
+  tiktok_capi_token                                   String?
   google_tag_id                                       String?
+  google_api_secret                                   String?
   seo_title                                           String?
   seo_description                                     String?
   telegram_chat_id                                    String?

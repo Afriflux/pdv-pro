@@ -150,6 +150,7 @@ export function GettingStartedChecklist({
                 cx={baseSize / 2} cy={baseSize / 2} r={radius}
                 stroke="url(#goldGradient)" strokeWidth={strokeWidth} strokeLinecap="round"
                 fill="none"
+                // eslint-disable-next-line react/forbid-dom-props
                 style={{
                   strokeDasharray: circumference,
                   strokeDashoffset: strokeDashoffset,
