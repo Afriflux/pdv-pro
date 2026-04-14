@@ -61,7 +61,7 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
 
   return (
     <main className={`min-h-screen flex flex-col items-center selection:bg-black/10 transition-colors duration-500 ${bgClass}`}>
-      <div className={`w-full max-w-lg min-h-screen md:min-h-[90vh] md:my-10 md:rounded-[40px] flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out overflow-hidden border ${wrapperClass}`}>
+      <div className={`w-full max-w-lg min-h-screen md:min-h-[90vh] md:my-10 md:rounded-[40px] flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out border ${wrapperClass}`}>
         {/* Sticky Header with Banner & Profile */}
         <BioLinkHeaderClient bioLink={bioLink} brandColor={brandColor} theme={theme} />
 

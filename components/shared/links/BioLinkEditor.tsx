@@ -142,9 +142,14 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
       })
 
       if (res.success) {
-        setMessage({ text: 'Votre vitrine a été mise à jour.', type: 'success' })
+        import('sweetalert2').then(Swal => Swal.default.fire({
+            icon: 'success',
+            title: 'Sauvegardé !',
+            text: 'Votre configuration Link-in-bio a bien été mise à jour.',
+            confirmButtonText: 'Super !',
+            confirmButtonColor: '#0F7A60',
+        }))
         setFormData((prev) => ({ ...prev, slug: res.data?.slug }))
-        toast.success('Votre vitrine a été mise à jour avec succès !')
       } else {
         setMessage({ text: res.error || 'Erreur inconnue', type: 'error' })
         toast.error(res.error || 'Erreur lors de la sauvegarde.')
@@ -174,6 +179,24 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       <div className="flex-1 space-y-6">
+        <div className="bg-white rounded-[32px] p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <h3 className="text-xl font-black text-[#1A1A1A]">Votre Link-in-Bio</h3>
+            <a href={publicUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1 mt-1">
+              <ExternalLink size={14} /> {publicUrl}
+            </a>
+          </div>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(publicUrl);
+              toast.success('Lien copié dans le presse-papier !');
+            }}
+            className="flex items-center gap-2 bg-[#FAFAF7] hover:bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold transition-all active:scale-95"
+          >
+            <Copy size={16} /> Copier le lien
+          </button>
+        </div>
+
         {/* PROFIL CARD */}
         <div className="bg-white rounded-[32px] p-6 sm:p-8 shadow-sm border border-gray-100">
           <h3 className="text-xl font-black text-[#1A1A1A] mb-6 border-b border-gray-100 pb-4">Profil & Apparence</h3>
