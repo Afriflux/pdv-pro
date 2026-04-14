@@ -10,14 +10,24 @@ export async function POST(req: NextRequest) {
     const body = JSON.parse(bodyText) as Record<string, any>
 
     const {
-      amount, payment_method, buyer_phone, store_id, client_name, client_email
+      pay_link_id, payment_method, buyer_phone, client_name, client_email
     } = body
 
-    if (!amount || !payment_method || !buyer_phone || !store_id) {
+    if (!pay_link_id || !payment_method || !buyer_phone) {
       return NextResponse.json({ error: 'Champs obligatoires manquants.' }, { status: 400 })
     }
 
-    const total = Number(amount)
+    // Sécurisation : on lit l'amount et la boutique directement en BDD !
+    const payLink = await prisma.paymentLink.findUnique({
+      where: { id: pay_link_id }
+    })
+
+    if (!payLink || !payLink.is_active) {
+      return NextResponse.json({ error: 'Lien de paiement invalide ou expiré.' }, { status: 404 })
+    }
+
+    const total = payLink.amount;
+    const store_id = payLink.store_id;
 
     // Recherche ou création auto du produit système "Paiement Direct" pour rattacher la commande
     let systemProduct = await prisma.product.findFirst({
@@ -33,6 +43,7 @@ export async function POST(req: NextRequest) {
            type: 'physical',
            category: 'system_payment_link',
            price: 0,
+           images: [],
          }
        })
     }
@@ -55,6 +66,7 @@ export async function POST(req: NextRequest) {
         buyer_phone: buyer_phone,
         buyer_email: client_email || undefined,
         payment_method,
+        payment_ref: pay_link_id, // stocker l'ID du lien pour la validation future
         subtotal: total,
         total: total,
         platform_fee: finalPlatformFee,
@@ -87,7 +99,7 @@ export async function POST(req: NextRequest) {
         phone: buyer_phone,
         email: client_email || undefined
       },
-      description: `Facture de paiement direct`,
+      description: payLink.title || `Facture de paiement direct`,
       returnUrl: `${baseUrl}/success/${order.id}`,
       notifyUrl: `${baseUrl}/api/webhooks/${payment_method}`,
       env: 'prod'

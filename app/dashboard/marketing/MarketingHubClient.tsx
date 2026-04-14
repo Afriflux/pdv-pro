@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState } from 'react'
 import { LayoutDashboard, Target, PenTool, Radio, Mail, ChevronRight } from 'lucide-react'
 
@@ -115,7 +117,7 @@ export default function MarketingHubClient({ store, products, links, domain }: M
                   <button 
                     onClick={() => {
                       navigator.clipboard.writeText(storeUrl);
-                      alert("Lien copié dans le presse-papier !");
+                      toast("Lien copié dans le presse-papier !");
                     }}
                     className="bg-[#0F7A60] text-white px-5 py-3 rounded-xl text-sm font-bold hover:bg-[#0D5C4A] transition-colors shrink-0"
                   >

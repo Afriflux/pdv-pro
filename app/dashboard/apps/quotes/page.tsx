@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState, useEffect } from 'react'
 import { Trash2, FileText, ChevronLeft, User, DollarSign, Calendar, Activity, CheckCircle2, Send, Plus } from 'lucide-react'
 import Link from 'next/link'
@@ -51,7 +53,7 @@ export default function QuotesPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!clientName || items.some(i => !i.description || i.quantity <= 0 || i.unit_price <= 0)) {
-      alert("Veuillez remplir tous les champs obligatoires des articles.")
+      toast("Veuillez remplir tous les champs obligatoires des articles.")
       return
     }
     
@@ -69,12 +71,13 @@ export default function QuotesPage() {
       setItems([{ description: '', quantity: 1, unit_price: 0 }])
       loadQuotes()
     } else {
-      alert(res.error || "Une erreur est survenue")
+      toast.error(res.error || "Une erreur est survenue")
     }
     setIsSubmitting(false)
   }
 
   const handleDelete = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Voulez-vous vraiment supprimer ce devis ?')) return
     setQuotes(quotes.filter(q => q.id !== id))
     await deleteQuoteAction(id)

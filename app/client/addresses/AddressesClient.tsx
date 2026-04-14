@@ -135,6 +135,7 @@ export default function AddressesClient({ addresses, profileName, profilePhone }
   }
 
   const handleDelete = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Supprimer cette adresse de livraison ?')) return
     setDeletingId(id)
     const res = await deleteDeliveryAddress(id)

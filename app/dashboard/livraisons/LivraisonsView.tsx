@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState, useMemo, useEffect } from 'react'
 import { Search, Download, CheckSquare, Square, ChevronDown, Loader2, MapPin, Phone as PhoneIcon, Clock as ClockIcon, Package, Target, ClipboardList, LayoutGrid, List as ListIcon, ArrowRightCircle, CheckCircle2, Users, Rocket, X, Link as LinkIcon, Trash2, UserPlus } from 'lucide-react'
 import Image from 'next/image'
@@ -141,10 +143,10 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: nextStatus } : o))
         }
       } else {
-        alert(`❌ Erreur: ${res.error}`)
+        toast.error(`❌ Erreur: ${res.error}`)
       }
     } catch {
-      alert("Erreur lors de la mise à jour")
+      toast.error("Erreur lors de la mise à jour")
     } finally {
       setIsUpdating(false)
     }
@@ -165,7 +167,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
         }))
       }
     } catch (_e) {
-      alert('Erreur assignation livreur')
+      toast.error('Erreur assignation livreur')
     }
   }
 
@@ -179,12 +181,13 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
       setNewDelivererPhone('')
       setNewDelivererExpiration('definitif')
     } else {
-      alert(`Erreur: ${res.error}`)
+      toast.error(`Erreur: ${res.error}`)
     }
     setIsCreatingDeliverer(false)
   }
 
   const handleDeleteDeliverer = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm("Supprimer ce livreur ? Il n'aura plus accès aux commandes assignées.")) return
     const res = await deleteDelivererAction(id)
     if (res.success) {
@@ -195,7 +198,7 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
   const copyMagicLink = (delivererId: string) => {
     const link = `${window.location.origin}/delivery/${delivererId}`
     navigator.clipboard.writeText(link)
-    alert("Lien copié ! Vous pouvez l'envoyer au livreur sur WhatsApp.")
+    toast("Lien copié ! Vous pouvez l'envoyer au livreur sur WhatsApp.")
   }
 
   const executeBulkUpdate = async (newStatus: string) => {
@@ -216,12 +219,12 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
            setOrders(prev => prev.map(o => arrIds.includes(o.id) ? { ...o, status: newStatus } : o))
         }
         setSelectedIds(new Set()) // Reset 
-        alert(`✅ ${res.updated} colis mis à jour en "${UPDATEABLE_STATUSES.find(s=>s.id === newStatus)?.label || newStatus}"`)
+        toast.success(`✅ ${res.updated} colis mis à jour en "${UPDATEABLE_STATUSES.find(s=>s.id === newStatus)?.label || newStatus}"`)
       } else {
-        alert(`❌ Erreur: ${res.error}`)
+        toast.error(`❌ Erreur: ${res.error}`)
       }
     } catch {
-      alert("Erreur lors de la mise à jour")
+      toast.error("Erreur lors de la mise à jour")
     } finally {
       setIsUpdating(false)
     }

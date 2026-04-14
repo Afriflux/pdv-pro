@@ -10,6 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
     outcome: 'accepted' | 'dismissed'
     platform: string
   }>
+  // eslint-disable-next-line no-alert
   prompt(): Promise<void>
 }
 
@@ -39,6 +40,7 @@ export default function InstallPWA() {
     if (!promptInstall) {
       return
     }
+    // eslint-disable-next-line no-alert
     promptInstall.prompt()
   }
 

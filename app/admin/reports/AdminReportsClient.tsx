@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState } from 'react'
 import { AdminComplaint, resolveReport } from '@/lib/admin/adminActions'
 
@@ -44,7 +46,7 @@ export default function AdminReportsClient({ initialReports }: Props) {
       
       setIsModalOpen(false)
     } catch (error: any) {
-      alert(error.message || 'Erreur lors de la résolution.')
+      toast.error(error.message || 'Erreur lors de la résolution.')
     } finally {
       setLoading(false)
     }

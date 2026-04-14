@@ -11,6 +11,7 @@ export function DangerZoneTab() {
   const [loading, setLoading] = useState(false)
 
   const onDeleteAccount = async () => {
+    // eslint-disable-next-line no-alert
     if (!window.confirm("CONFIRMATION REQUISE:\n\nVoulez-vous vraiment supprimer votre boutique et toutes ses données (commandes, produits, etc.) ?\n\nCette action est IMMÉDIATE et IRRÉVERSIBLE.")) {
       return
     }

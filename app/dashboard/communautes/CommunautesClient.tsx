@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 // ─── app/dashboard/communautes/CommunautesClient.tsx ─────────────────────────
 // Client Component — Feed communautaire Yayyam
 // 4 onglets : Feed | Classement | Groupes | Ressources
@@ -158,7 +160,7 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
       link.click()
     } catch(err) {
       console.error(err)
-      alert("Erreur lors de l'export de l'image.")
+      toast.error("Erreur lors de l'export de l'image.")
     } finally {
       setExporting(false)
     }
@@ -204,6 +206,7 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
 
   const handleDelete = async () => {
     if (!onDelete || isDeleting) return
+    // eslint-disable-next-line no-alert
     if (!confirm('Voulez-vous vraiment supprimer cette publication ?')) return
     setIsDeleting(true)
     try {
@@ -211,10 +214,10 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
       if (res.ok) {
         onDelete(post.id)
       } else {
-        alert('Erreur lors de la suppression')
+        toast.error('Erreur lors de la suppression')
       }
     } catch {
-      alert('Erreur réseau')
+      toast.error('Erreur réseau')
     } finally {
       setIsDeleting(false)
     }

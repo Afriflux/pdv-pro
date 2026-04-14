@@ -72,6 +72,7 @@ function PageRow({ page }: { page: SalePage }) {
   const [copied, setCopied] = useState(false)
   
   const handleToggle = () => startTransition(() => { togglePageStatus(page.id, page.active); })
+  // eslint-disable-next-line no-alert
   const handleDelete = () => { if (confirm('Supprimer cette page ?')) startTransition(() => { deletePage(page.id); }) }
   const handleDuplicate = () => startTransition(() => { duplicatePage(page.id); })
   
@@ -174,6 +175,7 @@ function PageCard({ page }: { page: SalePage }) {
   const [copied, setCopied] = useState(false)
   
   const handleToggle = () => startTransition(() => { togglePageStatus(page.id, page.active); })
+  // eslint-disable-next-line no-alert
   const handleDelete = () => { if (confirm('Supprimer cette page ?')) startTransition(() => { deletePage(page.id); }) }
   const handleDuplicate = () => startTransition(() => { duplicatePage(page.id); })
   

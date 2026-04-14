@@ -3,7 +3,7 @@
 'use client'
 
 import { useState, useTransition, useRef } from 'react'
-import { Plus, Trash2, GripVertical, Save, CheckCircle2, ExternalLink, UploadCloud, Loader2, Image as ImageIcon, Link2 } from 'lucide-react'
+import { Plus, Trash2, GripVertical, Save, CheckCircle2, ExternalLink, UploadCloud, Loader2, Image as ImageIcon, Link2, Copy } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { createClient } from '@/lib/supabase/client'
 import { saveBioLink } from '@/app/actions/biolink'
@@ -144,8 +144,10 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
       if (res.success) {
         setMessage({ text: 'Votre vitrine a été mise à jour.', type: 'success' })
         setFormData((prev) => ({ ...prev, slug: res.data?.slug }))
+        toast.success('Votre vitrine a été mise à jour avec succès !')
       } else {
         setMessage({ text: res.error || 'Erreur inconnue', type: 'error' })
+        toast.error(res.error || 'Erreur lors de la sauvegarde.')
       }
     })
   }
@@ -271,7 +273,7 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
             <div>
               <label className="block text-[13px] font-bold text-gray-400 mb-1">Lien personnalisé (Slug)</label>
               <div className="flex">
-                <span className="bg-gray-100 border border-gray-200 border-r-0 rounded-l-xl px-3 py-3 text-sm text-gray-500 font-medium">
+                <span className="bg-gray-100 border border-gray-200 border-r-0 rounded-l-xl px-2 sm:px-3 py-3 text-xs sm:text-sm text-gray-500 font-medium shrink-0">
                   {domain}/bio/
                 </span>
                 <input 
@@ -282,9 +284,24 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
                     const val = e.target.value.replace(/[^a-z0-9-]/g, '').toLowerCase()
                     setFormData(prev => ({...prev, slug: val}))
                   }}
-                  className="flex-1 bg-[#FAFAF7] border border-gray-100 rounded-r-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-[#0F7A60]/20 outline-none"
+                  className="w-full min-w-0 bg-[#FAFAF7] border border-gray-100 px-3 sm:px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-[#0F7A60]/20 outline-none"
                   placeholder="mon-nom"
                 />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if(!formData.slug) {
+                      toast.error("Veuillez d'abord définir un lien");
+                      return;
+                    }
+                    navigator.clipboard.writeText(publicUrl);
+                    toast.success("Lien copié dans le presse-papiers !");
+                  }}
+                  className="bg-[#0F7A60] hover:bg-[#0B5C48] text-white px-3 sm:px-4 flex items-center justify-center rounded-r-xl transition-colors shrink-0"
+                  title="Copier le lien"
+                >
+                  <Copy size={16} />
+                </button>
               </div>
             </div>
             <div>

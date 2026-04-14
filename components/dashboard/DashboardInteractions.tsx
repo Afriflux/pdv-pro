@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState } from 'react'
 
 export function CopyLinkButton({ url }: { url: string }) {
@@ -9,7 +11,7 @@ export function CopyLinkButton({ url }: { url: string }) {
     navigator.clipboard.writeText(url)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-    alert('Lien de vente copié !')
+    toast('Lien de vente copié !')
   }
 
   return (

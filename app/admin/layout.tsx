@@ -2,9 +2,8 @@ import { GlobalHomeButton } from '@/components/shared/GlobalHomeButton'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
-import { Search } from 'lucide-react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
-import { AdminPageWrapper } from '@/components/admin/AdminPageWrapper'
+import { AdminMobileBottomNav } from '@/components/admin/AdminMobileBottomNav'
 import GlobalCoach from '@/components/dashboard/GlobalCoach'
 
 // ----------------------------------------------------------------
@@ -62,30 +61,36 @@ export default async function AdminLayout({
       {/* ─────────────────────────────────────────────────────────
           CONTENU PRINCIPAL
       ───────────────────────────────────────────────────────── */}
-      <main className="relative flex-1 min-w-0 bg-gray-50 h-screen overflow-y-auto overflow-x-hidden relative flex flex-col pt-14 lg:pt-0">
+      <main className="relative flex-1 min-w-0 bg-gray-50 h-screen overflow-y-auto overflow-x-hidden flex flex-col">
         <GlobalHomeButton />
 
-        {/* ── HEADER DESKTOP ── Fond blanc / Glassmorphism */}
-        <header className="hidden lg:flex h-[64px] bg-white/80 backdrop-blur-xl border-b border-gray-200 sticky top-0 z-40 px-6 items-center justify-between shadow-sm shrink-0">
-          <div className="flex items-center gap-4 w-full">
-            {/* Barre de recherche */}
-            <div className="relative hidden md:block w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                className="w-full bg-gray-50 border border-gray-200 rounded-full py-1.5 pl-10 pr-4 text-xs
-                  focus:border-[#0F7A60] focus:ring-2 focus:ring-[#0F7A60]/10 outline-none transition-all"
-              />
-            </div>
-          </div>
-        </header>
+        {/* 🌟 UNIVERSAL MESH BACKGROUND 🌟 */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+          <div className="absolute top-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-emerald-300/10 blur-[130px] pointer-events-none mix-blend-multiply animate-pulse [animation-duration:10s]" />
+          <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] rounded-full bg-teal-300/10 blur-[120px] pointer-events-none mix-blend-multiply animate-pulse [animation-duration:12s] [animation-delay:2s]" />
+        </div>
 
-        {/* ── PAGE CONTENT Dynamique ── */}
-        <AdminPageWrapper>
-          {children}
-        </AdminPageWrapper>
+        <div className="relative z-10 w-full h-full flex flex-col">
+          {/* ── HEADER DESKTOP ── Fond blanc / Glassmorphism */}
+          <header className="hidden lg:flex h-[64px] bg-white/80 backdrop-blur-xl border-b border-gray-200 sticky top-0 z-40 px-6 items-center justify-between shadow-sm shrink-0">
+            <div className="flex items-center gap-4 w-full">
+              {/* Espace réservé — la recherche est gérée par le contenu */}
+            </div>
+          </header>
+
+          {/* ── PAGE CONTENT Dynamique ── */}
+          <div className="pt-14 lg:pt-4 pb-24 lg:pb-12 w-full max-w-[2000px] mx-auto px-3 lg:px-8 xl:px-10 min-h-full flex-1">
+            {children}
+          </div>
+        </div>
       </main>
+
+      {/* Bottom Tab Bar Mobile */}
+      <AdminMobileBottomNav
+        adminName={userData?.name || userData?.email?.split('@')[0] || 'Admin'}
+        adminRole={userData?.role ?? 'support'}
+        avatarUrl={userData?.avatar_url ?? null}
+      />
 
       {/* Le Cerveau IA pour les Admins aussi ! */}
       <GlobalCoach />

@@ -71,6 +71,7 @@ export default function SmartReviewsControls({ isActive, reviews, products }: Pr
   }
 
   const handleDelete = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if(!confirm("Supprimer cet avis ?")) return
     setDeletingId(id)
     await deleteReviewAction(id)

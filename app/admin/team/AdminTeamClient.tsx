@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState } from 'react'
 import { AdminTeamMember, toggleManagerRole } from '@/lib/admin/adminActions'
 
@@ -19,11 +21,12 @@ export default function AdminTeamClient({ initialTeam, eligibleUsers }: Props) {
 
   const handleToggleRole = async (member: AdminTeamMember, makeManager: boolean) => {
     if (member.role === 'super_admin') {
-      alert("Action impossible sur le compte Super Administrateur.")
+      toast.error("Action impossible sur le compte Super Administrateur.")
       return
     }
 
     const actionText = makeManager ? 'promouvoir comme Gestionnaire' : 'révoquer les accès de'
+    // eslint-disable-next-line no-alert
     if (!confirm(`Voulez-vous vraiment ${actionText} ${member.name} ?`)) return
     
     setLoadingId(member.id)
@@ -37,7 +40,7 @@ export default function AdminTeamClient({ initialTeam, eligibleUsers }: Props) {
         // Ajouter à la liste (normalement géré via le form d'ajout)
       }
     } catch (error: any) {
-      alert(error.message || 'Une erreur est survenue.')
+      toast.error(error.message || 'Une erreur est survenue.')
     } finally {
       setLoadingId(null)
     }
@@ -53,7 +56,7 @@ export default function AdminTeamClient({ initialTeam, eligibleUsers }: Props) {
       // Mettre à jour l'UI (Refresh brut pour simplifier et récupérer le User formaté)
       window.location.reload()
     } catch (error: any) {
-      alert(error.message || 'Erreur lors de la promotion.')
+      toast.error(error.message || 'Erreur lors de la promotion.')
       setLoadingId(null)
     }
   }

@@ -21,7 +21,7 @@ export default function PayLinkClient({ link, storeColor }: { link: any, storeCo
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           pay_link_id: link.id,
-          buyer_name: name,
+          client_name: name,
           buyer_phone: phone,
           payment_method: paymentMethod
         })

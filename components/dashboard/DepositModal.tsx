@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -23,7 +25,7 @@ export function DepositModal() {
   const totalAmount = amount + feeAmount
 
   const handleDeposit = () => {
-    alert(`Redirection vers la passerelle ${gateway.name} pour un montant total de ${totalAmount.toLocaleString('fr-FR')} FCFA...`)
+    toast(`Redirection vers la passerelle ${gateway.name} pour un montant total de ${totalAmount.toLocaleString('fr-FR')} FCFA...`)
     setIsOpen(false)
   }
 

@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { BioLinkClientModules, TrackedLink } from './BioLinkClientModules'
-import Image from 'next/image'
+import BioLinkHeaderClient from './BioLinkHeaderClient'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const dynamic = 'force-dynamic'
 
 export default async function BioLinkPage({ params }: { params: { slug: string } }) {
@@ -61,51 +62,8 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
   return (
     <main className={`min-h-screen flex flex-col items-center selection:bg-black/10 transition-colors duration-500 ${bgClass}`}>
       <div className={`w-full max-w-lg min-h-screen md:min-h-[90vh] md:my-10 md:rounded-[40px] flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out overflow-hidden border ${wrapperClass}`}>
-        
-        {/* Banner Section */}
-        {bioLink.banner_url ? (
-          <div className="w-full h-40 md:h-48 bg-cover bg-center shrink-0" {...{ style: { backgroundImage: `url(${bioLink.banner_url})` } }}></div>
-        ) : (
-          <div className="w-full h-32 md:h-40 shrink-0" {...{ style: { backgroundColor: brandColor, opacity: 0.8 } }}></div>
-        )}
-
-        {/* Sticky Profile Header */}
-        <div className={`sticky top-0 z-50 w-full flex flex-col items-center px-6 md:px-10 pt-2 pb-4 backdrop-blur-xl shadow-sm transition-colors duration-500 ${
-          theme === 'dark' ? 'bg-[#1A1A1A]/80 border-b border-gray-800' : 
-          theme === 'glass' ? 'bg-white/10 border-b border-white/20' : 
-          'bg-white/90 border-b border-gray-100'
-        }`}>
-          <div className={`w-20 h-20 md:w-24 md:h-24 rounded-full -mt-10 md:-mt-14 mb-3 flex items-center justify-center text-3xl font-black shadow-xl shrink-0 overflow-hidden ring-4 transition-all duration-300 ${
-            theme === 'dark' ? 'bg-gray-800 ring-[#1A1A1A] text-white' :
-            theme === 'glass' ? 'bg-white/20 backdrop-blur-md ring-transparent text-white border cursor-glow' :
-            'bg-white ring-white text-[#0F7A60]'
-          }`}>
-            {bioLink.avatar_url ? (
-              <Image 
-                src={bioLink.avatar_url} 
-                alt={bioLink.title || 'Profile'} 
-                width={96}
-                height={96}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span {...{ style: { color: brandColor } }}>
-                {bioLink.title ? bioLink.title.charAt(0).toUpperCase() : bioLink.user?.name?.charAt(0).toUpperCase()}
-              </span>
-            )}
-          </div>
-          
-          <h1 className="text-xl md:text-2xl font-black tracking-tight text-center">{bioLink.user?.name || bioLink.title}</h1>
-          {bioLink.title && bioLink.user?.name && (
-            <p className={`text-xs md:text-sm font-bold mt-1 tracking-wide ${
-              theme === 'dark' ? 'text-gray-500' :
-              theme === 'glass' ? 'text-white/60' :
-              'text-gray-400'
-            }`}>
-              {bioLink.title}
-            </p>
-          )}
-        </div>
+        {/* Sticky Header with Banner & Profile */}
+        <BioLinkHeaderClient bioLink={bioLink} brandColor={brandColor} theme={theme} />
 
         <div className="px-6 md:px-10 pb-16 flex flex-col items-center w-full relative z-10 flex-1">
           {bioLink.bio && (

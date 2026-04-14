@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState, useMemo, useEffect, useRef, useTransition } from 'react'
 import { ListChecks, CheckCircle2, Clock, Target, Search, Calendar, MessageSquare, Plus, X, Trash2, Edit2, Loader2, Phone, Mail, Users, AlertTriangle, FileText, UserCircle2, Megaphone, PenTool, Briefcase, Truck, Package, Sparkles } from 'lucide-react'
 import { createTaskAction, updateTaskStatus, updateTaskTitle, deleteTaskAction, getStoreCustomersAction } from './actions'
@@ -213,7 +215,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
         client_name: tempTask.client_name, client_phone: tempTask.client_phone, order_id: tempTask.order_id
       })
       if (!res.success) {
-        alert(res.error)
+        toast(res.error)
         setTasks(backup)
       } else {
         // Remplace l'ID temporaire par le vrai ID venant de DB (le refresh Next.js va aussi retélécharger tout)
@@ -222,6 +224,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
   }
 
   const handleDelete = (id: string) => {
+    // eslint-disable-next-line no-alert
     if(confirm('Supprimer cette tâche ?')) {
       const backup = [...tasks]
       setTasks(prev => prev.filter(t => t.id !== id))
@@ -229,7 +232,7 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
       startTransition(async () => {
         const res = await deleteTaskAction(id)
         if (!res.success) {
-          alert('Erreur: Impossible de supprimer.')
+          toast.error('Erreur: Impossible de supprimer.')
           setTasks(backup)
         }
       })

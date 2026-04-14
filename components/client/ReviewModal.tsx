@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState } from 'react'
 import { Star, MessageSquare } from 'lucide-react'
 import { submitReview } from '@/app/client/orders/actions'
@@ -44,7 +46,7 @@ export function ReviewModal({ orderId, storeId, productId, buyerName, existingRe
     const res = await submitReview(formData)
     setIsSubmitting(false)
     if (res?.error) {
-      alert(res.error)
+      toast(res.error)
     } else {
       setIsOpen(false)
     }

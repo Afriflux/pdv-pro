@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PortalSidebar } from '@/components/portal/PortalSidebar'
+import { PortalMobileBottomNav } from '@/components/portal/PortalMobileBottomNav'
 import GlobalCoach from '@/components/dashboard/GlobalCoach'
 import AffiliateContractBanner from '@/components/affiliate/AffiliateContractBanner'
 
@@ -62,6 +63,13 @@ export default async function PortalLayout({
 
       <main className="relative flex-1 bg-gray-50 min-w-0 h-screen overflow-y-auto overflow-x-hidden">
         <GlobalHomeButton />
+
+        {/* 🌟 UNIVERSAL MESH BACKGROUND 🌟 */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+          <div className="absolute top-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-emerald-300/10 blur-[130px] pointer-events-none mix-blend-multiply animate-pulse [animation-duration:10s]" />
+          <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] rounded-full bg-teal-300/10 blur-[120px] pointer-events-none mix-blend-multiply animate-pulse [animation-duration:12s] [animation-delay:2s]" />
+        </div>
+
         {/* Bandeau alerte contrat affilié — affiché uniquement si non signé */}
         {!contractAccepted && (
           <AffiliateContractBanner
@@ -69,10 +77,17 @@ export default async function PortalLayout({
           />
         )}
 
-        <div className="pt-14 lg:pt-0 pb-12">
+        <div className="relative z-10 pt-14 lg:pt-0 pb-24 lg:pb-12 w-full max-w-[2000px] mx-auto px-3 lg:px-8 xl:px-10 min-h-full">
           {children}
         </div>
       </main>
+
+      {/* Bottom Tab Bar Mobile */}
+      <PortalMobileBottomNav
+        userName={userName}
+        storeName={storeName}
+        avatarUrl={avatarUrl}
+      />
 
       <GlobalCoach />
     </div>

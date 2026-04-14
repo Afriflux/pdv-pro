@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { ClientSidebar } from '@/components/client/ClientSidebar'
+import { ClientMobileBottomNav } from '@/components/client/ClientMobileBottomNav'
 
 export const metadata = {
   title: 'Espace Client | Yayyam',
@@ -51,14 +52,23 @@ export default async function ClientLayout({
 
       <main className="relative flex-1 min-w-0 h-screen bg-gray-50 font-sans overflow-y-auto overflow-x-hidden">
         <GlobalHomeButton />
-        {/* Ambient Glows */}
-        <div className="absolute top-0 left-10 w-[600px] h-[600px] bg-[#0F7A60]/[0.03] blur-[120px] rounded-full pointer-events-none z-0" />
-        <div className="absolute top-[20%] right-0 w-[500px] h-[500px] bg-[#C9A84C]/[0.03] blur-[120px] rounded-full pointer-events-none z-0" />
+
+        {/* 🌟 UNIVERSAL MESH BACKGROUND 🌟 */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+          <div className="absolute top-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-emerald-300/10 blur-[130px] pointer-events-none mix-blend-multiply animate-pulse [animation-duration:10s]" />
+          <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] rounded-full bg-teal-300/10 blur-[120px] pointer-events-none mix-blend-multiply animate-pulse [animation-duration:12s] [animation-delay:2s]" />
+        </div>
         
-        <div className="pt-14 lg:pt-0 pb-12 h-full relative z-10">
+        <div className="relative z-10 pt-14 lg:pt-0 pb-24 lg:pb-12 w-full max-w-[2000px] mx-auto px-3 lg:px-8 xl:px-10 min-h-full">
           {children}
         </div>
       </main>
+
+      {/* Bottom Tab Bar Mobile */}
+      <ClientMobileBottomNav
+        userName={userName}
+        avatarUrl={avatarUrl}
+      />
     </div>
   )
 }

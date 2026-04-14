@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LifeBuoy, X, Check, Loader2, Send } from 'lucide-react'
@@ -61,7 +63,7 @@ export function HelpdeskWidget({ storeId, accentColor }: Props) {
         setForm({ customer_name: '', customer_email: '', customer_phone: '', order_id: '', subject: '', message: '' })
       }, 3000)
     } else {
-       alert("Erreur lors de l'envoi de la demande.")
+       toast.error("Erreur lors de l'envoi de la demande.")
     }
     setLoading(false)
   }

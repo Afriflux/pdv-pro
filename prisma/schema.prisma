@@ -11,74 +11,63 @@ datasource db {
 }
 
 model User {
-  id                    String                @id
-  role                  Role                  @default(acheteur)
-  name                  String
-  phone                 String?               @unique
-  email                 String?
-  address               String?
-  location_lat          Float?
-  location_lng          Float?
-  created_at            DateTime              @default(now())
-  updated_at            DateTime              @updatedAt
-  avatar_url            String?
-  addresses             DeliveryAddress[]
-  adminLogs             AdminLog[]
-  Ambassador            Ambassador?
-  Complaint             Complaint[]
-  masterclassProgresses MasterclassProgress[]
-  notifications         Notification[]
-  npsResponses          NpsResponse[]
-  orders                Order[]
-  reports               Report[]
-  store                 Store?
-  tipReads              TipRead[]
-
-  // ── Outils & Paramètres supplémentaires affilié/vendeur ──
-  professional_phone String?
-  social_links       Json?
-  meta_pixel_id      String?
-  tiktok_pixel_id    String?
-  google_tag_id      String?
-
-  // ── KYC Global (Affiliés & Closers) ──
-  kyc_status        String? @default("unverified")
-  kyc_document_type String?
-  kyc_documents     Json?
-  id_card_url       String?
-
-  // ── Paramètres de retrait Closer/Affilié ──
-  withdrawal_method                 String?  @default("wave")
-  withdrawal_number                 String?
+  id                                String                @id
+  role                              Role                  @default(acheteur)
+  name                              String
+  phone                             String?               @unique
+  email                             String?
+  address                           String?
+  location_lat                      Float?
+  location_lng                      Float?
+  created_at                        DateTime              @default(now())
+  updated_at                        DateTime              @updatedAt
+  avatar_url                        String?
+  google_tag_id                     String?
+  meta_pixel_id                     String?
+  professional_phone                String?
+  social_links                      Json?
+  tiktok_pixel_id                   String?
+  withdrawal_method                 String?               @default("wave")
   withdrawal_name                   String?
-  closer_auto_withdraw              Boolean? @default(false)
-  closer_auto_withdraw_threshold    Float?   @default(50000)
-  affiliate_auto_withdraw           Boolean? @default(false)
-  affiliate_auto_withdraw_threshold Float?   @default(50000)
-
-  // ── Balance Closer ──
-  closer_balance      Float? @default(0)
-  closer_total_earned Float? @default(0)
-
-  CloserWithdrawal CloserWithdrawal[]
-
-  // ── Portefeuille Client ──
-  client_wallet_balance Float?         @default(0)
-  client_payment_method String?        @default("wave")
-  client_payment_number String?
-  coachingSlots         CoachingSlot[]
-  bookings              Booking[]
-  blockedDates          BlockedDate[]
-  workflows             Workflow[]
-  tasks                 Task[]
-  BioLink               BioLink?
-
-  // ── YAYYAM OS ERP Relations ──
-  internal_role_id  String?             @db.Uuid
-  InternalRole      InternalRole?       @relation(fields: [internal_role_id], references: [id], onUpdate: NoAction)
-  securityAuditLogs AuditLog[]
-  employeeContract  EmployeeContract?
-  shareholding      ShareholderEquity[]
+  withdrawal_number                 String?
+  closer_auto_withdraw              Boolean?              @default(false)
+  closer_auto_withdraw_threshold    Float?                @default(50000)
+  affiliate_auto_withdraw           Boolean?              @default(false)
+  affiliate_auto_withdraw_threshold Float?                @default(50000)
+  client_payment_method             String?               @default("wave")
+  client_payment_number             String?
+  client_wallet_balance             Float?                @default(0)
+  closer_balance                    Float?                @default(0)
+  closer_total_earned               Float?                @default(0)
+  id_card_url                       String?
+  kyc_document_type                 String?
+  kyc_documents                     Json?
+  kyc_status                        String?               @default("unverified")
+  internal_role_id                  String?               @db.Uuid
+  adminLogs                         AdminLog[]
+  Ambassador                        Ambassador?
+  securityAuditLogs                 AuditLog[]
+  BioLink                           BioLink?
+  blockedDates                      BlockedDate[]
+  bookings                          Booking[]
+  CloserWithdrawal                  CloserWithdrawal[]
+  coachingSlots                     CoachingSlot[]
+  Complaint                         Complaint[]
+  addresses                         DeliveryAddress[]
+  employeeContract                  EmployeeContract?
+  masterclassProgresses             MasterclassProgress[]
+  notifications                     Notification[]
+  npsResponses                      NpsResponse[]
+  orders                            Order[]
+  reports                           Report[]
+  shareholding                      ShareholderEquity[]
+  store                             Store?
+  tasks                             Task[]
+  tipReads                          TipRead[]
+  InternalRole                      InternalRole?         @relation(fields: [internal_role_id], references: [id], onUpdate: NoAction)
+  workflows                         Workflow[]
+  payoutMethods                     PayoutMethod[]
+  payoutRequests                    PayoutRequest[]
 
   @@schema("public")
 }
@@ -91,12 +80,12 @@ model DeliveryAddress {
   phone          String
   address        String
   city           String?
-  latitude       Float?
-  longitude      Float?
-  delivery_notes String?
   is_default     Boolean  @default(false)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
+  delivery_notes String?
+  latitude       Float?
+  longitude      Float?
   user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
@@ -107,7 +96,6 @@ model Store {
   id                                                  String                 @id @default(uuid())
   user_id                                             String                 @unique
   name                                                String
-  store_name                                          String?
   slug                                                String                 @unique
   logo_url                                            String?
   primary_color                                       String?
@@ -115,8 +103,6 @@ model Store {
   updated_at                                          DateTime               @updatedAt
   affiliate_active                                    Boolean                @default(false)
   affiliate_margin                                    Float                  @default(0.10)
-  closer_active                                       Boolean                @default(false)
-  closer_margin                                       Float                  @default(0.10)
   id_card_url                                         String?
   kyc_status                                          String                 @default("unverified")
   onboarding_completed                                Boolean                @default(false)
@@ -132,13 +118,8 @@ model Store {
   kyc_documents                                       Json?
   social_links                                        Json?
   meta_pixel_id                                       String?
-  meta_capi_token                                     String?
   tiktok_pixel_id                                     String?
-  tiktok_capi_token                                   String?
   google_tag_id                                       String?
-  google_api_secret                                   String?
-  seo_title                                           String?
-  seo_description                                     String?
   telegram_chat_id                                    String?
   telegram_notifications                              Json?                  @default("{\"stock\": true, \"orders\": true, \"payments\": true, \"whatsapp\": true}")
   referred_by                                         String?
@@ -168,16 +149,24 @@ model Store {
   gamification_active                                 Boolean?               @default(false)
   gamification_config                                 Json?
   vendor_type_updated_at                              DateTime?
+  closer_active                                       Boolean                @default(false)
+  closer_margin                                       Float                  @default(0.10)
   social_proof_active                                 Boolean                @default(false)
   social_proof_config                                 Json?
   volume_discounts_active                             Boolean                @default(false)
   volume_discounts_config                             Json?
+  meta_capi_token                                     String?
   smart_reviews_active                                Boolean                @default(false)
+  seo_description                                     String?
+  seo_title                                           String?
+  store_name                                          String?
+  google_api_secret                                   String?
+  tiktok_capi_token                                   String?
   Affiliate                                           Affiliate[]
   AffiliateReferral                                   AffiliateReferral?
   Ambassador_Ambassador_store_idToStore               Ambassador[]           @relation("Ambassador_store_idToStore")
-  HelpdeskTicket                                      HelpdeskTicket[]
   AmbassadorReferral                                  AmbassadorReferral?
+  assetPurchases                                      AssetPurchase[]
   blockedDates                                        BlockedDate[]
   bookings                                            Booking[]
   closingRequests                                     ClosingRequest[]
@@ -186,15 +175,25 @@ model Store {
   CommunityLike                                       CommunityLike[]
   CommunityPost                                       CommunityPost[]
   Complaint                                           Complaint[]
+  dailyDigests                                        DailyDigest[]
   deliverers                                          Deliverer[]
   deliveryZones                                       DeliveryZone[]
+  HelpdeskTicket                                      HelpdeskTicket[]
+  installedApps                                       InstalledApp[]
+  leads                                               Lead[]
+  loyalty_config                                      LoyaltyConfig?
+  loyalty_transactions                                LoyaltyTransaction[]
   orders                                              Order[]
+  paymentLinks                                        PaymentLink[]
   products                                            Product[]
   promos                                              PromoCode[]
   promotions                                          Promotion[]
+  quotes                                              Quote[]
   Review                                              Review[]
   pages                                               SalePage[]
   shortLinks                                          ShortLink[]
+  sms_campaigns                                       SmsCampaign[]
+  sms_credits                                         SmsCredit?
   Store                                               Store?                 @relation("StoreToStore", fields: [referred_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
   other_Store                                         Store[]                @relation("StoreToStore")
   user                                                User                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -203,29 +202,19 @@ model Store {
   subscriptions                                       Subscription[]
   tasks                                               Task[]
   TelegramCommunity                                   TelegramCommunity[]
+  themeTemplates                                      ThemeTemplate[]
   wallet                                              Wallet?
+  webhooks                                            Webhook[]
+  whatsapp_bot                                        WhatsappBot?
   WithdrawalRequest                                   WithdrawalRequest[]
   workflows                                           Workflow[]
   telegram_link_tokens                                telegram_link_tokens[]
-  leads                                               Lead[]
-  themeTemplates                                      ThemeTemplate[]
-  installedApps                                       InstalledApp[]
-  webhooks                                            Webhook[]
-  assetPurchases                                      AssetPurchase[]
-  paymentLinks                                        PaymentLink[]
-  quotes                                              Quote[]
-  dailyDigests                                        DailyDigest[]
-  whatsapp_bot                                        WhatsappBot?
-  sms_credits                                         SmsCredit?
-  sms_campaigns                                       SmsCampaign[]
-  loyalty_config                                      LoyaltyConfig?
-  loyalty_transactions                                LoyaltyTransaction[]
 
   @@schema("public")
 }
 
 model Product {
-  id                      String      @id @default(uuid())
+  id                      String              @id @default(uuid())
   store_id                String
   type                    ProductType
   name                    String
@@ -233,10 +222,10 @@ model Product {
   price                   Float
   images                  String[]
   category                String?
-  active                  Boolean     @default(true)
-  created_at              DateTime    @default(now())
-  updated_at              DateTime    @updatedAt
-  cash_on_delivery        Boolean     @default(false)
+  active                  Boolean             @default(true)
+  created_at              DateTime            @default(now())
+  updated_at              DateTime            @updatedAt
+  cash_on_delivery        Boolean             @default(false)
   digital_file_url        String?
   digital_link            String?
   shipping_fee            Float?
@@ -249,45 +238,42 @@ model Product {
   license_notes           String?
   license_type            String?
   max_downloads           Int?
-  video_download_allowed  Boolean     @default(false)
-  views                   Int?        @default(0)
-  resale_allowed          Boolean?    @default(false)
-  resale_commission       Decimal?    @default(0.00) @db.Decimal(5, 2)
+  video_download_allowed  Boolean             @default(false)
+  views                   Int?                @default(0)
+  resale_allowed          Boolean?            @default(false)
+  resale_commission       Decimal?            @default(0.00) @db.Decimal(5, 2)
   seo_title               String?
   seo_description         String?
-  template                String?     @default("default")
-  coaching_type           String?     @default("individual")
-  max_participants        Int?        @default(1)
-  coaching_durations      Int[]       @default([60])
-  coaching_is_pack        Boolean?    @default(false)
-  coaching_pack_count     Int?        @default(1)
-  sales                   Int         @default(0)
+  coaching_type           String?             @default("individual")
+  max_participants        Int?                @default(1)
+  coaching_durations      Int[]               @default([60])
+  coaching_is_pack        Boolean?            @default(false)
+  coaching_pack_count     Int?                @default(1)
+  sales                   Int                 @default(0)
   affiliate_active        Boolean?
   affiliate_margin        Float?
-  closer_active           Boolean?
-  closer_margin           Float?
-  payment_type            String?     @default("one_time")
+  payment_type            String?             @default("one_time")
   recurring_interval      String?
   affiliate_media_kit_url String?
-
-  // Bump & Upsells
-  bump_active     Boolean? @default(false)
-  bump_offer_text String?
-  bump_product_id String?
-  oto_active      Boolean? @default(false)
-  oto_product_id  String?
-  oto_discount    Float?
-
-  bookings          Booking[]
-  Complaint         Complaint[]
-  digitalAccess     DigitalAccess[]
-  orders            Order[]
-  store             Store               @relation(fields: [store_id], references: [id], onDelete: Cascade)
-  variants          ProductVariant[]
-  Review            Review[]
-  shortLinks        ShortLink[]
-  TelegramCommunity TelegramCommunity[]
-  leads             Lead[]
+  closer_active           Boolean?
+  closer_margin           Float?
+  bump_active             Boolean?            @default(false)
+  bump_offer_text         String?
+  bump_product_id         String?
+  oto_active              Boolean?            @default(false)
+  oto_discount            Float?
+  oto_product_id          String?
+  template                String?             @default("default")
+  bookings                Booking[]
+  Complaint               Complaint[]
+  digitalAccess           DigitalAccess[]
+  leads                   Lead[]
+  orders                  Order[]
+  store                   Store               @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  variants                ProductVariant[]
+  Review                  Review[]
+  shortLinks              ShortLink[]
+  TelegramCommunity       TelegramCommunity[]
 
   @@index([store_id])
   @@index([store_id], map: "idx_product_store_id")
@@ -372,12 +358,12 @@ model Order {
   delivery_commission      Float           @default(0)
   buyer_email              String?
   affiliate_amount         Float?          @default(0)
-  affiliate_subid          String?
   is_subscription          Boolean         @default(false)
   next_billing_at          DateTime?
   deliverer_id             String?
   bump_product_id          String?
   bump_variant_id          String?
+  affiliate_subid          String?
   booking                  Booking?
   closing                  ClosingRequest?
   digitalAccess            DigitalAccess[]
@@ -444,10 +430,10 @@ model Wallet {
   auto_withdraw_enabled   Boolean?            @default(false)
   auto_withdraw_threshold Float?              @default(100000)
   monthly_goal            Float?              @default(1000000)
+  transactions            Transaction[]
   vendor                  Store               @relation(fields: [vendor_id], references: [id], onDelete: Cascade)
   withdrawals             Withdrawal[]
   WithdrawalRequest       WithdrawalRequest[]
-  transactions            Transaction[]
 
   @@schema("public")
 }
@@ -495,8 +481,6 @@ model Affiliate {
   active_referred      Int?                   @default(0)
   commission_rate      Float?                 @default(5.00)
   is_active            Boolean?               @default(true)
-  contract_accepted    Boolean?               @default(false)
-  contract_accepted_at DateTime?              @db.Timestamptz(6)
   created_at           DateTime?              @default(now()) @db.Timestamptz(6)
   updated_at           DateTime?              @default(now()) @db.Timestamptz(6)
   token                String?
@@ -507,6 +491,8 @@ model Affiliate {
   vendor_id            String                 @default("")
   total_withdrawn      Float                  @default(0)
   telegram_chat_id     String?
+  contract_accepted    Boolean?               @default(false)
+  contract_accepted_at DateTime?              @db.Timestamptz(6)
   Store                Store                  @relation(fields: [store_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   AffiliateClickLog    AffiliateClickLog[]
   AffiliateReferral    AffiliateReferral[]
@@ -532,10 +518,10 @@ model PromoCode {
   active       Boolean    @default(true)
   product_ids  String[]
   created_at   DateTime   @default(now())
-  orders       Order[]
-  store        Store      @relation(fields: [store_id], references: [id], onDelete: Cascade)
   affiliate_id String?
-  Affiliate    Affiliate? @relation(fields: [affiliate_id], references: [id], onDelete: SetNull)
+  orders       Order[]
+  Affiliate    Affiliate? @relation(fields: [affiliate_id], references: [id])
+  store        Store      @relation(fields: [store_id], references: [id], onDelete: Cascade)
 
   @@unique([store_id, code])
   @@schema("public")
@@ -772,10 +758,10 @@ model Deliverer {
   name       String
   phone      String
   active     Boolean   @default(true)
-  expires_at DateTime?
   created_at DateTime  @default(now())
-  updated_at DateTime @updatedAt
-  store      Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  updated_at DateTime  @updatedAt
+  expires_at DateTime?
+  store      Store     @relation(fields: [store_id], references: [id], onDelete: Cascade)
   orders     Order[]
 
   @@index([store_id])
@@ -799,12 +785,12 @@ model Webhook {
 model CoachingSlot {
   id          String   @id @default(uuid())
   store_id    String?
-  user_id     String?
   day_of_week Int
   start_time  String
   end_time    String
   active      Boolean  @default(true)
   created_at  DateTime @default(now())
+  user_id     String?
   store       Store?   @relation(fields: [store_id], references: [id], onDelete: Cascade)
   user        User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
@@ -815,7 +801,6 @@ model Booking {
   id           String   @id @default(uuid())
   order_id     String?  @unique
   store_id     String?
-  user_id      String?
   product_id   String?
   booking_date DateTime
   start_time   String
@@ -823,6 +808,7 @@ model Booking {
   status       String   @default("pending")
   meet_link    String?
   created_at   DateTime @default(now())
+  user_id      String?
   order        Order?   @relation(fields: [order_id], references: [id], onDelete: Cascade)
   product      Product? @relation(fields: [product_id], references: [id], onDelete: Cascade)
   store        Store?   @relation(fields: [store_id], references: [id], onDelete: Cascade)
@@ -832,20 +818,20 @@ model Booking {
 }
 
 model MasterclassArticle {
-  id         String   @id @default(cuid())
-  emoji      String   @default("📖")
-  title      String
-  color      String   @default("bg-emerald-50")
-  category   String
-  readTime   String   @default("5 min")
-  intro      String
-  tips       Json
-  is_active  Boolean  @default(true)
-  is_premium Boolean  @default(false)
-  price         Float    @default(0)
-  allowed_roles String[] @default(["all"])
+  id            String   @id @default(cuid())
+  emoji         String   @default("📖")
+  title         String
+  color         String   @default("bg-emerald-50")
+  category      String
+  readTime      String   @default("5 min")
+  intro         String
+  tips          Json
+  is_active     Boolean  @default(true)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
+  is_premium    Boolean  @default(false)
+  price         Float    @default(0)
+  allowed_roles String[] @default(["all"])
 
   @@schema("public")
 }
@@ -862,32 +848,31 @@ model MasterclassProgress {
 }
 
 model MarketplaceApp {
-  id              String   @id @default(uuid())
-  name            String
-  description     String?
-  icon_url        String?
-  category        String
-  is_premium      Boolean  @default(false)
-  price           Float    @default(0)
-  allowed_roles   String[] @default(["all"])
-  features        Json?
-  active          Boolean  @default(true)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  
+  id            String   @id @default(uuid())
+  name          String
+  description   String?
+  icon_url      String?
+  category      String
+  is_premium    Boolean  @default(false)
+  price         Float    @default(0)
+  allowed_roles String[] @default(["all"])
+  features      Json?
+  active        Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
   @@schema("public")
 }
-
 
 model BlockedDate {
   id         String   @id @default(cuid())
   store_id   String?
-  user_id    String?
   date       DateTime
   reason     String?
   created_at DateTime @default(now())
   start_time String?
   end_time   String?
+  user_id    String?
   store      Store?   @relation(fields: [store_id], references: [id], onDelete: Cascade)
   user       User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
@@ -934,10 +919,10 @@ model BuyerScore {
   total_orders    Int      @default(0)
   success_orders  Int      @default(0)
   refused_orders  Int      @default(0)
-  disputed_orders Int      @default(0)
-  score           Int      @default(50)
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
+  disputed_orders Int      @default(0)
+  score           Int      @default(50)
 
   @@schema("public")
 }
@@ -945,8 +930,8 @@ model BuyerScore {
 model BuyerBlacklist {
   id            String   @id @default(uuid())
   phone         String   @unique
-  reason        String   // "3+ cancelled COD" | "fraud_detected" | "manual"
-  flagged_by    String?  // store_id qui a signalé
+  reason        String
+  flagged_by    String?
   total_refused Int      @default(0)
   created_at    DateTime @default(now())
 
@@ -994,17 +979,17 @@ model TelegramMember {
 model Workflow {
   id          String    @id @default(uuid())
   store_id    String?
-  user_id     String?
   title       String
   description String?
   status      String    @default("inactive")
   triggerType String
   config      Json
-  is_premium  Boolean   @default(false)
-  price       Float     @default(0)
   last_run    DateTime?
   created_at  DateTime  @default(now())
   updated_at  DateTime  @default(now()) @updatedAt
+  user_id     String?
+  is_premium  Boolean   @default(false)
+  price       Float     @default(0)
   store       Store?    @relation(fields: [store_id], references: [id], onDelete: Cascade)
   user        User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
@@ -1015,7 +1000,6 @@ model Workflow {
 model Task {
   id           String   @id @default(uuid())
   store_id     String?
-  user_id      String?
   title        String
   priority     String   @default("medium")
   status       String   @default("todo")
@@ -1027,6 +1011,7 @@ model Task {
   client_name  String?
   client_phone String?
   order_id     String?
+  user_id      String?
   store        Store?   @relation(fields: [store_id], references: [id], onDelete: Cascade)
   user         User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
@@ -1813,8 +1798,8 @@ model TelegramCommunityAccess {
   community_id      String
   buyer_phone       String?
   invite_link       String?
-  telegram_user_id  String?
   sent_at           DateTime?         @default(now()) @db.Timestamptz(6)
+  telegram_user_id  String?
   TelegramCommunity TelegramCommunity @relation(fields: [community_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([community_id], map: "idx_tca_community")
@@ -1855,6 +1840,375 @@ model telegram_link_tokens {
 
   @@index([store_id], map: "idx_telegram_link_tokens_store_id")
   @@index([token], map: "idx_telegram_link_tokens_token")
+  @@schema("public")
+}
+
+model Lead {
+  id                String     @id @default(dbgenerated("(gen_random_uuid())::text"))
+  store_id          String
+  product_id        String?
+  closer_id         String?
+  status            LeadStatus @default(new)
+  name              String
+  phone             String
+  email             String?
+  source            String     @default("abandoned_cart")
+  notes             String?
+  claimed_at        DateTime?  @db.Timestamptz(6)
+  closed_at         DateTime?  @db.Timestamptz(6)
+  created_at        DateTime?  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime?  @default(now()) @db.Timestamptz(6)
+  commission_amount Float?
+  Product           Product?   @relation(fields: [product_id], references: [id])
+  Store             Store      @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@index([store_id], map: "idx_lead_store")
+  @@index([closer_id], map: "idx_lead_closer")
+  @@index([status], map: "idx_lead_status")
+  @@schema("public")
+}
+
+model BioLink {
+  id                String   @id @default(uuid())
+  user_id           String   @unique
+  slug              String   @unique
+  title             String?
+  bio               String?
+  avatar_url        String?
+  theme             String   @default("light")
+  links             Json?    @default("[]")
+  socials           Json?    @default("[]")
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  views             Int      @default(0)
+  banner_url        String?
+  brand_color       String   @default("#0F7A60")
+  clicks            Int      @default(0)
+  newsletter_active Boolean? @default(false)
+  newsletter_text   String?  @default("Abonnez-vous à ma newsletter")
+  tip_active        Boolean? @default(false)
+  tip_text          String?  @default("Offrez-moi un café ☕️")
+  phone_active      Boolean? @default(false)
+  phone_number      String?
+  phone_text        String?  @default("Appeler Maintenant 📞")
+  user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@schema("public")
+}
+
+model ThemeTemplate {
+  id            String   @id @default(uuid())
+  store_id      String?
+  name          String
+  description   String?
+  type          String
+  category      String
+  sub_category  String?
+  niche         String?
+  preview_url   String?
+  data          Json
+  is_premium    Boolean  @default(false)
+  is_global     Boolean  @default(false)
+  allowed_roles String[] @default(["all"])
+  active        Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  price         Float    @default(0)
+  store         Store?   @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@index([store_id])
+  @@schema("public")
+}
+
+model InstalledApp {
+  id           String   @id @default(uuid())
+  store_id     String
+  app_id       String
+  installed_at DateTime @default(now())
+  status       String   @default("active")
+  settings     Json?
+  store        Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@unique([store_id, app_id])
+  @@index([store_id])
+  @@schema("public")
+}
+
+model AssetPurchase {
+  id           String   @id @default(uuid())
+  store_id     String
+  asset_type   String
+  asset_id     String
+  amount_paid  Float
+  purchased_at DateTime @default(now())
+  store        Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@index([store_id])
+  @@schema("public")
+}
+
+model PaymentLink {
+  id          String   @id @default(uuid())
+  store_id    String
+  title       String
+  description String?
+  amount      Float
+  currency    String   @default("XOF")
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  store       Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@index([store_id])
+  @@schema("public")
+}
+
+model Quote {
+  id           String    @id @default(uuid())
+  store_id     String
+  client_name  String
+  client_email String?
+  client_phone String?
+  items        Json
+  total_amount Float
+  status       String    @default("DRAFT")
+  expires_at   DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  store        Store     @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@index([store_id])
+  @@schema("public")
+}
+
+model HelpdeskTicket {
+  id             String   @id @default(uuid())
+  store_id       String
+  order_id       String?
+  customer_name  String
+  customer_email String?
+  customer_phone String?
+  subject        String
+  message        String
+  status         String   @default("OPEN")
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  store          Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@index([store_id])
+  @@schema("public")
+}
+
+model DailyDigest {
+  id          String   @id @default(uuid())
+  store_id    String
+  date        DateTime @db.Date
+  summary     String
+  metrics     Json
+  suggestions Json
+  score       Int      @default(0)
+  read        Boolean  @default(false)
+  created_at  DateTime @default(now())
+  store       Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@unique([store_id, date])
+  @@index([store_id])
+  @@schema("public")
+}
+
+model WhatsappBot {
+  id              String   @id @default(uuid())
+  store_id        String   @unique
+  active          Boolean  @default(false)
+  welcome_message String   @default("Bienvenue ! Tapez *catalogue* pour voir nos produits ou *aide* pour les commandes disponibles.")
+  auto_reply      Boolean  @default(true)
+  ai_enabled      Boolean  @default(false)
+  phone_number    String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  store           Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model WhatsappConversation {
+  id           String   @id @default(uuid())
+  store_id     String
+  phone        String
+  client_name  String?
+  last_message String?
+  context      Json?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@unique([store_id, phone])
+  @@schema("public")
+}
+
+model SmsCredit {
+  id         String   @id @default(uuid())
+  store_id   String   @unique
+  credits    Int      @default(0)
+  used       Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  store      Store    @relation(fields: [store_id], references: [id])
+
+  @@schema("public")
+}
+
+model SmsCampaign {
+  id           String    @id @default(uuid())
+  store_id     String
+  name         String
+  message      String
+  recipients   Json
+  total_sent   Int       @default(0)
+  total_failed Int       @default(0)
+  status       String    @default("draft")
+  scheduled_at DateTime?
+  sent_at      DateTime?
+  created_at   DateTime  @default(now())
+  store        Store     @relation(fields: [store_id], references: [id])
+
+  @@schema("public")
+}
+
+model SmsLog {
+  id          String   @id @default(uuid())
+  store_id    String
+  phone       String
+  message     String
+  type        String
+  status      String   @default("sent")
+  twilio_sid  String?
+  campaign_id String?
+  created_at  DateTime @default(now())
+
+  @@schema("public")
+}
+
+model LoyaltyAccount {
+  id           String               @id @default(uuid())
+  phone        String               @unique
+  total_earned Int                  @default(0)
+  balance      Int                  @default(0)
+  tier         String               @default("bronze")
+  created_at   DateTime             @default(now())
+  updated_at   DateTime             @updatedAt
+  transactions LoyaltyTransaction[]
+
+  @@schema("public")
+}
+
+model LoyaltyTransaction {
+  id          String         @id @default(uuid())
+  account_id  String
+  type        String
+  points      Int
+  description String
+  order_id    String?
+  store_id    String?
+  created_at  DateTime       @default(now())
+  account     LoyaltyAccount @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  store       Store?         @relation(fields: [store_id], references: [id])
+
+  @@schema("public")
+}
+
+model LoyaltyConfig {
+  id             String   @id @default(uuid())
+  store_id       String   @unique
+  enabled        Boolean  @default(false)
+  points_per_100 Int      @default(1)
+  max_redeem_pct Int      @default(20)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  store          Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model InternalRole {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique
+  description String?
+  color_cls   String?  @default("text-emerald-600 border-emerald-300")
+  bg_cls      String?  @default("bg-emerald-50")
+  is_custom   Boolean  @default(true)
+  permissions Json     @default("{}")
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  users       User[]
+
+  @@schema("public")
+}
+
+model AuditLog {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String
+  action     String
+  module     String
+  details    Json?
+  ip_address String?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  User       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], map: "idx_audit_user")
+  @@index([action], map: "idx_audit_action")
+  @@schema("public")
+}
+
+model EmployeeContract {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id       String    @unique
+  job_title     String
+  department    String
+  base_salary   Float     @default(0)
+  status        String    @default("active")
+  hired_at      DateTime  @default(now()) @db.Timestamptz(6)
+  terminated_at DateTime? @db.Timestamptz(6)
+  User          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model ShareholderEquity {
+  id             String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String
+  equity_percent Float
+  start_date     DateTime               @default(now()) @db.Timestamptz(6)
+  end_date       DateTime?              @db.Timestamptz(6)
+  is_active      Boolean                @default(true)
+  created_at     DateTime               @default(now()) @db.Timestamptz(6)
+  Distributions  DividendDistribution[]
+  User           User                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@schema("public")
+}
+
+model DividendDistribution {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  equity_id      String            @db.Uuid
+  amount_distrib Float
+  net_profit_ref Float
+  distributed_at DateTime          @default(now()) @db.Timestamptz(6)
+  Equity         ShareholderEquity @relation(fields: [equity_id], references: [id])
+
+  @@schema("public")
+}
+
+model CompanyExpense {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title        String
+  category     String
+  amount       Float
+  is_recurring Boolean  @default(false)
+  frequency    String?
+  expense_date DateTime @default(now()) @db.Timestamptz(6)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+
   @@schema("public")
 }
 
@@ -1996,395 +2350,50 @@ enum LeadStatus {
   @@schema("public")
 }
 
-model Lead {
-  id         String     @id @default(dbgenerated("(gen_random_uuid())::text"))
-  store_id   String
-  product_id String?
-  closer_id  String? // ID of the closer who claimed it
-  status     LeadStatus @default(new)
+model PaymentIntegration {
+  id                    String   @id @default(uuid())
+  provider              String   @unique // ex: "wave", "paytech", "cinetpay"
+  name                  String?
+  is_active             Boolean  @default(true)
+  commission_rate       Float    @default(0.0) // ex: 1.0, 2.5
+  priority_order        Int      @default(0)
+  credentials_encrypted String?
+  supported_methods     Json?    // ex: ["orange_money", "wave", "card"]
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
 
-  // Prospect Info
-  name  String
-  phone String
-  email String?
-
-  // Context
-  source String  @default("abandoned_cart") // or "callback_request"
-  notes  String?
-
-  claimed_at DateTime? @db.Timestamptz(6)
-  closed_at  DateTime? @db.Timestamptz(6)
-  created_at DateTime? @default(now()) @db.Timestamptz(6)
-  updated_at DateTime? @default(now()) @db.Timestamptz(6)
-
-  commission_amount Float?
-
-  Store   Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
-  Product Product? @relation(fields: [product_id], references: [id], onDelete: SetNull)
-
-  @@index([store_id], map: "idx_lead_store")
-  @@index([closer_id], map: "idx_lead_closer")
-  @@index([status], map: "idx_lead_status")
   @@schema("public")
 }
 
-model BioLink {
-  id          String   @id @default(uuid())
-  user_id     String   @unique
-  slug        String   @unique
-  title       String?  
-  bio         String?
-  avatar_url  String?
-  banner_url  String?
-  brand_color String   @default("#0F7A60")
-  theme             String   @default("light")
-  links             Json?    @default("[]")
-  socials           Json?    @default("[]")
-  newsletter_active Boolean? @default(false)
-  newsletter_text   String?  @default("Abonnez-vous à ma newsletter")
-  tip_active        Boolean? @default(false)
-  tip_text          String?  @default("Offrez-moi un café ☕️")
-  phone_active      Boolean? @default(false)
-  phone_number      String?
-  phone_text        String?  @default("Appeler Maintenant 📞")
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
-  views             Int      @default(0)
-  clicks            Int      @default(0)
+model PayoutMethod {
+  id             String          @id @default(uuid())
+  user_id        String
+  channel        String          // ex: "wave", "orange_money", "bank_transfer"
+  destination    String          // ex: numero de tel ou IBAN
+  is_default     Boolean         @default(false)
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
+  
+  user           User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  PayoutRequest  PayoutRequest[]
 
-  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  @@schema("public")
+}
+
+model PayoutRequest {
+  id               String       @id @default(uuid())
+  user_id          String
+  amount           Float
+  payout_method_id String
+  status           String       @default("pending") // "pending", "completed", "failed"
+  processed_at     DateTime?
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+
+  user             User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  method           PayoutMethod @relation(fields: [payout_method_id], references: [id])
+
+  @@index([status])
   @@index([user_id])
-  @@schema("public")
-}
-
-model ThemeTemplate {
-  id              String   @id @default(uuid())
-  store_id        String?  // Null if global, otherwise belongs to a store
-  name            String
-  description     String?
-  type            String   // "sale_page", "product_page", "bio_link", etc.
-  category        String   
-  sub_category    String? 
-  niche           String?
-  preview_url     String?
-  data            Json
-  is_premium      Boolean  @default(false)
-  price           Float    @default(0)
-  is_global       Boolean  @default(false)
-  allowed_roles   String[] @default(["all"])
-  active          Boolean  @default(true)
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  store           Store?   @relation(fields: [store_id], references: [id], onDelete: Cascade)
-
-  @@index([store_id])
-  @@schema("public")
-}
-
-model InstalledApp {
-  id           String   @id @default(uuid())
-  store_id     String
-  app_id       String
-  installed_at DateTime @default(now())
-  status       String   @default("active")
-  settings     Json?
-
-  store        Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
-
-  @@unique([store_id, app_id])
-  @@index([store_id])
-  @@schema("public")
-}
-
-model AssetPurchase {
-  id            String   @id @default(uuid())
-  store_id      String
-  asset_type    String   // "template", "masterclass", "workflow"
-  asset_id      String
-  amount_paid   Float
-  purchased_at  DateTime @default(now())
-  store         Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
-
-  @@index([store_id])
-  @@schema("public")
-}
-
-model PaymentLink {
-  id          String   @id @default(uuid())
-  store_id    String
-  title       String
-  description String?
-  amount      Float
-  currency    String   @default("XOF")
-  is_active   Boolean  @default(true)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  store       Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
-
-  @@index([store_id])
-  @@schema("public")
-}
-
-model Quote {
-  id           String   @id @default(uuid())
-  store_id     String
-  client_name  String
-  client_email String?
-  client_phone String?
-  items        Json
-  total_amount Float
-  status       String   @default("DRAFT") // DRAFT, SENT, ACCEPTED, REJECTED
-  expires_at   DateTime?
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-  store        Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
-
-  @@index([store_id])
-  @@schema("public")
-}
-
-model HelpdeskTicket {
-  id             String    @id @default(uuid())
-  store_id       String
-  order_id       String?
-  customer_name  String
-  customer_email String?
-  customer_phone String?
-  subject        String
-  message        String
-  status         String    @default("OPEN")
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
-
-  store Store @relation(fields: [store_id], references: [id], onDelete: Cascade)
-  
-  @@index([store_id])
-  @@schema("public")
-}
-
-model DailyDigest {
-  id          String   @id @default(uuid())
-  store_id    String
-  date        DateTime @db.Date
-  summary     String
-  metrics     Json     // {visitors, orders, revenue, avg_cart, abandoned, top_product}
-  suggestions Json     // [{text, priority, action_url}]
-  score       Int      @default(0)
-  read        Boolean  @default(false)
-  created_at  DateTime @default(now())
-
-  store Store @relation(fields: [store_id], references: [id], onDelete: Cascade)
-
-  @@unique([store_id, date])
-  @@index([store_id])
-  @@schema("public")
-}
-
-model WhatsappBot {
-  id                String   @id @default(uuid())
-  store_id          String   @unique
-  active            Boolean  @default(false)
-  welcome_message   String   @default("Bienvenue ! Tapez *catalogue* pour voir nos produits ou *aide* pour les commandes disponibles.")
-  auto_reply        Boolean  @default(true)
-  ai_enabled        Boolean  @default(false)
-  phone_number      String?
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
-
-  store             Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
-
-  @@schema("public")
-}
-
-model WhatsappConversation {
-  id           String   @id @default(uuid())
-  store_id     String
-  phone        String
-  client_name  String?
-  last_message String?
-  context      Json?
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-
-  @@unique([store_id, phone])
-  @@schema("public")
-}
-
-model SmsCredit {
-  id          String   @id @default(uuid())
-  store_id    String
-  store       Store    @relation(fields: [store_id], references: [id])
-  credits     Int      @default(0)
-  used        Int      @default(0)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  @@unique([store_id])
-  @@schema("public")
-}
-
-model SmsCampaign {
-  id            String   @id @default(uuid())
-  store_id      String
-  store         Store    @relation(fields: [store_id], references: [id])
-  name          String
-  message       String   // max 160 chars
-  recipients    Json     // [{phone: "+221...", name: "..."}]
-  total_sent    Int      @default(0)
-  total_failed  Int      @default(0)
-  status        String   @default("draft") // draft | sending | completed | failed
-  scheduled_at  DateTime?
-  sent_at       DateTime?
-  created_at    DateTime @default(now())
-
-  @@schema("public")
-}
-
-model SmsLog {
-  id           String   @id @default(uuid())
-  store_id     String
-  phone        String
-  message      String
-  type         String   // campaign | auto_abandoned | auto_confirm | auto_tracking
-  status       String   @default("sent") // sent | delivered | failed
-  twilio_sid   String?
-  campaign_id  String?
-  created_at   DateTime @default(now())
-
-  @@schema("public")
-}
-
-model LoyaltyAccount {
-  id              String   @id @default(uuid())
-  phone           String   @unique // Le numéro de l'acheteur (identifiant universel global)
-  total_earned    Int      @default(0) // Total points gagnés (pour le niveau)
-  balance         Int      @default(0) // Points disponibles à dépenser
-  tier            String   @default("bronze") // bronze | silver | gold | diamond
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  transactions    LoyaltyTransaction[]
-
-  @@schema("public")
-}
-
-model LoyaltyTransaction {
-  id              String   @id @default(uuid())
-  account_id      String
-  account         LoyaltyAccount @relation(fields: [account_id], references: [id], onDelete: Cascade)
-  type            String   // earn | redeem | bonus | expire
-  points          Int      // Positif pour earn/bonus, négatif pour redeem
-  description     String
-  order_id        String?  // Lié à quelle commande
-  store_id        String?  // Chez quel vendeur
-  store           Store?   @relation(fields: [store_id], references: [id], onDelete: SetNull)
-  created_at      DateTime @default(now())
-
-  @@schema("public")
-}
-
-model LoyaltyConfig {
-  id              String   @id @default(uuid())
-  store_id        String   @unique
-  store           Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
-  enabled         Boolean  @default(false)
-  points_per_100  Int      @default(1)   // 1 point par 100 FCFA dépensé
-  max_redeem_pct  Int      @default(20)  // Max 20% de la commande payable en points
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-
-  @@schema("public")
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ── SYSTEME D'EXPLOITATION YAYYAM OS (ERP / BOARD / COMPTABILITÉ) ───────────
-// ─────────────────────────────────────────────────────────────────────────────
-
-// 1. RBAC (Access Control) DYNAMIQUE
-model InternalRole {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String   @unique
-  description String?
-  color_cls   String?  @default("text-emerald-600 border-emerald-300")
-  bg_cls      String?  @default("bg-emerald-50")
-  is_custom   Boolean  @default(true)
-  
-  permissions Json     @default("{}") // ex: { "dashboard": "full", "vendors": "read" }
-  created_at  DateTime @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime @default(now()) @db.Timestamptz(6)
-
-  users       User[]
-  @@schema("public")
-}
-
-// 2. CENTRE D'AUDIT (Security Logs)
-model AuditLog {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id    String
-  action     String   // ex: "MODIFIED_ROLE", "DELETED_VENDOR"
-  module     String   // ex: "RBAC", "VENDORS", "FINANCES"
-  details    Json?    // Detailed footprint of what changed
-  ip_address String?
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-
-  User       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  @@index([user_id], map: "idx_audit_user")
-  @@index([action], map: "idx_audit_action")
-  @@schema("public")
-}
-
-// 3. RH / STAFF (Hierarchy & Payroll)
-model EmployeeContract {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id         String   @unique
-  job_title       String
-  department      String   // ex: "Support", "Direction", "IT"
-  base_salary     Float    @default(0) // Salaire de base
-  status          String   @default("active") // active, suspended, terminated
-  hired_at        DateTime @default(now()) @db.Timestamptz(6)
-  terminated_at   DateTime? @db.Timestamptz(6)
-
-  User            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  @@schema("public")
-}
-
-// 4. ACTIONNARIAT / BOARD (Smart Contracts for Equity)
-model ShareholderEquity {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id         String
-  equity_percent  Float    // ex: 20 for 20%
-  start_date      DateTime @default(now()) @db.Timestamptz(6)
-  end_date        DateTime? @db.Timestamptz(6) // Null = Durée indéterminée
-  is_active       Boolean  @default(true)
-  created_at      DateTime @default(now()) @db.Timestamptz(6)
-  
-  User            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  Distributions   DividendDistribution[]
-  @@schema("public")
-}
-
-model DividendDistribution {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  equity_id        String   @db.Uuid
-  amount_distrib   Float
-  net_profit_ref   Float    // Base de bénéfice utilisée pour calculer
-  distributed_at   DateTime @default(now()) @db.Timestamptz(6)
-
-  Equity           ShareholderEquity @relation(fields: [equity_id], references: [id])
-  @@schema("public")
-}
-
-// 5. COMPTABILITÉ INTERNE (P&L - Expenses)
-model CompanyExpense {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title       String   // ex: "Vercel Hosting", "Meta Ads"
-  category    String   // ex: "SERVERS", "MARKETING", "PAYROLL"
-  amount      Float
-  is_recurring Boolean @default(false)
-  frequency   String?  // ex: "monthly"
-  expense_date DateTime @default(now()) @db.Timestamptz(6)
-  created_at  DateTime @default(now()) @db.Timestamptz(6)
-  
   @@schema("public")
 }

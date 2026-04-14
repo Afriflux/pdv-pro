@@ -116,6 +116,7 @@ export default function LandingAdminClient(props: Props) {
   }
 
   const updateTestimonial = (id: string, field: keyof Testimonial, val: string | boolean) => setTestimonials(prev => prev.map(t => t.id === id ? { ...t, [field]: val } : t))
+  // eslint-disable-next-line no-alert
   const removeTestimonial = (id: string) => confirm('Flasher ce témoignage ?') && setTestimonials(prev => prev.filter(t => t.id !== id))
 
   const handleSaveFaqs = async () => {
@@ -136,6 +137,7 @@ export default function LandingAdminClient(props: Props) {
   }
 
   const updateFaq = (id: string, field: keyof FAQ, val: string | boolean | number) => setFaqs(prev => prev.map(f => f.id === id ? { ...f, [field]: val } : f))
+  // eslint-disable-next-line no-alert
   const removeFaq = (id: string) => confirm('Détruire cette question ?') && setFaqs(prev => prev.filter(f => f.id !== id))
   const moveFaq = (index: number, diff: number) => {
     const clone = [...faqs], targetIdx = index + diff

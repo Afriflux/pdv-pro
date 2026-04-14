@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState, useMemo, useTransition, useEffect, useRef } from 'react'
 import { ListChecks, CheckCircle2, Clock, Target, Search, Calendar, MessageSquare, Plus, X, Trash2, Edit2, Loader2, Phone, Mail, Users, AlertTriangle, FileText, Sparkles, Megaphone, PenTool, Briefcase, Truck, Package, UserCircle2 } from 'lucide-react'
 
@@ -227,7 +229,7 @@ export function UniversalTasks({ initialTasks = [], ownerId, ownerType, actions 
     startTransition(async () => {
       const res = await actions.createTask(tempTask)
       if (!res.success) {
-        alert(res.error || 'Erreur lors de la création')
+        toast.error(res.error || 'Erreur lors de la création')
         setTasks(backup)
       } else if (res.task) {
         // On pourrait mettre à jour tempTask avec res.task.id
@@ -236,6 +238,7 @@ export function UniversalTasks({ initialTasks = [], ownerId, ownerType, actions 
   }
 
   const handleDelete = (id: string) => {
+    // eslint-disable-next-line no-alert
     if(confirm('Supprimer cette tâche ?')) {
       const backup = [...tasks]
       setTasks(prev => prev.filter(t => t.id !== id))
@@ -243,7 +246,7 @@ export function UniversalTasks({ initialTasks = [], ownerId, ownerType, actions 
       startTransition(async () => {
         const res = await actions.deleteTask(id)
         if (!res.success) {
-          alert('Erreur: Impossible de supprimer.')
+          toast.error('Erreur: Impossible de supprimer.')
           setTasks(backup)
         }
       })

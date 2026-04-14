@@ -61,6 +61,7 @@ export default function AdminVendorEdit({ storeId, userId, initialData }: AdminV
   }
 
   const handleResetPassword = async () => {
+    // eslint-disable-next-line no-alert
     if (!window.confirm(`Envoyer un lien de réinitialisation du mot de passe à ${formData.email} ?`)) return
     setResetLoading(true)
 

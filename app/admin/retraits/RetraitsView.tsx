@@ -124,6 +124,7 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
       return
     }
 
+    // eslint-disable-next-line no-alert
     if (!confirm(`Confirmez-vous la validation de ${idsToProcess.length} retraits ?`)) return
 
     setIsProcessingBulk(true)

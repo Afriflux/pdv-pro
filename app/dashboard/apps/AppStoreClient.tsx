@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import React, { useState } from 'react'
 import { 
   Link as LinkIcon, Zap, BookOpen, Trophy, 
@@ -138,7 +140,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
       router.refresh()
     } catch (e) {
       console.error("Installation failure", e)
-      alert("Echec de l'installation/désinstallation. Veuillez réessayer.")
+      toast.error("Echec de l'installation/désinstallation. Veuillez réessayer.")
       setInstalledAppIds(initialInstalled)
     } finally {
       setInstallingId(null)
@@ -166,7 +168,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
     } catch (e: unknown) {
       const err = e instanceof Error ? e : new Error('Erreur inconnue')
       console.error(err)
-      alert(err.message || "Erreur lors de l'achat.")
+      toast.error(err.message || "Erreur lors de l'achat.")
     } finally {
       setPurchasing(false)
     }

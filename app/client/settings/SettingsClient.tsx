@@ -121,6 +121,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
   }
 
   const handleDeleteAddress = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette adresse ?')) return
     
     setAddrLoading(true)
@@ -137,6 +138,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
   }
 
   const handleDeleteAccount = async () => {
+    // eslint-disable-next-line no-alert
     if (!prompt('Ceci supprimera définitivement votre compte et tout l’historique associé.\nTapez "CONFIRMER" pour procéder.')) return
     
     setDeleteLoading(true)

@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -480,7 +482,7 @@ export function PageEditor({ page, storeId, products }: PageEditorProps) {
 
   const handleAIGenerate = async (sectionIndex: number, exactVisualSection: RendererSection, field: string, contextType: string, actionType: string = 'generate') => {
     if (!title.trim()) {
-      alert("Veuillez d'abord donner un titre général à la page pour aider l'IA.")
+      toast("Veuillez d'abord donner un titre général à la page pour aider l'IA.")
       return
     }
 
@@ -506,7 +508,7 @@ export function PageEditor({ page, storeId, products }: PageEditorProps) {
 
       updateVisualSection(sectionIndex, { ...exactVisualSection, [field]: data.text })
     } catch (err: any) {
-      alert(err.message || 'Erreur de génération')
+      toast.error(err.message || 'Erreur de génération')
     } finally {
       setGeneratingField(null)
     }

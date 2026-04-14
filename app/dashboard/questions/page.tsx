@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { MessageSquare, CheckCircle2, Clock, Loader2, Send, Search, AlertCircle, Zap, BarChart3, Inbox } from 'lucide-react'
@@ -119,7 +121,7 @@ export default function QuestionsDashboard() {
       
       setAnswers(prev => ({ ...prev, [q.id]: data.answer }))
     } catch (err: any) {
-      alert("Erreur IA : " + err.message)
+      toast.error("Erreur IA : " + err.message)
     } finally {
       setGeneratingAi(null)
     }

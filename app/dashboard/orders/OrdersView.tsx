@@ -1,6 +1,7 @@
 /* eslint-disable react/forbid-dom-props */
 'use client'
 
+import { toast } from 'sonner';
 import { useState, useMemo, useEffect } from 'react'
 import { Search, Download, CheckSquare, Square, ChevronDown, Loader2, LayoutGrid, List as ListIcon, Clock as ClockIcon, Phone as PhoneIcon, PackageOpen, ArrowRight, Filter } from 'lucide-react'
 import Image from 'next/image'
@@ -193,12 +194,12 @@ export default function OrdersView({ initialOrders, storeName, storeId = '' }: O
           setSelectedOrder({ ...selectedOrder, status: newStatus })
         }
         
-        alert(`✅ ${res.updated} commande(s) mise(s) à jour en "${STATUS_CONFIG[newStatus]?.label || newStatus}"`)
+        toast.success(`✅ ${res.updated} commande(s) mise(s) à jour en "${STATUS_CONFIG[newStatus]?.label || newStatus}"`)
       } else {
-        alert(`❌ Erreur: ${res.error}`)
+        toast.error(`❌ Erreur: ${res.error}`)
       }
     } catch {
-      alert("Erreur lors de la mise à jour")
+      toast.error("Erreur lors de la mise à jour")
     } finally {
       setIsUpdating(false)
     }

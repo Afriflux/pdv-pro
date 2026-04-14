@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import React, { useEffect, useState } from 'react'
 import { getDelivererDataAction, markOrderAsDeliveredAction } from './actions'
 import { Loader2, MapPin, Phone, Package, CheckCircle2, Navigation2, Rocket, Clock } from 'lucide-react'
@@ -36,13 +38,14 @@ export default function DelivererPortal({ params }: { params: { delivererId: str
   }, [params.delivererId])
 
   const handleDeliver = async (orderId: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Certifiez-vous avoir bien livré ce colis ?')) return
     setUpdatingId(orderId)
     const res = await markOrderAsDeliveredAction(orderId, params.delivererId)
     if (res.success) {
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'delivered' } : o))
     } else {
-      alert(res.error || 'Erreur')
+      toast.error(res.error || 'Erreur')
     }
     setUpdatingId(null)
   }

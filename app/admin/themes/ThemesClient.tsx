@@ -146,6 +146,7 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
   }
 
   const handleDelete = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Voulez-vous vraiment supprimer ce thème ?')) return
     const res = await deleteThemeTemplate(id)
     if (res.success) {

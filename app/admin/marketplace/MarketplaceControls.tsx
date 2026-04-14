@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 
 import { useState } from 'react'
 import { Activity, LayoutTemplate, Zap, BookOpen, Save, Lock } from 'lucide-react'
@@ -33,7 +35,7 @@ export default function MarketplaceControls({
         setMasterclasses(masterclasses.map(m => m.id === id ? { ...m, is_premium, price } : m))
       }
     } else {
-      alert("Erreur: " + res.error)
+      toast.error("Erreur: " + res.error)
     }
     setSavingId(null)
   }

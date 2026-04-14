@@ -33,5 +33,15 @@ export default async function AppStorePage() {
     orderBy: { created_at: 'asc' }
   })
 
-  return <AppStoreClient initialInstalled={installedApps} dbApps={dbApps as any} />
+  // Récupération des PaymentIntegrations inactifs
+  const inactiveIntegrations = await prisma.paymentIntegration.findMany({
+    where: { is_active: false },
+    select: { provider: true }
+  })
+  const inactiveProviders = new Set(inactiveIntegrations.map(p => p.provider))
+
+  // Masquage global dans l'App Store
+  const filteredDbApps = dbApps.filter(app => !inactiveProviders.has(app.id))
+
+  return <AppStoreClient initialInstalled={installedApps} dbApps={filteredDbApps as any} />
 }

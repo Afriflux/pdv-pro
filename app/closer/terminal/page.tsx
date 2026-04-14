@@ -1,5 +1,7 @@
 "use client"
 
+import { toast } from 'sonner';
+
 import { useState, useEffect } from 'react'
 import { PhoneCall, Inbox, CheckCircle2, XOctagon, Search, Star, Target, LayoutGrid, List, Loader2, Sparkles, TrendingUp, MessageCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -30,7 +32,7 @@ export default function TerminalPage() {
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: 'contacted' } : l))
     const res = await claimLead(leadId)
     if (!res.success) {
-      alert(res.error)
+      toast(res.error)
       fetchLeads() 
     }
   }
@@ -39,7 +41,7 @@ export default function TerminalPage() {
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status } : l))
     const res = await updateLeadStatus(leadId, status)
     if (!res.success) {
-      alert(res.error)
+      toast(res.error)
       fetchLeads()
     }
   }

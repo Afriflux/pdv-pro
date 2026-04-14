@@ -90,6 +90,7 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
   }
 
   const handleDelete = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette zone ?')) return
     try {
       await deleteDeliveryZone(id)

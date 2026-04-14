@@ -134,6 +134,7 @@ export function UniversalWorkflowBuilder({
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
+    // eslint-disable-next-line no-alert
     if (!confirm('Voulez-vous vraiment supprimer ce workflow ?')) return
     const res = await actions.deleteWorkflow(id)
     if (res.success) {

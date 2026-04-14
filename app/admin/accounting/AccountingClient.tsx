@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import React, { useState } from 'react'
 import { PlusCircle, Search, Server, MonitorPlay, Users, ArrowRight, DollarSign, Calendar, TrendingUp } from 'lucide-react'
 import { format } from 'date-fns'
@@ -64,7 +66,7 @@ export default function AccountingClient({ initialExpenses }: { initialExpenses:
             />
           </div>
           
-          <button onClick={() => alert('Future Server Action pour ajouter une charge')} className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-bold transition-all shadow-lg flex items-center justify-center gap-2 whitespace-nowrap">
+          <button onClick={() => toast('Future Server Action pour ajouter une charge')} className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-sm font-bold transition-all shadow-lg flex items-center justify-center gap-2 whitespace-nowrap">
             <PlusCircle size={16}/> Saisir une charge
           </button>
         </div>

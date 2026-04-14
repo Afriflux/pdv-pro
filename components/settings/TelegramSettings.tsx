@@ -110,6 +110,7 @@ export function TelegramSettings({
 
   // Action : Déconnecter le compte Telegram
   const handleDisconnect = async () => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Voulez-vous vraiment déconnecter votre compte Telegram ?')) return
     
     setIsLoading(true)

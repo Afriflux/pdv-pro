@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner';
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { generateFlashFunnel } from '@/app/actions/flash-funnel'
@@ -18,11 +20,11 @@ export default function FlashFunnelButton({ productId, compact = false, classNam
       if (res?.success && res.pageId) {
         router.push(`/dashboard/pages/${res.pageId}/edit`)
       } else {
-        alert(res?.error || "Erreur de génération du Funnel Flash")
+        toast.error(res?.error || "Erreur de génération du Funnel Flash")
         setLoading(false)
       }
     } catch (_err) {
-      alert("Une erreur inattendue est survenue.")
+      toast.error("Une erreur inattendue est survenue.")
       setLoading(false)
     }
   }

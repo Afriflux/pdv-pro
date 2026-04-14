@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState } from 'react'
 import { Search, ShoppingBag, ArrowUpRight, CheckCircle2, Clock, X, QrCode as QrCodeIcon, Download, Copy } from 'lucide-react'
 import { applyForAffiliation } from './actions'
@@ -85,7 +87,7 @@ function LinkModal({ item, affiliation, onClose }: { item: MarketplaceItem, affi
       setAiResult(data.result)
     } catch (e) {
       const error = e as Error;
-      alert(error.message || "Erreur lors de la génération")
+      toast.error(error.message || "Erreur lors de la génération")
     } finally {
       setAiLoading(false)
     }
@@ -250,7 +252,7 @@ export default function MarketplaceClient({ items, affiliations }: MarketplaceCl
     })
     
     if (res.error) {
-      alert("Erreur: " + res.error)
+      toast.error("Erreur: " + res.error)
     } else {
       // Reload automatically handled by revalidatePath in Server Action,
       // The component will re-render with new data from server.

@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import React, { useState } from 'react'
 import { PlusCircle, Search, User, Percent, Calculator, Crown, Coins } from 'lucide-react'
 import { format } from 'date-fns'
@@ -43,11 +45,11 @@ export default function EquityClient({
         paymentMethod: method,
         reference: reference
       })
-      alert("Dividende distribué et isolé comptablement avec succès !")
+      toast.success("Dividende distribué et isolé comptablement avec succès !")
       setPayoutModal({ isOpen: false, shareholder: null, amount: 0 })
       router.refresh()
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : "Erreur")
     } finally {
       setIsSubmitting(false)
     }
@@ -80,7 +82,7 @@ export default function EquityClient({
             />
           </div>
           
-          <button onClick={() => alert('Future Server Action pour ajouter un associé')} className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-sm font-bold transition-all shadow-lg flex items-center justify-center gap-2 whitespace-nowrap">
+          <button onClick={() => toast('Future Server Action pour ajouter un associé')} className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-sm font-bold transition-all shadow-lg flex items-center justify-center gap-2 whitespace-nowrap">
             <PlusCircle size={16}/> Nouvel Associé
           </button>
         </div>
@@ -170,7 +172,7 @@ export default function EquityClient({
                            if (calculatedGain > 0) {
                              setPayoutModal({ isOpen: true, shareholder, amount: calculatedGain })
                            } else {
-                             alert("Aucun gain à reverser.")
+                             toast("Aucun gain à reverser.")
                            }
                          }}
                          title="Verser le dividende"

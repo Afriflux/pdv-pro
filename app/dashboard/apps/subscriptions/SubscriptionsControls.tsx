@@ -47,6 +47,7 @@ export default function SubscriptionsControls({ subscriptions }: Props) {
   })
 
   const handleCancel = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if(!confirm("Êtes-vous sûr de vouloir annuler de force cet abonnement ? Le client ne sera plus relancé.")) return
     setCancelingId(id)
     await cancelSubscriptionAction(id)

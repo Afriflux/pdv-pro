@@ -198,6 +198,7 @@ export default function RolesClient({
   }
 
   const deleteDepartment = (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!window.confirm('Supprimer ce nœud et tous ses sous-éléments ?')) return
     const updated = treeDelete(orgDepts, id)
     setOrgDepts(updated)
@@ -311,6 +312,7 @@ export default function RolesClient({
 
   const handleDeleteRole = (roleId: string) => {
     const roleToDelete = roles.find(r => r.id === roleId);
+    // eslint-disable-next-line no-alert
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer le rôle "${roleToDelete?.name}" ?\n\nAttention : Si des administrateurs possèdent ce rôle, ils perdront leurs accès après enregistrement.`)) {
        setRoles(prev => prev.filter(r => r.id !== roleId));
        setHasUnsavedChanges(true);

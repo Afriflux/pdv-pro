@@ -161,6 +161,7 @@ export default function AppsClient({ initialApps }: { initialApps: MarketplaceAp
   }
 
   const handleDelete = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Voulez-vous vraiment supprimer cette app ?')) return
     const res = await deleteMarketplaceApp(id)
     if (res.success) {

@@ -415,70 +415,27 @@ export function CloserSidebar({
         </div>
       </aside>
 
-      {/* ── MOBILE : bouton hamburger + drawer ── */}
+      {/* ── MOBILE : top bar compacte ── */}
       <div className="lg:hidden">
-        {/* Topbar mobile */}
-        <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-4 h-14">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setMobileOpen(true)}
-              className="text-gray-400 hover:text-gray-900 transition p-1"
-              aria-label="Ouvrir le menu"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <Link href="/" className="flex items-center gap-1.5 ml-1" onClick={() => setMobileOpen(false)}>
-              <span className="text-lg font-display font-black text-gray-900">Yayyam</span>
-              <span className="text-lg font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-emerald-400">Closer</span>
+        <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-3 h-14">
+          <Link href="/" className="flex items-center gap-2 focus:outline-none ml-1">
+            <div className="w-8 h-8 rounded-xl bg-[#0F7A60] flex items-center justify-center shadow-sm">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-white">
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 9.5L12 3l9 6.5V20a2 2 0 01-2 2H5a2 2 0 01-2-2V9.5z" />
+                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 22V12h6v10" />
+               </svg>
+            </div>
+            <span className="text-lg font-display font-black text-gray-900">Yayyam</span>
+          </Link>
+          <div className="flex items-center gap-2 mr-1">
+            <Link href="/closer/settings" className="w-9 h-9 rounded-full overflow-hidden border-2 border-emerald-100 bg-emerald-50 flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all">
+              {avatarUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-sm font-black text-emerald-700">{userName?.[0]?.toUpperCase() ?? 'C'}</span>
+              )}
             </Link>
-          </div>
-          <div className="flex items-center gap-2">
-            <NotificationBell />
-          </div>
-        </div>
-
-        {/* Overlay */}
-        {mobileOpen && (
-          <div
-            className="fixed inset-0 z-40 bg-black/60"
-            onClick={() => setMobileOpen(false)}
-          />
-        )}
-
-        {/* Drawer */}
-        <div
-          className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-[#043324] transform transition-transform duration-300 overflow-hidden shadow-2xl ${
-            mobileOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
-        >
-          {/* Gradients Héroïques Mobile */}
-          {/* Desktop Noise */}
-          
-          <div className="absolute top-0 left-0 w-[300px] h-[300px] bg-emerald-400/10 rounded-full blur-[80px] -translate-y-1/2 -translate-x-1/4 pointer-events-none z-0"></div>
-
-          <div className="relative z-10 flex flex-col h-full w-full">
-            {/* Bouton fermeture */}
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="absolute top-5 right-5 text-gray-400 hover:text-gray-900 transition bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center border border-gray-200 z-50"
-              aria-label="Fermer le menu"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <SidebarContent
-              storeName={storeName}
-              userName={userName}
-              avatarUrl={avatarUrl}
-              vendorType={vendorType || 'digital'}
-              onClose={() => setMobileOpen(false)}
-              collapsed={false}
-              setShowSwitchModal={setShowSwitchModal}
-            />
           </div>
         </div>
       </div>

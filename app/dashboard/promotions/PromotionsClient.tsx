@@ -175,6 +175,7 @@ export default function PromotionsClient({
   }
 
   const handleDeleteCode = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if(!confirm("Supprimer ce coupon ?")) return
     const res = await deletePromoCode(id)
     if (res.success) {

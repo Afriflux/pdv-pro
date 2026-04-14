@@ -191,6 +191,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
   }
 
   const handleDelete = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Voulez-vous vraiment supprimer cet article ?')) return
     const res = await deleteMasterclassArticle(id)
     if (res.success) {

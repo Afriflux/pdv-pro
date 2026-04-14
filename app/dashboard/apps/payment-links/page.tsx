@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState, useEffect } from 'react'
 import { Plus, Link as LinkIcon, Trash2, Copy, CheckCircle2, ChevronLeft, CreditCard, Activity } from 'lucide-react'
 import Link from 'next/link'
@@ -48,7 +50,7 @@ export default function PaymentLinksPage() {
       setDescription('')
       loadLinks()
     } else {
-      alert(res.error || "Une erreur est survenue")
+      toast.error(res.error || "Une erreur est survenue")
     }
     setIsSubmitting(false)
   }
@@ -59,6 +61,7 @@ export default function PaymentLinksPage() {
   }
 
   const handleDelete = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Voulez-vous vraiment supprimer ce lien de paiement ?')) return
     setLinks(links.filter(l => l.id !== id))
     await deletePaymentLinkAction(id)

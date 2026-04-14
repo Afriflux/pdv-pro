@@ -32,7 +32,8 @@ export const viewport: Viewport = {
   themeColor: '#0F7A60',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export const revalidate = 60 // Refresh cache every minute to apply admin SEO changes

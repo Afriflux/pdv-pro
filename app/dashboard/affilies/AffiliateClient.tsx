@@ -199,6 +199,7 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
   }
 
   const handleReject = async (affiliateId: string, isSuspend = false) => {
+    // eslint-disable-next-line no-alert
     if (!confirm(isSuspend ? "Voulez-vous suspendre cet affilié actif ?" : "Voulez-vous vraiment refuser cet affilié ?")) return
     setActionLoading(affiliateId)
     const res = await rejectAffiliate(affiliateId)

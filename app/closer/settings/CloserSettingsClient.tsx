@@ -140,6 +140,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
   }
 
   const handleDeleteAccount = async () => {
+    // eslint-disable-next-line no-alert
     if (!prompt('Ceci supprimera définitivement votre compte et tout l’historique associé.\nTapez "CONFIRMER" pour procéder.')) return
     
     setDeleteLoading(true)

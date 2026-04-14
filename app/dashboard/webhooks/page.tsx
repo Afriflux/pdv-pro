@@ -104,6 +104,7 @@ export default function WebhooksPage() {
   }
 
   const handleDelete = async (id: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Voulez-vous vraiment supprimer ce webhook ?')) return
     const res = await deleteWebhookAction(id)
     if (res.success) {

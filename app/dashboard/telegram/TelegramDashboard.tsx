@@ -1,5 +1,7 @@
 'use client'
 
+import { toast } from 'sonner';
+
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import {
@@ -183,6 +185,7 @@ export default function TelegramDashboard({
 
   // Action : Supprimer
   const deleteCommunity = async (communityId: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('Déconnecter ce groupe ? Le groupe Telegram ne sera pas supprimé, mais vos clients ne recevront plus d\'invitation.')) return
     setDeleting(communityId)
     try {
@@ -262,9 +265,9 @@ export default function TelegramDashboard({
       if (!res.ok) throw new Error('Erreur diffusion')
       setBroadcastTarget(null)
       setBroadcastMessage('')
-      alert("✅ Message diffusé avec succès sur Telegram !")
+      toast.success("✅ Message diffusé avec succès sur Telegram !")
     } catch {
-      alert("❌ Échec de l'envoi du message.")
+      toast.error("❌ Échec de l'envoi du message.")
     } finally {
       setBroadcasting(false)
     }
@@ -273,6 +276,7 @@ export default function TelegramDashboard({
   // Action : Expulser (Bannir) un client
   const [banningId, setBanningId] = useState<string | null>(null)
   const handleBan = async (accessId: string) => {
+    // eslint-disable-next-line no-alert
     if (!confirm("Voulez-vous vraiment expulser ce client du groupe Telegram ?")) return
     setBanningId(accessId)
     try {
@@ -283,10 +287,10 @@ export default function TelegramDashboard({
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erreur')
-      alert("✅ Utilisateur expulsé avec succès.")
+      toast.success("✅ Utilisateur expulsé avec succès.")
       router.refresh()
     } catch (e: any) {
-      alert(`❌ Impossible de bannir : ${e.message}`)
+      toast.error(`❌ Impossible de bannir : ${e.message}`)
     } finally {
       setBanningId(null)
     }

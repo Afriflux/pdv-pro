@@ -187,6 +187,7 @@ export function UniversalAgenda({
   }
 
   const handleClearDay = (day: number) => {
+    // eslint-disable-next-line no-alert
     if (confirm(`Voulez-vous vraiment supprimer tous les créneaux de ce jour ?`)) {
       setSlots(slots.filter(s => s.day_of_week !== day))
     }

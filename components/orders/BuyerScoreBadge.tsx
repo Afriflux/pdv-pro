@@ -54,6 +54,7 @@ export function BuyerScoreBadge({ phone, storeId, compact = false }: BuyerScoreB
 
   const handleFlag = async () => {
     if (flagging) return
+    // eslint-disable-next-line no-alert
     if (!confirm(`Êtes-vous sûr de vouloir signaler ce numéro (${phone}) ? Il ne pourra plus payer en COD.`)) return
 
     setFlagging(true)
