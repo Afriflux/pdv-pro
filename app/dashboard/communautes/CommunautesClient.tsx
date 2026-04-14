@@ -6,9 +6,31 @@ import { toast } from 'sonner';
 // Client Component — Feed communautaire Yayyam
 // 4 onglets : Feed | Classement | Groupes | Ressources
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { Trash2, MessageSquare, Send, RefreshCw, ChevronRight, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+
+const ProgressionBar = ({ progressPercent }: { progressPercent: number }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.style.width = `${Math.min(progressPercent, 100)}%`
+    }
+  }, [progressPercent])
+
+  return (
+    <div className="h-full bg-gray-200 rounded-full overflow-hidden">
+      <div 
+        ref={ref}
+        className="h-full bg-gradient-to-r from-[#0DE0A1] to-[#0F7A60] rounded-full relative transition-all duration-1000 ease-out"
+      >
+        <div className="absolute top-0 bottom-0 left-0 right-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+      </div>
+    </div>
+  )
+}
 import Image from 'next/image'
 import type { PostItem, LeaderboardEntry, CurrentStore } from './page'
 
@@ -206,8 +228,17 @@ function PostCard({ post, currentStoreId, onLike, onDelete }: PostCardProps) {
 
   const handleDelete = async () => {
     if (!onDelete || isDeleting) return
-    // eslint-disable-next-line no-alert
-    if (!confirm('Voulez-vous vraiment supprimer cette publication ?')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment supprimer cette publication ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     setIsDeleting(true)
     try {
       const res = await fetch(`/api/community/posts/${post.id}`, { method: 'DELETE' })
@@ -828,12 +859,7 @@ export default function CommunautesClient({
                             <span>{next}</span>
                           </div>
                           <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner relative">
-                            <div 
-                              className="h-full bg-gradient-to-r from-[#0DE0A1] to-[#0F7A60] rounded-full relative transition-all duration-1000 ease-out"
-                              style={{ width: `${progressPercent}%` }}
-                            >
-                              <div className="absolute top-0 bottom-0 left-0 right-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
-                            </div>
+                            <ProgressionBar progressPercent={progressPercent} />
                           </div>
                         </div>
                       </div>

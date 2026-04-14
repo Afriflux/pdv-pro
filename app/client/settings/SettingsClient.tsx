@@ -121,8 +121,17 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
   }
 
   const handleDeleteAddress = async (id: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette adresse ?')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Êtes-vous sûr de vouloir supprimer cette adresse ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     
     setAddrLoading(true)
     setError('')
@@ -138,8 +147,18 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
   }
 
   const handleDeleteAccount = async () => {
-    // eslint-disable-next-line no-alert
-    if (!prompt('Ceci supprimera définitivement votre compte et tout l’historique associé.\nTapez "CONFIRMER" pour procéder.')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Suppression définitive',
+      text: 'Ceci supprimera définitivement votre compte et tout l’historique associé. Tapez "CONFIRMER" pour procéder.',
+      input: 'text',
+      icon: 'error',
+      showCancelButton: true,
+      confirmButtonText: 'Supprimer définitivement',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed || result.value !== 'CONFIRMER') return
     
     setDeleteLoading(true)
     setError('')

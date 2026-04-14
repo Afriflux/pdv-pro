@@ -68,6 +68,7 @@ model User {
   workflows                         Workflow[]
   payoutMethods                     PayoutMethod[]
   payoutRequests                    PayoutRequest[]
+  lessonProgresses                  UserLessonProgress[]
 
   @@schema("public")
 }
@@ -274,6 +275,7 @@ model Product {
   Review                  Review[]
   shortLinks              ShortLink[]
   TelegramCommunity       TelegramCommunity[]
+  Course                  Course?
 
   @@index([store_id])
   @@index([store_id], map: "idx_product_store_id")
@@ -2238,6 +2240,7 @@ enum ProductType {
   digital
   physical
   coaching
+  course
 
   @@schema("public")
 }
@@ -2395,5 +2398,64 @@ model PayoutRequest {
 
   @@index([status])
   @@index([user_id])
+  @@schema("public")
+}
+
+model Course {
+  id          String         @id @default(uuid())
+  product_id  String         @unique
+  title       String
+  description String?
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+  product     Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  modules     CourseModule[]
+  
+  @@schema("public")
+}
+
+model CourseModule {
+  id          String         @id @default(uuid())
+  course_id   String
+  title       String
+  description String?
+  order_index Int            @default(0)
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+  course      Course         @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  lessons     CourseLesson[]
+  
+  @@schema("public")
+}
+
+model CourseLesson {
+  id          String         @id @default(uuid())
+  module_id   String
+  title       String
+  content     String?
+  video_url   String?
+  is_free     Boolean        @default(false)
+  order_index Int            @default(0)
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+  module      CourseModule   @relation(fields: [module_id], references: [id], onDelete: Cascade)
+  progresses  UserLessonProgress[]
+  
+  @@schema("public")
+}
+
+model UserLessonProgress {
+  id          String       @id @default(uuid())
+  user_id     String
+  lesson_id   String
+  completed   Boolean      @default(false)
+  completed_at DateTime?
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  user        User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  lesson      CourseLesson @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, lesson_id])
   @@schema("public")
 }

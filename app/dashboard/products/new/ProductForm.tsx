@@ -47,7 +47,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
   const [name, setName]               = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice]             = useState('')
-  const [type, setType]               = useState<'digital' | 'physical' | 'coaching'>(
+  const [type, setType]               = useState<'digital' | 'physical' | 'coaching' | 'course'>(
     vendorType === 'digital' ? 'digital' : 'physical'
   )
   const [category, setCategory]       = useState('')
@@ -367,7 +367,8 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
             }
           : type === 'physical'
           ? { shipping_fee: shippingFee ? parseFloat(shippingFee) : null, shipping_delay: shippingDelay.trim() || null, cash_on_delivery: cashOnDelivery }
-          : { 
+          : type === 'coaching'
+          ? { 
               session_duration: sessionDuration.trim() || null, 
               session_mode: sessionMode, 
               booking_link: bookingLink.trim() || null,
@@ -377,6 +378,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
               coaching_is_pack: coachingIsPack,
               coaching_pack_count: coachingIsPack ? parseInt(coachingPackCount) || 1 : 1
             }
+          : {} // course
 
       const productId = crypto.randomUUID()
 
@@ -444,6 +446,22 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
            .from('TelegramCommunity')
            .update({ product_id: product.id })
            .eq('id', selectedCommunityId)
+      }
+
+      // 5. Créer l'entité Course si le type est course
+      if (type === 'course') {
+        const { error: courseError } = await supabase
+          .from('Course')
+          .insert({
+            id: crypto.randomUUID(),
+            product_id: product.id,
+            title: name.trim(),
+            description: description.trim() || null
+          })
+          
+        if (courseError) {
+          console.error("Erreur création entité Course", courseError)
+        }
       }
 
       router.push('/dashboard/products')
@@ -682,7 +700,8 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
             {([
               { v: 'physical', label: '📦 Physique' },
               { v: 'digital',  label: '📥 Digital'  },
-              { v: 'coaching', label: '🎓 Service / Coaching' },
+              { v: 'course',   label: '🎓 Formation (Académie)' },
+              { v: 'coaching', label: '👥 Service / Coaching' },
             ] as const)
             .filter(opt => {
               if (vendorType === 'digital') return opt.v !== 'physical'

@@ -26,12 +26,12 @@ export default async function CloserLayout({
   const avatarUrl = userProfile?.avatar_url ?? (user.user_metadata?.avatar_url as string) ?? (user.user_metadata?.picture as string) ?? null
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-[100dvh] bg-gray-50 overflow-hidden">
       {/* Sidebar Responsive Dynamique */}
       <CloserSidebar storeName="Espace Closer" userName={userName} avatarUrl={avatarUrl} />
       
       {/* Contenu Principal */}
-      <main className="relative flex-1 bg-gray-50 min-w-0 h-screen overflow-y-auto overflow-x-hidden">
+      <main className="relative flex-1 bg-gray-50 min-w-0 h-[100dvh] overflow-y-auto overflow-x-hidden">
         <GlobalHomeButton />
 
         {/* 🌟 UNIVERSAL MESH BACKGROUND 🌟 */}

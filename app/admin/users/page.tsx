@@ -61,6 +61,10 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
   if (roleFilter !== 'all') {
     if (roleFilter === 'acheteur') {
       userQuery = userQuery.in('role', ['acheteur', 'client'])
+    } else if (roleFilter === 'ambassadeur') {
+      const { data: ambData } = await supabase.from('Ambassador').select('user_id')
+      const ambIds = ambData?.map(a => a.user_id) || []
+      userQuery = userQuery.in('id', ambIds.length > 0 ? ambIds : ['empty'])
     } else {
       userQuery = userQuery.eq('role', roleFilter)
     }
@@ -72,26 +76,30 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
 
   if (error) console.error('[AdminUsers] Error:', error.message)
 
-  // ── Charger les stores (pour le lien "Voir espace") ──
+  // ── Charger les stores et les statuts ambassadeurs ──
   const targetUserIds = (users ?? []).map((u: any) => u.id) // eslint-disable-line @typescript-eslint/no-explicit-any
   let storesByUserId: Record<string, string> = {}
+  let isAmbassadeurByUserId: Record<string, boolean> = {}
+  
   if (targetUserIds.length > 0) {
-    const { data: stores } = await supabase
-      .from('Store')
-      .select('id, user_id')
-      .in('user_id', targetUserIds)
-    if (stores) {
-      storesByUserId = Object.fromEntries(stores.map((s: any) => [s.user_id, s.id])) // eslint-disable-line @typescript-eslint/no-explicit-any
-    }
+    const [{ data: stores }, { data: ambs }] = await Promise.all([
+      supabase.from('Store').select('id, user_id').in('user_id', targetUserIds),
+      supabase.from('Ambassador').select('user_id').in('user_id', targetUserIds)
+    ])
+    if (stores) storesByUserId = Object.fromEntries(stores.map((s: any) => [s.user_id, s.id]))
+    if (ambs) isAmbassadeurByUserId = Object.fromEntries(ambs.map((a: any) => [a.user_id, true]))
   }
 
   // ── KPI Stats ──
-  const roleCountPromises = ['vendeur', 'acheteur', 'client', 'affilie', 'ambassadeur', 'closer', 'super_admin', 'gestionnaire', 'support'].map(
+  const roleCountPromises = ['vendeur', 'acheteur', 'client', 'affilie', 'closer', 'super_admin', 'gestionnaire', 'support'].map(
     role => supabase.from('User').select('id', { count: 'exact', head: true }).eq('role', role)
   )
-  const roleCounts = await Promise.all(roleCountPromises)
-  const [vendeurC, acheteurC, clientC, affilieC, ambassadeurC, closerC, adminC, gestC, supportC] = roleCounts.map(r => r.count ?? 0)
-  const totalUsers = vendeurC + acheteurC + clientC + affilieC + ambassadeurC + closerC + adminC + gestC + supportC
+  const ambassadeurPromise = supabase.from('Ambassador').select('id', { count: 'exact', head: true })
+  
+  const [roleCounts, ambCount] = await Promise.all([Promise.all(roleCountPromises), ambassadeurPromise])
+  const [vendeurC, acheteurC, clientC, affilieC, closerC, adminC, gestC, supportC] = roleCounts.map(r => r.count ?? 0)
+  const ambassadeurC = ambCount.count ?? 0
+  const totalUsers = vendeurC + acheteurC + clientC + affilieC + closerC + adminC + gestC + supportC
 
   const totalPages = Math.ceil((count ?? 0) / pageSize)
 
@@ -217,13 +225,14 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
                     // Determine navigation link based on role and store existence
                     let detailLink = '#'
                     const storeId = storesByUserId[user.id]
+                    const isAmb = isAmbassadeurByUserId[user.id]
 
                     if (storeId) {
                       detailLink = `/admin/vendeurs/${storeId}`
                     }
-                    else if (user.role === 'vendeur' || user.role === 'affilie') detailLink = `/admin/vendeurs`
+                    else if (user.role === 'vendeur') detailLink = `/admin/vendeurs`
                     else if (user.role === 'acheteur' || user.role === 'client') detailLink = `/admin/clients?q=${encodeURIComponent(user.phone || user.email || user.name)}`
-                    else if (user.role === 'ambassadeur') detailLink = `/admin/ambassadeurs`
+                    else if (isAmb) detailLink = `/admin/ambassadeurs`
                     else if (user.role === 'closer') detailLink = `/admin/closing`
                     else if (user.role === 'super_admin' || user.role === 'gestionnaire' || user.role === 'support') detailLink = `/admin/roles`
 
@@ -242,7 +251,14 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
                               )}
                             </div>
                             <div className="min-w-0">
-                              <p className="font-black text-gray-900 truncate text-sm">{user.name}</p>
+                              <div className="flex items-center gap-1.5 focus:outline-none">
+                                <p className="font-black text-gray-900 truncate text-sm">{user.name}</p>
+                                {isAmb && (
+                                  <span title="Ambassadeur Actif" className="text-[10px] w-5 h-5 flex items-center justify-center bg-pink-50 border border-pink-100 rounded-full shadow-sm cursor-help">
+                                    🏅
+                                  </span>
+                                )}
+                              </div>
                               <p className="text-xs text-gray-400 truncate">{user.id.slice(0, 12)}...</p>
                             </div>
                           </div>
@@ -278,12 +294,18 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <Link
-                            href={detailLink}
-                            className="text-xs font-black text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-all"
-                          >
-                            Voir espace →
-                          </Link>
+                          {detailLink !== '#' ? (
+                            <Link
+                              href={detailLink}
+                              className="text-xs font-black text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-all inline-block"
+                            >
+                              Voir espace →
+                            </Link>
+                          ) : (
+                            <span className="text-[11px] font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200 inline-block">
+                              Profil Standard
+                            </span>
+                          )}
                         </td>
                       </tr>
                     )

@@ -278,8 +278,15 @@ export async function signOut(): Promise<void> {
 // ----------------------------------------------------------------
 // GOOGLE OAUTH
 // ----------------------------------------------------------------
-export async function signInWithGoogle() {
+export async function signInWithGoogle(formData?: FormData) {
   const supabase = await createClient()
+  
+  const role = formData?.get('role') as string
+  if (role) {
+    const { cookies } = await import('next/headers')
+    cookies().set('yayyam_onboarding_role', role, { path: '/', maxAge: 60 * 60 })
+  }
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {

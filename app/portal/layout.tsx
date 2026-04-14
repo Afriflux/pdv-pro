@@ -54,14 +54,14 @@ export default async function PortalLayout({
   const avatarUrl = userProfile.avatar_url || user.user_metadata?.avatar_url || user.user_metadata?.picture || null
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-[100dvh] bg-gray-50 overflow-hidden">
       <PortalSidebar
         storeName={storeName}
         userName={userName}
         avatarUrl={avatarUrl}
       />
 
-      <main className="relative flex-1 bg-gray-50 min-w-0 h-screen overflow-y-auto overflow-x-hidden">
+      <main className="relative flex-1 bg-gray-50 min-w-0 h-[100dvh] overflow-y-auto overflow-x-hidden">
         <GlobalHomeButton />
 
         {/* 🌟 UNIVERSAL MESH BACKGROUND 🌟 */}

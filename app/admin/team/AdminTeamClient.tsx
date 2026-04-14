@@ -7,7 +7,7 @@ import { AdminTeamMember, toggleManagerRole } from '@/lib/admin/adminActions'
 
 interface Props {
   initialTeam: AdminTeamMember[]
-  eligibleUsers: any[] // Les utilisateurs qui peuvent devenir gestionnaires
+  eligibleUsers: Array<{id: string; name: string; email: string | null; phone: string | null}>
 }
 
 export default function AdminTeamClient({ initialTeam, eligibleUsers }: Props) {
@@ -26,8 +26,17 @@ export default function AdminTeamClient({ initialTeam, eligibleUsers }: Props) {
     }
 
     const actionText = makeManager ? 'promouvoir comme Gestionnaire' : 'révoquer les accès de'
-    // eslint-disable-next-line no-alert
-    if (!confirm(`Voulez-vous vraiment ${actionText} ${member.name} ?`)) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: `Voulez-vous vraiment ${actionText} ${member.name} ?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, continuer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: makeManager ? '#10b981' : '#ef4444'
+    })
+    if (!result.isConfirmed) return
     
     setLoadingId(member.id)
     try {
@@ -39,8 +48,9 @@ export default function AdminTeamClient({ initialTeam, eligibleUsers }: Props) {
       } else {
         // Ajouter à la liste (normalement géré via le form d'ajout)
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Une erreur est survenue.')
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Une erreur est survenue.'
+      toast.error(msg)
     } finally {
       setLoadingId(null)
     }
@@ -55,8 +65,9 @@ export default function AdminTeamClient({ initialTeam, eligibleUsers }: Props) {
       await toggleManagerRole(selectedUserId, true)
       // Mettre à jour l'UI (Refresh brut pour simplifier et récupérer le User formaté)
       window.location.reload()
-    } catch (error: any) {
-      toast.error(error.message || 'Erreur lors de la promotion.')
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Erreur lors de la promotion.'
+      toast.error(msg)
       setLoadingId(null)
     }
   }
@@ -105,6 +116,8 @@ export default function AdminTeamClient({ initialTeam, eligibleUsers }: Props) {
           
           <form onSubmit={handleAddManager} className="flex flex-col sm:flex-row gap-4 max-w-3xl relative z-10">
             <select
+              title="Sélectionner un utilisateur"
+              aria-label="Sélectionner un utilisateur"
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}
               required

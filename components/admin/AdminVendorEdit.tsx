@@ -61,8 +61,17 @@ export default function AdminVendorEdit({ storeId, userId, initialData }: AdminV
   }
 
   const handleResetPassword = async () => {
-    // eslint-disable-next-line no-alert
-    if (!window.confirm(`Envoyer un lien de réinitialisation du mot de passe à ${formData.email} ?`)) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: `Envoyer un lien de réinitialisation du mot de passe à ${formData.email} ?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, envoyer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#10b981'
+    })
+    if (!result.isConfirmed) return
     setResetLoading(true)
 
     try {
@@ -176,6 +185,7 @@ export default function AdminVendorEdit({ storeId, userId, initialData }: AdminV
                     >
                       <option value="vendeur">Vendeur (Standard)</option>
                       <option value="acheteur">Acheteur</option>
+                      <option value="client">Client</option>
                       <option value="affilie">Affilié</option>
                       <option value="closer">Closer</option>
                       <option value="gestionnaire">Gestionnaire (Staff)</option>

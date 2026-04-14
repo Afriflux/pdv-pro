@@ -409,3 +409,62 @@ export async function getAmbassadorStats(userId: string): Promise<AmbassadorStat
     qualifiedThisMonth,
   }
 }
+
+// ─── 5. Activer le Profil Ambassadeur ────────────────────────────────────────
+
+/**
+ * Génère un code de parrainage et inscrit l'utilisateur au programme Ambassadeur.
+ */
+export async function activateAmbassadorProfile(userId: string): Promise<Ambassador | null> {
+  const supabase = createAdminClient()
+  
+  // 1. Récupérer les infos de l'utilisateur
+  const { data: user, error: userError } = await supabase
+    .from('User')
+    .select('name')
+    .eq('id', userId)
+    .single()
+    
+  if (userError || !user) throw new Error('Utilisateur introuvable')
+  
+  // 2. Générer un code unique (3 premières lettres + 4 chiffres)
+  const prefix = (user.name || 'YAY').replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase().padEnd(3, 'Y')
+  const code = `${prefix}-${Math.floor(1000 + Math.random() * 9000)}`
+  
+  // 3. Récupérer les taux par défaut (PlatformConfig)
+  const { data: configs } = await supabase
+    .from('PlatformConfig')
+    .select('key, value')
+    .in('key', ['ambassador_commission_fixed', 'ambassador_min_revenue'])
+    
+  const configMap = Object.fromEntries(configs?.map(c => [c.key, c.value]) || [])
+  const commission = parseInt(configMap['ambassador_commission_fixed'] || '10000', 10)
+  const minCa = parseInt(configMap['ambassador_min_revenue'] || '50000', 10)
+  
+  // Chercher un store existant
+  const { data: store } = await supabase.from('Store').select('id').eq('user_id', userId).maybeSingle()
+  
+  // 4. Créer l'ambassadeur
+  const { data: newAmbassador, error: insertError } = await supabase
+    .from('Ambassador')
+    .insert({
+      user_id: userId,
+      store_id: store?.id || null,
+      code,
+      name: user.name,
+      commission_per_vendor: commission,
+      min_ca_requirement: minCa,
+      is_active: true
+    })
+    .select()
+    .single()
+    
+  if (insertError) {
+    if (insertError.code === '23505') { // Unique violation
+      return getAmbassadorStats(userId).then(stats => stats?.ambassador || null)
+    }
+    throw new Error(`Erreur lors de la création du profil ambassadeur: ${insertError.message}`)
+  }
+  
+  return mapAmbassador(newAmbassador as Record<string, unknown>)
+}

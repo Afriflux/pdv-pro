@@ -92,6 +92,11 @@ function ProductListRow({ product, baseUrl }: { product: Product; baseUrl: strin
             Coaching
           </span>
         )}
+        {product.type === 'course' && (
+          <span className="text-xs font-semibold px-2 py-1 rounded-full text-white bg-indigo-600">
+            Académie
+          </span>
+        )}
       </div>
 
       {/* Badge statut cliquable */}
@@ -111,6 +116,14 @@ function ProductListRow({ product, baseUrl }: { product: Product; baseUrl: strin
 
       {/* Actions */}
       <div className="flex items-center gap-2">
+        {product.type === 'course' && (
+           <Link 
+             href={`/dashboard/products/${product.id}/course`}
+             className="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg hover:bg-indigo-100 transition whitespace-nowrap"
+           >
+             Gérer le cours
+           </Link>
+        )}
         <FlashFunnelButton productId={product.id} compact />
         <CopyButton url={`${baseUrl}/pay/${product.id}`} compact />
         <Link 
@@ -165,6 +178,11 @@ function LargeProductCard({ product, baseUrl }: { product: Product; baseUrl: str
               Coaching
             </span>
           )}
+          {product.type === 'course' && (
+            <span className="text-xs font-semibold px-2 py-1 rounded-full text-white bg-indigo-600 shadow-sm">
+              Académie (Cours)
+            </span>
+          )}
         </div>
       </div>
 
@@ -202,6 +220,14 @@ function LargeProductCard({ product, baseUrl }: { product: Product; baseUrl: str
           </div>
           
           <div className="flex gap-2">
+            {product.type === 'course' && (
+               <Link 
+                 href={`/dashboard/products/${product.id}/course`}
+                 className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-600/10 flex items-center justify-center whitespace-nowrap"
+               >
+                 Gérer la formation
+               </Link>
+            )}
             <FlashFunnelButton productId={product.id} className="h-[48px]" />
             <CopyButton url={`${baseUrl}/pay/${product.id}`} />
             <Link 

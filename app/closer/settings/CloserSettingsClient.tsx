@@ -140,8 +140,25 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
   }
 
   const handleDeleteAccount = async () => {
-    // eslint-disable-next-line no-alert
-    if (!prompt('Ceci supprimera définitivement votre compte et tout l’historique associé.\nTapez "CONFIRMER" pour procéder.')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Zone de Danger',
+      text: 'Ceci supprimera définitivement votre compte et tout l’historique associé. Tapez "CONFIRMER" pour procéder.',
+      input: 'text',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444',
+      preConfirm: (inputValue) => {
+        if (inputValue !== 'CONFIRMER') {
+          Swal.showValidationMessage('Vous devez taper CONFIRMER pour valider')
+        }
+        return inputValue
+      }
+    })
+    
+    if (!result.isConfirmed || result.value !== 'CONFIRMER') return
     
     setDeleteLoading(true)
     setError('')
@@ -340,6 +357,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                         {/* Wave */}
                         <button
                           type="button"
+                          aria-label="Sélectionner Wave Mobile"
                           onClick={() => setWithdrawalMethod('wave')}
                           className={`relative p-6 text-left rounded-[1.5rem] border-2 transition-all duration-300 flex flex-col items-start gap-4 overflow-hidden group ${
                             withdrawalMethod === 'wave' 
@@ -365,6 +383,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                         {/* Orange Money */}
                         <button
                           type="button"
+                          aria-label="Sélectionner Orange Money"
                           onClick={() => setWithdrawalMethod('orange_money')}
                           className={`relative p-6 text-left rounded-[1.5rem] border-2 transition-all duration-300 flex flex-col items-start gap-4 overflow-hidden group ${
                             withdrawalMethod === 'orange_money' 
@@ -390,6 +409,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                         {/* Bank */}
                         <button
                           type="button"
+                          aria-label="Sélectionner Virement Bancaire"
                           onClick={() => setWithdrawalMethod('bank')}
                           className={`relative p-6 text-left rounded-[1.5rem] border-2 transition-all duration-300 flex flex-col items-start gap-4 overflow-hidden group ${
                             withdrawalMethod === 'bank' 
@@ -472,6 +492,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                           </div>
                           <button 
                             type="button"
+                            aria-label="Activer le retrait automatique"
                             onClick={() => setAutoWithdrawEnabled(!autoWithdrawEnabled)}
                             className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 mt-1 shadow-inner focus:outline-none ${autoWithdrawEnabled ? 'bg-[#0F7A60]' : 'bg-gray-200'}`}
                           >

@@ -187,8 +187,17 @@ export default function LivraisonsView({ storeId, storeName, initialOrders, deli
   }
 
   const handleDeleteDeliverer = async (id: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm("Supprimer ce livreur ? Il n'aura plus accès aux commandes assignées.")) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: "Supprimer ce livreur ? Il n'aura plus accès aux commandes assignées.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     const res = await deleteDelivererAction(id)
     if (res.success) {
       setDeliverers(prev => prev.filter(d => d.id !== id))

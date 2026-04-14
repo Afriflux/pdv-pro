@@ -58,6 +58,7 @@ const NAV: NavSection[] = [
     title: 'COMPTE',
     items: [
       { name: 'Mon Portefeuille', href: '/client/wallet', icon: Wallet },
+      { name: 'Ambassadeurs', href: '/client/ambassadeur', icon: Sparkles, badge: 'NEW' },
       { name: 'Points & Récompenses', href: '/client/loyalty', icon: Sparkles },
       { name: 'Mes Adresses', href: '/client/addresses', icon: MapPin },
       { name: 'Paramètres', href: '/client/settings', icon: Settings },

@@ -1,7 +1,26 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ShieldCheck, ShieldAlert, Ban, Flag, Loader2 } from 'lucide-react'
+
+function ScoreProgressBar({ score }: { score: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (ref.current) ref.current.style.width = `${Math.min(score, 100)}%`
+  }, [score])
+  
+  return (
+    <div
+      ref={ref}
+      className={`h-full rounded-full transition-all duration-500 ${
+        score >= 80 ? 'bg-emerald-500'
+        : score >= 50 ? 'bg-blue-500'
+        : score >= 30 ? 'bg-orange-500'
+        : 'bg-red-500'
+      }`}
+    />
+  )
+}
 
 interface BuyerScoreBadgeProps {
   phone: string
@@ -54,8 +73,17 @@ export function BuyerScoreBadge({ phone, storeId, compact = false }: BuyerScoreB
 
   const handleFlag = async () => {
     if (flagging) return
-    // eslint-disable-next-line no-alert
-    if (!confirm(`Êtes-vous sûr de vouloir signaler ce numéro (${phone}) ? Il ne pourra plus payer en COD.`)) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Signaler ce numéro',
+      text: `Êtes-vous sûr de vouloir signaler ce numéro (${phone}) ? Il ne pourra plus payer en COD.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, signaler',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
 
     setFlagging(true)
     try {
@@ -134,15 +162,7 @@ export function BuyerScoreBadge({ phone, storeId, compact = false }: BuyerScoreB
 
           {/* Score bar */}
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                info.score >= 80 ? 'bg-emerald-500'
-                : info.score >= 50 ? 'bg-blue-500'
-                : info.score >= 30 ? 'bg-orange-500'
-                : 'bg-red-500'
-              }`}
-              style={{ width: `${info.score}%` }}
-            />
+            <ScoreProgressBar score={info.score} />
           </div>
 
           {/* Actions */}

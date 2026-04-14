@@ -7,8 +7,16 @@ import { Plus, Link as LinkIcon, Trash2, Copy, CheckCircle2, ChevronLeft, Credit
 import Link from 'next/link'
 import { getPaymentLinksAction, createPaymentLinkAction, togglePaymentLinkAction, deletePaymentLinkAction } from './actions'
 
+interface PaymentLink {
+  id: string
+  title: string
+  amount: number
+  description?: string | null
+  is_active: boolean
+}
+
 export default function PaymentLinksPage() {
-  const [links, setLinks] = useState<any[]>([])
+  const [links, setLinks] = useState<PaymentLink[]>([])
   const [loading, setLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -61,8 +69,17 @@ export default function PaymentLinksPage() {
   }
 
   const handleDelete = async (id: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm('Voulez-vous vraiment supprimer ce lien de paiement ?')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment supprimer ce lien de paiement ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     setLinks(links.filter(l => l.id !== id))
     await deletePaymentLinkAction(id)
   }
@@ -110,8 +127,9 @@ export default function PaymentLinksPage() {
           <form onSubmit={handleCreate} className="space-y-4 max-w-2xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate">Titre de la demande</label>
+                <label htmlFor="title-input" className="text-sm font-bold text-slate">Titre de la demande</label>
                 <input 
+                  id="title-input"
                   type="text"
                   required
                   value={title}
@@ -121,8 +139,9 @@ export default function PaymentLinksPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-bold text-slate">Montant (FCFA)</label>
+                <label htmlFor="amount-input" className="text-sm font-bold text-slate">Montant (FCFA)</label>
                 <input 
+                  id="amount-input"
                   type="number"
                   required
                   min="100"
@@ -135,8 +154,9 @@ export default function PaymentLinksPage() {
             </div>
             
             <div className="space-y-2">
-              <label className="text-sm font-bold text-slate">Description (Optionnel)</label>
+              <label htmlFor="description-input" className="text-sm font-bold text-slate">Description (Optionnel)</label>
               <textarea 
+                id="description-input"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 placeholder="Détails visibles par le client..."
@@ -178,6 +198,7 @@ export default function PaymentLinksPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
+                      aria-label={link.is_active ? "Désactiver le lien" : "Activer le lien"}
                       onClick={() => handleToggle(link.id, link.is_active)}
                       className={`w-10 h-6 rounded-full transition-colors relative ${link.is_active ? 'bg-[#0F7A60]' : 'bg-gray-200'}`}
                     >
@@ -203,6 +224,8 @@ export default function PaymentLinksPage() {
                   </button>
                   <button
                     onClick={() => handleDelete(link.id)}
+                    aria-label="Supprimer le lien"
+                    title="Supprimer le lien"
                     className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                   >
                     <Trash2 size={18} />

@@ -98,7 +98,7 @@ const NAV: NavSection[] = [
       { name: 'Closers', href: '/dashboard/closers', icon: Users, appId: 'closers' },
       { name: 'Telegram', href: '/dashboard/telegram', icon: Zap, appId: 'telegram' },
       { name: 'AI Generator', href: '/dashboard/ai-generator', icon: Palette, appId: 'ai-generator' },
-      { name: 'Ambassadeurs', href: '/dashboard/ambassadeur', icon: Gem, appId: 'ambassadeur' },
+      { name: 'Ambassadeurs', href: '/dashboard/ambassadeur', icon: Gem },
     ]
   },
   {

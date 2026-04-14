@@ -61,6 +61,11 @@ export async function PATCH(
       if (updates.onboarding_completed !== undefined) storeUpdates.onboarding_completed = updates.onboarding_completed
       if (updates.kyc_status !== undefined) storeUpdates.kyc_status = updates.kyc_status
 
+      // Soft Delete Opérationnel : on met en quarantaine (is_active = false) si le rôle principal n'est plus vendeur
+      if (updates.role && updates.role !== 'vendeur') {
+        storeUpdates.is_active = false
+      }
+
       if (Object.keys(storeUpdates).length > 0) {
         const { error: storeErr } = await supabaseAdmin
           .from('Store')

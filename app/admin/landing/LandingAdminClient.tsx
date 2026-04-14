@@ -116,8 +116,19 @@ export default function LandingAdminClient(props: Props) {
   }
 
   const updateTestimonial = (id: string, field: keyof Testimonial, val: string | boolean) => setTestimonials(prev => prev.map(t => t.id === id ? { ...t, [field]: val } : t))
-  // eslint-disable-next-line no-alert
-  const removeTestimonial = (id: string) => confirm('Flasher ce témoignage ?') && setTestimonials(prev => prev.filter(t => t.id !== id))
+  const removeTestimonial = async (id: string) => {
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Flasher ce témoignage ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, flasher',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (result.isConfirmed) setTestimonials(prev => prev.filter(t => t.id !== id))
+  }
 
   const handleSaveFaqs = async () => {
     setSavingFaqs(true)
@@ -137,8 +148,19 @@ export default function LandingAdminClient(props: Props) {
   }
 
   const updateFaq = (id: string, field: keyof FAQ, val: string | boolean | number) => setFaqs(prev => prev.map(f => f.id === id ? { ...f, [field]: val } : f))
-  // eslint-disable-next-line no-alert
-  const removeFaq = (id: string) => confirm('Détruire cette question ?') && setFaqs(prev => prev.filter(f => f.id !== id))
+  const removeFaq = async (id: string) => {
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Détruire cette question ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, détruire',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (result.isConfirmed) setFaqs(prev => prev.filter(f => f.id !== id))
+  }
   const moveFaq = (index: number, diff: number) => {
     const clone = [...faqs], targetIdx = index + diff
     if (targetIdx < 0 || targetIdx >= clone.length) return

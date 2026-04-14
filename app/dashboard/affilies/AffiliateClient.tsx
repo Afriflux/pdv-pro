@@ -199,8 +199,17 @@ export default function AffiliateClient({ storeId, storeSlug, initialActive, ini
   }
 
   const handleReject = async (affiliateId: string, isSuspend = false) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm(isSuspend ? "Voulez-vous suspendre cet affilié actif ?" : "Voulez-vous vraiment refuser cet affilié ?")) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: isSuspend ? 'Voulez-vous suspendre cet affilié actif ?' : 'Voulez-vous vraiment refuser cet affilié ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     setActionLoading(affiliateId)
     const res = await rejectAffiliate(affiliateId)
     if (res.success) {

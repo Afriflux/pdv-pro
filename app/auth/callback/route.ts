@@ -21,7 +21,10 @@ export async function GET(request: NextRequest) {
 
       if (!store) {
         // Pas de boutique → C'est un nouveau user via Google
-        return NextResponse.redirect(`${origin}/register/ambassador?userId=${user.id}`)
+        const { cookies } = await import('next/headers')
+        const roleCookie = cookies().get('yayyam_onboarding_role')?.value
+        const roleQuery = roleCookie ? `&role=${roleCookie}` : ''
+        return NextResponse.redirect(`${origin}/register/complete?userId=${user.id}${roleQuery}`)
       }
     }
   }

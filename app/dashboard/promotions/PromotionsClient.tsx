@@ -175,8 +175,17 @@ export default function PromotionsClient({
   }
 
   const handleDeleteCode = async (id: string) => {
-    // eslint-disable-next-line no-alert
-    if(!confirm("Supprimer ce coupon ?")) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Supprimer ce coupon ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     const res = await deletePromoCode(id)
     if (res.success) {
       setPromoCodes(prev => prev.filter(p => p.id !== id))

@@ -237,9 +237,18 @@ export function UniversalTasks({ initialTasks = [], ownerId, ownerType, actions 
     })
   }
 
-  const handleDelete = (id: string) => {
-    // eslint-disable-next-line no-alert
-    if(confirm('Supprimer cette tâche ?')) {
+  const handleDelete = async (id: string) => {
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Supprimer cette tâche ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if(result.isConfirmed) {
       const backup = [...tasks]
       setTasks(prev => prev.filter(t => t.id !== id))
       
@@ -335,6 +344,8 @@ export function UniversalTasks({ initialTasks = [], ownerId, ownerType, actions 
                     {editingId === task.id ? (
                       <input 
                         className="w-full text-sm font-bold bg-gray-50 border border-line rounded px-2 py-1 outline-none"
+                        title="Titre de la tâche"
+                        placeholder="Titre de la tâche"
                         value={editTitle}
                         onChange={(e) => setEditTitle(e.target.value)}
                         onBlur={() => saveEdit(task.id)}

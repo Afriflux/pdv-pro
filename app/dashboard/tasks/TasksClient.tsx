@@ -223,9 +223,18 @@ export default function TasksClient({ initialTasks = [] }: { initialTasks?: Task
     })
   }
 
-  const handleDelete = (id: string) => {
-    // eslint-disable-next-line no-alert
-    if(confirm('Supprimer cette tâche ?')) {
+  const handleDelete = async (id: string) => {
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Supprimer cette tâche ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if(result.isConfirmed) {
       const backup = [...tasks]
       setTasks(prev => prev.filter(t => t.id !== id))
       

@@ -135,8 +135,17 @@ export default function AddressesClient({ addresses, profileName, profilePhone }
   }
 
   const handleDelete = async (id: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm('Supprimer cette adresse de livraison ?')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Supprimer cette adresse de livraison ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     setDeletingId(id)
     const res = await deleteDeliveryAddress(id)
     if (res.error) showMessage('error', res.error)

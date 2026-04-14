@@ -72,8 +72,19 @@ function PageRow({ page }: { page: SalePage }) {
   const [copied, setCopied] = useState(false)
   
   const handleToggle = () => startTransition(() => { togglePageStatus(page.id, page.active); })
-  // eslint-disable-next-line no-alert
-  const handleDelete = () => { if (confirm('Supprimer cette page ?')) startTransition(() => { deletePage(page.id); }) }
+  const handleDelete = async () => {
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Supprimer cette page ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (result.isConfirmed) startTransition(() => { deletePage(page.id); })
+  }
   const handleDuplicate = () => startTransition(() => { duplicatePage(page.id); })
   
   const handleCopyLink = () => {
@@ -175,8 +186,19 @@ function PageCard({ page }: { page: SalePage }) {
   const [copied, setCopied] = useState(false)
   
   const handleToggle = () => startTransition(() => { togglePageStatus(page.id, page.active); })
-  // eslint-disable-next-line no-alert
-  const handleDelete = () => { if (confirm('Supprimer cette page ?')) startTransition(() => { deletePage(page.id); }) }
+  const handleDelete = async () => {
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Supprimer cette page ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (result.isConfirmed) startTransition(() => { deletePage(page.id); })
+  }
   const handleDuplicate = () => startTransition(() => { duplicatePage(page.id); })
   
   const handleCopyLink = () => {

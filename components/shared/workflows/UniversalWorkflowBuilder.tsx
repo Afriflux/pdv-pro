@@ -134,8 +134,17 @@ export function UniversalWorkflowBuilder({
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
-    // eslint-disable-next-line no-alert
-    if (!confirm('Voulez-vous vraiment supprimer ce workflow ?')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment supprimer ce workflow ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     const res = await actions.deleteWorkflow(id)
     if (res.success) {
       setWorkflows(prev => prev.filter(w => w.id !== id))

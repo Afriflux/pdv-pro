@@ -44,13 +44,13 @@ export default async function ClientLayout({
   const avatarUrl = userProfile.avatar_url || user.user_metadata?.avatar_url || user.user_metadata?.picture || null
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-[100dvh] bg-gray-50 overflow-hidden">
       <ClientSidebar
         userName={userName}
         avatarUrl={avatarUrl}
       />
 
-      <main className="relative flex-1 min-w-0 h-screen bg-gray-50 font-sans overflow-y-auto overflow-x-hidden">
+      <main className="relative flex-1 min-w-0 h-[100dvh] bg-gray-50 font-sans overflow-y-auto overflow-x-hidden">
         <GlobalHomeButton />
 
         {/* 🌟 UNIVERSAL MESH BACKGROUND 🌟 */}

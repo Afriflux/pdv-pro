@@ -71,8 +71,17 @@ export default function SmartReviewsControls({ isActive, reviews, products }: Pr
   }
 
   const handleDelete = async (id: string) => {
-    // eslint-disable-next-line no-alert
-    if(!confirm("Supprimer cet avis ?")) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Supprimer cet avis ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     setDeletingId(id)
     await deleteReviewAction(id)
     setDeletingId(null)

@@ -91,15 +91,22 @@
     border-color: hsl(var(--border));
   }
 
-  html, body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    overflow-x: hidden;
-    width: 100vw;
-    max-width: 100%;
-    position: relative;
+    html, body {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      overflow-x: hidden;
+      width: 100vw;
+      max-width: 100%;
+      position: relative;
+    }
+
+    /* iOS Mobile Zoom Fix */
+    @media screen and (max-width: 768px) {
+      input, select, textarea {
+        font-size: 16px !important;
+      }
+    }
   }
-}
 
 /* Scrollbar utilities */
 .scrollbar-hide::-webkit-scrollbar {

@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Gift, Star, Trophy, TrendingUp, Users, Zap, Crown, Target, Award, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import AmbassadorSettingsClient from './AmbassadorSettingsClient'
 
 export const metadata = {
   title: 'Fidélité & Récompenses | Yayyam Admin',
@@ -22,6 +23,23 @@ export default async function LoyaltyPage() {
       .in('status', ['confirmed', 'delivered', 'completed'])
       .limit(500),
   ])
+
+  // Fetch Config for Ambassador
+  const { data: configs } = await supabase.from('PlatformConfig').select('key, value').in('key', [
+    'ambassador_reward_client',
+    'ambassador_reward_pro',
+    'ambassador_require_purchase',
+    'ambassador_active'
+  ])
+
+  const getConfig = (key: string, def: string) => configs?.find(c => c.key === key)?.value || def
+
+  const initialConfig = {
+    ambassador_reward_client: getConfig('ambassador_reward_client', '500'),
+    ambassador_reward_pro: getConfig('ambassador_reward_pro', '1000'),
+    ambassador_require_purchase: getConfig('ambassador_require_purchase', 'true'),
+    ambassador_active: getConfig('ambassador_active', 'false'),
+  }
 
   // Calculate top buyers
   const buyerCounts: Record<string, { name: string; count: number }> = {}
@@ -91,6 +109,9 @@ export default async function LoyaltyPage() {
       {/* Content */}
       <div className="px-6 lg:px-10 -mt-16 pb-20 relative z-20">
         
+        {/* Paramètres d'Acquisition (Ambassadeurs) */}
+        <AmbassadorSettingsClient initialConfig={initialConfig} />
+
         {/* Loyalty Tiers */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 mb-8">
           <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">

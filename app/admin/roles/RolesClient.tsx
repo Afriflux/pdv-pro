@@ -197,9 +197,18 @@ export default function RolesClient({
     saveOrgDepts(updated)
   }
 
-  const deleteDepartment = (id: string) => {
-    // eslint-disable-next-line no-alert
-    if (!window.confirm('Supprimer ce nœud et tous ses sous-éléments ?')) return
+  const deleteDepartment = async (id: string) => {
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Supprimer ce nœud et tous ses sous-éléments ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     const updated = treeDelete(orgDepts, id)
     setOrgDepts(updated)
     saveOrgDepts(updated)
@@ -310,10 +319,19 @@ export default function RolesClient({
     setRoleModal({ isOpen: true, action: 'edit', roleId: roleId, nameValue: roleToEdit.name });
   }
 
-  const handleDeleteRole = (roleId: string) => {
+  const handleDeleteRole = async (roleId: string) => {
     const roleToDelete = roles.find(r => r.id === roleId);
-    // eslint-disable-next-line no-alert
-    if (window.confirm(`Êtes-vous sûr de vouloir supprimer le rôle "${roleToDelete?.name}" ?\n\nAttention : Si des administrateurs possèdent ce rôle, ils perdront leurs accès après enregistrement.`)) {
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: `Êtes-vous sûr de vouloir supprimer le rôle "${roleToDelete?.name}" ?\n\nAttention : Si des administrateurs possèdent ce rôle, ils perdront leurs accès après enregistrement.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (result.isConfirmed) {
        setRoles(prev => prev.filter(r => r.id !== roleId));
        setHasUnsavedChanges(true);
        toast.success("Rôle supprimé. N'oubliez pas d'enregistrer.");
@@ -654,38 +672,36 @@ export default function RolesClient({
                                return (
                                <th key={role.id} className="px-6 py-5 border-r border-gray-100 last:border-0 min-w-[170px]">
                                   <div className="flex flex-col items-center gap-2">
-                                     <div className="flex items-center gap-2">
-                                       <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider border shadow-sm ${role.bgCls} ${role.colorCls}`}>
-                                         {role.name === 'Super Admin' && <Lock size={12} className="mr-1.5 opacity-50"/>}
-                                         {role.name}
-                                       </span>
-                                       {role.name !== 'Super Admin' && (
-                                         <div className="flex items-center gap-1.5 mt-1.5">
-                                           <button 
-                                              onClick={() => handleCloneRole(role)}
-                                              title="Dupliquer"
-                                              aria-label="Dupliquer"
-                                              className="p-1.5 text-gray-400 hover:text-[#0F7A60] hover:bg-[#0F7A60]/10 rounded-lg transition-all"
-                                           >
-                                              <Copy size={13} strokeWidth={2.5}/>
-                                           </button>
-                                           <button 
-                                              onClick={() => handleEditRoleName(role.id)}
-                                              title="Renommer"
-                                              className="p-1.5 text-gray-400 hover:text-[#C9A84C] hover:bg-[#C9A84C]/10 rounded-lg transition-all"
-                                           >
-                                              <Edit2 size={13} strokeWidth={2.5}/>
-                                           </button>
-                                           <button 
-                                              onClick={() => handleDeleteRole(role.id)}
-                                              title="Supprimer"
-                                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-lg transition-all"
-                                           >
-                                              <Trash2 size={13} strokeWidth={2.5}/>
-                                           </button>
-                                         </div>
-                                       )}
-                                     </div>
+                                     <span className={`inline-flex text-center items-center px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider border shadow-sm ${role.bgCls} ${role.colorCls}`}>
+                                       {role.name === 'Super Admin' && <Lock size={12} className="mr-1.5 opacity-50"/>}
+                                       {role.name}
+                                     </span>
+                                     {role.name !== 'Super Admin' && (
+                                       <div className="flex items-center gap-1.5 mt-1">
+                                         <button 
+                                            onClick={() => handleCloneRole(role)}
+                                            title="Dupliquer"
+                                            aria-label="Dupliquer"
+                                            className="p-1.5 text-gray-400 hover:text-[#0F7A60] hover:bg-[#0F7A60]/10 rounded-lg transition-all"
+                                         >
+                                            <Copy size={13} strokeWidth={2.5}/>
+                                         </button>
+                                         <button 
+                                            onClick={() => handleEditRoleName(role.id)}
+                                            title="Renommer"
+                                            className="p-1.5 text-gray-400 hover:text-[#C9A84C] hover:bg-[#C9A84C]/10 rounded-lg transition-all"
+                                         >
+                                            <Edit2 size={13} strokeWidth={2.5}/>
+                                         </button>
+                                         <button 
+                                            onClick={() => handleDeleteRole(role.id)}
+                                            title="Supprimer"
+                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-lg transition-all"
+                                         >
+                                            <Trash2 size={13} strokeWidth={2.5}/>
+                                         </button>
+                                       </div>
+                                     )}
                                      <span className="text-xs font-bold text-gray-400">
                                        {userCount} membre{userCount !== 1 ? 's' : ''} impacté{userCount !== 1 ? 's' : ''}
                                      </span>

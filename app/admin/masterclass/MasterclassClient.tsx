@@ -191,8 +191,17 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
   }
 
   const handleDelete = async (id: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm('Voulez-vous vraiment supprimer cet article ?')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment supprimer cet article ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     const res = await deleteMasterclassArticle(id)
     if (res.success) {
       setArticles(prev => prev.filter(a => a.id !== id))

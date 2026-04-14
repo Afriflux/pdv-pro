@@ -90,8 +90,17 @@ export function ZoneList({ initialZones }: { initialZones: DeliveryZone[] }) {
   }
 
   const handleDelete = async (id: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette zone ?')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Êtes-vous sûr de vouloir supprimer cette zone ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     try {
       await deleteDeliveryZone(id)
       setZones(zones.filter(z => z.id !== id))

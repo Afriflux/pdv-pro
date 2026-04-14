@@ -94,6 +94,11 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
               Coaching
             </span>
           )}
+          {product.type === 'course' && (
+            <span className="text-xs font-semibold px-2 py-1 rounded-full text-white bg-indigo-600 shadow-sm">
+              Académie (Cours)
+            </span>
+          )}
         </div>
 
         {/* Badge statut cliquable (droite) */}
@@ -158,12 +163,21 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
           </div>
 
           <div className="flex gap-2 mt-2 relative z-10">
-            <Link
-              href={`/dashboard/products/${product.id}/edit`}
-              className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-gray-600 bg-white border border-gray-200 rounded-xl py-3.5 min-h-[44px] hover:text-[#0F7A60] hover:border-[#0F7A60]/30 hover:bg-[#0F7A60]/5 transition-all duration-300 shadow-sm"
-            >
-              ✏️ Modifier
-            </Link>
+            {product.type === 'course' ? (
+              <Link
+                href={`/dashboard/products/${product.id}/course`}
+                className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-xl py-3.5 min-h-[44px] hover:text-indigo-700 hover:bg-indigo-100 hover:border-indigo-300 transition-all duration-300 shadow-sm"
+              >
+                🎓 Gérer
+              </Link>
+            ) : (
+              <Link
+                href={`/dashboard/products/${product.id}/edit`}
+                className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-gray-600 bg-white border border-gray-200 rounded-xl py-3.5 min-h-[44px] hover:text-[#0F7A60] hover:border-[#0F7A60]/30 hover:bg-[#0F7A60]/5 transition-all duration-300 shadow-sm"
+              >
+                ✏️ Modifier
+              </Link>
+            )}
             <button
               onClick={handleDuplicate}
               disabled={pending}

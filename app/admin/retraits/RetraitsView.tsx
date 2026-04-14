@@ -124,8 +124,17 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
       return
     }
 
-    // eslint-disable-next-line no-alert
-    if (!confirm(`Confirmez-vous la validation de ${idsToProcess.length} retraits ?`)) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: `Confirmez-vous la validation de ${idsToProcess.length} retraits ?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, valider',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#10b981' // emerald-500
+    })
+    if (!result.isConfirmed) return
 
     setIsProcessingBulk(true)
     

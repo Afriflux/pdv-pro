@@ -47,8 +47,17 @@ export default function SubscriptionsControls({ subscriptions }: Props) {
   })
 
   const handleCancel = async (id: string) => {
-    // eslint-disable-next-line no-alert
-    if(!confirm("Êtes-vous sûr de vouloir annuler de force cet abonnement ? Le client ne sera plus relancé.")) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Êtes-vous sûr de vouloir annuler de force cet abonnement ? Le client ne sera plus relancé.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, annuler',
+      cancelButtonText: 'Non, garder',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     setCancelingId(id)
     await cancelSubscriptionAction(id)
     setCancelingId(null)

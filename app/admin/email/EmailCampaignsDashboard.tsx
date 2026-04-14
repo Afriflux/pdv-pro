@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Search, Sparkles, Mail, LayoutGrid, List } from 'lucide-react'
+import { Search, Sparkles, Mail, LayoutGrid, List, PenTool } from 'lucide-react'
 import EmailCampaignsKanban from './EmailCampaignsKanban'
 import GenerateCampaignModal from './GenerateCampaignModal'
+import CreateManualCampaignModal from './CreateManualCampaignModal'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Campaign {
@@ -55,8 +56,14 @@ function statusBadge(status: string): { label: string; classes: string } {
   return map[status] ?? { label: status, classes: 'bg-gray-50 text-gray-500 border-gray-200' }
 }
 
-function getProgressStyle(rate: number): React.CSSProperties {
-  return { width: `${Math.min(rate, 100)}%` } as React.CSSProperties
+import { useRef, useEffect } from 'react'
+
+function ProgressBar({ rate, colorClass }: { rate: number, colorClass: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (ref.current) ref.current.style.width = `${Math.min(rate, 100)}%`
+  }, [rate])
+  return <div ref={ref} className={`h-full rounded-full transition-all duration-1000 ${colorClass}`}></div>
 }
 
 // ─── Composant Interactif ────────────────────────────────────────────────────
@@ -65,6 +72,7 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
   const [activeFilter, setActiveFilter] = useState<'all' | 'sent' | 'draft' | 'scheduled'>('all')
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table')
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false)
+  const [isManualModalOpen, setIsManualModalOpen] = useState(false)
 
   const filteredCampaigns = useMemo(() => {
     let result = [...campaigns]
@@ -143,6 +151,14 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
                   <p className="text-2xl font-black text-[#0D5C4A]">{avgClickRate.toFixed(1)}<span className="text-lg">%</span></p>
                </div>
              </div>
+             
+             <button 
+                onClick={() => setIsManualModalOpen(true)}
+                className="hidden lg:flex items-center gap-2 bg-white hover:bg-emerald-50 text-emerald-800 px-5 py-3.5 rounded-2xl shadow-sm border border-emerald-100 transition-all font-bold"
+                title="Créer Manuellement"
+             >
+                <PenTool className="w-5 h-5 text-emerald-600" /> <span className="text-sm font-black whitespace-nowrap">Créer Manuellement</span>
+             </button>
              
              <button 
                 onClick={() => setIsGenerateModalOpen(true)}
@@ -321,7 +337,7 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
                               <span className="text-xs font-bold text-gray-400">{formatNumber(opens)} vues</span>
                             </div>
                             <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-emerald-500 rounded-full transition-all duration-1000" style={getProgressStyle(openRate)}></div>
+                              <ProgressBar rate={openRate} colorClass="bg-emerald-500" />
                             </div>
                           </div>
                         ) : (
@@ -338,7 +354,7 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
                               <span className="text-xs font-bold text-gray-400">{formatNumber(clicks)} clics</span>
                             </div>
                             <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-[#0D5C4A] rounded-full transition-all duration-1000" style={getProgressStyle(clickRate)}></div>
+                              <ProgressBar rate={clickRate} colorClass="bg-[#0D5C4A]" />
                             </div>
                           </div>
                         ) : (
@@ -393,6 +409,12 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
       <GenerateCampaignModal 
         isOpen={isGenerateModalOpen} 
         onClose={() => setIsGenerateModalOpen(false)} 
+      />
+
+      {/* MODAL MANUEL */}
+      <CreateManualCampaignModal
+        isOpen={isManualModalOpen}
+        onClose={() => setIsManualModalOpen(false)}
       />
     </div>
   )

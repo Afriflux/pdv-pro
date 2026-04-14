@@ -11,8 +11,17 @@ export function DangerZoneTab() {
   const [loading, setLoading] = useState(false)
 
   const onDeleteAccount = async () => {
-    // eslint-disable-next-line no-alert
-    if (!window.confirm("CONFIRMATION REQUISE:\n\nVoulez-vous vraiment supprimer votre boutique et toutes ses données (commandes, produits, etc.) ?\n\nCette action est IMMÉDIATE et IRRÉVERSIBLE.")) {
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation Requise',
+      text: 'Voulez-vous vraiment supprimer votre boutique et toutes ses données (commandes, produits, etc.) ? Cette action est IMMÉDIATE et IRRÉVERSIBLE.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer définitivement',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) {
       return
     }
     
@@ -39,7 +48,7 @@ export function DangerZoneTab() {
           <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-red-600 to-rose-600 opacity-90"></div>
           
           {/* Motifs "Attention" clairs */}
-          <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #FFF 0, #FFF 10px, transparent 10px, transparent 20px)' }}></div>
+          <div className="absolute inset-0 opacity-[0.15] bg-[length:20px_20px] bg-[repeating-linear-gradient(45deg,#FFF_0,#FFF_10px,transparent_10px,transparent_20px)]"></div>
           
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 animate-pulse duration-[5000ms] pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-rose-500/30 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>

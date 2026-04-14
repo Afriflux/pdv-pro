@@ -46,7 +46,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
+    <div className="flex h-[100dvh] bg-gray-50 font-sans overflow-hidden">
       
       {/* ─────────────────────────────────────────────────────────
           SIDEBAR DYNAMIQUE — Gestion des états desktop/mobile
@@ -61,7 +61,7 @@ export default async function AdminLayout({
       {/* ─────────────────────────────────────────────────────────
           CONTENU PRINCIPAL
       ───────────────────────────────────────────────────────── */}
-      <main className="relative flex-1 min-w-0 bg-gray-50 h-screen overflow-y-auto overflow-x-hidden flex flex-col">
+      <main className="relative flex-1 min-w-0 bg-gray-50 h-[100dvh] overflow-y-auto overflow-x-hidden flex flex-col">
         <GlobalHomeButton />
 
         {/* 🌟 UNIVERSAL MESH BACKGROUND 🌟 */}

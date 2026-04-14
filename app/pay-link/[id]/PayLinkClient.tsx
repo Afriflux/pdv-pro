@@ -1,7 +1,20 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Activity, ExternalLink } from 'lucide-react'
+
+function DynamicColorButton({ 
+  storeColor, 
+  children, 
+  ...props 
+}: { storeColor: string } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const ref = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (ref.current) ref.current.style.backgroundColor = storeColor
+  }, [storeColor])
+
+  return <button ref={ref} {...props}>{children}</button>
+}
 
 export default function PayLinkClient({ link, storeColor }: { link: any, storeColor: string }) {
   const [name, setName] = useState('')
@@ -97,11 +110,11 @@ export default function PayLinkClient({ link, storeColor }: { link: any, storeCo
         </div>
       </div>
 
-      <button
+      <DynamicColorButton
+        storeColor={storeColor}
         disabled={isLoading}
         type="submit"
         className="w-full flex items-center justify-center gap-2 text-white px-6 py-4 rounded-xl font-bold transition-all shadow-lg hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 mt-6"
-        style={{ backgroundColor: storeColor }}
       >
         {isLoading ? (
            <Activity className="animate-spin" size={20} />
@@ -111,7 +124,7 @@ export default function PayLinkClient({ link, storeColor }: { link: any, storeCo
              <ExternalLink size={18} />
            </>
         )}
-      </button>
+      </DynamicColorButton>
     </form>
   )
 }

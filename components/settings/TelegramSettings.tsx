@@ -110,8 +110,17 @@ export function TelegramSettings({
 
   // Action : Déconnecter le compte Telegram
   const handleDisconnect = async () => {
-    // eslint-disable-next-line no-alert
-    if (!confirm('Voulez-vous vraiment déconnecter votre compte Telegram ?')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment déconnecter votre compte Telegram ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, déconnecter',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     
     setIsLoading(true)
     try {

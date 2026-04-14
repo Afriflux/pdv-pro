@@ -185,8 +185,17 @@ export default function TelegramDashboard({
 
   // Action : Supprimer
   const deleteCommunity = async (communityId: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm('Déconnecter ce groupe ? Le groupe Telegram ne sera pas supprimé, mais vos clients ne recevront plus d\'invitation.')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: "Déconnecter ce groupe ? Le groupe Telegram ne sera pas supprimé, mais vos clients ne recevront plus d'invitation.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, déconnecter',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     setDeleting(communityId)
     try {
       await fetch('/api/telegram/community', {
@@ -276,8 +285,17 @@ export default function TelegramDashboard({
   // Action : Expulser (Bannir) un client
   const [banningId, setBanningId] = useState<string | null>(null)
   const handleBan = async (accessId: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm("Voulez-vous vraiment expulser ce client du groupe Telegram ?")) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment expulser ce client du groupe Telegram ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, expulser',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     setBanningId(accessId)
     try {
       const res = await fetch('/api/telegram/community/ban', {

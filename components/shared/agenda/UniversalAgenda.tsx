@@ -186,9 +186,18 @@ export function UniversalAgenda({
     setIsSlotModalOpen(false)
   }
 
-  const handleClearDay = (day: number) => {
-    // eslint-disable-next-line no-alert
-    if (confirm(`Voulez-vous vraiment supprimer tous les créneaux de ce jour ?`)) {
+  const handleClearDay = async (day: number) => {
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment supprimer tous les créneaux de ce jour ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (result.isConfirmed) {
       setSlots(slots.filter(s => s.day_of_week !== day))
     }
   }

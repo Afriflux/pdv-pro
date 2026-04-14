@@ -17,12 +17,14 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { ambassadorCode } = body
+    const { ambassadorCode, role: requestedRole } = body
 
+    const userRole = requestedRole || 'vendeur' // Fallback sécurisé
+    
     let code = ''
     let isValidCode = false
 
-    if (ambassadorCode && ambassadorCode.trim()) {
+    if (userRole === 'vendeur' && ambassadorCode && ambassadorCode.trim()) {
       code = ambassadorCode.trim().toUpperCase()
 
       // 1. Valider le code ambassadeur
@@ -60,75 +62,82 @@ export async function POST(req: NextRequest) {
     // Au pire, le trigger `public.handle_new_user()` s'en est chargé, 
     // ou bien il n'existe pas encore si l'OAuth n'a pas triggeré correctement.
     // On peut faire un upsert sécurisé pour garantir son existence.
-    const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'Vendeur'
+    const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'Utilisateur'
     
     await supabaseAdmin.from('User').upsert(
       { 
         id: user.id, 
         email: user.email!, 
         name: userName,
-        role: 'vendeur'
+        role: userRole
       },
       { onConflict: 'id' }
     )
 
-    // 3. Créer Store + Wallet
-    const storeId = randomUUID()
-    const walletId = randomUUID()
-    const slug =
-      userName
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]/g, '-')
-        .replace(/-+/g, '-')
-        .slice(0, 25) +
-      '-' +
-      randomUUID().slice(0, 4)
+    // 3. Créer Store + Wallet UNIQUEMENT si le rôle est vendeur
+    if (userRole === 'vendeur') {
+      const storeId = randomUUID()
+      const walletId = randomUUID()
+      const slug =
+        userName
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]/g, '-')
+          .replace(/-+/g, '-')
+          .slice(0, 25) +
+        '-' +
+        randomUUID().slice(0, 4)
 
-    // Insérer le Store
-    const { error: storeError } = await supabaseAdmin.from('Store').insert({
-      id: storeId,
-      user_id: user.id,
-      name: userName,
-      slug: slug,
-      onboarding_completed: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-
-    if (storeError) {
-      throw new Error('Store insert: ' + storeError.message)
-    }
-
-    // Créer le Wallet
-    const { error: walletError } = await supabaseAdmin
-      .from('Wallet')
-      .insert({
-        id: walletId,
-        vendor_id: storeId,
-        balance: 0,
-        pending: 0,
-        total_earned: 0,
+      // Insérer le Store
+      const { error: storeError } = await supabaseAdmin.from('Store').insert({
+        id: storeId,
+        user_id: user.id,
+        name: userName,
+        slug: slug,
+        onboarding_completed: true,
+        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
 
-    if (walletError && walletError.code !== '23505') {
-      throw new Error('Wallet insert: ' + walletError.message)
-    }
+      if (storeError) {
+        throw new Error('Store insert: ' + storeError.message)
+      }
 
-    // 4. Lier le vendeur à l'ambassadeur
-    if (isValidCode) {
-      const registrationMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
-      try {
-        await linkVendorToAmbassador(code, storeId, registrationMonth)
-      } catch (ambassadorError: unknown) {
-        console.error('[OAUTH GOOGLE] Erreur linkVendorToAmbassador:', ambassadorError)
-        // Ne pas throw l'erreur, la boutique est créée
+      // Créer le Wallet
+      const { error: walletError } = await supabaseAdmin
+        .from('Wallet')
+        .insert({
+          id: walletId,
+          vendor_id: storeId,
+          balance: 0,
+          pending: 0,
+          total_earned: 0,
+          updated_at: new Date().toISOString(),
+        })
+
+      if (walletError && walletError.code !== '23505') {
+        throw new Error('Wallet insert: ' + walletError.message)
+      }
+
+      // 4. Lier le vendeur à l'ambassadeur
+      if (isValidCode) {
+        const registrationMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`
+        try {
+          await linkVendorToAmbassador(code, storeId, registrationMonth)
+        } catch (ambassadorError: unknown) {
+          console.error('[OAUTH GOOGLE] Erreur linkVendorToAmbassador:', ambassadorError)
+        }
       }
     }
 
-    return NextResponse.json({ success: true, redirectTo: '/dashboard' })
+    // Déterminer la redirection selon le rôle final
+    let targetUrl = '/dashboard'
+    if (userRole === 'acheteur' || userRole === 'client') targetUrl = '/client'
+    else if (userRole === 'affilie') targetUrl = '/portal'
+    else if (userRole === 'closer') targetUrl = '/closer'
+
+    return NextResponse.json({ success: true, redirectTo: targetUrl })
 
   } catch (error: unknown) {
     console.error('[OAUTH GOOGLE COMPLETE] Erreur interne:', error)

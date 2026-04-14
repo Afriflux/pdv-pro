@@ -41,6 +41,7 @@ interface ProfileLink {
 
 const PROFILE_LINKS: ProfileLink[] = [
   { icon: Wallet, label: 'Mon Portefeuille', href: '/client/wallet', color: 'text-emerald-500' },
+  { icon: Sparkles, label: 'Ambassadeurs', href: '/client/ambassadeur', color: 'text-yellow-500' },
   { icon: Sparkles, label: 'Points & Récompenses', href: '/client/loyalty', color: 'text-purple-500' },
   { icon: Sparkles, label: 'Assistant IA', href: '/client/assistant', color: 'text-blue-500' },
   { icon: CalendarDays, label: 'Mes Réservations', href: '/client/agenda', color: 'text-orange-500' },

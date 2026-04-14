@@ -146,8 +146,17 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
   }
 
   const handleDelete = async (id: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm('Voulez-vous vraiment supprimer ce thème ?')) return
+    const Swal = (await import('sweetalert2')).default
+    const result = await Swal.fire({
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment supprimer ce thème ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444'
+    })
+    if (!result.isConfirmed) return
     const res = await deleteThemeTemplate(id)
     if (res.success) {
       setTemplates(prev => prev.filter(t => t.id !== id))
@@ -308,7 +317,7 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
                  {/* Visual Banner */}
                  <div className="h-44 w-full bg-slate-50 border border-gray-100/50 rounded-[2rem] relative overflow-hidden flex items-center justify-center mb-4 isolate">
                    {template.preview_url ? (
-                     <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${template.preview_url})`}} title="Aperçu du thème"></div>
+                     <div className="absolute inset-0 bg-cover bg-center"   title="Aperçu du thème"><img src={template.preview_url} alt="Aperçu" className="w-full h-full object-cover" /></div>
                    ) : (
                      <div className="text-4xl opacity-20"><LayoutTemplate /></div>
                    )}
