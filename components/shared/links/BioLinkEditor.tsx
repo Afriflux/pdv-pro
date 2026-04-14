@@ -616,21 +616,25 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
                       <div key={link.id} className="w-full">
                         <a 
                           href={link.url || '#'} 
+                          ref={(el) => {
+                            if (el) {
+                              const bg = link.isPrimary 
+                                ? (link.bgColor || (formData.theme === 'glass' ? 'rgba(255, 255, 255, 0.95)' : formData.brand_color))
+                                : (link.bgColor || (formData.theme === 'dark' ? '#2A2A2A' : formData.theme === 'glass' ? 'rgba(255, 255, 255, 0.2)' : '#FFFFFF'))
+                              const color = link.isPrimary
+                                ? (link.textColor || (formData.theme === 'glass' ? formData.brand_color : ctaTextColor))
+                                : (link.textColor || (formData.theme === 'dark' || formData.theme === 'glass' ? '#FFFFFF' : '#000000'))
+                              const border = link.isPrimary
+                                ? (link.bgColor ? 'none' : (formData.theme === 'glass' ? '1px solid rgba(255, 255, 255, 1)' : `1px solid ${formData.brand_color}`))
+                                : (link.bgColor ? 'none' : (formData.theme === 'glass' ? '1px solid rgba(255, 255, 255, 0.3)' : formData.theme === 'light' ? '1px solid #E5E7EB' : 'none'))
+                              el.style.backgroundColor = bg
+                              el.style.color = color
+                              el.style.border = border
+                            }
+                          }}
                           className={`w-full rounded-2xl py-4 px-4 shadow-sm hover:shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold text-sm text-center flex items-center justify-center gap-2 ${
                             link.isPrimary ? 'shadow-lg' : ''
                           } ${link.animation === 'pulse' ? 'animate-pulse' : link.animation === 'bounce' ? 'animate-bounce' : ''}`}
-                          // eslint-disable-next-line react/forbid-dom-props
-                          style={{
-                            ...(link.isPrimary ? {
-                              backgroundColor: link.bgColor ? link.bgColor : (formData.theme === 'glass' ? 'rgba(255, 255, 255, 0.95)' : formData.brand_color),
-                              color: link.textColor ? link.textColor : (formData.theme === 'glass' ? formData.brand_color : ctaTextColor),
-                              border: link.bgColor ? 'none' : (formData.theme === 'glass' ? '1px solid rgba(255, 255, 255, 1)' : `1px solid ${formData.brand_color}`),
-                            } : {
-                              backgroundColor: link.bgColor ? link.bgColor : (formData.theme === 'dark' ? '#2A2A2A' : formData.theme === 'glass' ? 'rgba(255, 255, 255, 0.2)' : '#FFFFFF'),
-                              color: link.textColor ? link.textColor : (formData.theme === 'dark' || formData.theme === 'glass' ? '#FFFFFF' : '#000000'),
-                              border: link.bgColor ? 'none' : (formData.theme === 'glass' ? '1px solid rgba(255, 255, 255, 0.3)' : formData.theme === 'light' ? '1px solid #E5E7EB' : 'none'),
-                            })
-                          }}
                         >
                           {link.icon && <span>{link.icon}</span>}
                           {link.title || 'Nouveau Lien'}

@@ -150,13 +150,9 @@ export function GettingStartedChecklist({
                 cx={baseSize / 2} cy={baseSize / 2} r={radius}
                 stroke="url(#goldGradient)" strokeWidth={strokeWidth} strokeLinecap="round"
                 fill="none"
-                // eslint-disable-next-line react/forbid-dom-props
-                style={{
-                  strokeDasharray: circumference,
-                  strokeDashoffset: strokeDashoffset,
-                  transition: 'stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                  filter: 'url(#glow)'
-                }}
+                className="checklist-progress-ring"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
