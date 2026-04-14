@@ -120,7 +120,10 @@ Règles impératives :
     return NextResponse.json({ answer: finalAnswer, learned: isNewKnowledge })
 
   } catch (err: unknown) {
-    console.error('[coach-ia]', err)
+    const errMsg = err instanceof Error ? err.message : String(err)
+    const errStack = err instanceof Error ? err.stack : ''
+    console.error('[coach-ia] ERROR:', errMsg)
+    console.error('[coach-ia] STACK:', errStack)
     return NextResponse.json({ error: 'Le Coach est momentanément indisponible.' }, { status: 500 })
   }
 }

@@ -10,7 +10,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 function generateCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // sans I/O/0/1 pour éviter confusion
-  let code = 'Yayyam-'
+  let code = 'YAYYAM-'
   for (let i = 0; i < 4; i++) {
     code += chars[Math.floor(Math.random() * chars.length)]
   }
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     // 2. Body
     const body = await request.json()
-    const { store_id } = body as { store_id?: string }
+    const { store_id, force_new } = body as { store_id?: string; force_new?: boolean }
     if (!store_id) {
       return NextResponse.json({ error: 'store_id requis' }, { status: 400 })
     }
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       .gt('code_expires_at', now)
       .maybeSingle()
 
-    if (existing?.connect_code) {
+    if (!force_new && existing?.connect_code) {
       return NextResponse.json({
         code: existing.connect_code,
         expires_at: existing.code_expires_at,
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
 
     // 5. Générer nouveau code
     const code = generateCode()
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString() // +10 min
+    const expiresAt = new Date(Date.now() + 2 * 60 * 1000).toISOString() // +2 min
 
     // 6. Chercher s'il existe déjà une community non liée pour ce store
     const { data: unlinked } = await admin

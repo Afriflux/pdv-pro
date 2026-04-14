@@ -84,8 +84,8 @@ export async function POST() {
       }
     }
 
-    // 5. Enregistrement du token (Valable 15 minutes)
-    const expiresAt = new Date(now.getTime() + 15 * 60 * 1000)
+    // 5. Enregistrement du token (Valable 2 minutes)
+    const expiresAt = new Date(now.getTime() + 2 * 60 * 1000)
     
     const { error: insertError } = await supabaseAdmin
       .from('telegram_link_tokens')

@@ -113,7 +113,7 @@ async function callOpenAI(
 async function callGemini(
   apiKey: string, 
   req: AIGenerationRequest, 
-  model: string = 'gemini-1.5-flash'
+  model: string = 'gemini-2.0-flash'
 ): Promise<AIGenerationResponse> {
   // Construct a structure suitable for the Gemini API v1beta
   const contents = [
@@ -159,19 +159,19 @@ async function callGemini(
  */
 const ROUTING_PREFERENCES: Record<string, { provider: AIProvider, model: string }[]> = {
   eco: [
-    { provider: 'gemini', model: 'gemini-1.5-flash' },
+    { provider: 'gemini', model: 'gemini-2.0-flash' },
     { provider: 'openai', model: 'gpt-4o-mini' },
     { provider: 'anthropic', model: 'claude-3-haiku-20240307' },
   ],
   creative: [
     { provider: 'anthropic', model: 'claude-3-5-sonnet-20240620' },
     { provider: 'openai', model: 'gpt-4o' },
-    { provider: 'gemini', model: 'gemini-1.5-pro' },
+    { provider: 'gemini', model: 'gemini-2.0-flash' },
   ],
   reasoning: [
     { provider: 'openai', model: 'gpt-4o' },
     { provider: 'anthropic', model: 'claude-3-5-sonnet-20240620' },
-    { provider: 'gemini', model: 'gemini-1.5-pro' },
+    { provider: 'gemini', model: 'gemini-2.0-flash' },
   ]
 }
 
@@ -194,7 +194,7 @@ export async function generateAIResponse(req: AIGenerationRequest): Promise<AIGe
     }
     // High tier fallback models for creative/reasoning
     if (req.taskType === 'creative' || req.taskType === 'reasoning') {
-      fallbackMap['gemini'] = 'gemini-1.5-pro'
+      fallbackMap['gemini'] = 'gemini-2.0-flash'
       fallbackMap['openai'] = 'gpt-4o'
       fallbackMap['anthropic'] = 'claude-3-5-sonnet-20240620'
     }

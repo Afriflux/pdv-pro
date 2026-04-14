@@ -20,7 +20,8 @@ import {
   CreditCard,
   MessageCircle,
   AlertTriangle,
-  LogOut
+  LogOut,
+  Copy
 } from 'lucide-react'
 import { updateTelegramNotifications } from '@/app/actions/settings'
 import { toast } from '@/lib/toast'
@@ -225,6 +226,15 @@ export function TelegramSettings({
                       <p className="text-[13px] text-gray-300 font-medium leading-loose">
                         <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-xs font-black mr-2">1</span> Ouvrez <b className="text-white">@Yayyam_bot</b> sur Telegram<br/>
                         <span className="inline-flex w-5 h-5 items-center justify-center bg-emerald-500 text-white rounded-full text-xs font-black mr-2">2</span> Envoyez : <code className="bg-black/50 px-2 py-1 rounded-lg border border-[#2A2A2A] text-emerald-400 font-mono shadow-inner select-all">/start {token}</code>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(`/start ${token}`)
+                            toast.success('Commande copiée !')
+                          }}
+                          className="ml-2 inline-flex items-center gap-1 px-2 py-1 bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-400 rounded-lg text-xs font-bold transition-colors border border-emerald-500/30"
+                        >
+                          <Copy size={12} /> Copier
+                        </button>
                       </p>
                     </div>
                     
@@ -243,6 +253,15 @@ export function TelegramSettings({
                         className="w-full py-4 border border-gray-600 text-gray-300 rounded-2xl font-bold text-[14px] text-center flex items-center justify-center gap-2 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
                       >
                         <RefreshCcw size={18} /> Générer un nouveau code
+                      </button>
+                    )}
+                    
+                    {timeLeft > 0 && (
+                      <button
+                        onClick={handleConnect}
+                        className="w-full text-center text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <RefreshCcw size={12} /> Régénérer un nouveau code
                       </button>
                     )}
                   </div>

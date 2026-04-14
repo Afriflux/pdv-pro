@@ -133,14 +133,14 @@ export default function TelegramDashboard({
   }, [])
 
   // Action : Générer Code
-  const handleGenerateCode = async () => {
+  const handleGenerateCode = async (forceNew = false) => {
     setStep('generating')
     setError(null)
     try {
       const res = await fetch('/api/telegram/community/generate-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ store_id: store.id }),
+        body: JSON.stringify({ store_id: store.id, force_new: forceNew }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erreur inconnue')
@@ -322,7 +322,7 @@ export default function TelegramDashboard({
 
           {step === 'idle' && (
             <button
-              onClick={handleGenerateCode}
+              onClick={() => handleGenerateCode()}
               className="group bg-white hover:bg-emerald-50 text-[#0F7A60] px-6 py-4 rounded-2xl text-sm font-black transition-all flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
             >
               <Plus size={20} className="text-[#0F7A60] group-hover:scale-110 transition-transform" />
@@ -544,6 +544,13 @@ export default function TelegramDashboard({
                             <Clock size={14} className={remaining < 120_000 ? 'animate-pulse' : ''} />
                             Code valide pour {countdown}
                           </div>
+                          <button
+                            onClick={() => handleGenerateCode(true)}
+                            className="mt-3 text-xs font-bold text-emerald-600 hover:text-emerald-800 flex items-center gap-1.5 transition-colors"
+                          >
+                            <RefreshCw size={12} />
+                            Régénérer un nouveau code
+                          </button>
                         </div>
                       </div>
                     )}
@@ -579,7 +586,7 @@ export default function TelegramDashboard({
                   </div>
                   <p className="font-black text-xl text-red-600 max-w-md mx-auto">{error}</p>
                   <button
-                    onClick={handleGenerateCode}
+                    onClick={() => handleGenerateCode()}
                     className="bg-[#0F7A60] hover:bg-emerald-700 text-white px-8 py-3.5 rounded-xl text-sm font-black transition-all hover:-translate-y-1"
                   >
                     Générer un nouveau code
@@ -766,7 +773,7 @@ export default function TelegramDashboard({
                   </ul>
 
                   <button
-                    onClick={handleGenerateCode}
+                    onClick={() => handleGenerateCode()}
                     className="group bg-[#0DE0A1] hover:bg-emerald-400 text-[#0F7A60] px-8 py-4 rounded-2xl text-base font-black transition-all flex items-center justify-center gap-3 shadow-lg shadow-emerald-900/50 hover:shadow-xl hover:-translate-y-1 w-full sm:w-auto mt-4"
                   >
                     <Plus size={22} className="group-hover:rotate-90 transition-transform duration-300" />
