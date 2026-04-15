@@ -105,7 +105,7 @@ export default function CloserTargetsClient({ stores: initialStores }: CloserTar
            variants={containerVars}
            initial="hidden"
            animate="show"
-           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+           className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6"
          >
            <AnimatePresence>
              {filteredStores.length === 0 ? (

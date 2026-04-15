@@ -316,21 +316,21 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
           </div>
         ) : (
           /* VUE GRILLE */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
              {filteredTemplates.map((template: Record<string, any>) => (
-               <div key={template.id} className="bg-white border text-left border-gray-100/80 rounded-[2.5rem] p-3 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-xl hover:border-emerald-500/20 transition-all duration-300 flex flex-col group h-full">
+               <div key={template.id} className="bg-white border text-left border-gray-100/80 rounded-[2.5rem] p-3 shadow-sm hover:shadow-md hover:border-emerald-500/20 transition-all duration-300 flex flex-col group h-full">
                  {/* Visual Banner */}
-                 <div className="h-44 w-full bg-slate-50 border border-gray-100/50 rounded-[2rem] relative overflow-hidden flex items-center justify-center mb-4 isolate">
+                 <div className="h-36 w-full bg-slate-50 border border-gray-100/50 rounded-[2rem] relative overflow-hidden flex items-center justify-center mb-4 isolate">
                    {template.preview_url ? (
                      <div className="absolute inset-0 bg-cover bg-center"   title="Aperçu du thème"><img src={template.preview_url} alt="Aperçu" className="w-full h-full object-cover" /></div>
                    ) : (
                      <div className="text-4xl opacity-20"><LayoutTemplate /></div>
                    )}
-                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 text-xs font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm border border-black/5">
+                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm border border-black/5">
                      {template.type.replace('_', ' ')}
                    </div>
                    {template.is_premium && (
-                     <div className="absolute bottom-3 left-3 bg-amber-400 text-amber-900 text-xs font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm flex items-center gap-1">
+                     <div className="absolute bottom-3 left-3 bg-amber-400 text-amber-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm flex items-center gap-1">
                        ⭐ {template.price}F
                      </div>
                    )}
@@ -340,21 +340,21 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
                  <div className="px-4 flex flex-col flex-1 pb-2">
                    <div className="flex flex-wrap gap-1 mb-2">
                      {(template.allowed_roles || ['vendor']).map((r: string) => (
-                       <span key={r} className="text-xs font-bold uppercase tracking-widest text-[#0F7A60] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">
+                       <span key={r} className="text-[10px] font-bold uppercase tracking-widest text-[#0F7A60] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">
                          {r === 'all' ? 'TOUS' : r}
                        </span>
                      ))}
                    </div>
                    <h3 className="text-lg font-black text-gray-900 leading-snug mb-1 truncate">{template.name}</h3>
-                   <p className="text-[12px] text-gray-500 font-medium mb-4 truncate">{template.category} {template.sub_category && `• ${template.sub_category}`}</p>
+                   <p className="text-[11px] text-gray-500 font-medium mb-4 truncate">{template.category} {template.sub_category && `• ${template.sub_category}`}</p>
                    
                    {/* Footer Actions */}
-                   <div className="mt-auto flex items-center justify-between gap-2 pt-4 border-t border-gray-50">
+                   <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-gray-50">
                      <button 
                        onClick={() => handleToggleActive(template.id, template.active)}
-                       className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 rounded-xl text-xs font-black tracking-wide uppercase transition-all border ${template.active ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'}`}
+                       className={`flex-1 flex justify-center items-center gap-1.5 py-2 rounded-xl text-[10px] font-black tracking-wide uppercase transition-all border ${template.active ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'}`}
                      >
-                       {template.active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                       {template.active ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
                        {template.active ? 'Actif' : 'Désactivé'}
                      </button>
                      <div className="flex items-center gap-1">

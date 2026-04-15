@@ -252,21 +252,21 @@ export default function AppsClient({ initialApps }: { initialApps: MarketplaceAp
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
              {filteredApps.map((app: MarketplaceAppRecord) => {
                const isTextIcon = app.icon_url && app.icon_url.length > 4;
                return (
-               <div key={app.id} className="bg-white border text-left border-gray-100/80 rounded-[2.5rem] p-3 shadow-md hover:shadow-xl hover:border-[#0F7A60]/30 transition-all duration-300 flex flex-col group h-full">
+               <div key={app.id} className="bg-white border text-left border-gray-100/80 rounded-[2.5rem] p-3 shadow-sm hover:shadow-md hover:border-[#0F7A60]/30 transition-all duration-300 flex flex-col group h-full">
                  {/* Visual Header */}
                  <div className="h-32 w-full bg-slate-50 border border-gray-100/50 rounded-[2rem] relative overflow-hidden flex items-center justify-center mb-4 isolate">
                    <div className="text-5xl drop-shadow-sm group-hover:scale-110 transition-transform duration-500">
                      {isTextIcon ? <Puzzle size={48} className="text-[#0F7A60]" /> : (app.icon_url || '🚀')}
                    </div>
-                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 text-xs font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm border border-black/5">
+                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm border border-black/5">
                      {app.category}
                    </div>
                    {app.is_premium && (
-                     <div className="absolute bottom-3 left-3 bg-amber-400 text-amber-900 text-xs font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm flex items-center gap-1">
+                     <div className="absolute bottom-3 left-3 bg-amber-400 text-amber-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm flex items-center gap-1">
                        ⭐ Extension PRO
                      </div>
                    )}
@@ -276,26 +276,26 @@ export default function AppsClient({ initialApps }: { initialApps: MarketplaceAp
                  <div className="px-4 flex flex-col flex-1 pb-2">
                    <div className="flex flex-wrap gap-1 mb-2">
                      {(app.allowed_roles || ['vendor']).map((r: string) => (
-                       <span key={r} className="text-xs font-bold uppercase tracking-widest text-[#0F7A60] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">
+                       <span key={r} className="text-[10px] font-bold uppercase tracking-widest text-[#0F7A60] bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">
                          {r === 'all' ? 'TOUS' : r}
                        </span>
                      ))}
                    </div>
-                   <h3 className="text-xl font-black text-gray-900 leading-snug mb-2 group-hover:text-[#0F7A60] transition-colors line-clamp-1">{app.name}</h3>
-                   <p className="text-[13px] text-gray-500 font-medium line-clamp-2 mb-4 flex-1">{app.description}</p>
+                   <h3 className="text-lg font-black text-gray-900 leading-snug mb-1 group-hover:text-[#0F7A60] transition-colors line-clamp-1">{app.name}</h3>
+                   <p className="text-xs text-gray-500 font-medium line-clamp-2 mb-4 flex-1">{app.description}</p>
                    
                    {/* Footer Actions */}
-                   <div className="mt-auto flex items-center justify-between gap-2 pt-4 border-t border-gray-50">
+                   <div className="mt-auto flex items-center justify-between gap-2 pt-3 border-t border-gray-50">
                      <button 
                        onClick={() => handleToggleActive(app.id, app.active)}
-                       className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 rounded-xl text-xs font-black tracking-wide uppercase transition-all border ${app.active ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'}`}
+                       className={`flex-1 flex justify-center items-center gap-1.5 py-2 rounded-xl text-[10px] font-black tracking-wide uppercase transition-all border ${app.active ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'}`}
                      >
-                       {app.active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                       {app.active ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
                        {app.active ? 'En Ligne' : 'Hors Ligne'}
                      </button>
                      <div className="flex items-center gap-1">
-                       <button aria-label="Modifier" title="Modifier" onClick={() => handleOpenEdit(app)} className="p-2.5 text-gray-500 hover:text-blue-600 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-blue-200 hover:bg-blue-50 transition-all"><Edit2 className="w-4 h-4" /></button>
-                       <button aria-label="Supprimer" title="Supprimer" onClick={() => handleDelete(app.id)} className="p-2.5 text-gray-500 hover:text-red-600 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-red-200 hover:bg-red-50 transition-all"><Trash2 className="w-4 h-4" /></button>
+                       <button aria-label="Modifier" title="Modifier" onClick={() => handleOpenEdit(app)} className="p-2 text-gray-500 hover:text-blue-600 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-blue-200 hover:bg-blue-50 transition-all"><Edit2 className="w-3.5 h-3.5" /></button>
+                       <button aria-label="Supprimer" title="Supprimer" onClick={() => handleDelete(app.id)} className="p-2 text-gray-500 hover:text-red-600 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-red-200 hover:bg-red-50 transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
                      </div>
                    </div>
                  </div>

@@ -244,6 +244,7 @@ export function ClientSidebar({
   const [mobileOpen, setMobileOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -257,21 +258,20 @@ export function ClientSidebar({
     if (mounted) localStorage.setItem('client_sidebar_collapsed', JSON.stringify(collapsed))
   }, [collapsed, mounted])
 
+  const isEffectivelyCollapsed = collapsed && mounted && !hovered
+
   return (
     <>
       {/* ── DESKTOP : sidebar fixe gauche texturée Emerald ── */}
       <aside 
-        className={`hidden lg:flex flex-col flex-shrink-0 bg-white h-screen sticky top-0 z-30 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] relative overflow-hidden border-r border-gray-200 ${
-          collapsed && mounted ? 'w-[80px]' : 'w-[280px]'
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className={`hidden lg:flex flex-col flex-shrink-0 bg-white h-screen sticky top-0 z-30 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] relative overflow-hidden border-r border-gray-200 shadow-[4px_0_24px_rgba(0,0,0,0.02)] ${
+          isEffectivelyCollapsed ? 'w-[84px]' : 'w-[280px]'
         }`}
       >
-        {/* Desktop Noise */}
-        
-        
-        
-
         <div className="relative z-10 flex flex-col h-full w-full">
-          <SidebarContent userName={userName} avatarUrl={avatarUrl} collapsed={collapsed && mounted} setCollapsed={setCollapsed} />
+          <SidebarContent userName={userName} avatarUrl={avatarUrl} collapsed={isEffectivelyCollapsed} setCollapsed={setCollapsed} />
         </div>
       </aside>
 
