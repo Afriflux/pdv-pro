@@ -74,8 +74,7 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
         pingType: 'wave',
         fields: [
           { key: 'WAVE_API_KEY', testKey: 'WAVE_API_KEY_TEST', label: 'API Key', type: 'password' },
-          { key: 'WAVE_API_SECRET', testKey: 'WAVE_API_SECRET_TEST', label: 'Webhook Secret', type: 'password' },
-          { key: 'FALLBACK_WAVE_PAYTECH', label: 'Bascule d\'urgence vers Paytech (Routage Smart)', type: 'boolean' }
+          { key: 'WAVE_API_SECRET', testKey: 'WAVE_API_SECRET_TEST', label: 'Webhook Secret', type: 'password' }
         ]
       },
       {
