@@ -31,17 +31,21 @@ export async function createBictorysPayment(payload: PaymentRequestPayload): Pro
       })
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Erreur lors de la création de la session Bictorys')
+    let data
+    try {
+      const responseText = await response.text()
+      data = JSON.parse(responseText)
+    } catch (parseError) {
+      throw new Error(`Bictorys a renvoyé une erreur réseau (non-JSON): ${response.status} ${response.statusText}`)
     }
 
-    // Le backend Bictorys renvoie l'objet charge qui contient l'URL de paiement ou les détails
-    // Bictorys structure généralement `data.checkoutUrl` ou `data.paymentUrl`
+    if (!response.ok) {
+      throw new Error(data.message || data.error?.message || `Bictorys a refusé la transaction (${response.status})`)
+    }
+
     return {
       success: true,
-      paymentUrl: data.checkoutUrl || data.paymentUrl || payload.returnUrl, // Fallback returnUrl si api direct mode utilisé.
+      paymentUrl: data.checkoutUrl || data.paymentUrl || payload.returnUrl,
       transactionId: data.id || payload.orderId
     }
   } catch (error: any) {

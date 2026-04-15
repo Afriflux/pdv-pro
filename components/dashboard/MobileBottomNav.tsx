@@ -25,6 +25,8 @@ import {
   Menu,
 } from 'lucide-react'
 
+import { NAV } from './Sidebar'
+
 // ----------------------------------------------------------------
 // Types
 // ----------------------------------------------------------------
@@ -33,31 +35,14 @@ interface MobileBottomNavProps {
   userName: string
   avatarUrl?: string | null
   storeSlug?: string | null
+  installedApps?: string[]
+  vendorType?: 'digital' | 'physical' | 'hybrid'
 }
-
-interface ProfileLink {
-  icon: typeof Wallet
-  label: string
-  href: string
-  color?: string
-}
-
-const PROFILE_LINKS: ProfileLink[] = [
-  { icon: Wallet, label: 'Portefeuille', href: '/dashboard/wallet', color: 'text-emerald-500' },
-  { icon: Gem, label: 'Commissions', href: '/dashboard/abonnements', color: 'text-purple-500' },
-  { icon: Users, label: 'Clients & CRM', href: '/dashboard/customers', color: 'text-blue-500' },
-  { icon: Truck, label: 'Livraisons', href: '/dashboard/livraisons', color: 'text-orange-500' },
-  { icon: Blocks, label: 'App Store', href: '/dashboard/apps', color: 'text-indigo-500' },
-  { icon: GraduationCap, label: 'Académie', href: '/dashboard/tips', color: 'text-amber-500' },
-  { icon: Settings, label: 'Paramètres', href: '/dashboard/settings', color: 'text-gray-500' },
-  { icon: Globe, label: 'Ma Vitrine', href: '/dashboard/marketplace', color: 'text-teal-500' },
-  { icon: ArrowLeftRight, label: 'Espace Acheteur', href: '#switch-to-buyer', color: 'text-cyan-500' },
-]
 
 // ----------------------------------------------------------------
 // Component
 // ----------------------------------------------------------------
-export function MobileBottomNav({ storeName, userName, avatarUrl }: MobileBottomNavProps) {
+export function MobileBottomNav({ storeName, userName, avatarUrl, installedApps = [], vendorType = 'digital' }: MobileBottomNavProps) {
   const pathname = usePathname()
   const [profileOpen, setProfileOpen] = useState(false)
 
@@ -252,27 +237,51 @@ export function MobileBottomNav({ storeName, userName, avatarUrl }: MobileBottom
               </div>
 
               {/* Links */}
-              <div className="px-3 pb-2">
-                {PROFILE_LINKS.map((link) => {
-                  const Icon = link.icon
-                  const active = isActive(link.href)
+              <div className="px-3 pb-2 space-y-4">
+                {NAV.map((section) => {
+                  const items = section.items.filter(item => {
+                    if (item.for && vendorType && !item.for.includes(vendorType)) return false
+                    if (item.appId && installedApps && !installedApps.includes(item.appId)) return false
+                    return true
+                  })
+
+                  if (items.length === 0) return null
+
                   return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setProfileOpen(false)}
-                      className={`flex items-center gap-3.5 px-3 py-3.5 rounded-2xl transition-all duration-200 active:scale-[0.98] ${
-                        active ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                        active ? 'bg-emerald-100' : 'bg-gray-100'
-                      }`}>
-                        <Icon className={`w-[18px] h-[18px] ${active ? 'text-emerald-600' : link.color || 'text-gray-500'}`} />
+                    <div key={section.title}>
+                      <div className="px-3 mb-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] drop-shadow-sm">
+                        {section.title}
                       </div>
-                      <span className={`text-sm flex-1 ${active ? 'font-bold' : 'font-medium'}`}>{link.label}</span>
-                      <ChevronRight className="w-4 h-4 text-gray-300" />
-                    </Link>
+                      <div className="space-y-1">
+                        {items.map((link) => {
+                          const Icon = link.icon
+                          const active = isActive(link.href)
+                          return (
+                            <Link
+                              key={link.href}
+                              href={link.href}
+                              onClick={() => setProfileOpen(false)}
+                              className={`flex items-center gap-3.5 px-3 py-3.5 rounded-2xl transition-all duration-200 active:scale-[0.98] ${
+                                active ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-50'
+                              }`}
+                            >
+                              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                                active ? 'bg-emerald-100' : 'bg-gray-100'
+                              }`}>
+                                <Icon className={`w-[18px] h-[18px] ${active ? 'text-emerald-600' : 'text-gray-500'}`} />
+                              </div>
+                              <span className={`text-sm flex-1 ${active ? 'font-bold' : 'font-medium'}`}>{link.name}</span>
+                              {link.badge && (
+                                <span className="ml-auto text-[9px] font-black bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 px-2 py-0.5 rounded-md shadow-sm uppercase tracking-wider">
+                                  {link.badge}
+                                </span>
+                              )}
+                              <ChevronRight className="w-4 h-4 text-gray-300 ml-1" />
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    </div>
                   )
                 })}
               </div>

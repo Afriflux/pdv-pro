@@ -44,6 +44,8 @@ export default async function CustomersPage() {
     totalSpent: number
     orderCount: number
     lastOrderAt: Date
+    score: number | null
+    isBlacklisted: boolean
   }
 
   const customersMap = new Map<string, CustomerAgg>()
@@ -57,13 +59,34 @@ export default async function CustomersPage() {
         email: o.buyer_email,
         totalSpent: 0,
         orderCount: 0,
-        lastOrderAt: o.created_at // comme on est orderBy desc, c'est la toute dernière commande
+        lastOrderAt: o.created_at,
+        score: null,
+        isBlacklisted: false
       })
     }
     const c = customersMap.get(p)!
     c.totalSpent += o.total
     c.orderCount += 1
   }
+
+  const buyerScores = await prisma.buyerScore.findMany({
+    where: { phone: { in: Array.from(customersMap.keys()) } }
+  })
+  
+  const buyerBlacklists = await prisma.buyerBlacklist.findMany({
+    where: { phone: { in: Array.from(customersMap.keys()) } }
+  })
+
+  // Mettre à jour la map avec les scores et statuts de liste noire
+  buyerScores.forEach(bs => {
+    const c = customersMap.get(bs.phone)
+    if (c) c.score = bs.score
+  })
+  
+  buyerBlacklists.forEach(bb => {
+    const c = customersMap.get(bb.phone)
+    if (c) c.isBlacklisted = true
+  })
 
   const customers = Array.from(customersMap.values())
 

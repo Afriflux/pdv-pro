@@ -57,7 +57,7 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
       case 'apparence': return <AppearanceTab store={store} />
       case 'vendor': return <VendorTypeTab store={store} />
       case 'reseaux': return <SocialLinksTab store={store} />
-      case 'securite': return <SecurityTab profile={profile} />
+      case 'securite': return <SecurityTab profile={profile} store={store} />
       case 'notifications': return <NotificationsTab store={store} />
       case 'retrait': return <FinanceTab store={store} />
       case 'kyc': return <KycTab store={store} />
@@ -83,8 +83,7 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
             <span className="text-[11px] font-bold text-gray-500">{completionPercent}%</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-            {/* eslint-disable-next-line */}
-            <div className="bg-[#0F7A60] h-full transition-all duration-1000 shadow-[0_0_10px_rgba(15,122,96,0.5)]" style={{ width: `${completionPercent}%` }}></div>
+            <div className="bg-[#0F7A60] h-full transition-all duration-1000 shadow-[0_0_10px_rgba(15,122,96,0.5)]" {...{ style: { width: `${completionPercent}%` } }}></div>
           </div>
         </div>
 

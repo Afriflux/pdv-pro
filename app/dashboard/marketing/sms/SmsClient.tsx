@@ -33,7 +33,7 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
     setBuyLoading(true)
     const res = await purchaseSmsCredits(storeId, 100) // Dummy pack of 100
     if (res.success) {
-      toast.success(res.message as string)
+      toast.success("Rechargement réussi")
       setData(prev => ({ ...prev, credits: prev.credits + 100 }))
     } else {
       toast.error(res.error || 'Erreur')

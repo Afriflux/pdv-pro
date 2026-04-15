@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
+import { generateDeliveryOTP } from '@/app/actions/delivery-otp'
 
 export type ClosingAction = 'VALIDATED' | 'REJECTED' | 'NO_REPLY' | 'CANCELLATION_REQUESTED' | 'SCHEDULED' | 'NOTE_ADDED'
 
@@ -61,11 +62,14 @@ export async function processClosingRequest(
 
   // 1. Traitement direct sur la commande et scores (si validation/rejet)
   if (action === 'VALIDATED' && req.status !== 'VALIDATED') {
-    // a. Expédition
+    // a. Expédition (et génération OTP)
     await prisma.order.update({
       where: { id: req.order_id },
       data: { status: 'processing' }
     })
+    
+    // Génération de l'OTP de livraison (ne bloque par l'exécution si ça échoue, même s'il faudrait)
+    await generateDeliveryOTP(req.order_id)
     
     // c. Score acheteur
     await prisma.buyerScore.upsert({

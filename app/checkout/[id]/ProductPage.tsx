@@ -1,5 +1,6 @@
 /* eslint-disable react/forbid-dom-props */
 'use client'
+'use client'
 
 // ─── Page Produit Premium — Style Shopify ─────────────────────────────────────
 // Galerie d'images, variants, sticky bar mobile, slide-down formulaire,
@@ -236,7 +237,7 @@ function ImageGallery({
           src={images[activeIndex]}
           alt={`${productName} — image ${activeIndex + 1}`}
           className={`w-full h-full object-cover transition-transform ${isHovering ? 'duration-150 ease-out' : 'duration-500 ease-in-out'}`}
-          style={isHovering && window.innerWidth >= 1024 ? zoomStyle : {}} // Zoom only on desktop lg
+          {...{ style: isHovering && window.innerWidth >= 1024 ? zoomStyle : {} }} // Zoom only on desktop lg
         />
 
         {/* Navigation flèches (visible si plusieurs images) */}
@@ -275,7 +276,7 @@ function ImageGallery({
                     ? 'w-5 h-2'
                     : 'w-2 h-2 bg-white/50'
                 }`}
-                style={i === activeIndex ? { backgroundColor: accent } : {}}
+                {...{ style: i === activeIndex ? { backgroundColor: accent } : {} }}
               />
             ))}
           </div>
@@ -296,7 +297,7 @@ function ImageGallery({
                   ? 'border-transparent shadow-sm bg-white' 
                   : 'border-transparent opacity-60 bg-gray-100 hover:opacity-100 mix-blend-multiply'
               }`}
-              style={i === activeIndex ? { borderColor: accent } : {}}
+              {...{ style: i === activeIndex ? { borderColor: accent } : {} }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={src} alt={productName || "Image produit"} className="w-full h-full object-cover" />
@@ -795,11 +796,9 @@ export default function ProductPage({
                               ${isOutOfStock ? 'opacity-40 cursor-not-allowed line-through text-gray-400 border-gray-200' : ''}
                               ${isSelected && !isOutOfStock ? 'scale-105 shadow-md' : !isOutOfStock ? 'border-gray-200 text-gray-600 hover:border-gray-400' : ''}
                             `}
-                            style={
-                              isSelected && !isOutOfStock
-                                ? { borderColor: accent, backgroundColor: `${accent}10`, color: accent }
-                                : {}
-                            }
+                            {...{ style: isSelected && !isOutOfStock
+                                ? { borderColor: accent, backgroundColor: `${accent}0D`, color: accent }
+                                : {} }}
                           >
                             {v.value_1}
                             {v.value_2 ? ` / ${v.value_2}` : ''}
@@ -1092,10 +1091,10 @@ export default function ProductPage({
                     <Tags className="w-4 h-4" {...{ style: { color: accent } }} /> Remises quantité
                   </h3>
                   <div className="grid gap-2">
-                    {tiers.map((tier: { min_qty: number; discount_percent: number }, i: number) => (
+                    {tiers.map((tier: { qty: number; discount_pct: number }, i: number) => (
                       <div key={i} className="flex items-center justify-between bg-white/80 rounded-xl px-4 py-2.5 border border-amber-100/50">
-                        <span className="text-sm font-bold text-gray-700">Achetez {tier.min_qty}+</span>
-                        <span className="text-sm font-black px-3 py-1 rounded-lg" {...{ style: { color: accent, backgroundColor: accent + '15' } }}>-{tier.discount_percent}%</span>
+                        <span className="text-sm font-bold text-gray-700">Achetez {tier.qty}+</span>
+                        <span className="text-sm font-black px-3 py-1 rounded-lg" {...{ style: { color: accent, backgroundColor: accent + '15' } }}>-{tier.discount_pct}%</span>
                       </div>
                     ))}
                   </div>

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
+import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
 
 /**
  * Generate a 6-digit OTP for COD order validation.
@@ -15,7 +16,7 @@ export async function generateDeliveryOTP(orderId: string): Promise<{ success: b
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      select: { id: true, payment_method: true, status: true, store_id: true }
+      select: { id: true, payment_method: true, status: true, store_id: true, buyer_phone: true, store: { select: { name: true } } }
     })
 
     if (!order) return { success: false, error: 'Commande introuvable' }
@@ -31,6 +32,19 @@ export async function generateDeliveryOTP(orderId: string): Promise<{ success: b
         delivery_otp_created_at: new Date()
       }
     })
+
+    // Envoi de l'OTP au client
+    if (order.buyer_phone) {
+      try {
+        const storeName = order.store?.name || 'Yayyam'
+        await sendWhatsApp({
+          to: order.buyer_phone,
+          body: `Bonjour ! Votre commande sur ${storeName} est confirmée.\n\n🔒 *CODE DE SÉCURITÉ : ${otp}*\n\nVeuillez communiquer ce code d'accès de 6 chiffres au livreur à la réception de votre colis pour valider la livraison.`
+        })
+      } catch (e) {
+        console.error('Failed to send OTP WP:', e)
+      }
+    }
 
     return { success: true, otp }
   } catch (error: any) {

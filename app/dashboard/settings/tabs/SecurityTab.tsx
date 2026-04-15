@@ -6,7 +6,10 @@ import { createClient } from '@/lib/supabase/client'
 import * as Actions from '@/app/actions/settings'
 import { toast } from '@/lib/toast'
 
-export function SecurityTab({ profile }: { profile: any }) {
+export function SecurityTab({ profile, store }: { profile: any, store?: any }) {
+  const isAntiFraudCODActive = store?.installedApps?.some(
+    (app: any) => app.app_id === 'fraud-cod' && app.status === 'active'
+  )
   const [currentPassword, setCurrentPassword] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -68,7 +71,7 @@ export function SecurityTab({ profile }: { profile: any }) {
           <div className="absolute inset-0 bg-gradient-to-br from-[#022C22] via-[#020617] to-[#064E3B] opacity-90"></div>
           
           {/* Motifs de sécurité */}
-          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at center, #10B981 2px, transparent 2px)', backgroundSize: '24px 24px' }}></div>
+          <div className="absolute inset-0 opacity-10" {...{ style: { backgroundImage: 'radial-gradient(circle at center, #10B981 2px, transparent 2px)', backgroundSize: '24px 24px' } }}></div>
           
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-600/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 animate-pulse duration-[10000ms] pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-500/10 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
@@ -130,6 +133,47 @@ export function SecurityTab({ profile }: { profile: any }) {
 
           {/* === FORM FIELDS EN CARTES GLASS === */}
           <div className="flex flex-col gap-6 w-full max-w-3xl">
+
+            <div id="anti-fraude" className="scroll-mt-32 p-1">
+              <div className="group relative">
+                <div className={`absolute -inset-0.5 rounded-[1.5rem] blur transition duration-500 ${isAntiFraudCODActive ? 'bg-red-500 opacity-30' : 'bg-gray-300 opacity-20'}`}></div>
+                <div className={`relative bg-white/90 backdrop-blur-md rounded-[1.2rem] border p-6 flex flex-col sm:flex-row gap-5 items-start sm:items-center ${isAntiFraudCODActive ? 'border-red-200/50' : 'border-gray-200/50'}`}>
+                  <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center shrink-0 shadow-inner ${isAntiFraudCODActive ? 'bg-red-50 border-red-100' : 'bg-gray-50 border-gray-100'}`}>
+                    <ShieldCheck size={28} className={isAntiFraudCODActive ? 'text-red-500' : 'text-gray-400'} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-[16px] font-black text-gray-900 flex items-center gap-2 mb-1.5">
+                      Module Anti-Fraude (COD)
+                      {isAntiFraudCODActive ? (
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-wider">Actif</span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-500 text-[10px] font-black uppercase tracking-wider">Non installé</span>
+                      )}
+                    </h3>
+                    <p className="text-[13.5px] text-gray-500 font-medium leading-relaxed">
+                      Chaque commande payable à la livraison générera désormais un code OTP obligatoire. 
+                      Vos clients doivent communiquer ce code à vos livreurs pour valider la transaction.
+                    </p>
+                  </div>
+                  {!isAntiFraudCODActive ? (
+                    <a href="/dashboard/apps" className="px-4 py-2 bg-gray-900 hover:bg-gray-800 transition-colors text-white rounded-xl text-xs font-bold shrink-0 shadow-md">
+                      Installer l'App
+                    </a>
+                  ) : (
+                    <a href="/dashboard/apps" className="px-4 py-2 bg-white hover:bg-red-50 border border-red-200 transition-colors text-red-600 rounded-xl text-xs font-bold shrink-0 shadow-sm flex items-center gap-1">
+                      Désinstaller
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Séparateur Sécurité de Compte */}
+            <div className="flex items-center gap-4 py-4 pt-2">
+              <div className="h-px bg-gray-200 flex-1"></div>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-400">Sécurité du compte</span>
+              <div className="h-px bg-gray-200 flex-1"></div>
+            </div>
 
             {passwordError && (
               <div className="p-4 bg-red-50/80 backdrop-blur-md border border-red-200 text-red-600 text-[14px] font-bold rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">

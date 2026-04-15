@@ -94,6 +94,8 @@ export default async function DashboardLayout({
         storeName={storeName}
         userName={vendorName}
         avatarUrl={avatarUrl}
+        installedApps={installedApps}
+        vendorType={storeVendorType}
       />
 
       {/* Le Coach IA Ultime Omniprésent */}

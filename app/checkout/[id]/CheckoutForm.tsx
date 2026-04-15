@@ -308,16 +308,12 @@ export function CheckoutForm({
       ? JSON.parse(product.store.volume_discounts_config) 
       : product.store.volume_discounts_config
       
-    if (config?.rules && Array.isArray(config.rules)) {
-      // Find the highest rule where quantity >= rule.quantity
-      const sortedRules = [...config.rules].sort((a, b) => b.quantity - a.quantity)
-      const validRule = sortedRules.find(r => quantity >= r.quantity)
-      if (validRule) {
-        if (validRule.discountType === 'percentage') {
-          volumeDiscountAmount = (basePrice * quantity) * (validRule.value / 100)
-        } else if (validRule.discountType === 'fixed') {
-          volumeDiscountAmount = validRule.value
-        }
+    if (config?.tiers && Array.isArray(config.tiers)) {
+      // Find the highest tier where quantity >= tier.qty
+      const sortedTiers = [...config.tiers].sort((a, b) => b.qty - a.qty)
+      const validTier = sortedTiers.find(t => quantity >= t.qty)
+      if (validTier && validTier.discount_pct) {
+         volumeDiscountAmount = (basePrice * quantity) * (validTier.discount_pct / 100)
       }
     }
   }

@@ -69,7 +69,7 @@ model User {
   payoutMethods                     PayoutMethod[]
   payoutRequests                    PayoutRequest[]
   lessonProgresses                  UserLessonProgress[]
-  assignedTickets                   HelpdeskTicket[]      @relation("HelpdeskAdmin")
+  assignedTickets                   Complaint[]      @relation("HelpdeskAdmin")
 
   @@schema("public")
 }
@@ -180,7 +180,6 @@ model Store {
   dailyDigests                                        DailyDigest[]
   deliverers                                          Deliverer[]
   deliveryZones                                       DeliveryZone[]
-  HelpdeskTicket                                      HelpdeskTicket[]
   installedApps                                       InstalledApp[]
   leads                                               Lead[]
   loyalty_config                                      LoyaltyConfig?
@@ -371,6 +370,7 @@ model Order {
   delivery_otp_created_at  DateTime?
   booking                  Booking?
   closing                  ClosingRequest?
+  Complaint                Complaint[]
   digitalAccess            DigitalAccess[]
   invoices                 Invoice[]
   promo_code               PromoCode?      @relation(fields: [applied_promo_id], references: [id])
@@ -596,12 +596,14 @@ model DownloadLog {
 
 model Invoice {
   id          String   @id @default(uuid())
-  order_id    String
+  order_id    String?
+  quote_id    String?
   numero      String   @unique
   pdf_url     String?
   white_label Boolean  @default(false)
   created_at  DateTime @default(now())
-  order       Order    @relation(fields: [order_id], references: [id])
+  order       Order?   @relation(fields: [order_id], references: [id])
+  Quote       Quote?   @relation(fields: [quote_id], references: [id])
 
   @@schema("public")
 }
@@ -1737,20 +1739,25 @@ model CommunityPost {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Complaint {
-  id           String   @id @default(dbgenerated("(gen_random_uuid())::text"))
-  store_id     String?
-  product_id   String?
-  reporter_id  String?
-  type         String
-  description  String
-  evidence_url String?
-  status       String   @default("pending")
-  admin_notes  String?
-  created_at   DateTime @default(now()) @db.Timestamptz(6)
-  updated_at   DateTime @default(now()) @db.Timestamptz(6)
-  Product      Product? @relation(fields: [product_id], references: [id], onUpdate: NoAction)
-  User         User?    @relation(fields: [reporter_id], references: [id], onUpdate: NoAction)
-  Store        Store?   @relation(fields: [store_id], references: [id], onUpdate: NoAction)
+  id                String   @id @default(dbgenerated("(gen_random_uuid())::text"))
+  store_id          String?
+  product_id        String?
+  order_id          String?
+  reporter_id       String?
+  reporter_name     String?
+  type              String
+  description       String
+  evidence_url      String?
+  status            String   @default("pending")
+  admin_notes       String?
+  assigned_admin_id String?
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @default(now()) @db.Timestamptz(6)
+  Product           Product? @relation(fields: [product_id], references: [id], onUpdate: NoAction)
+  User              User?    @relation(fields: [reporter_id], references: [id], onUpdate: NoAction)
+  Admin             User?    @relation("HelpdeskAdmin", fields: [assigned_admin_id], references: [id], onUpdate: NoAction)
+  Order             Order?   @relation(fields: [order_id], references: [id], onUpdate: NoAction)
+  Store             Store?   @relation(fields: [store_id], references: [id], onUpdate: NoAction)
 
   @@index([created_at(sort: Desc)], map: "idx_complaint_created")
   @@index([product_id], map: "idx_complaint_product")
@@ -1982,26 +1989,7 @@ model Quote {
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
   store        Store     @relation(fields: [store_id], references: [id], onDelete: Cascade)
-
-  @@index([store_id])
-  @@schema("public")
-}
-
-model HelpdeskTicket {
-  id             String   @id @default(uuid())
-  store_id       String
-  order_id       String?
-  customer_name  String
-  customer_email String?
-  customer_phone String?
-  subject        String
-  message        String
-  status         String   @default("OPEN")
-  assigned_admin_id String?
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-  store          Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
-  Admin          User?    @relation("HelpdeskAdmin", fields: [assigned_admin_id], references: [id])
+  Invoice      Invoice[]
 
   @@index([store_id])
   @@schema("public")

@@ -49,21 +49,8 @@ export async function purchaseSmsCredits(storeId: string, quantity: number) {
   const store = await prisma.store.findUnique({ where: { id: storeId, user_id: user.id } })
   if (!store) throw new Error("Non autorisé")
 
-  // TODO: Intégrer l'API de Payment de Yayyam. 
-  // Pour le MVP on va faire une attribution directe pour les tests en Local.
-  
-  if (process.env.NODE_ENV === 'development') {
-    const record = await prisma.smsCredit.upsert({
-      where: { store_id: storeId },
-      update: { credits: { increment: quantity } },
-      create: { store_id: storeId, credits: quantity, used: 0 }
-    })
-    return { success: true, message: `Achat simulé: +${quantity} SMS crédités.`, data: record }
-  }
-
-  // Comportement normal : rediriger vers paiement
-  // Ceci générera un lien de paiement pour acheter un "pack de sms"
-  return { success: false, error: 'Module de paiement externe en attente d\'intégration' }
+  // Pour la production, nous verrouillons la création gratuite ou non gérée.
+  return { success: false, error: 'Le rechargement automatique est suspendu. Veuillez contacter le support Yayyam pour créditer votre compte SMS.' }
 }
 
 /**

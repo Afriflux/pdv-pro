@@ -19,9 +19,29 @@ function DynamicColorButton({
 export default function PayLinkClient({ link, storeColor }: { link: any, storeColor: string }) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState<'wave' | 'paytech' | 'cinetpay'>('wave')
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null)
+  const [methods, setMethods] = useState<any[]>([])
+  const [loadingMethods, setLoadingMethods] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchMethods = async () => {
+      try {
+        const res = await fetch('/api/payments/available')
+        const data = await res.json()
+        if (data.methods && data.methods.length > 0) {
+          setMethods(data.methods)
+          setPaymentMethod(data.methods[0].id)
+        }
+      } catch (err) {
+        console.error('Erreur chargement paiements:', err)
+      } finally {
+        setLoadingMethods(false)
+      }
+    }
+    fetchMethods()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -93,26 +113,44 @@ export default function PayLinkClient({ link, storeColor }: { link: any, storeCo
       {/* Choix du moyen de paiement */}
       <div className="space-y-2 pt-2">
         <label className="text-sm font-bold text-slate block">Moyen de paiement</label>
+        
+        {loadingMethods ? (
+           <div className="grid grid-cols-2 gap-3 animate-pulse">
+             <div className="h-20 bg-gray-100 rounded-xl"></div>
+             <div className="h-20 bg-gray-100 rounded-xl"></div>
+           </div>
+        ) : methods.length === 0 ? (
+           <div className="bg-red-50 text-red-600 p-3 rounded-xl border border-red-100 text-xs text-center font-medium">
+             Aucun moyen de paiement configuré.
+           </div>
+        ) : (
         <div className="grid grid-cols-2 gap-3">
-          <label className={`cursor-pointer border-2 rounded-xl p-3 flex flex-col items-center justify-center gap-2 transition-all ${paymentMethod === 'wave' ? 'border-[#1ebbf0] bg-[#1ebbf0]/5 shadow-sm' : 'border-line hover:border-gray-300 bg-[#FAFAF7]'}`}>
-            <input type="radio" name="payment_method" value="wave" className="hidden" onChange={() => setPaymentMethod('wave')} />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/wave-logo.png" alt="Wave" className="h-6 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
-            <span className="text-xs font-bold whitespace-nowrap">Wave</span>
-          </label>
-          
-          <label className={`cursor-pointer border-2 rounded-xl p-3 flex flex-col items-center justify-center gap-2 transition-all ${paymentMethod === 'paytech' ? 'border-orange-500 bg-orange-50 shadow-sm' : 'border-line hover:border-gray-300 bg-[#FAFAF7]'}`}>
-            <input type="radio" name="payment_method" value="paytech" className="hidden" onChange={() => setPaymentMethod('paytech')} />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/orange-money-logo.png" alt="Orange Money" className="h-6 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
-            <span className="text-xs font-bold whitespace-nowrap">Mobile Money</span>
-          </label>
+          {methods.map((method) => {
+            const isSelected = paymentMethod === method.id
+            return (
+              <label 
+                key={method.id} 
+                className={`cursor-pointer border-2 rounded-xl p-3 flex flex-col items-center justify-center gap-2 transition-all ${isSelected ? 'shadow-sm' : 'border-line hover:border-gray-300 bg-[#FAFAF7]'}`}
+                {...{ style: isSelected ? { borderColor: storeColor, backgroundColor: `${storeColor}08` } : {} }}
+              >
+                <input type="radio" name="payment_method" value={method.id} className="hidden" onChange={() => setPaymentMethod(method.id)} />
+                {method.icon.startsWith('/') ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={method.icon} alt={method.label} className="h-6 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                ) : (
+                  <span className="text-xl">{method.icon}</span>
+                )}
+                <span className="text-xs font-bold whitespace-nowrap">{method.label}</span>
+              </label>
+            )
+          })}
         </div>
+        )}
       </div>
 
       <DynamicColorButton
         storeColor={storeColor}
-        disabled={isLoading}
+        disabled={isLoading || !paymentMethod}
         type="submit"
         className="w-full flex items-center justify-center gap-2 text-white px-6 py-4 rounded-xl font-bold transition-all shadow-lg hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 mt-6"
       >

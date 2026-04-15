@@ -87,7 +87,7 @@ export default function MarketingStats({ links }: MarketingStatsProps) {
         </div>
         <div className="mt-4 pt-4 border-t border-gray-50 relative z-10 w-full">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Statut</p>
-          <span className="inline-block mt-1 text-xs font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-lg">À venir bientôt</span>
+          <span className="inline-block mt-1 text-xs font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-lg">Non calculé</span>
         </div>
       </div>
 

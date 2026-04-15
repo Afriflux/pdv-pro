@@ -60,6 +60,54 @@ export async function processWhatsAppMessage({ storeId, phone, clientName, messa
   // Normalize phone number to omit "+" and non digits for the Cloud API
   const cleanPhone = phone.replace(/\+/g, '').replace(/\s+/g, '')
 
+  const rawMsg = message.toLowerCase().trim()
+
+  // --- SMART REVIEWS INTERCEPTION ---
+  if (/^[1-5]$/.test(rawMsg)) {
+    const rating = parseInt(rawMsg, 10)
+    
+    // Check if there is an order eligible for review
+    const orderToReview = await prisma.order.findFirst({
+      where: {
+        store_id: storeId,
+        buyer_phone: { contains: phone.substring(phone.length - 8) },
+        status: 'delivered',
+        Review: { none: {} }
+      },
+      orderBy: { updated_at: 'desc' }
+    });
+
+    if (orderToReview) {
+      await prisma.review.create({
+        data: {
+          store_id: storeId,
+          product_id: orderToReview.product_id,
+          order_id: orderToReview.id,
+          buyer_name: orderToReview.buyer_name,
+          buyer_phone: orderToReview.buyer_phone,
+          rating: rating,
+          comment: "Avis collecté via WhatsApp Smart Reviews",
+          verified: true
+        }
+      });
+      
+      const storeName = botConfig?.store.name || 'Notre Boutique'
+      await sendWhatsAppText(
+        cleanPhone, 
+        `Merci pour votre note de ${rating}/5 ! 🙏\n\nSi vous avez un commentaire supplémentaire, n'hésitez pas à nous l'écrire. À très bientôt sur *${storeName}* !`
+      );
+      
+      // Update the client context just in case, even if bot is off
+      await prisma.whatsappConversation.upsert({
+        where: { store_id_phone: { store_id: storeId, phone } },
+        update: { last_message: `Review: ${rating}/5`, client_name: clientName },
+        create: { store_id: storeId, phone, client_name: clientName, last_message: `Review: ${rating}/5` }
+      })
+      return; // Stop execution here
+    }
+  }
+  // --- FIN SMART REVIEWS ---
+
   if (!botConfig || !botConfig.active) {
     // Si le bot n'est pas actif pour cette boutique, on ne répond rien.
     return
@@ -71,8 +119,6 @@ export async function processWhatsAppMessage({ storeId, phone, clientName, messa
     update: { last_message: message, client_name: clientName },
     create: { store_id: storeId, phone, client_name: clientName, last_message: message }
   })
-
-  const rawMsg = message.toLowerCase().trim()
 
   // 2. Traitement des Mots-Clés
   const isJoinIntent = rawMsg.startsWith('join')

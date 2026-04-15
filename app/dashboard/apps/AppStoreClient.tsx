@@ -299,7 +299,15 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                     </div>
 
                     <div className="flex-1">
-                      <div className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">{app.category}</div>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="text-xs font-black text-gray-400 uppercase tracking-widest">{app.category}</div>
+                        {['fraud-cod', 'whatsapp-bot', 'loyalty-points', 'cinetpay', 'paytech', 'intouch'].includes(app.id) && (
+                          <div className="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-[0.4rem] text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 border border-emerald-100/50 shadow-sm">
+                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                             Plug-in
+                          </div>
+                        )}
+                      </div>
                       <h3 className="font-black text-[#1A1A1A] text-lg mb-2 leading-tight break-words">{app.name}</h3>
                       <p className="text-[13px] text-gray-500 leading-relaxed font-medium line-clamp-3">{app.description}</p>
                     </div>
@@ -337,7 +345,6 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                       {isInstalled && (() => {
                         // Mapping des apps vers leurs vraies routes
                         const routeMap: Record<string, string> = {
-                          // ... mapping exists, keeping logic intact, wait I can't overwrite this without including it explicitly, so I will copy the previous logic
                           'marketing': '/dashboard/marketing',
                           'workflows': '/dashboard/workflows',
                           'affilies': '/dashboard/affilies',
@@ -354,20 +361,27 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                           'tasks': '/dashboard/tasks',
                           'communautes': '/dashboard/communautes',
                           'closers': '/dashboard/closers',
-                          'academy': '/dashboard/tips', // Yayyam Académie
+                          'academy': '/dashboard/academy',
                           'cinetpay': '/dashboard/settings',
                           'paytech': '/dashboard/settings',
                           'intouch': '/dashboard/settings',
                           'fraud-cod': '/dashboard/settings#anti-fraude',
-                          'coach-ia': '/dashboard',
+                          'coach-ia': '/dashboard/ai-generator',
                           'sms-marketing': '/dashboard/marketing/sms',
                           'whatsapp-bot': '/dashboard/settings#whatsapp-bot',
-                          'loyalty-points': '/dashboard/settings#loyalty',
+                          'loyalty-points': '/dashboard/loyalty-points',
+                          'social-proof': '/dashboard/social-proof',
+                          'volume-discounts': '/dashboard/volume-discounts',
+                          'smart-reviews': '/dashboard/smart-reviews',
+                          'helpdesk': '/dashboard/helpdesk',
+                          'payment-links': '/dashboard/payment-links',
+                          'quotes': '/dashboard/quotes',
                         };
                         const configRoute = routeMap[app.id] || `/dashboard/apps/${app.id}`;
+                        const isPlugin = ['fraud-cod', 'whatsapp-bot', 'loyalty-points', 'cinetpay', 'paytech', 'intouch'].includes(app.id);
                         return (
-                          <a href={configRoute} className="flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all bg-[#0F7A60] text-white hover:opacity-90 shadow-lg shadow-emerald-900/10">
-                            Ouvrir
+                          <a href={configRoute} className={`flex-1 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${isPlugin ? 'bg-white text-emerald-700 border-2 border-emerald-100 hover:bg-emerald-50 shadow-sm hover:border-emerald-200' : 'bg-[#0F7A60] text-white hover:opacity-90 shadow-lg shadow-emerald-900/10 hover:-translate-y-0.5'}`}>
+                            {isPlugin ? 'Paramétrer' : 'Ouvrir'}
                           </a>
                         );
                       })()}

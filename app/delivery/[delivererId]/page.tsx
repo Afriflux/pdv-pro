@@ -39,22 +39,51 @@ export default function DelivererPortal({ params }: { params: { delivererId: str
 
   const handleDeliver = async (orderId: string) => {
     const Swal = (await import('sweetalert2')).default
-    const result = await Swal.fire({
-      title: 'Confirmation de Livraison',
-      text: 'Certifiez-vous avoir bien livré ce colis ?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Oui, certifier',
-      cancelButtonText: 'Annuler',
-      confirmButtonColor: '#0F7A60'
-    })
-    if (!result.isConfirmed) return
-    const res = await markOrderAsDeliveredAction(orderId, params.delivererId)
+    
+    setUpdatingId(orderId)
+    let res = await markOrderAsDeliveredAction(orderId, params.delivererId)
+
+    if (res.error === 'OTP_REQUIRED') {
+      const result = await Swal.fire({
+        title: 'Code de Sécurité',
+        text: 'Demandez le code OTP à 6 chiffres reçu par le client.',
+        input: 'text',
+        inputPlaceholder: 'Entrez le code OTP...',
+        inputAttributes: {
+          inputmode: 'numeric',
+          pattern: '[0-9]*'
+        },
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Valider Livraison',
+        cancelButtonText: 'Annuler',
+        confirmButtonColor: '#0F7A60',
+        preConfirm: (value) => {
+          if (!value || value.trim().length === 0) {
+            Swal.showValidationMessage('Veuillez entrer le code OTP')
+          }
+          return value
+        }
+      })
+
+      if (!result.isConfirmed) {
+        setUpdatingId(null)
+        return
+      }
+
+      res = await markOrderAsDeliveredAction(orderId, params.delivererId, result.value)
+    } else if (!res.error) {
+      // Pas d'OTP requis, mais on pourrait demander une simple confirmation ?
+      // Pour aller plus vite, si ça passe direct, c'est bon.
+    }
+
     if (res.success) {
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'delivered' } : o))
-    } else {
-      toast.error(res.error || 'Erreur')
+      toast.success('✔ Livraison confirmée !')
+    } else if (res.error) {
+      toast.error(res.error)
     }
+
     setUpdatingId(null)
   }
 

@@ -126,8 +126,7 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
         webhookUrl: '/api/webhooks/moneroo',
         pingType: 'generic' as const,
         fields: [
-          { key: 'MONEROO_SECRET_KEY', testKey: 'MONEROO_SECRET_KEY_TEST', label: 'Secret Key', type: 'password' as const, placeholder: 'sk_live_...' },
-          { key: 'MONEROO_PUBLIC_KEY', testKey: 'MONEROO_PUBLIC_KEY_TEST', label: 'Public Key', type: 'password' as const, placeholder: 'pk_live_...' }
+          { key: 'MONEROO_SECRET_KEY', testKey: 'MONEROO_SECRET_KEY_TEST', label: 'Secret Key (Type: Privée)', type: 'password' as const, placeholder: 'Clé commençant parfois par sk_...' }
         ]
       },
       {

@@ -29,7 +29,11 @@ import {
   Link as LinkIcon,
   Palette,
   Webhook,
-  CreditCard
+  CreditCard,
+  LifeBuoy,
+  Repeat,
+  Target,
+  MessageSquare
 } from 'lucide-react'
 import { NotificationBell } from './NotificationBell'
 import { Logo } from '@/components/ui/Logo'
@@ -37,7 +41,7 @@ import { Logo } from '@/components/ui/Logo'
 // ----------------------------------------------------------------
 // Types
 // ----------------------------------------------------------------
-interface NavItem {
+export interface NavItem {
   name: string
   href: string
   icon: LucideIcon
@@ -46,7 +50,7 @@ interface NavItem {
   appId?: string
 }
 
-interface NavSection {
+export interface NavSection {
   title: string
   items: NavItem[]
 }
@@ -55,7 +59,7 @@ interface NavSection {
 // ----------------------------------------------------------------
 // Navigation
 // ----------------------------------------------------------------
-const NAV: NavSection[] = [
+export const NAV: NavSection[] = [
   {
     title: 'PRINCIPAL',
     items: [
@@ -64,13 +68,14 @@ const NAV: NavSection[] = [
       { name: 'Pages de Vente', href: '/dashboard/pages', icon: LayoutTemplate },
       { name: 'Commandes', href: '/dashboard/orders', icon: ShoppingCart },
       { name: 'Clients & CRM', href: '/dashboard/customers', icon: Users, badge: 'LTV' },
+      { name: 'SAV & Aide', href: '/dashboard/helpdesk', icon: LifeBuoy },
       { name: 'Livraisons', href: '/dashboard/livraisons', icon: Truck, for: ['physical', 'hybrid'], appId: 'livraisons' },
     ]
   },
   {
     title: 'FORMATION',
     items: [
-      { name: 'Yayyam Académie', href: '/dashboard/tips', icon: GraduationCap, badge: 'Freemium', appId: 'academy' },
+      { name: 'Yayyam Académie', href: '/dashboard/academy', icon: GraduationCap, badge: 'Freemium', appId: 'academy' },
     ]
   },
   {
@@ -78,6 +83,7 @@ const NAV: NavSection[] = [
     items: [
       { name: 'Portefeuille', href: '/dashboard/wallet', icon: Wallet },
       { name: 'Commissions', href: '/dashboard/abonnements', icon: Gem },
+      { name: 'Abonnements', href: '/dashboard/apps/subscriptions', icon: Repeat, appId: 'subscriptions' },
     ]
   },
   {
@@ -85,10 +91,12 @@ const NAV: NavSection[] = [
     items: [
       { name: 'App Store', href: '/dashboard/apps', icon: Blocks, badge: 'NEW' },
       { name: 'API & Webhooks', href: '/dashboard/webhooks', icon: Webhook, appId: 'webhooks' },
-      { name: 'Devis & Factures', href: '/dashboard/apps/quotes', icon: ShoppingCart, appId: 'quotes' },
-      { name: 'Liens de Paiement', href: '/dashboard/apps/payment-links', icon: CreditCard, appId: 'payment-links' },
+      { name: 'Devis & Factures', href: '/dashboard/quotes', icon: ShoppingCart, appId: 'quotes' },
+      { name: 'Liens de Paiement', href: '/dashboard/payment-links', icon: CreditCard, appId: 'payment-links' },
       { name: 'Link-in-Bio', href: '/dashboard/links', icon: LinkIcon, appId: 'links' },
+      { name: 'Pixels CAPI', href: '/dashboard/apps/server-side-pixels', icon: Target, appId: 'server-side-pixels' },
       { name: 'Marketing', href: '/dashboard/marketing', icon: Share2, appId: 'marketing' },
+      { name: 'SMS Marketing', href: '/dashboard/marketing/sms', icon: MessageSquare, appId: 'sms-marketing' },
       { name: 'Workflows', href: '/dashboard/workflows', icon: Zap, appId: 'workflows' },
       { name: 'Agenda', href: '/dashboard/agenda', icon: Users, appId: 'agenda' },
       { name: 'Tasks', href: '/dashboard/tasks', icon: ShoppingCart, appId: 'tasks' },
@@ -98,6 +106,9 @@ const NAV: NavSection[] = [
       { name: 'Closers', href: '/dashboard/closers', icon: Users, appId: 'closers' },
       { name: 'Telegram', href: '/dashboard/telegram', icon: Zap, appId: 'telegram' },
       { name: 'AI Generator', href: '/dashboard/ai-generator', icon: Palette, appId: 'ai-generator' },
+      { name: 'Preuve Sociale', href: '/dashboard/social-proof', icon: Zap, appId: 'social-proof' },
+      { name: 'Prix de Gros', href: '/dashboard/volume-discounts', icon: ShoppingCart, appId: 'volume-discounts' },
+      { name: 'Avis 5 Étoiles', href: '/dashboard/smart-reviews', icon: Gem, appId: 'smart-reviews' },
       { name: 'Ambassadeurs', href: '/dashboard/ambassadeur', icon: Gem },
     ]
   },

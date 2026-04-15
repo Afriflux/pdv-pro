@@ -60,20 +60,43 @@ export async function getDelivererDataAction(delivererId: string) {
   }
 }
 
-export async function markOrderAsDeliveredAction(orderId: string, delivererId: string) {
+export async function markOrderAsDeliveredAction(orderId: string, delivererId: string, otpInput?: string) {
   try {
     // Vérifier si la commande appartient bien à ce livreur
     const order = await prisma.order.findFirst({
-      where: { id: orderId, deliverer_id: delivererId }
+      where: { id: orderId, deliverer_id: delivererId },
+      select: { id: true, delivery_otp: true, delivery_otp_created_at: true, payment_method: true }
     })
 
     if (!order) {
       return { error: 'Commande non autorisée ou introuvable' }
     }
 
+    // Vérification de l'OTP si c'est une commande COD avec OTP
+    if (order.payment_method === 'cod' && order.delivery_otp) {
+      if (!otpInput) {
+        return { error: 'OTP_REQUIRED' } // Signale au front qu'il faut demander l'OTP
+      }
+      
+      if (order.delivery_otp_created_at) {
+        const expiresAt = new Date(order.delivery_otp_created_at.getTime() + 24 * 60 * 60 * 1000)
+        if (new Date() > expiresAt) {
+          return { error: 'Code OTP expiré.' }
+        }
+      }
+
+      if (order.delivery_otp !== otpInput.trim()) {
+        return { error: 'Code OTP incorrect.' }
+      }
+    }
+
     await prisma.order.update({
       where: { id: orderId },
-      data: { status: 'delivered' }
+      data: { 
+        status: 'delivered',
+        delivery_otp: null,
+        delivery_otp_created_at: null
+      }
     })
 
     // Si on veut être puriste sur les finances : 

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Activity, ExternalLink, CheckCircle2 } from 'lucide-react'
 import Image from 'next/image'
+import { useEffect } from 'react'
 
 interface QuoteData {
   id: string
@@ -13,9 +14,29 @@ interface QuoteData {
 
 export default function QuoteClient({ quote, storeColor }: { quote: QuoteData, storeColor: string }) {
   const [phone, setPhone] = useState(quote.client_phone || '')
-  const [paymentMethod, setPaymentMethod] = useState<'wave' | 'paytech' | 'cinetpay'>('wave')
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null)
+  const [methods, setMethods] = useState<any[]>([])
+  const [loadingMethods, setLoadingMethods] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchMethods = async () => {
+      try {
+        const res = await fetch('/api/payments/available')
+        const data = await res.json()
+        if (data.methods && data.methods.length > 0) {
+          setMethods(data.methods)
+          setPaymentMethod(data.methods[0].id)
+        }
+      } catch (err) {
+        console.error('Erreur chargement paiements:', err)
+      } finally {
+        setLoadingMethods(false)
+      }
+    }
+    fetchMethods()
+  }, [])
 
   if (quote.status === 'ACCEPTED') {
     return (
@@ -99,23 +120,43 @@ export default function QuoteClient({ quote, storeColor }: { quote: QuoteData, s
 
           <div className="space-y-3">
             <label className="text-sm font-bold text-slate block">Mode de règlement</label>
+            
+            {loadingMethods ? (
+               <div className="grid grid-cols-2 gap-3 animate-pulse">
+                 <div className="h-20 bg-gray-100 rounded-xl"></div>
+                 <div className="h-20 bg-gray-100 rounded-xl"></div>
+               </div>
+            ) : methods.length === 0 ? (
+               <div className="bg-red-50 text-red-600 p-3 rounded-xl border border-red-100 text-xs text-center font-medium">
+                 Aucun moyen de paiement configuré.
+               </div>
+            ) : (
             <div className="grid grid-cols-2 gap-3">
-              <label className={`cursor-pointer border-2 rounded-xl p-4 flex flex-col items-center justify-center gap-3 transition-all ${paymentMethod === 'wave' ? 'border-[#1ebbf0] bg-[#1ebbf0]/5 shadow-sm' : 'border-line hover:border-gray-300 bg-[#FAFAF7]'}`}>
-                <input type="radio" name="payment_method" value="wave" className="hidden" onChange={() => setPaymentMethod('wave')} />
-                <Image src="/images/wave-logo.png" alt="Wave" width={80} height={32} className="h-8 w-auto object-contain" />
-                <span className="text-sm font-bold whitespace-nowrap">Wave</span>
-              </label>
-              
-              <label className={`cursor-pointer border-2 rounded-xl p-4 flex flex-col items-center justify-center gap-3 transition-all ${paymentMethod === 'paytech' ? 'border-orange-500 bg-orange-50 shadow-sm' : 'border-line hover:border-gray-300 bg-[#FAFAF7]'}`}>
-                <input type="radio" name="payment_method" value="paytech" className="hidden" onChange={() => setPaymentMethod('paytech')} />
-                <Image src="/images/orange-money-logo.png" alt="Orange Money" width={80} height={32} className="h-8 w-auto object-contain" />
-                <span className="text-sm font-bold whitespace-nowrap">Orange / Free</span>
-              </label>
+              {methods.map((method) => {
+                const isSelected = paymentMethod === method.id
+                return (
+                  <label 
+                    key={method.id} 
+                    className={`cursor-pointer border-2 rounded-xl p-4 flex flex-col items-center justify-center gap-3 transition-all ${isSelected ? 'shadow-sm' : 'border-line hover:border-gray-300 bg-[#FAFAF7]'}`}
+                    {...{ style: isSelected ? { borderColor: storeColor, backgroundColor: `${storeColor}08` } : {} }}
+                  >
+                    <input type="radio" name="payment_method" value={method.id} className="hidden" onChange={() => setPaymentMethod(method.id)} />
+                    {method.icon.startsWith('/') ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={method.icon} alt={method.label} className="h-8 w-auto object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                    ) : (
+                      <span className="text-2xl">{method.icon}</span>
+                    )}
+                    <span className="text-sm font-bold whitespace-nowrap">{method.label}</span>
+                  </label>
+                )
+              })}
             </div>
+            )}
           </div>
 
           <button
-            disabled={isLoading}
+            disabled={isLoading || !paymentMethod}
             type="submit"
             className="w-full flex items-center justify-center gap-2 text-white px-6 py-5 rounded-xl font-bold transition-all shadow-lg hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 mt-8 text-lg"
             {...{ style: { backgroundColor: storeColor } }}

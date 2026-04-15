@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 import { prisma } from '@/lib/prisma'

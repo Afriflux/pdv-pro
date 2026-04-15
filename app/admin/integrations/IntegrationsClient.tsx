@@ -98,9 +98,9 @@ export default function IntegrationsClient({ configMap, statsMap, configuredCoun
       <div className="flex flex-col gap-8 w-full relative z-20 px-6 lg:px-10 -mt-8 pb-20 max-w-[1900px] mx-auto">
         
         {/* -- HORIZONTAL FILTERS & SEARCH -- */}
-        <div className="w-full bg-white/80 backdrop-blur-md border border-slate-200/50 p-3 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col lg:flex-row gap-4 items-center justify-between animate-in slide-in-from-bottom-2 duration-300 z-10">
+        <div className="w-full bg-white/80 backdrop-blur-md border border-slate-200/50 p-3 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col xl:flex-row gap-4 items-center justify-between animate-in slide-in-from-bottom-2 duration-300 z-10">
           
-          <nav className="flex flex-row gap-2 overflow-x-auto hide-scrollbar w-full lg:w-auto p-1">
+          <nav className="flex flex-row flex-nowrap lg:flex-wrap gap-2 overflow-x-auto lg:overflow-visible hide-scrollbar w-full xl:w-auto p-1">
             {filteredGroups.map(group => {
               const isActive = activeTab === group.category
               const health = getGroupHealth(group.category)

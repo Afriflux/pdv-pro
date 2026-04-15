@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { Search, Crown, CheckCircle2, AlertCircle, MessageCircle } from 'lucide-react'
+import Swal from 'sweetalert2'
 
 // ----------------------------------------------------------------
 // Types
@@ -13,6 +14,8 @@ type CustomerAgg = {
   totalSpent: number
   orderCount: number
   lastOrderAt: Date
+  score: number | null
+  isBlacklisted: boolean
 }
 
 interface CustomersClientProps {
@@ -122,8 +125,16 @@ export default function CustomersClient({ customers, storeName }: CustomersClien
                          {tag.icon && <tag.icon size={10} />}
                          {tag.label}
                        </span>
+                       {c.isBlacklisted && (
+                         <span className="px-2 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-red-100 text-red-600">
+                           Banni
+                         </span>
+                       )}
                     </p>
                     {c.email && <p className="text-xs text-dust truncate mt-0.5">{c.email}</p>}
+                    {c.score !== null && (
+                      <p className="text-xs font-bold text-gray-500 mt-1">Score: <span className={c.score > 80 ? 'text-green-600' : c.score < 50 ? 'text-red-500' : 'text-orange-500'}>{c.score} / 100</span></p>
+                    )}
                   </div>
 
                   {/* Phone */}
@@ -146,8 +157,8 @@ export default function CustomersClient({ customers, storeName }: CustomersClien
                     {new Date(c.lastOrderAt).toLocaleDateString('fr-FR')}
                   </div>
 
-                  {/* Action WhatsApp */}
-                  <div className="w-full md:w-[10%] text-right flex justify-end">
+                  {/* Action WhatsApp & Ban */}
+                  <div className="w-full md:w-[10%] text-right flex justify-end gap-2">
                     <a 
                       href={waLink}
                       target="_blank"
@@ -157,6 +168,13 @@ export default function CustomersClient({ customers, storeName }: CustomersClien
                     >
                       <MessageCircle size={18} />
                     </a>
+                    <button
+                      onClick={() => Swal.fire('Info', `Bannir ${c.name} est géré côté API Anti-Fraude`, 'info')}
+                      className="p-2.5 bg-red-50 text-red-600 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-sm tooltip-trigger"
+                      title="Mettre sur liste noire"
+                    >
+                      <AlertCircle size={18} />
+                    </button>
                   </div>
 
                 </div>

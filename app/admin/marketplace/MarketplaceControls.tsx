@@ -69,8 +69,7 @@ export default function MarketplaceControls({
                     <button 
                       onClick={() => handleUpdate(type, item.id, !item.is_premium, item.price || 0)}
                       aria-label="Basculer Modèle Freemium"
-                      role="switch"
-                      aria-checked={!!item.is_premium}
+                      data-state={item.is_premium ? "checked" : "unchecked"}
                       className={`relative w-12 h-6 rounded-full transition-colors ${item.is_premium ? 'bg-amber-500' : 'bg-line'}`}
                     >
                       <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all shadow-sm ${item.is_premium ? 'left-7' : 'left-1'}`} />

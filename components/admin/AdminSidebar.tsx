@@ -77,7 +77,7 @@ const NAV: NavSection[] = [
       { name: 'Notifications', href: '/admin/notifications', icon: BellRing, badge: 'NEW' },
       { name: 'Chat WhatsApp', href: '/admin/whatsapp', icon: MessageSquare, badge: 'NEW' },
       { name: 'Fidélité & Récompenses', href: '/admin/loyalty', icon: Gift, badge: 'NEW' },
-      { name: 'Support & Tickets', href: '/admin/tickets', icon: MessageSquare, badge: 'NEW' },
+      { name: 'Support & Tickets', href: '/admin/complaints', icon: MessageSquare, badge: 'NEW' },
     ]
   },
   {

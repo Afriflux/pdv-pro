@@ -800,6 +800,7 @@ export default async function LandingPage() {
               <li><Link href="/conditions-utilisation" className="hover:text-emerald-light transition">Conditions d&apos;utilisation</Link></li>
               <li><Link href="/politique-confidentialite" className="hover:text-emerald-light transition">Politique de confidentialité</Link></li>
               <li><Link href="/mentions-legales" className="hover:text-emerald-light transition">Mentions légales</Link></li>
+              <li><Link href="/documentation" className="text-emerald hover:text-emerald-light font-bold transition">Documentation Centrale</Link></li>
               <li><a suppressHydrationWarning href={`https://wa.me/${get('landing_whatsapp_support', '221780476393')}`} target="_blank" className="hover:text-emerald-light transition flex items-center gap-2">
                 <span className="w-2 h-2 bg-emerald rounded-full animate-pulse"></span>
                 Support WhatsApp

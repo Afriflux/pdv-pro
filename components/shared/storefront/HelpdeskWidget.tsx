@@ -8,7 +8,7 @@ import { LifeBuoy, X, Check, Loader2, Send } from 'lucide-react'
 
 // Note: To submit securely to Prisma from a client component, we should call a Server Action
 // Since the seller isn't logged in, we need a public action. 
-import { submitTicketAction } from '@/app/dashboard/apps/helpdesk/actions'
+import { submitTicketAction } from '@/app/dashboard/helpdesk/actions'
 
 interface Props {
   storeId: string
@@ -69,7 +69,7 @@ export function HelpdeskWidget({ storeId, accentColor }: Props) {
   }
 
   return (
-    <div style={{ "--accent": accentColor, "--accent-rgb": accentRgb } as React.CSSProperties}>
+    <div {...{ style: { "--accent": accentColor, "--accent-rgb": accentRgb } as React.CSSProperties }}>
       <button onClick={() => setIsOpen(true)} aria-label="Aide" title="Aide"
         className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[80] w-14 h-14 rounded-full text-white shadow-[0_10px_25px_rgba(var(--accent-rgb),0.5)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all bg-[var(--accent)]"
       >

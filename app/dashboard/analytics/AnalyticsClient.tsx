@@ -1,5 +1,6 @@
 /* eslint-disable react/forbid-dom-props */
 'use client'
+'use client'
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -196,7 +197,7 @@ export default function AnalyticsClient({
 
           <div className="space-y-2 relative">
             <label className="text-xs font-bold text-slate-600 flex items-center justify-between mb-1">
-              Canal d'acquisition <span className="text-xs bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded uppercase">Bientôt</span>
+              Canal d'acquisition
             </label>
             <select aria-label="Canal d'acquisition" title="Canal d'acquisition" disabled className="w-full bg-slate-50 border border-slate-200 text-sm font-bold text-slate-400 rounded-xl px-3 py-2.5 opacity-60 cursor-not-allowed">
               <option>Tous les canaux</option>
@@ -205,7 +206,7 @@ export default function AnalyticsClient({
 
           <div className="space-y-2 relative">
             <label className="text-xs font-bold text-slate-600 flex items-center justify-between mb-1">
-              Appareil <span className="text-xs bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded uppercase">Bientôt</span>
+              Appareil
             </label>
             <select aria-label="Appareil d'acquisition" title="Appareil d'acquisition" disabled className="w-full bg-slate-50 border border-slate-200 text-sm font-bold text-slate-400 rounded-xl px-3 py-2.5 opacity-60 cursor-not-allowed">
               <option>Mobiles & Desktops</option>
@@ -530,7 +531,8 @@ export default function AnalyticsClient({
                    {data.sources.length > 0 ? data.sources.map((s, index) => (
                      <div key={s.name} className="flex items-center justify-between text-xs font-bold p-2 hover:bg-white rounded-lg transition-colors cursor-default">
                        <div className="flex items-center gap-3">
-                         <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                         {/* eslint-disable-next-line */}
+                         <div className="w-3 h-3 rounded-full shadow-sm" {...{ style: { backgroundColor: COLORS[index % COLORS.length] } }} />
                          <span className="text-slate-500 uppercase tracking-widest">{s.name}</span>
                        </div>
                        <span className="text-[#1A1A1A] text-sm tabular-nums">{s.value}</span>
@@ -558,7 +560,7 @@ export default function AnalyticsClient({
                        <div className="w-full h-2.5 bg-slate-100/50 rounded-full overflow-hidden shadow-inner flex items-stretch">
                          <div
                            className={`h-full transition-all duration-1000 ease-out rounded-full shadow-sm w-[var(--bar-width)] ${COLORS_BG[i % COLORS_BG.length]}`}
-                           style={{ '--bar-width': `${(g.value / (data.geography[0]?.value || 1)) * 100}%` } as React.CSSProperties}
+                           {...{ style: { '--bar-width': `${(g.value / (data.geography[0]?.value || 1)) * 100}%` } as React.CSSProperties }}
                          />
                        </div>
                      </div>

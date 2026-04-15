@@ -3,6 +3,7 @@ import { createWavePayment } from './wave/client'
 import { createPaytechPayment } from './paytech/client'
 import { createBictorysPayment } from './bictorys/client'
 import { createCinetpayPayment } from './cinetpay/client'
+import { createMonerooPayment } from './moneroo/client'
 
 export type PaymentEnvironment = 'test' | 'prod'
 
@@ -69,26 +70,6 @@ import { triggerSystemAlertTelegram } from '@/lib/telegram/notify-hooks'
  * Routeur Intelligent de Paiement (Smart Payment Router)
  */
 export async function createPaymentSession(payload: PaymentRequestPayload): Promise<PaymentResponse> {
-  // 1. Gestion du Smart Routing / Fallback d'urgence
-  if (payload.method === 'wave') {
-    const usePaytechFallback = await isFallbackActive('FALLBACK_WAVE_PAYTECH')
-    if (usePaytechFallback) {
-      console.log('⚡️ [Smart Routing] Wave est en maintenance, bascule automatique vers PayTech.')
-      
-      // Alerte Telegram
-      await triggerSystemAlertTelegram(
-        'Bascule (Smart Routing) Activée', 
-        `La méthode 'wave' est indisponible. Redirection automatique vers 'paytech' pour la commande ${payload.orderId} (${payload.amount} FCFA).`
-      )
-
-      // On mute le payload pour utiliser PayTech comme agrégateur
-      payload.method = 'paytech'
-      // Appel du client Paytech en redirigeant le fallback
-      const response = await createPaytechPayment(payload)
-      return { ...response, fallbackUsed: true }
-    }
-  }
-
   // 2. Routage vers le bon provider
   switch (payload.method) {
     case 'wave':
@@ -102,6 +83,9 @@ export async function createPaymentSession(payload: PaymentRequestPayload): Prom
 
     case 'cinetpay':
       return await createCinetpayPayment(payload)
+
+    case 'moneroo':
+      return await createMonerooPayment(payload)
 
     default:
       return { success: false, error: 'Méthode de paiement non supportée par le Routeur' }

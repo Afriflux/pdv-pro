@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from "next/server";
 import { Document, Page, Text, View, StyleSheet, renderToStream, Image } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/server";

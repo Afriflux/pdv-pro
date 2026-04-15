@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
 import { SettingsLayout } from './SettingsLayout'
 
 export default async function SettingsPage() {
@@ -7,34 +8,40 @@ export default async function SettingsPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: store, error: storeError } = await supabase
-    .from('Store')
-    .select(`
-      id, name, store_name, slug, logo_url, primary_color, description, category,
-      kyc_status, kyc_document_type, kyc_documents, id_card_url, security_pin,
-      updated_at, banner_url,
-      notif_new_order, notif_weekly_report, notif_stock_alert,
-      social_links,
-      meta_pixel_id, meta_capi_token, tiktok_pixel_id, tiktok_capi_token, google_tag_id, google_api_secret,
-      seo_title, seo_description,
-      telegram_chat_id, telegram_notifications,
-      withdrawal_method, withdrawal_number, withdrawal_name,
-      contract_accepted, contract_accepted_at, vendor_type,
-      whatsapp_bot (*),
-      installedApps (app_id, status)
-    `)
-    .eq('user_id', user.id)
-    .single()
+  const dbStore = await prisma.store.findUnique({
+    where: { user_id: user.id },
+    include: {
+      whatsapp_bot: true
+    }
+  })
 
-  if (storeError && storeError.code !== 'PGRST116') {
-    console.error('[SettingsPage] Fetch store error:', storeError)
+  // Conversion of potential Prisma date objects to ISO strings for RSC
+  let store: any = null
+  if (dbStore) {
+    store = { ...dbStore }
+    if (store.created_at) store.created_at = store.created_at.toISOString()
+    if (store.updated_at) store.updated_at = store.updated_at.toISOString()
+    if (store.contract_accepted_at) store.contract_accepted_at = store.contract_accepted_at.toISOString()
+    if (store.vendor_type_updated_at) store.vendor_type_updated_at = store.vendor_type_updated_at.toISOString()
   }
+
 
   const { data: profile } = await supabase
     .from('User')
     .select('name, phone, email, avatar_url')
     .eq('id', user.id)
     .single()
+
+  // Fetch installed apps reliably via Prisma
+  let apps: any[] = []
+  if (store) {
+    apps = await prisma.installedApp.findMany({
+      where: { store_id: store.id, status: 'active' },
+      select: { app_id: true, status: true }
+    })
+  }
+  
+  const finalStore = store ? { ...store, installedApps: apps } : { installedApps: apps }
 
   // Extraction intelligente du numéro de téléphone
   const extractPhone = () => {
@@ -85,7 +92,7 @@ export default async function SettingsPage() {
 
         <div className="w-full relative z-10">
         <SettingsLayout
-          store={store}
+          store={finalStore}
           profile={{
             ...(profile ?? {}),
             name: profile?.name || '',

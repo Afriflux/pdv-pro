@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Image from 'next/image'
 import { Download, PlayCircle, ArrowRight, BookOpen, Lock } from 'lucide-react'
+import Link from 'next/link'
 
 export const metadata = {
   title: 'Ma Bibliothèque | Yayyam Client',
@@ -27,7 +28,11 @@ export default async function LibraryPage() {
       revoked: false
     },
     include: {
-      product: true,
+      product: {
+        include: {
+          Course: true
+        }
+      },
       order: true
     },
     orderBy: {
@@ -77,7 +82,9 @@ export default async function LibraryPage() {
             {(digitalAccesses || []).map((access) => {
               const product = access.product
               const image = product.images?.[0] || '/images/placeholder.webp'
-              const isVideo = product.digital_link !== null
+              const course = product.Course;
+              const isLMS = !!course; // La méthode LMS Yayyam Academy V2
+              const isVideo = product.digital_link !== null || isLMS;
               const isExpired = access.expires_at && new Date(access.expires_at) < new Date()
 
               return (
@@ -121,15 +128,23 @@ export default async function LibraryPage() {
                            <Lock size={16} /> Accès verrouillé
                          </div>
                        ) : (
-                         <a 
-                           href={product.digital_link || product.digital_file_url || '#'}
-                           target={product.digital_link ? "_blank" : "_self"}
-                           className="w-full py-3.5 bg-[#1A1A1A] hover:bg-[#0F7A60] text-white rounded-xl flex items-center justify-center gap-2 font-bold text-sm transition-all shadow-sm hover:shadow-[#0F7A60]/20 group/btn"
-                         >
-                           {isVideo ? <PlayCircle size={18} /> : <Download size={18} />}
-                           {isVideo ? 'Lire la vidéo' : 'Télécharger'}
-                           <ArrowRight size={16} className="opacity-0 -ml-4 group-hover/btn:opacity-100 group-hover/btn:ml-0 transition-all" />
-                         </a>
+                          isLMS ? (
+                            <Link href={`/client/library/${course.id}`} className="w-full py-3.5 bg-[#1A1A1A] hover:bg-[#0F7A60] text-white rounded-xl flex items-center justify-center gap-2 font-bold text-sm transition-all shadow-sm hover:shadow-[#0F7A60]/20 group/btn">
+                              <PlayCircle size={18} />
+                              Accéder au LMS
+                              <ArrowRight size={16} className="opacity-0 -ml-4 group-hover/btn:opacity-100 group-hover/btn:ml-0 transition-all" />
+                            </Link>
+                          ) : (
+                            <a 
+                              href={product.digital_link || product.digital_file_url || '#'}
+                              target={product.digital_link ? "_blank" : "_self"}
+                              className="w-full py-3.5 bg-[#1A1A1A] hover:bg-[#0F7A60] text-white rounded-xl flex items-center justify-center gap-2 font-bold text-sm transition-all shadow-sm hover:shadow-[#0F7A60]/20 group/btn"
+                            >
+                              {isVideo ? <PlayCircle size={18} /> : <Download size={18} />}
+                              {isVideo ? 'Lire la vidéo' : 'Télécharger'}
+                              <ArrowRight size={16} className="opacity-0 -ml-4 group-hover/btn:opacity-100 group-hover/btn:ml-0 transition-all" />
+                            </a>
+                          )
                        )}
                      </div>
                    </div>
