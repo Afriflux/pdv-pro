@@ -23,7 +23,7 @@ export default async function TelegramPage() {
   // Communautés liées
   const { data: communities } = await admin
     .from('TelegramCommunity')
-    .select('id, chat_id, chat_title, chat_type, product_id, is_active, members_count, created_at')
+    .select('id, chat_id, chat_title, chat_type, product_id, welcome_message, is_active, members_count, created_at')
     .eq('store_id', store.id)
     .not('chat_id', 'is', null)
     .order('created_at', { ascending: false })
@@ -33,7 +33,7 @@ export default async function TelegramPage() {
     .from('Product')
     .select('id, name, type, price')
     .eq('store_id', store.id)
-    .eq('is_active', true)
+    .eq('active', true)
     .order('name')
 
   // Stats d'accès récents

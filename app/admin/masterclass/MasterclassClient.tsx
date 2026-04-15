@@ -48,7 +48,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
     is_premium: false,
     price: 0,
     allowed_roles: ['all'] as string[],
-    tips: [{ number: 1, title: '', desc: '', imageUrl: '', videoUrl: '' }]
+    tips: [{ number: 1, module: '', title: '', desc: '', imageUrl: '', videoUrl: '' }]
   })
 
   // Computed data
@@ -101,7 +101,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
       is_premium: false,
       price: 0,
       allowed_roles: ['all'],
-      tips: [{ number: 1, title: '', desc: '', imageUrl: '', videoUrl: '' }]
+      tips: [{ number: 1, module: '', title: '', desc: '', imageUrl: '', videoUrl: '' }]
     })
     setEditingId(null)
   }
@@ -142,7 +142,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
       is_premium: false,
       price: 0,
       allowed_roles: ['all'],
-      tips: generatedArticle.tips || [{ number: 1, title: '', desc: '', imageUrl: '', videoUrl: '' }]
+      tips: generatedArticle.tips || [{ number: 1, module: '', title: '', desc: '', imageUrl: '', videoUrl: '' }]
     })
     setEditingId(null)
     setIsModalOpen(true) // Ouvre le formulaire d'édition auto complété
@@ -213,7 +213,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
   const addTip = () => {
     setFormData(prev => ({
       ...prev,
-      tips: [...prev.tips, { number: prev.tips.length + 1, title: '', desc: '', imageUrl: '', videoUrl: '' }]
+      tips: [...prev.tips, { number: prev.tips.length + 1, module: '', title: '', desc: '', imageUrl: '', videoUrl: '' }]
     }))
   }
 
@@ -654,9 +654,9 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
 
               <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest">Étapes du Cours ({formData.tips.length})</h3>
+                  <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest">Modules & Leçons ({formData.tips.length})</h3>
                   <button type="button" onClick={addTip} className="text-[#0F7A60] text-sm font-bold flex items-center gap-1.5 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100 hover:bg-emerald-100 transition-colors">
-                    <Plus size={16} /> Ajouter une étape
+                    <Plus size={16} /> Ajouter une leçon
                   </button>
                 </div>
                 
@@ -679,14 +679,20 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                           <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white border border-gray-200 shadow-sm text-xs font-black text-gray-500 group-hover:text-[#0F7A60] group-hover:border-emerald-200 transition-colors">
                             {tip.number}
                           </span>
-                          <button type="button" title="Supprimer l'étape" aria-label="Supprimer l'étape" onClick={() => removeTip(index)} className="text-gray-400 hover:text-red-500 bg-white p-2 rounded-lg border border-gray-100 shadow-sm opacity-0 group-hover:opacity-100 active:opacity-100 transition-all">
+                          <button type="button" title="Supprimer la leçon" aria-label="Supprimer la leçon" onClick={() => removeTip(index)} className="text-gray-400 hover:text-red-500 bg-white p-2 rounded-lg border border-gray-100 shadow-sm opacity-0 group-hover:opacity-100 active:opacity-100 transition-all">
                             <Trash2 size={14} />
                           </button>
                         </div>
                         
                         <input 
+                          placeholder="Nom du Module (Optionnel - ex: Chapitre 1)" 
+                          value={tip.module || ''} 
+                          onChange={e => updateTip(index, 'module', e.target.value)} 
+                          className="w-full border-b border-gray-200 bg-transparent p-2 text-xs font-bold text-indigo-600 focus:border-indigo-500 outline-none mb-3 transition-colors placeholder:text-indigo-300 uppercase tracking-wider" 
+                        />
+                        <input 
                           required 
-                          placeholder="Titre de l'étape (ex: L'accroche choc)" 
+                          placeholder="Titre de la leçon (ex: L'accroche choc)" 
                           value={tip.title} 
                           onChange={e => updateTip(index, 'title', e.target.value)} 
                           className="w-full border-b border-gray-200 bg-transparent p-2 text-sm font-bold text-gray-900 focus:border-[#0F7A60] outline-none mb-3 transition-colors placeholder:font-normal" 
@@ -706,7 +712,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                           className="w-full border border-gray-200 bg-gray-50 rounded-xl p-3 text-sm focus:border-[#0F7A60] outline-none mb-3 transition-colors" 
                         />
                         <input 
-                          placeholder="Lien Vidéo / Iframe (Optionnel)" 
+                          placeholder="Lien Support Vidéo (YouTube / Vimeo / Iframe)" 
                           value={tip.videoUrl || ''} 
                           onChange={e => updateTip(index, 'videoUrl', e.target.value)} 
                           className="w-full border border-gray-200 bg-gray-50 rounded-xl p-3 text-sm focus:border-[#0F7A60] outline-none transition-colors" 
@@ -716,7 +722,7 @@ export default function MasterclassClient({ initialArticles }: { initialArticles
                   ))}
                   {formData.tips.length === 0 && (
                      <div className="text-center py-6 text-gray-400 text-sm font-medium border-2 border-dashed border-gray-200 rounded-2xl">
-                       Aucune étape. Cliquez sur "Ajouter une étape" pour commencer.
+                       Aucune leçon. Cliquez sur "Ajouter une leçon" pour commencer.
                      </div>
                   )}
                 </div>

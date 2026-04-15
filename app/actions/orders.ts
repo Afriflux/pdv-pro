@@ -96,6 +96,15 @@ export async function bulkUpdateOrdersStatus(
       }
     }
 
+    if (status === 'cod_confirmed' && updatedOrders) {
+      const { generateDeliveryOTP } = await import('@/app/actions/delivery-otp')
+      for (const order of updatedOrders) {
+        if (order.payment_method === 'cod') {
+          await generateDeliveryOTP(order.id).catch(e => console.error('[Generate OTP Error]', e))
+        }
+      }
+    }
+
     // 3. Sync Wallet balances (incremental) & Notifications
     if (previousOrders) {
       let balanceDelta = 0;

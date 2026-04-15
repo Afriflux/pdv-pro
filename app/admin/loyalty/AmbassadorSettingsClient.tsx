@@ -9,6 +9,8 @@ type Config = {
   ambassador_reward_pro: string
   ambassador_require_purchase: string
   ambassador_active: string
+  ambassador_min_revenue_vendor: string
+  ambassador_min_days_active: string
 }
 
 export default function AmbassadorSettingsClient({ initialConfig }: { initialConfig: Config }) {
@@ -78,7 +80,35 @@ export default function AmbassadorSettingsClient({ initialConfig }: { initialCon
           <p className="text-[10px] text-gray-400 mt-1">Concerne les Vendeurs, Affiliés et Closers.</p>
         </div>
       </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-gray-100">
+        <div>
+          <label className="block text-xs font-bold text-gray-700 mb-2">Conditions de C.A. minimum pour la prime finale (CFA)</label>
+          <div className="relative">
+            <input 
+              type="number" 
+              value={config.ambassador_min_revenue_vendor}
+              onChange={(e) => setConfig({...config, ambassador_min_revenue_vendor: e.target.value})}
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:ring-[#0F7A60] focus:border-[#0F7A60]" 
+            />
+            <CreditCard size={16} className="absolute right-4 top-3.5 text-gray-400" />
+          </div>
+          <p className="text-[10px] text-gray-400 mt-1">Ex: Le filleul doit réaliser au moins 50.000 FCFA pour valider la prime du parrain.</p>
+        </div>
 
+        <div>
+          <label className="block text-xs font-bold text-gray-700 mb-2">Période minimale d'activité (Jours)</label>
+          <div className="relative">
+            <input 
+              type="number" 
+              value={config.ambassador_min_days_active}
+              onChange={(e) => setConfig({...config, ambassador_min_days_active: e.target.value})}
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:ring-[#C9A84C] focus:border-[#C9A84C]" 
+            />
+            <Users size={16} className="absolute right-4 top-3.5 text-gray-400" />
+          </div>
+          <p className="text-[10px] text-gray-400 mt-1">Ex: La boutique du filleul doit être active depuis au moins 30 jours.</p>
+        </div>
+      </div>
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-4 mt-6">
         <ShieldAlert className="text-amber-600 shrink-0 mt-0.5" size={20} />
         <div>

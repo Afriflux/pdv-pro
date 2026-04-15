@@ -20,19 +20,19 @@ export default async function SecurityHubPage() {
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-[#FAFAF7] w-full animate-in fade-in duration-500 pb-0">
       
-      {/* ── HEADER FULL-BLEED (COVER PREMIUM) ── */}
-      <header className="w-full bg-gradient-to-r from-[#4c0519] to-[#881337] pt-10 pb-24 px-6 lg:px-10 relative overflow-hidden shrink-0 shadow-lg">
+      {/* ── HEADER FULL-BLEED (COVER PREMIUM — VERT YAYYAM) ── */}
+      <header className="w-full bg-gradient-to-r from-[#012928] via-[#0A4138] to-[#04332A] pt-10 pb-24 px-6 lg:px-10 relative overflow-hidden shrink-0 shadow-lg">
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-rose-500/20 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-emerald-400/20 rounded-full blur-[100px] pointer-events-none"></div>
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
           <div className="flex items-center gap-5">
-            <div className="p-4 rounded-[1.5rem] bg-white/10 text-rose-300 shadow-2xl backdrop-blur-md ring-4 ring-white/10">
+            <div className="p-4 rounded-[1.5rem] bg-white/10 text-emerald-300 shadow-2xl backdrop-blur-md ring-4 ring-white/10">
               <Lock className="w-6 h-6" />
             </div>
             <div className="pb-1">
               <h1 className="text-3xl font-black text-white tracking-tight">Sécurité & Audit</h1>
-              <p className="text-rose-100/90 font-medium text-sm mt-1 max-w-xl">
+              <p className="text-emerald-100/90 font-medium text-sm mt-1 max-w-xl">
                 Supervisez la sécurité de bout en bout et tracez les actions globales effectuées sur le système.
               </p>
             </div>

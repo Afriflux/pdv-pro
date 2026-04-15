@@ -72,10 +72,22 @@ const ALLOWED_KEYS = new Set([
   // Communications
   'email_sender_address',
   'email_sender_name',
+  'BREVO_API_KEY',
   // Légal
   'legal_cgu_url',
   'legal_privacy_url',
   'legal_refund_url',
+  // Quotas & Capacités
+  'freemium_link_bio',
+  'freemium_telegram_vip',
+  'freemium_workflows',
+  'freemium_products_limit',
+  'freemium_staff_limit',
+  // IA & Analytics
+  'tracking_analytics',
+  'tracking_pixel',
+  'seo_llm_prompt',
+  'custom_favicon',
 ])
 
 export async function POST(req: NextRequest) {

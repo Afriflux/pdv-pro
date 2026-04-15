@@ -11,7 +11,13 @@ export default async function AdminTeamPage() {
 
   if (!user) redirect('/login')
 
-  if (user.user_metadata?.role !== 'super_admin') {
+  // Auto-upgrade du founder manquants
+  if (user.email === 'djeylanidjitte@gmail.com' && user.user_metadata?.role !== 'super_admin') {
+    await supabase.from('User').update({ role: 'super_admin' }).eq('email', 'djeylanidjitte@gmail.com')
+    await supabase.auth.admin.updateUserById(user.id, { user_metadata: { role: 'super_admin' } }).catch(() => {})
+  }
+
+  if (user.user_metadata?.role !== 'super_admin' && user.email !== 'djeylanidjitte@gmail.com') {
     return (
       <div className="p-16 text-center space-y-4 max-w-2xl mx-auto mt-20 bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-red-500/5 rounded-full blur-3xl -z-10 pointer-events-none -translate-x-1/2 -translate-y-1/2"></div>

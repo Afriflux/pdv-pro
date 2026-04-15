@@ -29,7 +29,9 @@ export default async function LoyaltyPage() {
     'ambassador_reward_client',
     'ambassador_reward_pro',
     'ambassador_require_purchase',
-    'ambassador_active'
+    'ambassador_active',
+    'ambassador_min_revenue_vendor',
+    'ambassador_min_days_active'
   ])
 
   const getConfig = (key: string, def: string) => configs?.find(c => c.key === key)?.value || def
@@ -39,6 +41,8 @@ export default async function LoyaltyPage() {
     ambassador_reward_pro: getConfig('ambassador_reward_pro', '1000'),
     ambassador_require_purchase: getConfig('ambassador_require_purchase', 'true'),
     ambassador_active: getConfig('ambassador_active', 'false'),
+    ambassador_min_revenue_vendor: getConfig('ambassador_min_revenue_vendor', '50000'),
+    ambassador_min_days_active: getConfig('ambassador_min_days_active', '30'),
   }
 
   // Calculate top buyers

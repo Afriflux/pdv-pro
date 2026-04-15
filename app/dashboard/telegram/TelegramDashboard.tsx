@@ -110,6 +110,13 @@ export default function TelegramDashboard({
     setWelcomeMessages(messages)
   }, [communities])
 
+  const injectVariable = (communityId: string, variable: string) => {
+    setWelcomeMessages(prev => {
+      const current = prev[communityId] || ''
+      return { ...prev, [communityId]: current + (current.endsWith(' ') || current === '' ? '' : ' ') + variable }
+    })
+  }
+
   // État pour le Flow de Connexion
   const [step, setStep] = useState<ConnectStep>('idle')
   const [code, setCode] = useState<string | null>(null)
@@ -362,30 +369,31 @@ export default function TelegramDashboard({
         </div>
       </div>
 
-      {/* ─── TABS LAYOUT (Sidebar & Contenu) ─── */}
-      <div className="flex flex-col md:flex-row gap-8 items-start mt-8">
+      {/* ─── TABS LAYOUT (Horizontal & Contenu) ─── */}
+      <div className="flex flex-col gap-8 items-start mt-8">
         
-        {/* Barre Latérale des Onglets */}
-        <div className="w-full md:w-64 shrink-0 bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col gap-2 relative z-10 md:sticky md:top-8">
-          <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2 mb-2">Modules</h3>
-          <button
-            onClick={() => setActiveTab('alerts')}
-            className={`w-full text-left px-4 py-3.5 rounded-xl text-[14px] font-bold transition-all flex items-center gap-3 ${
-              activeTab === 'alerts' ? 'bg-[#0F7A60] text-white shadow-md' : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
-            }`}
-          >
-            <BellRing size={18} />
-            Alertes & Bot
-          </button>
-          <button
-            onClick={() => setActiveTab('monetization')}
-            className={`w-full text-left px-4 py-3.5 rounded-xl text-[14px] font-bold transition-all flex items-center gap-3 ${
-              activeTab === 'monetization' ? 'bg-[#0F7A60] text-white shadow-md' : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
-            }`}
-          >
-            <Users size={18} />
-            Membres VIP
-          </button>
+        {/* Barre Horizontale des Onglets */}
+        <div className="w-full overflow-x-auto scrollbar-hide">
+          <div className="bg-white/60 backdrop-blur-md rounded-2xl p-2 shadow-sm border border-slate-100 flex flex-row items-center justify-start gap-2 relative z-10 w-max md:w-fit">
+            <button
+              onClick={() => setActiveTab('alerts')}
+              className={`text-center px-8 py-3 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2 shrink-0 ${
+                activeTab === 'alerts' ? 'bg-[#0F7A60] text-white shadow-md' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              }`}
+            >
+              <BellRing size={18} />
+              Alertes & Bot
+            </button>
+            <button
+              onClick={() => setActiveTab('monetization')}
+              className={`text-center px-8 py-3 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2 shrink-0 ${
+                activeTab === 'monetization' ? 'bg-[#0F7A60] text-white shadow-md' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
+              }`}
+            >
+              <Users size={18} />
+              Membres VIP
+            </button>
+          </div>
         </div>
 
         {/* Contenu Actif */}
@@ -618,6 +626,37 @@ export default function TelegramDashboard({
             </div>
           )}
 
+          {/* VUE D'ENSEMBLE DES LIAISONS ACTIVES */}
+          {communities.filter(c => c.product_id).length > 0 && (
+            <div className="bg-emerald-50/50 rounded-3xl border border-emerald-100 p-6 mb-8 mt-4 shadow-sm">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-2 bg-emerald-100 text-emerald-600 rounded-xl">
+                  <LinkIcon size={20} />
+                </div>
+                <h2 className="font-black text-xl text-emerald-900 tracking-tight">Vue d'ensemble des liaisons actives</h2>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {communities.filter(c => c.product_id).map(c => {
+                  const linkedProduct = products.find(p => p.id === c.product_id)
+                  return (
+                    <div key={c.id} className="bg-white p-4 rounded-2xl border border-emerald-50 shadow-sm flex items-center gap-4 hover:border-emerald-200 transition-colors">
+                      <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
+                        <MessageSquare size={18} className="text-slate-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-slate-400 truncate uppercase tracking-widest">{c.chat_title}</p>
+                        <p className="text-sm font-black text-emerald-700 truncate mt-1">{linkedProduct ? linkedProduct.name : 'Ce produit n\'existe plus'}</p>
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <CheckCircle2 size={16} />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           {/* LISTE DES MESSAGES/GROUPES EXISTANTS */}
           {communities.length > 0 ? (
             <div className="space-y-5">
@@ -712,6 +751,14 @@ export default function TelegramDashboard({
                         <span className="font-bold text-[13px] text-gray-700">Message de bienvenue personnalisé</span>
                       </div>
                       <p className="text-xs text-gray-500 font-medium mb-3">Ce message sera envoyé en privé par le Bot à chaque nouveau membre rejoignant ce groupe.</p>
+                      
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <span className="text-xs text-gray-400 font-bold uppercase tracking-wider mr-1">Raccourcis :</span>
+                        <button type="button" onClick={() => injectVariable(c.id, '{first_name}')} className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1.5 rounded-lg hover:bg-emerald-100 transition-colors">+ Prénom Client</button>
+                        <button type="button" onClick={() => injectVariable(c.id, '{last_name}')} className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1.5 rounded-lg hover:bg-emerald-100 transition-colors">+ Nom Client</button>
+                        <button type="button" onClick={() => injectVariable(c.id, '{group_name}')} className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1.5 rounded-lg hover:bg-emerald-100 transition-colors">+ Nom du Groupe</button>
+                      </div>
+
                       <div className="relative group/textarea">
                         <textarea
                           title="Message de bienvenue"
@@ -860,7 +907,7 @@ export default function TelegramDashboard({
         </div>
 
         {/* ─── DROITE : HISTORIQUE & AIDE ─── */}
-        <div className="space-y-6 lg:sticky lg:top-8">
+        <div className="space-y-6 lg:sticky lg:top-8 w-full md:w-80 shrink-0">
           
           {/* Historique "Wallet-like" */}
           <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">

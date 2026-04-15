@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateOrderStatus } from '@/app/actions/orders'
-import { Check, Package, Truck, Home, CreditCard, X, Loader2, Receipt, type LucideIcon } from 'lucide-react'
+import { Check, Package, Truck, Home, CreditCard, X, Loader2, Receipt, KeyRound, type LucideIcon } from 'lucide-react'
+import { verifyDeliveryOTP } from '@/app/actions/delivery-otp'
 
 const STATUS_ACTIONS: Record<string, { label: string; color: string; icon: LucideIcon }> = {
   confirmed:     { label: 'Confirmer la commande',  color: 'bg-emerald hover:bg-emerald-rich text-white', icon: Check },
@@ -27,8 +28,15 @@ export function OrderActions({ orderId, currentStatus, availableTransitions, isC
   const [loading, setLoading]         = useState<string | null>(null)
   const [error, setError]             = useState<string | null>(null)
   const [showCancel, setShowCancel]   = useState(false)
+  const [showOtp, setShowOtp]         = useState(false)
+  const [otpInput, setOtpInput]       = useState('')
 
   const handleUpdateStatus = async (newStatus: string) => {
+    if (newStatus === 'delivered' && isCod) {
+      setShowOtp(true)
+      return
+    }
+
     setLoading(newStatus)
     setError(null)
 
@@ -37,6 +45,28 @@ export function OrderActions({ orderId, currentStatus, availableTransitions, isC
       if (!res.success) {
         setError('Erreur lors de la mise à jour.')
       } else {
+        router.refresh()
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Erreur inattendue')
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handleVerifyOtp = async () => {
+    if (!otpInput.trim() || otpInput.trim().length !== 6) {
+      setError("Veuillez saisir un code OTP valide à 6 chiffres.")
+      return
+    }
+    setLoading('otp')
+    setError(null)
+    try {
+      const res = await verifyDeliveryOTP(orderId, otpInput)
+      if (!res.success) {
+        setError(res.error || 'Erreur lors de la vérification de l\'OTP.')
+      } else {
+        setShowOtp(false)
         router.refresh()
       }
     } catch (err: unknown) {
@@ -110,6 +140,42 @@ export function OrderActions({ orderId, currentStatus, availableTransitions, isC
               </button>
             )
           })}
+        </div>
+      )}
+
+      {/* Saisie OTP pour la livraison COD */}
+      {showOtp && (
+        <div className="border-2 border-emerald-100 rounded-2xl p-5 space-y-4 bg-emerald-50 text-center">
+          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
+            <KeyRound className="text-emerald-600" size={24} />
+          </div>
+          <div>
+            <p className="text-sm text-emerald-800 font-black uppercase">Code de Livraison (OTP)</p>
+            <p className="text-xs text-emerald-600/80 mt-1 font-medium">Saisissez le code à 6 chiffres fourni au client.</p>
+          </div>
+          <input
+            type="text"
+            value={otpInput}
+            onChange={(e) => setOtpInput(e.target.value)}
+            placeholder="Ex: 123456"
+            className="w-full text-center tracking-widest font-black text-xl bg-white border border-emerald-200 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            maxLength={6}
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={() => { setShowOtp(false); setError(null); }}
+              className="flex-1 bg-white border border-emerald-200 text-emerald-700 py-3 rounded-xl text-xs font-bold hover:bg-emerald-100 transition"
+            >
+              Annuler
+            </button>
+            <button
+              onClick={handleVerifyOtp}
+              disabled={loading === 'otp' || otpInput.length !== 6}
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs transition shadow-md disabled:opacity-50"
+            >
+              {loading === 'otp' ? 'Vérification...' : 'Valider'}
+            </button>
+          </div>
         </div>
       )}
 

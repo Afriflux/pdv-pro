@@ -69,6 +69,7 @@ model User {
   payoutMethods                     PayoutMethod[]
   payoutRequests                    PayoutRequest[]
   lessonProgresses                  UserLessonProgress[]
+  assignedTickets                   HelpdeskTicket[]      @relation("HelpdeskAdmin")
 
   @@schema("public")
 }
@@ -366,6 +367,8 @@ model Order {
   bump_product_id          String?
   bump_variant_id          String?
   affiliate_subid          String?
+  delivery_otp             String?
+  delivery_otp_created_at  DateTime?
   booking                  Booking?
   closing                  ClosingRequest?
   digitalAccess            DigitalAccess[]
@@ -1994,9 +1997,11 @@ model HelpdeskTicket {
   subject        String
   message        String
   status         String   @default("OPEN")
+  assigned_admin_id String?
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
   store          Store    @relation(fields: [store_id], references: [id], onDelete: Cascade)
+  Admin          User?    @relation("HelpdeskAdmin", fields: [assigned_admin_id], references: [id])
 
   @@index([store_id])
   @@schema("public")

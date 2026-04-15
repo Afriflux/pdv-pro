@@ -151,74 +151,79 @@ export default function ComplaintsClient({ complaints, isDemoMode = false }: Com
   }
 
   return (
-    <div className="flex flex-col lg:flex-row items-start animate-in fade-in slide-in-from-bottom-2 duration-500 w-full">
-      {/* ── COLONNE GAUCHE : ONGLETS LATÉRAUX ── */}
-      <aside className="w-full lg:w-[300px] flex-shrink-0 sticky top-[64px] z-10 lg:h-[calc(100vh-64px)] overflow-y-auto bg-white/80 backdrop-blur-3xl border-r border-gray-200 p-5 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col gap-6">
-        <div>
-          <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">Filtrer par Statut</h2>
+    <div className="flex flex-col gap-6 w-full relative z-20 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      {/* ── TABLE & FILTERS LAYOUT ── */}
+      
+      {/* ── NAVIGATION (Top Tabs) ── */}
+      <div className="w-full relative z-20">
+        <div className="w-full bg-white/80 backdrop-blur-3xl border border-gray-200 rounded-[2rem] lg:rounded-3xl p-3 lg:p-5 shadow-sm flex flex-col md:flex-row gap-6">
           
-          <nav className="flex flex-col gap-1.5">
-          {FILTERS.map(f => {
-            const Icon = ICONS[f.id]
-            const isSelected = statusFilter === f.id
-            
-            let activeStyle = 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20'
-            
-            if (f.id === 'pending') {
-              activeStyle = 'bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20'
-            }
-            else if (f.id === 'investigating') {
-              activeStyle = 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20'
-            }
-            else if (f.id === 'dismissed') {
-              activeStyle = 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-md shadow-red-500/20'
-            }
+          {/* Filtre par statut */}
+          <div className="flex flex-col md:flex-row md:items-center gap-3 overflow-hidden w-full max-w-2xl">
+            <h2 className="text-xs font-black uppercase text-gray-400 tracking-widest pl-2 shrink-0 hidden md:block">Statut</h2>
+            <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible">
+              <nav className="flex flex-row gap-2 w-full min-w-max lg:min-w-0 p-1">
+                {FILTERS.map(f => {
+                  const Icon = ICONS[f.id]
+                  const isSelected = statusFilter === f.id
+                  
+                  let activeStyle = 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20'
+                  if (f.id === 'pending') activeStyle = 'bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20'
+                  else if (f.id === 'investigating') activeStyle = 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20'
+                  else if (f.id === 'dismissed') activeStyle = 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-md shadow-red-500/20'
 
-            return (
-              <button
-                key={f.id}
-                onClick={() => setStatusFilter(f.id)}
-                className={`flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${isSelected ? activeStyle : 'bg-transparent text-gray-500 hover:bg-white hover:text-gray-900 border border-transparent'}`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white' : 'bg-gray-300'}`} />
-                  <Icon className="w-4 h-4" /> 
-                  <span>{f.label}</span>
-                </div>
-              </button>
-            )
-          })}
-          </nav>
+                  return (
+                    <button
+                      key={f.id}
+                      onClick={() => setStatusFilter(f.id)}
+                      className={`flex items-center justify-between px-4 py-2.5 rounded-[1.5rem] text-sm font-bold transition-all duration-300 shrink-0 ${isSelected ? activeStyle : 'bg-transparent text-gray-500 hover:bg-slate-50 hover:text-gray-900 border border-transparent hover:shadow-sm'}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-white' : 'bg-gray-300'}`} />
+                        <Icon className="w-4 h-4 hidden sm:block" /> 
+                        <span className="whitespace-nowrap">{f.label}</span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </nav>
+            </div>
+          </div>
+
+          <div className="hidden md:block w-px h-auto bg-gray-200 shrink-0"></div>
+
+          {/* Filtre par période */}
+          <div className="flex flex-col md:flex-row md:items-center gap-3 overflow-hidden w-full max-w-sm">
+            <h2 className="text-xs font-black uppercase text-gray-400 tracking-widest pl-2 shrink-0 hidden md:block">Période</h2>
+            <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible">
+              <nav className="flex flex-row gap-2 w-full min-w-max lg:min-w-0 p-1">
+                {[
+                  { id: 'all', label: 'Toutes les dates' },
+                  { id: '7days', label: '7 derniers jours' },
+                  { id: '30days', label: '30 derniers jours' }
+                ].map(df => {
+                  const isSelected = dateFilter === df.id
+                  return (
+                    <button
+                      key={df.id}
+                      onClick={() => setDateFilter(df.id as DateFilter)}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-[1.5rem] text-sm font-bold transition-all duration-300 shrink-0 ${isSelected ? 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20' : 'bg-transparent text-gray-500 hover:bg-slate-50 hover:text-gray-900 border border-transparent hover:shadow-sm'}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-white' : 'bg-gray-300'}`} />
+                        <span className="whitespace-nowrap">{df.label}</span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </nav>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div>
-          <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4 mt-2">Période</h2>
-          <nav className="flex flex-col gap-1.5">
-          {[
-            { id: 'all', label: 'Toutes les dates' },
-            { id: '7days', label: '7 derniers jours' },
-            { id: '30days', label: '30 derniers jours' }
-          ].map(df => {
-            const isSelected = dateFilter === df.id
-            return (
-            <button
-              key={df.id}
-              onClick={() => setDateFilter(df.id as DateFilter)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${isSelected ? 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-gray-900 border border-transparent'}`}
-            >
-              <div className="flex items-center gap-3">
-                <span className={`w-2.5 h-2.5 rounded-full ${isSelected ? 'bg-white' : 'bg-gray-300'}`} />
-                <span>{df.label}</span>
-              </div>
-            </button>
-            )
-          })}
-          </nav>
-        </div>
-      </aside>
-
-      {/* ── COLONNE DROITE : CONTENU ── */}
-      <div className="flex-1 w-full space-y-6 p-4 md:p-6 lg:p-8">
+      {/* ── CONTENU ── */}
+      <div className="flex-1 w-full min-w-0 flex flex-col gap-6">
         
         {isDemoMode && (
           <div className="bg-amber-50 border border-amber-200 text-amber-800 px-5 py-4 rounded-3xl flex items-center gap-4 shadow-sm animate-in fade-in">

@@ -94,75 +94,68 @@ export default function IntegrationsClient({ configMap, statsMap, configuredCoun
         </div>
       </header>
 
-      {/* ── SPLIT VIEW (Sidebar Secondaire & Content) ── */}
-      <div className="flex flex-col lg:flex-row items-start gap-6 w-full relative z-20 px-6 lg:px-10 -mt-16 pb-20 max-w-[1900px] mx-auto">
+      {/* ── UNIFIED VIEW (Horizontal Nav & Content) ── */}
+      <div className="flex flex-col gap-8 w-full relative z-20 px-6 lg:px-10 -mt-8 pb-20 max-w-[1900px] mx-auto">
         
-        {/* -- SECONDAIRE SIDEBAR -- */}
-        <aside className="w-full lg:w-[280px] flex-shrink-0 sticky top-[100px] z-10 bg-white border border-gray-100 p-5 rounded-3xl shadow-xl shadow-black-[0.02] flex flex-col gap-6 animate-in slide-in-from-bottom-2 duration-300">
-          <div>
-            <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">
-              <Filter size={14} /> Intégrations & API
-            </h2>
-            
-            {/* BARRE DE RECHERCHE */}
-            <div className="mb-4 relative w-full">
-               {/* Honeypots cachés pour piéger Chrome Autofill */}
-               <input type="text" name="username_fake" className="hidden" aria-hidden="true" autoComplete="username" />
-               <input type="password" name="password_fake" className="hidden" aria-hidden="true" autoComplete="current-password" />
-               
-               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-               <input 
-                 type="search" 
-                 name="integration_safe_search_val"
-                 id="integration_safe_search_val"
-                 placeholder="Rechercher un service..." 
-                 value={searchQuery}
-                 onChange={(e) => setSearchQuery(e.target.value)}
-                 autoComplete="new-password"
-                 autoCorrect="off"
-                 spellCheck="false"
-                 data-lpignore="true"
-                 data-1p-ignore="true"
-                 className="w-full bg-gray-50 border border-gray-200 focus:border-[#0D5C4A] focus:ring-1 focus:ring-[#0D5C4A]/20 transition-all rounded-xl py-2.5 pl-10 pr-4 text-[13px] font-medium text-gray-700 outline-none shadow-inner"
-               />
-            </div>
-
-            <nav className="flex flex-col gap-1.5 overflow-y-auto max-h-[60vh] pr-1">
-              {filteredGroups.map(group => {
-                const isActive = activeTab === group.category
-                const health = getGroupHealth(group.category)
-                
-                return (
-                  <button
-                    key={group.category}
-                    onClick={() => setActiveTab(group.category)}
-                    className={`w-full text-left px-4 py-3 rounded-2xl text-[13px] font-black transition-all border flex items-center justify-between ${
-                      isActive
-                        ? 'bg-[#0F7A60] text-white shadow-md shadow-[#0F7A60]/20'
-                        : 'bg-transparent text-gray-500 hover:bg-emerald-50 hover:text-gray-900 border-transparent hover:border-emerald-100'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 truncate pr-2">
-                      <div className={`w-2.5 h-2.5 rounded-full shrink-0 shadow-sm ${
-                        isActive && health === 'healthy' ? 'bg-white' :
-                        isActive && health === 'warning' ? 'bg-amber-300' :
-                        health === 'healthy' ? 'bg-emerald-400' : 
-                        health === 'warning' ? 'bg-amber-400' : 'bg-gray-300'
-                      }`}></div>
-                      <span className="truncate">{group.category}</span>
-                    </div>
-                  </button>
-                )
-              })}
+        {/* -- HORIZONTAL FILTERS & SEARCH -- */}
+        <div className="w-full bg-white/80 backdrop-blur-md border border-slate-200/50 p-3 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col lg:flex-row gap-4 items-center justify-between animate-in slide-in-from-bottom-2 duration-300 z-10">
+          
+          <nav className="flex flex-row gap-2 overflow-x-auto hide-scrollbar w-full lg:w-auto p-1">
+            {filteredGroups.map(group => {
+              const isActive = activeTab === group.category
+              const health = getGroupHealth(group.category)
               
-              {filteredGroups.length === 0 && (
-                <div className="text-center py-8 text-gray-400 text-sm font-medium">
-                  Aucun service trouvé.
-                </div>
-              )}
-            </nav>
+              return (
+                <button
+                  key={group.category}
+                  onClick={() => setActiveTab(group.category)}
+                  className={`shrink-0 px-5 py-2.5 rounded-xl text-[14px] font-bold transition-all flex items-center gap-2.5 ${
+                    isActive
+                      ? 'bg-emerald-900 text-white shadow-sm ring-1 ring-emerald-900'
+                      : 'text-slate-500 hover:bg-slate-100/50 hover:text-slate-800'
+                  }`}
+                >
+                  <div className={`w-2 h-2 rounded-full shadow-sm ${
+                    isActive && health === 'healthy' ? 'bg-emerald-400' :
+                    isActive && health === 'warning' ? 'bg-amber-300' :
+                    health === 'healthy' ? 'bg-emerald-500' : 
+                    health === 'warning' ? 'bg-amber-500' : 'bg-gray-300'
+                  }`}></div>
+                  <span className="whitespace-nowrap">{group.category}</span>
+                </button>
+              )
+            })}
+            
+            {filteredGroups.length === 0 && (
+              <div className="text-center py-2 px-4 text-gray-400 text-sm font-medium">
+                Aucun service trouvé.
+              </div>
+            )}
+          </nav>
+
+          {/* BARRE DE RECHERCHE */}
+          <div className="relative w-full lg:w-80 shrink-0">
+             {/* Honeypots cachés pour piéger Chrome Autofill */}
+             <input type="text" name="username_fake" className="hidden" aria-hidden="true" autoComplete="username" />
+             <input type="password" name="password_fake" className="hidden" aria-hidden="true" autoComplete="current-password" />
+             
+             <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+             <input 
+               type="search" 
+               name="integration_safe_search_val"
+               id="integration_safe_search_val"
+               placeholder="Rechercher un service..." 
+               value={searchQuery}
+               onChange={(e) => setSearchQuery(e.target.value)}
+               autoComplete="new-password"
+               autoCorrect="off"
+               spellCheck="false"
+               data-lpignore="true"
+               data-1p-ignore="true"
+               className="w-full bg-slate-50 border border-slate-200/50 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all rounded-xl py-2.5 pl-11 pr-4 text-[14px] font-medium text-slate-800 outline-none shadow-inner"
+             />
           </div>
-        </aside>
+        </div>
 
         {/* -- ZONE PRINCIPALE (Data Area) -- */}
         <main className="flex-1 min-w-0 w-full animate-in slide-in-from-bottom-2 duration-300 delay-75">

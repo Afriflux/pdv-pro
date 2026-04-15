@@ -27,6 +27,7 @@ export default function MarketplaceControls({
     const res = await updateResourceMonetizationAction(type, id, is_premium, price)
     
     if (res.success) {
+      toast.success('Ressource mise à jour avec succès')
       if (type === 'template') {
         setTemplates(templates.map(t => t.id === id ? { ...t, is_premium, price } : t))
       } else if (type === 'workflow') {
@@ -69,7 +70,7 @@ export default function MarketplaceControls({
                       onClick={() => handleUpdate(type, item.id, !item.is_premium, item.price || 0)}
                       aria-label="Basculer Modèle Freemium"
                       role="switch"
-                      aria-checked={item.is_premium ? 'true' : 'false'}
+                      aria-checked={!!item.is_premium}
                       className={`relative w-12 h-6 rounded-full transition-colors ${item.is_premium ? 'bg-amber-500' : 'bg-line'}`}
                     >
                       <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all shadow-sm ${item.is_premium ? 'left-7' : 'left-1'}`} />

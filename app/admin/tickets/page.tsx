@@ -2,8 +2,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import Link from 'next/link'
 import {
   MessageSquare, Clock, CheckCircle2, AlertCircle, XCircle,
-  Search, Filter, LucideIcon
+  Search, Filter, LucideIcon, UserPlus
 } from 'lucide-react'
+import TicketActions from './TicketActions'
 
 interface PageProps {
   searchParams: Promise<{
@@ -30,10 +31,10 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
   const pageSize     = 20
   const offset       = (currentPage - 1) * pageSize
 
-  // Query tickets
+  // Query tickets with assigned admin
   let ticketQuery = supabase
     .from('HelpdeskTicket')
-    .select('id, store_id, customer_name, customer_email, customer_phone, subject, message, status, created_at, updated_at', { count: 'exact' })
+    .select('id, store_id, customer_name, customer_email, customer_phone, subject, message, status, assigned_admin_id, created_at, updated_at', { count: 'exact' })
 
   if (query) {
     ticketQuery = ticketQuery.or(`customer_name.ilike.%${query}%,subject.ilike.%${query}%,customer_email.ilike.%${query}%`)
@@ -71,6 +72,25 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
     }
   }
 
+  // Get all admins for assignment dropdown
+  const { data: adminsData } = await supabase
+    .from('User')
+    .select('id, name, role')
+    .in('role', ['admin', 'super_admin'])
+    .order('name')
+  
+  const admins = (adminsData ?? []) as { id: string; name: string; role: string }[]
+
+  // Get assigned admin names for tickets
+  const assignedIds = Array.from(new Set((tickets ?? []).map((t: any) => t.assigned_admin_id).filter(Boolean))) // eslint-disable-line @typescript-eslint/no-explicit-any
+  const adminNameMap: Record<string, string> = {}
+  if (assignedIds.length > 0) {
+    const { data: assignedAdmins } = await supabase.from('User').select('id, name').in('id', assignedIds)
+    for (const a of (assignedAdmins ?? []) as any[]) { // eslint-disable-line @typescript-eslint/no-explicit-any
+      adminNameMap[a.id] = a.name
+    }
+  }
+
   const totalPages = Math.ceil((count ?? 0) / pageSize)
 
   return (
@@ -89,7 +109,7 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
             <div>
               <h1 className="text-3xl font-black text-white tracking-tight">Support & Tickets</h1>
               <p className="text-emerald-100/90 font-medium text-sm mt-1">
-                Centre de gestion des demandes de support client.
+                Centre de gestion des demandes de support client. Assignez et escaladez les tickets.
               </p>
             </div>
           </div>
@@ -126,49 +146,55 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
         </div>
       </header>
 
-      <div className="flex flex-col lg:flex-row items-start gap-6 w-full relative z-20 px-6 lg:px-10 -mt-16 pb-20">
+      {/* ── TABLE & FILTERS LAYOUT ── */}
+      <div className="flex flex-col gap-6 w-full relative z-20 px-6 lg:px-10 -mt-8 pb-20 items-start">
         
-        {/* Sidebar Filtres */}
-        <aside className="w-full lg:w-[250px] flex-shrink-0 sticky top-[100px] z-10 bg-white border border-gray-100 p-5 rounded-3xl shadow-xl flex flex-col gap-4">
-          <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2">
-            <Filter size={14} /> Statut
-          </h2>
-          <nav className="flex flex-col gap-1.5">
-            {[
-              { value: 'all',          label: 'Tous',       icon: '📋' },
-              { value: 'OPEN',         label: 'Ouverts',    icon: '🔴' },
-              { value: 'IN_PROGRESS',  label: 'En cours',   icon: '🟡' },
-              { value: 'RESOLVED',     label: 'Résolus',    icon: '🟢' },
-              { value: 'CLOSED',       label: 'Fermés',     icon: '⚫' },
-            ].map(filter => (
-              <Link
-                key={filter.value}
-                href={`/admin/tickets?status=${filter.value}&q=${query}`}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
-                  statusFilter === filter.value
-                    ? 'bg-[#0A4138] text-white shadow-md shadow-emerald-900/20'
-                    : 'text-gray-500 hover:bg-emerald-50 hover:text-gray-900'
-                }`}
-              >
-                <span>{filter.icon}</span>
-                <span>{filter.label}</span>
-              </Link>
-            ))}
-          </nav>
+        {/* ── NAVIGATION (Top Tabs) ── */}
+        <div className="w-full relative z-20">
+          <div className="w-full bg-white border border-gray-100 p-2 lg:p-4 rounded-[2rem] lg:rounded-3xl shadow-xl flex flex-col md:flex-row gap-4 items-center justify-between z-10">
+            <div className="flex items-center gap-4 w-full md:w-auto overflow-hidden">
+              <h2 className="text-xs font-black uppercase text-gray-400 tracking-widest pl-2 hidden md:flex items-center gap-2 shrink-0">
+                <Filter size={14} /> Filtres
+              </h2>
+              <div className="overflow-x-auto scrollbar-hide lg:overflow-visible w-full">
+                <nav className="flex flex-row gap-2 w-full min-w-max lg:min-w-0 p-1">
+                  {[
+                    { value: 'all',          label: 'Tous',       icon: '📋' },
+                    { value: 'OPEN',         label: 'Ouverts',    icon: '🔴' },
+                    { value: 'IN_PROGRESS',  label: 'En cours',   icon: '🟡' },
+                    { value: 'RESOLVED',     label: 'Résolus',    icon: '🟢' },
+                    { value: 'CLOSED',       label: 'Fermés',     icon: '⚫' },
+                  ].map(filter => (
+                    <Link
+                      key={filter.value}
+                      href={`/admin/tickets?status=${filter.value}&q=${query}`}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-bold transition-all shrink-0 ${
+                        statusFilter === filter.value
+                          ? 'bg-[#0A4138] text-white shadow-md shadow-emerald-900/20'
+                          : 'bg-white text-gray-500 hover:bg-emerald-50 hover:text-gray-900 border border-gray-100 hover:border-emerald-100'
+                      }`}
+                    >
+                      <span>{filter.icon}</span>
+                      <span className="whitespace-nowrap">{filter.label}</span>
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+            </div>
 
-          <div className="border-t border-gray-100 pt-4 mt-2">
-            <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Bientôt</p>
-            <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 text-center">
-              <MessageSquare size={20} className="text-emerald-500 mx-auto mb-2" />
-              <p className="text-xs font-bold text-emerald-700">Chat en temps réel</p>
-              <p className="text-xs text-emerald-500 mt-1">Discussion style WhatsApp intégrée</p>
+            <div className="hidden xl:flex items-center gap-3 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-2.5 shrink-0">
+              <UserPlus size={16} className="text-emerald-500" />
+              <div>
+                <p className="text-xs font-bold text-emerald-700">Assignation & Escalade</p>
+                <p className="text-[10px] text-emerald-500 font-medium">Directement depuis la table</p>
+              </div>
             </div>
           </div>
-        </aside>
+        </div>
 
         {/* Table */}
-        <div className="flex-1 min-w-0 w-full">
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        <div className="flex-1 min-w-0 w-full space-y-6">
+          <div className="bg-white rounded-[2rem] lg:rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
             
             <div className="px-6 lg:px-8 py-5 border-b border-gray-100 flex items-center justify-between">
               <h2 className="font-black text-gray-900 flex items-center gap-2">
@@ -185,12 +211,13 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
                     <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Boutique</th>
                     <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest hidden md:table-cell">Statut</th>
                     <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest hidden lg:table-cell">Date</th>
+                    <th className="text-right px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(tickets ?? []).length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="text-center py-20 text-gray-400 font-bold">
+                      <td colSpan={5} className="text-center py-20 text-gray-400 font-bold">
                         <MessageSquare className="mx-auto mb-4 text-gray-200" size={48} />
                         <p className="text-lg font-black text-gray-300 mb-2">Aucun ticket</p>
                         <p className="text-sm">Les tickets de support apparaîtront ici</p>
@@ -220,6 +247,15 @@ export default async function AdminTicketsPage({ searchParams }: PageProps) {
                         </td>
                         <td className="px-4 py-4 hidden lg:table-cell text-xs text-gray-400">
                           {new Date(ticket.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </td>
+                        <td className="px-4 py-4 text-right">
+                          <TicketActions
+                            ticketId={ticket.id}
+                            currentStatus={ticket.status}
+                            assignedAdminId={ticket.assigned_admin_id}
+                            assignedAdminName={ticket.assigned_admin_id ? adminNameMap[ticket.assigned_admin_id] || null : null}
+                            admins={admins}
+                          />
                         </td>
                       </tr>
                     )

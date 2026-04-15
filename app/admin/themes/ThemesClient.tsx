@@ -300,6 +300,11 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
                        )}
                      </td>
                      <td className="px-6 py-4 text-right">
+                       {template.preview_url && (
+                         <a href={template.preview_url} target="_blank" rel="noreferrer" title="Aperçu" className="p-2 mr-1 text-gray-400 hover:text-emerald-600 bg-white hover:bg-emerald-50 rounded-xl transition-colors border border-gray-100 shadow-sm inline-flex items-center justify-center">
+                           <Eye className="w-4 h-4" />
+                         </a>
+                       )}
                        <button aria-label="Modifier" title="Modifier" onClick={() => handleOpenEdit(template)} className="p-2 text-gray-400 hover:text-emerald-600 bg-white hover:bg-emerald-50 rounded-xl transition-colors border border-gray-100 shadow-sm inline-flex items-center justify-center">
                          <Edit2 className="w-4 h-4" />
                        </button>
@@ -353,6 +358,9 @@ export default function ThemesClient({ initialTemplates }: { initialTemplates: R
                        {template.active ? 'Actif' : 'Désactivé'}
                      </button>
                      <div className="flex items-center gap-1">
+                       {template.preview_url && (
+                         <a href={template.preview_url} target="_blank" rel="noreferrer" title="Aperçu" className="p-2.5 text-gray-500 hover:text-emerald-600 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-emerald-200 hover:bg-emerald-50 transition-all"><Eye className="w-4 h-4" /></a>
+                       )}
                        <button onClick={() => handleOpenEdit(template)} title="Modifier" className="p-2.5 text-gray-500 hover:text-blue-600 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-blue-200 hover:bg-blue-50 transition-all"><Edit2 className="w-4 h-4" /></button>
                        <button onClick={() => handleDelete(template.id)} title="Supprimer" className="p-2.5 text-gray-500 hover:text-red-600 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-red-200 hover:bg-red-50 transition-all"><Trash2 className="w-4 h-4" /></button>
                      </div>

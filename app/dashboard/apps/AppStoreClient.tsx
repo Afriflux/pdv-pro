@@ -246,7 +246,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
             </div>
 
             {/* Contenu Droite : Catégories et Grille App */}
-            <div className="flex-1 space-y-6 w-full overflow-hidden">
+            <div className="flex-1 space-y-6 w-full min-w-0">
               {/* Categories Pill Menu */}
               <div className="flex flex-wrap gap-2">
                 {categories.map(cat => (
@@ -264,7 +264,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                 ))}
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
                 {filteredApps.map(app => {
                   const isInstalled = installedAppIds.includes(app.id)
 
@@ -304,13 +304,13 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                       <p className="text-[13px] text-gray-500 leading-relaxed font-medium line-clamp-3">{app.description}</p>
                     </div>
                     
-                    <div className="mt-5 space-y-2 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                    <div className="mt-5 space-y-2 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100 flex-1">
                       {(app.features || []).map((feat: string | Record<string, string>, idx: number) => {
                         const label = typeof feat === 'string' ? feat : (feat?.title || feat?.desc || JSON.stringify(feat));
                         return (
-                        <div key={idx} className="flex items-center gap-2 text-[12px] font-bold text-gray-500">
-                          <CheckCircle2 size={14} className={isInstalled ? 'text-[#0F7A60]' : 'text-gray-300'} />
-                          <span className={isInstalled ? 'text-gray-800' : ''}>{label}</span>
+                        <div key={idx} className="flex items-start gap-2 text-[12px] font-bold text-gray-500">
+                          <CheckCircle2 size={14} className={`mt-0.5 shrink-0 ${isInstalled ? 'text-[#0F7A60]' : 'text-gray-300'}`} />
+                          <span className={`${isInstalled ? 'text-gray-800' : ''} leading-snug`}>{label}</span>
                         </div>
                         );
                       })}
@@ -329,7 +329,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                         ) : isInstalled ? (
                           'Désinstaller'
                         ) : app.isPro ? (
-                          <>Débloquer {app.price ? `(${new Intl.NumberFormat('fr-FR', {style: 'currency', currency: 'XOF', maximumFractionDigits: 0}).format(app.price)})` : ''}</>
+                          <span className="whitespace-nowrap">Débloquer {app.price ? `${(app.price / 1000).toFixed(0)}k` : ''}</span>
                         ) : (
                           'Installer'
                         )}
@@ -337,6 +337,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                       {isInstalled && (() => {
                         // Mapping des apps vers leurs vraies routes
                         const routeMap: Record<string, string> = {
+                          // ... mapping exists, keeping logic intact, wait I can't overwrite this without including it explicitly, so I will copy the previous logic
                           'marketing': '/dashboard/marketing',
                           'workflows': '/dashboard/workflows',
                           'affilies': '/dashboard/affilies',
@@ -357,13 +358,11 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                           'cinetpay': '/dashboard/settings',
                           'paytech': '/dashboard/settings',
                           'intouch': '/dashboard/settings',
-                          // Nouvelles apps
                           'fraud-cod': '/dashboard/settings#anti-fraude',
                           'coach-ia': '/dashboard',
                           'sms-marketing': '/dashboard/marketing/sms',
                           'whatsapp-bot': '/dashboard/settings#whatsapp-bot',
                           'loyalty-points': '/dashboard/settings#loyalty',
-
                         };
                         const configRoute = routeMap[app.id] || `/dashboard/apps/${app.id}`;
                         return (
@@ -383,7 +382,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
       </div>
 
       {/* Simulator Column */}
-      <div className="hidden lg:flex w-[400px] border-l border-gray-200 bg-white flex-col justify-center sticky top-0 h-full p-4 relative overflow-hidden">
+      <div className="hidden xl:flex xl:w-[350px] 2xl:w-[400px] border-l border-gray-200 bg-white flex-col justify-center sticky top-0 h-full p-4 relative overflow-hidden">
         {/* Gradients */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-100 rounded-full blur-[100px] pointer-events-none opacity-50"></div>
 

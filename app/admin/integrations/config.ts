@@ -129,6 +129,33 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
           { key: 'MONEROO_SECRET_KEY', testKey: 'MONEROO_SECRET_KEY_TEST', label: 'Secret Key', type: 'password' as const, placeholder: 'sk_live_...' },
           { key: 'MONEROO_PUBLIC_KEY', testKey: 'MONEROO_PUBLIC_KEY_TEST', label: 'Public Key', type: 'password' as const, placeholder: 'pk_live_...' }
         ]
+      },
+      {
+        id: 'intouch',
+        name: 'Configuration InTouch',
+        description: 'Agrégateur de paiements Mobile Money et Cartes.',
+        icon: '🔗',
+        docsUrl: 'https://intouchapi.com',
+        webhookUrl: '/api/webhooks/intouch',
+        pingType: 'generic' as const,
+        fields: [
+          { key: 'INTOUCH_API_KEY', testKey: 'INTOUCH_API_KEY_TEST', label: 'API Key', type: 'password' },
+          { key: 'INTOUCH_API_SECRET', testKey: 'INTOUCH_API_SECRET_TEST', label: 'API Secret', type: 'password' },
+          { key: 'INTOUCH_MERCHANT_ID', testKey: 'INTOUCH_MERCHANT_ID_TEST', label: 'Merchant ID', type: 'text' }
+        ]
+      },
+      {
+        id: 'orange_money',
+        name: 'Configuration Orange Money API',
+        description: 'Paiements directs via Orange Money Web Payment.',
+        icon: '🟠',
+        docsUrl: 'https://developer.orange.com',
+        webhookUrl: '/api/webhooks/orange_money',
+        pingType: 'orange_money',
+        fields: [
+          { key: 'ORANGE_MONEY_MERCHANT_KEY', testKey: 'ORANGE_MONEY_MERCHANT_KEY_TEST', label: 'Merchant Key', type: 'password' },
+          { key: 'ORANGE_MONEY_AUTHORIZATION_HEADER', testKey: 'ORANGE_MONEY_AUTHORIZATION_HEADER_TEST', label: 'Authorization Header', type: 'password' }
+        ]
       }
     ]
   },

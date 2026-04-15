@@ -193,18 +193,20 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
           </div>
       </header>
 
-      {/* ── SPLIT VIEW (Sidebar & Content side-by-side) ── */}
-      <div className="flex flex-col lg:flex-row items-start gap-8 w-full relative z-20 mx-auto">
+      {/* ── HYBRID VIEW (Sidebar / Horizontal Menu) ── */}
+      <div className="flex flex-col lg:flex-row gap-8 w-full relative z-20 mx-auto">
         
-        {/* ── MENU LATÉRAL ── */}
-        <aside className="w-full lg:w-[280px] flex-shrink-0 sticky top-[80px] z-10 bg-white/80 backdrop-blur-3xl border border-gray-200/60 rounded-[2rem] p-5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col gap-2">
-          <nav className="flex lg:flex-col gap-2 overflow-x-auto custom-scrollbar lg:overflow-visible pb-2 lg:pb-0" aria-label="Menu des paramètres client">
-            <MenuBtn active={activeTab === 'profile'} icon={<User className="w-5 h-5" />} label="Général" onClick={() => { setActiveTab('profile'); setError(''); setSuccess('') }} />
-            <MenuBtn active={activeTab === 'address'} icon={<MapPin className="w-5 h-5" />} label="Carnet d'Adresses" onClick={() => { setActiveTab('address'); setError(''); setSuccess('') }} />
-            <MenuBtn active={activeTab === 'security'} icon={<Lock className="w-5 h-5" />} label="Sécurité" onClick={() => { setActiveTab('security'); setError(''); setSuccess('') }} />
-            <div className="hidden lg:block h-px w-full bg-gray-200/50 my-2"></div>
-            <MenuBtn active={activeTab === 'danger'} icon={<Trash2 className="w-5 h-5" />} label="Suppression" onClick={() => { setActiveTab('danger'); setError(''); setSuccess('') }} isDanger={true} />
-          </nav>
+        {/* ── MENU HYBRIDE ── */}
+        <aside className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start z-20">
+          <div className="w-full relative z-10 overflow-x-auto scrollbar-hide lg:overflow-visible bg-white/80 lg:bg-transparent backdrop-blur-3xl lg:backdrop-blur-none p-3 lg:p-0 border border-gray-200/60 lg:border-none rounded-[2rem] lg:rounded-none shadow-[0_8px_30px_rgb(0,0,0,0.02)] lg:shadow-none">
+            <nav className="flex flex-row lg:flex-col gap-2 min-w-max lg:min-w-0" aria-label="Menu des paramètres client">
+              <MenuBtn active={activeTab === 'profile'} icon={<User size={18} />} label="Général" onClick={() => { setActiveTab('profile'); setError(''); setSuccess('') }} />
+              <MenuBtn active={activeTab === 'address'} icon={<MapPin size={18} />} label="Adresses" onClick={() => { setActiveTab('address'); setError(''); setSuccess('') }} />
+              <MenuBtn active={activeTab === 'security'} icon={<Lock size={18} />} label="Sécurité" onClick={() => { setActiveTab('security'); setError(''); setSuccess('') }} />
+              <div className="w-px h-auto bg-gray-200/50 mx-2 hidden sm:block lg:hidden"></div>
+              <MenuBtn active={activeTab === 'danger'} icon={<Trash2 size={18} />} label="Suppression" onClick={() => { setActiveTab('danger'); setError(''); setSuccess('') }} isDanger={true} />
+            </nav>
+          </div>
         </aside>
 
         {/* ── CONTENU PRINCIPAL ── */}

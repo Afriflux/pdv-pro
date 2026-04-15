@@ -5,9 +5,12 @@ export const metadata = {
   title: 'Notifications Push | Yayyam Admin',
 }
 
+import NotificationsClient from './NotificationsClient'
+
 export default async function NotificationsPage() {
   const supabase = createAdminClient()
 
+  // KPIs
   const [
     { count: totalUsers },
     { count: vendeurCount },
@@ -18,64 +21,14 @@ export default async function NotificationsPage() {
     supabase.from('User').select('id', { count: 'exact', head: true }).eq('role', 'acheteur'),
   ])
 
-  const channels = [
-    {
-      name: 'WhatsApp Business',
-      icon: '💬',
-      status: 'active',
-      statusLabel: 'Actif',
-      statusColor: 'text-emerald-600 bg-emerald-50',
-      description: 'Notifications transactionnelles via Meta WhatsApp Business API',
-      features: ['Confirmation commande', 'Suivi livraison', 'Rappels paiement', 'Support client'],
-    },
-    {
-      name: 'Email (Brevo)',
-      icon: '📧',
-      status: 'active',
-      statusLabel: 'Actif',
-      statusColor: 'text-emerald-600 bg-emerald-50',
-      description: 'Campagnes marketing et newsletters via Brevo (ex-Sendinblue)',
-      features: ['Campaigns email', 'Séquences automatisées', 'Templates personnalisés', 'Analytics'],
-    },
-    {
-      name: 'Telegram Bot',
-      icon: '🤖',
-      status: 'active',
-      statusLabel: 'Actif',
-      statusColor: 'text-emerald-600 bg-emerald-50',
-      description: 'Communauté vendeurs et alertes via Telegram Bot',
-      features: ['Groupe communauté', 'Alertes ventes', 'Vérification auto', 'Broadcast'],
-    },
-    {
-      name: 'Push PWA',
-      icon: '🔔',
-      status: 'planned',
-      statusLabel: 'Planifié',
-      statusColor: 'text-amber-600 bg-amber-50',
-      description: 'Notifications push navigateur via Service Worker (PWA)',
-      features: ['Nouvelle commande', 'Promotion flash', 'Rappel panier abandonné', 'Alertes prix'],
-    },
-    {
-      name: 'SMS',
-      icon: '📱',
-      status: 'planned',
-      statusLabel: 'Phase 2',
-      statusColor: 'text-gray-500 bg-gray-50',
-      description: 'SMS transactionnels pour les zones sans internet stable',
-      features: ['OTP Sécurité', 'Confirmation commande', 'Suivi livraison'],
-    },
-  ]
+  // Get config
+  const { data: configs } = await supabase.from('PlatformConfig').select('key, value')
+  const configMap: Record<string, string> = {}
+  for (const row of (configs || [])) {
+    configMap[row.key] = row.value
+  }
 
-  const automations = [
-    { name: 'Bienvenue Vendeur', trigger: 'Inscription vendeur', channel: 'WhatsApp', delay: 'Immédiat', active: true },
-    { name: 'Panier Abandonné', trigger: 'Checkout non complété', channel: 'WhatsApp', delay: '30 min', active: true },
-    { name: 'Confirmation Commande', trigger: 'Paiement validé', channel: 'WhatsApp + Email', delay: 'Immédiat', active: true },
-    { name: 'Rappel Avis', trigger: 'Commande livrée', channel: 'WhatsApp', delay: '48h', active: true },
-    { name: 'Anti-Churn Vendeur', trigger: '7j sans vente', channel: 'WhatsApp', delay: 'Lundi 10h', active: true },
-    { name: 'Digest Hebdo', trigger: 'Chaque lundi', channel: 'WhatsApp', delay: 'Lundi 8h', active: true },
-    { name: 'Rappel Masterclass', trigger: 'Avant session', channel: 'WhatsApp', delay: '1h avant', active: true },
-    { name: 'Promotion Flash', trigger: 'Manuel admin', channel: 'WhatsApp + Push', delay: 'Manuel', active: false },
-  ]
+  const activeChannelsCount = ['notif_whatsapp_active', 'notif_email_active', 'notif_telegram_active', 'notif_push_active'].filter(k => configMap[k] === 'true').length
 
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-[#FAFAF7] w-full animate-in fade-in duration-500">
@@ -104,7 +57,7 @@ export default async function NotificationsPage() {
             { label: 'Audience totale', value: totalUsers ?? 0, icon: Users },
             { label: 'Vendeurs', value: vendeurCount ?? 0, icon: Smartphone },
             { label: 'Clients', value: acheteurCount ?? 0, icon: Send },
-            { label: 'Canaux actifs', value: channels.filter(c => c.status === 'active').length, icon: CheckCircle },
+            { label: 'Canaux actifs', value: activeChannelsCount, icon: CheckCircle },
           ].map(kpi => (
             <div key={kpi.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col">
               <div className="flex items-center gap-2 mb-2">
@@ -118,82 +71,7 @@ export default async function NotificationsPage() {
       </header>
 
       <div className="px-6 lg:px-10 -mt-16 pb-20 relative z-20 space-y-8">
-        
-        {/* Channels */}
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
-          <h2 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
-            <Zap size={20} className="text-emerald-500" /> Canaux de Communication
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {channels.map(ch => (
-              <div key={ch.name} className="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-all hover:border-emerald-200 group">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{ch.icon}</span>
-                    <h3 className="font-black text-gray-900 text-sm">{ch.name}</h3>
-                  </div>
-                  <span className={`text-xs font-black px-2 py-1 rounded-full ${ch.statusColor}`}>
-                    {ch.statusLabel}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 mb-4">{ch.description}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {ch.features.map(f => (
-                    <span key={f} className="text-xs bg-gray-50 text-gray-500 px-2 py-0.5 rounded-full font-bold border border-gray-100">
-                      {f}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Automations */}
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="px-8 py-5 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="font-black text-gray-900 flex items-center gap-2">
-              <Settings size={20} className="text-emerald-500" /> Automatisations Actives
-            </h2>
-            <span className="text-xs text-gray-400 font-bold">
-              {automations.filter(a => a.active).length}/{automations.length} actives
-            </span>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-[#FAFAF7]">
-                  <th className="text-left px-8 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Automatisation</th>
-                  <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Déclencheur</th>
-                  <th className="text-left px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Canal</th>
-                  <th className="text-center px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Délai</th>
-                  <th className="text-center px-4 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Statut</th>
-                </tr>
-              </thead>
-              <tbody>
-                {automations.map(auto => (
-                  <tr key={auto.name} className="border-b border-gray-50 hover:bg-emerald-50/30 transition-colors">
-                    <td className="px-8 py-4 font-bold text-gray-900">{auto.name}</td>
-                    <td className="px-4 py-4 text-gray-500 text-xs">{auto.trigger}</td>
-                    <td className="px-4 py-4 text-xs font-bold text-gray-600">{auto.channel}</td>
-                    <td className="px-4 py-4 text-center">
-                      <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-                        <Clock size={12} /> {auto.delay}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <span className={`inline-flex items-center gap-1 text-xs font-black px-2 py-1 rounded-full ${
-                        auto.active ? 'text-emerald-700 bg-emerald-50' : 'text-gray-400 bg-gray-50'
-                      }`}>
-                        {auto.active ? '✅ Active' : '⏸️ Inactive'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <NotificationsClient initialConfig={configMap} />
       </div>
     </div>
   )

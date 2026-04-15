@@ -228,59 +228,58 @@ export function RetraitsView({ initialWithdrawals }: RetraitsViewProps) {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row items-start animate-in fade-in slide-in-from-bottom-2 duration-500 w-full">
+    <div className="flex flex-col gap-6 w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
       
-      {/* ── ONGLETS LATÉRAUX (ACCOLÉS À LA SIDEBAR PRINCIPALE) ── */}
-      <aside className="w-full lg:w-[300px] flex-shrink-0 sticky top-[64px] z-10 lg:h-[calc(100vh-64px)] overflow-y-auto bg-white/80 backdrop-blur-3xl border-r border-gray-200 p-5 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col gap-6">
-        <div>
-          <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">
-            <Filter size={14} /> Filtres Rapides
-          </h2>
-          <nav className="flex flex-col gap-1.5">
-            {[
-              { id: 'all', label: 'Toutes les demandes', count: withdrawals.length, activeStyle: 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20' },
-              { id: 'pending', label: 'En attente', count: pendingCount, activeStyle: 'bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20' },
-              { id: 'approved', label: 'Payés', count: approvedCount, activeStyle: 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-md shadow-emerald-500/20' },
-              { id: 'rejected', label: 'Rejetés', count: rejectedCount, activeStyle: 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-md shadow-red-500/20' },
-              { id: 'insufficient_funds', label: 'Fonds insuffisants', count: insufficientCount, activeStyle: 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-md shadow-orange-500/20' },
-            ].map(tab => (
-              <button 
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as 'all' | 'pending' | 'approved' | 'rejected' | 'insufficient_funds')}
-                className={`flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${activeTab === tab.id ? tab.activeStyle : 'bg-transparent text-gray-500 hover:bg-white hover:text-gray-900 border border-transparent'}`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className={`w-2.5 h-2.5 rounded-full ${activeTab === tab.id ? 'bg-white' : 'bg-gray-300'}`} />
-                  <span>{tab.label}</span>
-                </div>
-                {tab.count > 0 && (
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{tab.count}</span>
-                )}
-              </button>
-            ))}
-          </nav>
-        </div>
+      {/* ── NAVIGATION (Top Tabs) ── */}
+      <div className="w-full relative z-20">
+        <div className="w-full bg-white/80 backdrop-blur-3xl border border-gray-200 rounded-[2rem] lg:rounded-3xl p-2 lg:p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 z-10 w-fit">
+          <div className="flex items-center gap-4 w-full md:w-auto overflow-hidden">
+            <h2 className="text-xs items-center gap-2 font-black uppercase text-gray-400 tracking-widest pl-2 shrink-0 hidden md:flex">
+              <Filter size={14} /> Filtres
+            </h2>
+            
+            <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible">
+              <nav className="flex flex-row gap-2 w-full min-w-max lg:min-w-0 p-1">
+                {[
+                  { id: 'all', label: 'Toutes les demandes', count: withdrawals.length, activeStyle: 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20' },
+                  { id: 'pending', label: 'En attente', count: pendingCount, activeStyle: 'bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20' },
+                  { id: 'approved', label: 'Payés', count: approvedCount, activeStyle: 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-md shadow-emerald-500/20' },
+                  { id: 'rejected', label: 'Rejetés', count: rejectedCount, activeStyle: 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-md shadow-red-500/20' },
+                  { id: 'insufficient_funds', label: 'Fonds insuffisants', count: insufficientCount, activeStyle: 'bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-md shadow-orange-500/20' },
+                ].map(tab => (
+                  <button 
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as 'all' | 'pending' | 'approved' | 'rejected' | 'insufficient_funds')}
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-[1.5rem] text-sm font-semibold transition-all duration-300 shrink-0 ${
+                      activeTab === tab.id
+                        ? tab.activeStyle
+                        : 'bg-transparent text-gray-500 hover:bg-slate-50 hover:text-gray-900 border border-transparent'
+                    }`}
+                  >
+                    <span className="whitespace-nowrap">{tab.label}</span>
+                    <span className={`text-xs ml-2 px-2 py-0.5 rounded-full ${activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{tab.count}</span>
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
 
-        {/* Quick Bulk Actions for Sidebar */}
-        {selectedIds.size > 0 && activeTab === 'pending' && (
-          <div className="bg-gradient-to-br from-amber-400 to-amber-600 rounded-3xl p-5 shadow-xl shadow-amber-500/20 animate-in slide-in-from-left text-white mt-4 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-20"><Wallet size={64}/></div>
-            <h3 className="text-xs font-black uppercase tracking-wider mb-1 flex items-center gap-2 relative z-10">Sélection Active</h3>
-            <p className="font-bold text-2xl mb-5 relative z-10">{selectedIds.size}</p>
+          {/* Quick Bulk Actions Header Button */}
+          {selectedIds.size > 0 && activeTab === 'pending' && (
             <button 
               onClick={handleBulkApprove}
               disabled={isProcessingBulk}
-              className="w-full bg-white text-amber-600 hover:bg-gray-50 font-black py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 relative z-10"
+              className="flex-shrink-0 ml-auto bg-gradient-to-br from-amber-400 to-amber-600 text-white font-black px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50"
             >
-              {isProcessingBulk ? <Loader2 className="w-4 h-4 animate-spin text-amber-600" /> : <CheckCircle2 className="w-5 h-5 text-amber-500"/>}
-              Payer le lot
+              {isProcessingBulk ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4"/>}
+              Payer {selectedIds.size}
             </button>
-          </div>
-        )}
-      </aside>
+          )}
+        </div>
+      </div>
 
       {/* ── CONTENU PRINCIPAL ── */}
-      <div className="flex-1 w-full min-w-0 flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+      <div className="flex-1 w-full min-w-0 flex flex-col gap-6">
         
         {/* BARRE DE RECHERCHE ET FILTRES MAX */}
         <div className="flex flex-col xl:flex-row gap-4 xl:items-center justify-between bg-white/70 backdrop-blur-2xl p-4 rounded-3xl border border-white/50 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">

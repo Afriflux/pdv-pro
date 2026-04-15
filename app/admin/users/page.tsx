@@ -161,35 +161,39 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
         </div>
       </header>
 
-      {/* ── CONTENT ── */}
-      <div className="flex flex-col lg:flex-row items-start gap-6 w-full relative z-20 px-6 lg:px-10 -mt-16 pb-20">
+      {/* ── TABLE & FILTERS LAYOUT ── */}
+      <div className="flex flex-col gap-6 w-full relative z-20 px-6 lg:px-10 -mt-8 pb-20 items-start">
         
-        {/* Sidebar Filtres -- horizontal scroll mobile, vertical sidebar desktop */}
-        <aside className="w-full lg:w-[250px] flex-shrink-0 lg:sticky lg:top-[100px] z-10 bg-white border border-gray-100 p-3 lg:p-5 rounded-2xl lg:rounded-3xl shadow-xl flex flex-col gap-3 lg:gap-4">
-          <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2">
-            <Filter size={14} /> Filtres par rôle
-          </h2>
-          <nav className="flex lg:flex-col gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
-            {ROLE_FILTERS.map(filter => (
-              <Link
-                key={filter.value}
-                href={`/admin/users?role=${filter.value}&q=${query}`}
-                className={`flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-xl lg:rounded-2xl text-xs lg:text-sm font-bold transition-all duration-300 whitespace-nowrap shrink-0 ${
-                  roleFilter === filter.value
-                  ? 'bg-[#0A4138] text-white shadow-md shadow-emerald-900/20'
-                    : 'text-gray-500 hover:bg-emerald-50 hover:text-gray-900 border border-gray-100 lg:border-transparent'
-                }`}
-              >
-                <span className="text-sm lg:text-base">{filter.icon}</span>
-                <span>{filter.label}</span>
-              </Link>
-            ))}
-          </nav>
-        </aside>
+        {/* ── NAVIGATION (Top Tabs) ── */}
+        <div className="w-full relative z-20">
+          <div className="w-full bg-white border border-gray-100 p-2 lg:p-4 rounded-[2rem] lg:rounded-3xl shadow-xl flex flex-col md:flex-row gap-4 items-center justify-start z-10 w-fit">
+            <h2 className="text-xs items-center gap-2 font-black uppercase text-gray-400 tracking-widest pl-2 pr-2 shrink-0 hidden md:flex">
+              <Filter size={14} /> Filtres
+            </h2>
+            <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible">
+              <nav className="flex flex-row gap-2 p-1 min-w-max lg:min-w-0">
+                {ROLE_FILTERS.map(filter => (
+                <Link
+                  key={filter.value}
+                  href={`/admin/users?role=${filter.value}&q=${query}`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-[1.5rem] text-sm font-bold transition-all duration-300 whitespace-nowrap shrink-0 ${
+                    roleFilter === filter.value
+                    ? 'bg-[#0A4138] text-white shadow-md shadow-emerald-900/20'
+                      : 'bg-transparent text-gray-500 hover:bg-emerald-50 hover:text-gray-900 border border-transparent'
+                  }`}
+                >
+                  <span className="text-sm">{filter.icon}</span>
+                  <span>{filter.label}</span>
+                </Link>
+              ))}
+            </nav>
+            </div>
+          </div>
+        </div>
 
         {/* Table */}
-        <div className="flex-1 min-w-0 w-full">
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 relative z-10 overflow-hidden">
+        <div className="flex-1 min-w-0 w-full space-y-6">
+          <div className="bg-white rounded-[2rem] lg:rounded-3xl shadow-xl border border-gray-100 relative z-10 overflow-hidden">
             
             <div className="px-6 lg:px-8 py-5 border-b border-gray-100 flex items-center justify-between bg-white">
               <h2 className="font-black text-gray-900 flex items-center gap-2">

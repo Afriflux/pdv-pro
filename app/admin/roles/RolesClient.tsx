@@ -143,6 +143,7 @@ export default function RolesClient({
   // State for Roles Matrix
   const [roles, setRoles] = useState<RoleConfig[]>(initialRoles)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   // ── Org Departments State (recursive tree) ──
   const [orgDepts, setOrgDepts] = useState<OrgDepartment[]>(DEFAULT_DEPARTMENTS)
@@ -260,12 +261,26 @@ export default function RolesClient({
   }
 
   const handleSavePermissions = async () => {
+    setIsSaving(true)
     toast.success("Enregistrement en base de données en cours...")
-    // This connects to the new InternalRole prisma schema
-    setTimeout(() => {
+    try {
+      // Loop over all non-super-admin roles and save them
+      const promises = roles.filter(r => r.id !== 'super_admin').map(role => 
+        fetch('/api/admin/roles/permissions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roleId: role.id, permissions: role.permissions })
+        })
+      )
+      
+      await Promise.all(promises)
       toast.success("Droits d'accès mis à jour avec succès ✅")
       setHasUnsavedChanges(false)
-    }, 800)
+    } catch (err) {
+      toast.error("Erreur lors de la sauvegarde")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const handleAddCustomRole = () => {
@@ -346,7 +361,7 @@ export default function RolesClient({
     if (roleName === 'Super Admin') {
       if (access === 'full') return <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-lg text-xs font-black shadow-sm border border-emerald-200"><CheckCircle2 size={14}/> Total</span>
       if (access === 'read') return <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-800 rounded-lg text-xs font-black shadow-sm border border-amber-200"><Eye size={14}/> Lecture</span>
-      return <span className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-xs font-black shadow-sm border border-gray-200"><XCircle size={14}/> Bloqué</span>
+      return <span className="flex items-center gap-1.5 px-3 py-1 bg-red-100 text-red-800 rounded-lg text-xs font-black shadow-sm border border-red-200"><XCircle size={14}/> Bloqué</span>
     }
 
     // Les autres ont accès à une liste déroulante esthétique
@@ -359,7 +374,7 @@ export default function RolesClient({
         className={`text-xs font-black shadow-sm border rounded-lg px-2 py-1.5 outline-none cursor-pointer transition-colors focus:ring-2 focus:ring-emerald-500/20 appearance-none text-center bg-no-repeat bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M2%204l4%204%204-4%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[position:calc(100%-6px)_center] pr-6 ${
           access === 'full' ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200/50' :
           access === 'read' ? 'bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200/50' :
-          'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200/50'
+          'bg-red-50 text-red-700 border-red-200 hover:bg-red-100/50 mx-auto'
         }`}
       >
         <option value="full">✅ Total</option>
@@ -661,7 +676,7 @@ export default function RolesClient({
                     <table className="w-full text-left border-collapse">
                        <thead>
                           <tr className="bg-gray-50 border-b border-gray-100">
-                             <th className="px-6 py-5 text-xs font-black uppercase tracking-widest text-gray-400 w-1/3 border-r border-gray-100">
+                             <th className="px-6 py-5 text-xs font-black uppercase tracking-widest text-gray-400 min-w-[250px] w-auto border-r border-gray-100">
                                Accès Requis
                              </th>
                              {roles.map(role => {
@@ -741,7 +756,7 @@ export default function RolesClient({
                  <div className="px-6 py-4 bg-[#FAFAF7] border-t border-gray-100 flex items-center justify-center gap-8 text-xs font-black text-gray-500 uppercase tracking-widest">
                     <span className="flex items-center gap-2"><div className="w-3 h-3 bg-emerald-500 rounded-full"></div> Total (Modification)</span>
                     <span className="flex items-center gap-2"><div className="w-3 h-3 bg-amber-500 rounded-full"></div> Lecture seule</span>
-                    <span className="flex items-center gap-2"><div className="w-3 h-3 bg-gray-300 rounded-full"></div> Aucun accès</span>
+                    <span className="flex items-center gap-2"><div className="w-3 h-3 bg-red-400 rounded-full"></div> Aucun accès</span>
                  </div>
               </div>
 

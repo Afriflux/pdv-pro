@@ -47,10 +47,10 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
     })
   }
 
-  const aspectClass = 'aspect-square'
+  const aspectClass = 'aspect-[4/3]' // Reduced from aspect-square to make the design less vertical
 
   return (
-    <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white hover:border-[#0F7A60]/30 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-[#0F7A60]/10 transition-all duration-500 flex flex-col group relative">
+    <div className="bg-white/80 backdrop-blur-xl rounded-[24px] border border-white hover:border-[#0F7A60]/30 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-[#0F7A60]/10 transition-all duration-500 flex flex-col group relative">
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       {/* IMAGE */}
       <div className={`relative ${aspectClass} w-full overflow-hidden bg-gray-50/50`}>
@@ -58,8 +58,8 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
         <Link href={`/dashboard/products/${product.id}/edit`} className="absolute inset-0 z-0 flex flex-col items-center justify-center cursor-pointer">
           {!(product.images && product.images.length > 0) && (
             <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-dust">
-              <span className="text-5xl">📦</span>
-              <span className="text-sm">Aucune image</span>
+              <span className="text-4xl">📦</span>
+              <span className="text-xs font-bold text-gray-400">Aucune image</span>
             </div>
           )}
         </Link>
@@ -80,23 +80,23 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
         {/* Badges type (gauche) */}
         <div className="absolute top-2 left-2 flex flex-col gap-1 pointer-events-none z-20">
           {product.cash_on_delivery && (
-            <span className="text-xs font-semibold px-2 py-1 rounded-full text-white bg-[#D97706] shadow-sm">
+            <span className="block w-fit text-[10px] font-black tracking-widest px-2 py-0.5 rounded-md shadow-sm text-white bg-[#D97706]">
               COD
             </span>
           )}
           {product.type === 'digital' && (
-            <span className="text-xs font-semibold px-2 py-1 rounded-full text-white bg-[#1D4ED8] shadow-sm">
-              Digital
+            <span className="block w-fit text-[10px] font-black tracking-widest px-2 py-0.5 rounded-md shadow-sm text-white bg-[#1D4ED8]">
+              DIGITAL
             </span>
           )}
           {product.type === 'coaching' && (
-            <span className="text-xs font-semibold px-2 py-1 rounded-full text-white bg-[#7C3AED] shadow-sm">
-              Coaching
+            <span className="block w-fit text-[10px] font-black tracking-widest px-2 py-0.5 rounded-md shadow-sm text-white bg-[#7C3AED]">
+              COACHING
             </span>
           )}
           {product.type === 'course' && (
-            <span className="text-xs font-semibold px-2 py-1 rounded-full text-white bg-indigo-600 shadow-sm">
-              Académie (Cours)
+            <span className="block w-fit text-[10px] font-black tracking-widest px-2 py-0.5 rounded-md shadow-sm text-white bg-indigo-600">
+              ACADÉMIE
             </span>
           )}
         </div>
@@ -106,12 +106,12 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
           onClick={handleToggle}
           disabled={pending}
           title={product.active ? 'Cliquer pour désactiver' : 'Cliquer pour activer'}
-          className={`absolute top-2 right-2 z-20 text-xs font-semibold px-3 py-2 rounded-full shadow-sm min-h-[44px] min-w-[44px] transition-all flex items-center justify-center ${
+          className={`absolute top-2 right-2 z-20 text-[10px] font-black tracking-widest px-2 py-0.5 rounded-md shadow-sm transition-all flex items-center justify-center uppercase ${
             pending
               ? 'opacity-50 cursor-wait bg-gray-200 text-gray-400'
               : product.active
-              ? 'bg-[#0D5C4A] text-white hover:bg-red-500 cursor-pointer'
-              : 'bg-[#6B7280] text-white hover:bg-[#0D5C4A] cursor-pointer'
+              ? 'bg-[#0F7A60] text-white hover:bg-red-500 cursor-pointer'
+              : 'bg-[#6B7280] text-white hover:bg-[#0F7A60] cursor-pointer'
           }`}
         >
           {pending ? '...' : product.active ? 'Actif' : 'Inactif'}
@@ -122,58 +122,60 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
       <div className="p-3 flex flex-col flex-1">
 
         <Link href={`/dashboard/products/${product.id}/edit`} className="group/name">
-          <h3 className="font-display text-ink font-semibold text-sm leading-tight mb-1 line-clamp-2 min-h-[2.5rem] group-hover/name:text-emerald transition-colors">
+          <h3 className="font-display text-ink font-semibold text-[15px] leading-snug mb-1 line-clamp-2 min-h-[40px] group-hover/name:text-emerald transition-colors">
             {product.name}
           </h3>
         </Link>
 
         {product.category && (
-          <p className="text-sm text-dust mb-2 truncate">{product.category}</p>
+          <p className="text-xs text-dust mb-1 truncate">{product.category}</p>
         )}
 
         <div className="mt-auto relative z-10">
-          <p className="font-display text-[#0F7A60] font-black text-xl leading-none flex items-baseline gap-1 mt-3">
+          <p className="font-display text-[#0F7A60] font-black text-lg leading-none flex items-baseline gap-1 mt-2">
             {product.price.toLocaleString('fr-FR')}
-            <span className="text-xs text-gray-400 font-sans font-bold uppercase">FCFA</span>
+            <span className="text-[10px] text-gray-400 font-sans font-black tracking-widest uppercase">FCFA</span>
           </p>
           
           <div className="flex items-center gap-1.5 mt-2 mb-3">
-            <div className="flex items-center gap-1 text-sm font-bold text-gray-400 bg-white border border-gray-100 px-2 py-0.5 rounded-full shadow-sm">
+            <div className="flex items-center gap-1 text-xs font-bold text-gray-400 bg-gray-50 border border-gray-100 px-2 py-[2px] rounded-md shadow-sm">
               <Eye size={12} />
               <span>{(product.views || 0).toLocaleString()} vues</span>
             </div>
           </div>
 
-          <div className="border-t border-gray-100/50 my-2.5" />
+          <div className="border-t border-gray-100/50 my-2" />
 
           {/* LIEN + ACTIONS */}
           <div className="flex items-center gap-1.5">
-            <div className="flex-1 bg-cream rounded-lg px-2 py-1.5 min-w-0">
-              <p className="text-sm text-emerald font-mono truncate">
+            <div className="flex-1 bg-gray-50 border border-gray-100 rounded-lg px-2 py-1.5 min-w-0 flex items-center h-9">
+              <p className="text-xs text-emerald font-mono truncate font-medium">
                 /pay/{product.id.slice(0, 8)}...
               </p>
             </div>
-            <CopyButton url={`${baseUrl}/pay/${product.id}`} compact />
+            <div className="h-9">
+               <CopyButton url={`${baseUrl}/pay/${product.id}`} compact />
+            </div>
             <Link
               href={`/pay/${product.id}`}
-              className="text-xs bg-emerald text-white px-3 py-3.5 min-h-[44px] rounded-lg hover:bg-emerald-rich transition font-medium flex-shrink-0 flex items-center justify-center"
+              className="text-[11px] uppercase font-black tracking-widest bg-[#0F7A60] text-white px-3 min-w-16 h-9 rounded-lg hover:bg-emerald-800 shadow-sm shadow-[#0F7A60]/20 transition flex-shrink-0 flex items-center justify-center cursor-pointer"
             >
               Voir
             </Link>
           </div>
 
-          <div className="flex gap-2 mt-2 relative z-10">
+          <div className="flex gap-1.5 mt-2 relative z-10">
             {product.type === 'course' ? (
               <Link
                 href={`/dashboard/products/${product.id}/course`}
-                className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-xl py-3.5 min-h-[44px] hover:text-indigo-700 hover:bg-indigo-100 hover:border-indigo-300 transition-all duration-300 shadow-sm"
+                className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl py-2 h-9 hover:bg-indigo-100 transition-all duration-300 shadow-sm"
               >
                 🎓 Gérer
               </Link>
             ) : (
               <Link
                 href={`/dashboard/products/${product.id}/edit`}
-                className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-gray-600 bg-white border border-gray-200 rounded-xl py-3.5 min-h-[44px] hover:text-[#0F7A60] hover:border-[#0F7A60]/30 hover:bg-[#0F7A60]/5 transition-all duration-300 shadow-sm"
+                className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-[#1A1A1A] bg-white border border-gray-200 rounded-lg py-2 h-9 hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 shadow-sm"
               >
                 ✏️ Modifier
               </Link>
@@ -181,16 +183,16 @@ export default function ProductCard({ product, baseUrl }: ProductCardProps) {
             <button
               onClick={handleDuplicate}
               disabled={pending}
-              className="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium text-slate border border-line rounded-lg py-3.5 min-h-[44px] hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-gray-500 bg-white border border-gray-200 rounded-lg py-2 h-9 hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 shadow-sm disabled:opacity-50"
             >
               {pending ? '...' : '👯 Dupliquer'}
             </button>
             <button
               onClick={() => setShowQR(true)}
-              className="flex-shrink-0 flex items-center justify-center w-11 h-11 text-slate border border-line rounded-lg hover:text-emerald hover:border-emerald/30 hover:bg-emerald/5 transition"
+              className="flex-shrink-0 flex items-center justify-center w-9 h-9 text-gray-500 border border-gray-200 bg-white rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 shadow-sm"
               title="Afficher le QR Code"
             >
-              <QrCode size={16} />
+              <QrCode size={14} />
             </button>
           </div>
 

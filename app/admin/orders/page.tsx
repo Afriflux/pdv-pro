@@ -283,37 +283,43 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
            </div>
         </div>
 
-        {/* ── LAYOUT 2 COLONNES (Onglets & Table/Kanban) ── */}
-        <div className="flex flex-col lg:flex-row gap-6 md:gap-8 items-start animate-in fade-in slide-in-from-bottom-2 duration-500">
+        {/* ── TABLE & FILTERS LAYOUT ── */}
+        <div className="flex flex-col gap-6 w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
 
-          {/* ── ONGLETS LATÉRAUX ── */}
-          <aside className="w-full lg:w-56 flex-shrink-0 sticky top-24 z-10">
-            <h2 className="text-xs font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Filtrer par statut</h2>
-            <nav className="bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl p-3 flex flex-col gap-1 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-              {STATUS_TABS.map((tab) => {
-                const isActive = statusFilter === tab.value
-                const n = tab.value === 'all' ? total : (countByStatus[tab.value] ?? 0)
-                return (
-                  <Link
-                    key={tab.value}
-                    href={`/admin/orders?status=${tab.value}&view=${currentView}`}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 relative overflow-hidden group ${
-                      isActive
-                        ? 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-[0_4px_15px_rgba(15,122,96,0.3)] border border-[#0F7A60]/50'
-                        : 'bg-transparent text-gray-500 hover:bg-white/80 hover:text-gray-900 border border-transparent'
-                    }`}
-                  >
-                    {isActive && <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 ease-in-out -skew-x-12 -translate-x-full pointer-events-none" />}
-                    <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 relative z-10 shadow-sm ${isActive ? 'bg-white' : tab.dot}`} />
-                    <span className="flex-1 text-sm tracking-tight relative z-10">{tab.label}</span>
-                    <span className={`text-xs font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100/80 text-gray-500'}`}>
-                      {n}
-                    </span>
-                  </Link>
-                )
-              })}
-            </nav>
-          </aside>
+          {/* ── NAVIGATION (Top Tabs) ── */}
+          <div className="w-full relative z-20">
+            <div className="w-full relative z-10 flex flex-col md:flex-row md:items-center gap-4 bg-white/70 backdrop-blur-xl border border-white/50 rounded-[2rem] lg:rounded-3xl p-3 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+              <h2 className="text-xs font-black uppercase text-gray-400 tracking-widest px-2 shrink-0 hidden md:flex items-center gap-2">
+                Statuts
+              </h2>
+              <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible">
+                <nav className="flex flex-row flex-nowrap lg:flex-wrap gap-2 w-full min-w-max lg:min-w-0 p-1 items-center">
+                  {STATUS_TABS.map((tab) => {
+                    const isActive = statusFilter === tab.value
+                    const n = tab.value === 'all' ? total : (countByStatus[tab.value] ?? 0)
+                    return (
+                      <Link
+                        key={tab.value}
+                        href={`/admin/orders?status=${tab.value}&view=${currentView}`}
+                        className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 relative overflow-hidden group shrink-0 ${
+                          isActive
+                            ? 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-[0_4px_15px_rgba(15,122,96,0.3)] border border-[#0F7A60]/50'
+                            : 'bg-transparent text-gray-500 hover:bg-white/80 hover:text-gray-900 border border-transparent'
+                        }`}
+                      >
+                        {isActive && <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 ease-in-out -skew-x-12 -translate-x-full pointer-events-none" />}
+                        <span className={`w-2 h-2 rounded-full flex-shrink-0 relative z-10 shadow-sm ${isActive ? 'bg-white' : tab.dot}`} />
+                        <span className="text-sm tracking-tight relative z-10 whitespace-nowrap">{tab.label}</span>
+                        <span className={`text-xs font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100/80 text-gray-500'}`}>
+                          {n}
+                        </span>
+                      </Link>
+                    )
+                  })}
+                </nav>
+              </div>
+            </div>
+          </div>
 
           {/* ── CONTENU (TABLE OU KANBAN) ── */}
           <div className="flex-1 w-full min-w-0">

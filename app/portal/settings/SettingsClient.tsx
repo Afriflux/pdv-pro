@@ -100,22 +100,23 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
   }
 
   return (
-    <div className="flex flex-col lg:flex-row w-full pb-20 items-start relative z-20 gap-8">
+    <div className="flex flex-col lg:flex-row w-full gap-6 lg:gap-8 pb-20 relative z-20 mx-auto">
       
-      {/* ── MENU LATÉRAL ACCOLÉ ── */}
-      <aside className="w-full lg:w-[300px] flex-shrink-0 sticky top-[100px] z-10 lg:h-max bg-white/80 backdrop-blur-3xl border border-gray-200/60 rounded-[2.5rem] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.02)] flex flex-col gap-2">
-        <nav className="flex lg:flex-col gap-1.5 overflow-x-auto custom-scrollbar lg:overflow-visible pb-2 lg:pb-0" aria-label="Menu des paramètres affilié">
-          <MenuBtn active={activeTab === 'profile'} icon={<User className="w-5 h-5" />} label="Général" onClick={() => { setActiveTab('profile'); setError(''); setSuccess('') }} />
-          <MenuBtn active={activeTab === 'social'} icon={<Globe className="w-5 h-5" />} label="Réseaux Sociaux" onClick={() => { setActiveTab('social'); setError(''); setSuccess('') }} />
-          <MenuBtn active={activeTab === 'payments'} icon={<CreditCard className="w-5 h-5" />} label="Paiements" onClick={() => { setActiveTab('payments'); setError(''); setSuccess('') }} />
-          <MenuBtn active={activeTab === 'pixels'} icon={<Target className="w-5 h-5" />} label="Tracking & Pixels" onClick={() => { setActiveTab('pixels'); setError(''); setSuccess('') }} />
-          <MenuBtn active={activeTab === 'notifications'} icon={<AlertCircle className="w-5 h-5" />} label="Notifications" onClick={() => { setActiveTab('notifications'); setError(''); setSuccess('') }} />
-          <div className="hidden lg:block h-3" />
-          <MenuBtn active={activeTab === 'security'} icon={<Lock className="w-5 h-5" />} label="Sécurité" onClick={() => { setActiveTab('security'); setError(''); setSuccess('') }} />
-          <MenuBtn active={activeTab === 'kyc'} icon={<ShieldCheck className="w-5 h-5" />} label="Conformité (KYC)" onClick={() => { setActiveTab('kyc'); setError(''); setSuccess('') }} />
-          <MenuBtn active={activeTab === 'contract'} icon={<ScrollText className="w-5 h-5" />} label="Contrat" onClick={() => { setActiveTab('contract'); setError(''); setSuccess('') }} />
-          <MenuBtn active={activeTab === 'danger'} icon={<AlertTriangle className="w-5 h-5 text-red-500" />} label="Zone Danger" onClick={() => { setActiveTab('danger'); setError(''); setSuccess('') }} />
-        </nav>
+      {/* ── MENU HYBRIDE ── */}
+      <aside className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start z-20">
+        <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible bg-white/80 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none p-2 lg:p-0 rounded-2xl lg:rounded-none border border-gray-200/50 lg:border-none shadow-[0_4px_15px_rgba(0,0,0,0.02)] lg:shadow-none">
+          <nav className="flex flex-row lg:flex-col items-center lg:items-stretch gap-2 min-w-max lg:min-w-0" aria-label="Menu des paramètres affilié">
+            <MenuBtn active={activeTab === 'profile'} icon={<User size={16} />} label="Général" onClick={() => { setActiveTab('profile'); setError(''); setSuccess('') }} />
+            <MenuBtn active={activeTab === 'social'} icon={<Globe size={16} />} label="Réseaux" onClick={() => { setActiveTab('social'); setError(''); setSuccess('') }} />
+            <MenuBtn active={activeTab === 'payments'} icon={<CreditCard size={16} />} label="Paiements" onClick={() => { setActiveTab('payments'); setError(''); setSuccess('') }} />
+            <MenuBtn active={activeTab === 'pixels'} icon={<Target size={16} />} label="Tracking" onClick={() => { setActiveTab('pixels'); setError(''); setSuccess('') }} />
+            <MenuBtn active={activeTab === 'notifications'} icon={<AlertCircle size={16} />} label="Alertes" onClick={() => { setActiveTab('notifications'); setError(''); setSuccess('') }} />
+            <MenuBtn active={activeTab === 'security'} icon={<Lock size={16} />} label="Sécurité" onClick={() => { setActiveTab('security'); setError(''); setSuccess('') }} />
+            <MenuBtn active={activeTab === 'kyc'} icon={<ShieldCheck size={16} />} label="KYC" onClick={() => { setActiveTab('kyc'); setError(''); setSuccess('') }} />
+            <MenuBtn active={activeTab === 'contract'} icon={<ScrollText size={16} />} label="Contrat" onClick={() => { setActiveTab('contract'); setError(''); setSuccess('') }} />
+            <MenuBtn active={activeTab === 'danger'} icon={<AlertTriangle size={16} className="text-red-500" />} label="Danger" onClick={() => { setActiveTab('danger'); setError(''); setSuccess('') }} />
+          </nav>
+        </div>
       </aside>
 
       {/* ── CONTENU PRINCIPAL ── */}

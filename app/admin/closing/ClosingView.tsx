@@ -253,64 +253,64 @@ export function ClosingView({ initialRequests }: { initialRequests: ClosingReque
       </div>
       </div>
 
-      {/* 🚀 MAIN LAYOUT : SIDEBAR + CONTENT */}
-      <div className="flex flex-col lg:flex-row items-start animate-in fade-in slide-in-from-bottom-2 w-full">
+      {/* 🚀 MAIN LAYOUT : TABLE & FILTERS */}
+      <div className="flex flex-col gap-6 items-start animate-in fade-in slide-in-from-bottom-2 w-full p-4 md:p-6 lg:p-8">
         
-        {/* 📑 SIDEBAR SECONDARY (ONGLETS LATÉRAUX) */}
-        <aside className="w-full lg:w-[300px] flex-shrink-0 sticky top-[64px] z-10 lg:h-[calc(100vh-64px)] overflow-y-auto bg-white/80 backdrop-blur-3xl border-r border-gray-200 p-5 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col gap-6">
-          <div>
-            <h2 className="text-xs items-center gap-2 flex font-black uppercase text-gray-400 tracking-widest pl-2 mb-4">
-              <Filter size={14} /> Files d'Attente
-            </h2>
-            <nav className="flex flex-col gap-1.5">
-               <button 
-                 onClick={() => setActiveTab('PENDING')}
-                 className={`flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${activeTab === 'PENDING' ? 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-gray-900 border border-transparent'}`}
-               >
-                 <div className="flex items-center gap-3">
-                   <span className={`w-2.5 h-2.5 rounded-full ${activeTab === 'PENDING' ? 'bg-white' : 'bg-gray-300'}`} />
-                   <span>🔥 À Traiter</span>
-                 </div>
-                 {pendingCount > 0 && <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'PENDING' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{pendingCount}</span>}
-               </button>
+        {/* ── NAVIGATION (Top Tabs) ── */}
+        <div className="w-full relative z-20">
+          <div className="w-full bg-white/80 backdrop-blur-3xl border border-gray-200 rounded-[2rem] lg:rounded-3xl p-3 lg:p-5 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-start w-fit">
+            <h2 className="text-xs font-black uppercase text-gray-400 tracking-widest pl-2 shrink-0 hidden md:block">Attente</h2>
+            <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible">
+              <nav className="flex flex-row gap-2 w-full min-w-max lg:min-w-0 p-1">
+                <button 
+                  onClick={() => setActiveTab('PENDING')}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-[1.5rem] text-sm font-bold transition-all duration-300 shrink-0 ${activeTab === 'PENDING' ? 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20' : 'bg-transparent text-gray-500 hover:bg-slate-50 hover:text-gray-900 border border-transparent hover:shadow-sm'}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${activeTab === 'PENDING' ? 'bg-white' : 'bg-gray-300'}`} />
+                    <span className="whitespace-nowrap">🔥 À Traiter</span>
+                  </div>
+                  {pendingCount > 0 && <span className={`text-xs ml-2 px-2 py-0.5 rounded-md ${activeTab === 'PENDING' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{pendingCount}</span>}
+                </button>
 
-               <button 
-                 onClick={() => setActiveTab('SCHEDULED')}
-                 className={`flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${activeTab === 'SCHEDULED' ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-gray-900 border border-transparent'}`}
-               >
-                 <div className="flex items-center gap-3">
-                   <span className={`w-2.5 h-2.5 rounded-full ${activeTab === 'SCHEDULED' ? 'bg-white' : 'bg-gray-300'}`} />
-                   <span>⏰ Rappels</span>
-                 </div>
-                 {scheduledCount > 0 && <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'SCHEDULED' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{scheduledCount}</span>}
-               </button>
+                <button 
+                  onClick={() => setActiveTab('SCHEDULED')}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-[1.5rem] text-sm font-bold transition-all duration-300 shrink-0 ${activeTab === 'SCHEDULED' ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20' : 'bg-transparent text-gray-500 hover:bg-slate-50 hover:text-gray-900 border border-transparent hover:shadow-sm'}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${activeTab === 'SCHEDULED' ? 'bg-white' : 'bg-gray-300'}`} />
+                    <span className="whitespace-nowrap">⏰ Rappels</span>
+                  </div>
+                  {scheduledCount > 0 && <span className={`text-xs ml-2 px-2 py-0.5 rounded-md ${activeTab === 'SCHEDULED' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{scheduledCount}</span>}
+                </button>
 
-               <button 
-                 onClick={() => setActiveTab('NO_REPLY')}
-                 className={`flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${activeTab === 'NO_REPLY' ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-gray-900 border border-transparent'}`}
-               >
-                 <div className="flex items-center gap-3">
-                   <span className={`w-2.5 h-2.5 rounded-full ${activeTab === 'NO_REPLY' ? 'bg-white' : 'bg-gray-300'}`} />
-                   <span>⏳ Injoignable</span>
-                 </div>
-                 {noReplyCount > 0 && <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'NO_REPLY' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{noReplyCount}</span>}
-               </button>
+                <button 
+                  onClick={() => setActiveTab('NO_REPLY')}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-[1.5rem] text-sm font-bold transition-all duration-300 shrink-0 ${activeTab === 'NO_REPLY' ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20' : 'bg-transparent text-gray-500 hover:bg-slate-50 hover:text-gray-900 border border-transparent hover:shadow-sm'}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${activeTab === 'NO_REPLY' ? 'bg-white' : 'bg-gray-300'}`} />
+                    <span className="whitespace-nowrap">⏳ Injoignable</span>
+                  </div>
+                  {noReplyCount > 0 && <span className={`text-xs ml-2 px-2 py-0.5 rounded-md ${activeTab === 'NO_REPLY' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{noReplyCount}</span>}
+                </button>
 
-               <button 
-                 onClick={() => setActiveTab('PROCESSED')}
-                 className={`flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 ${activeTab === 'PROCESSED' ? 'bg-gray-900 text-white shadow-md shadow-gray-900/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-gray-900 border border-transparent'}`}
-               >
-                 <div className="flex items-center gap-3">
-                   <span className={`w-2.5 h-2.5 rounded-full ${activeTab === 'PROCESSED' ? 'bg-white' : 'bg-gray-300'}`} />
-                   <span>✅ Traités</span>
-                 </div>
-                 <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'PROCESSED' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{processedCount}</span>
-               </button>
-            </nav>
+                <button 
+                  onClick={() => setActiveTab('PROCESSED')}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-[1.5rem] text-sm font-bold transition-all duration-300 shrink-0 ${activeTab === 'PROCESSED' ? 'bg-gray-900 text-white shadow-md shadow-gray-900/20' : 'bg-transparent text-gray-500 hover:bg-slate-50 hover:text-gray-900 border border-transparent hover:shadow-sm'}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${activeTab === 'PROCESSED' ? 'bg-white' : 'bg-gray-300'}`} />
+                    <span className="whitespace-nowrap">✅ Traités</span>
+                  </div>
+                  <span className={`text-xs ml-2 px-2 py-0.5 rounded-md ${activeTab === 'PROCESSED' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{processedCount}</span>
+                </button>
+              </nav>
+            </div>
           </div>
-        </aside>
+        </div>
 
-        <div className="flex-1 w-full min-w-0 flex flex-col gap-6 p-4 md:p-6 lg:p-8">
+        <div className="flex-1 w-full min-w-0 flex flex-col gap-6">
 
           {/* 🎛️ BARRE DE FILTRES OPTIMISÉE */}
           <div className="flex flex-col md:flex-row gap-3 md:items-center justify-between bg-white/70 backdrop-blur-xl p-3 rounded-2xl border border-gray-200 shadow-sm">

@@ -209,21 +209,21 @@ function PageCard({ page }: { page: SalePage }) {
   }
 
   return (
-    <div className="bg-white/90 backdrop-blur-2xl rounded-3xl border border-white hover:border-[#0F7A60]/30 hover:shadow-2xl hover:shadow-[#0F7A60]/10 transition-all duration-500 flex flex-col group overflow-hidden relative">
+    <div className="bg-white/90 backdrop-blur-2xl rounded-[24px] border border-white hover:border-[#0F7A60]/30 hover:shadow-2xl hover:shadow-[#0F7A60]/10 transition-all duration-500 flex flex-col group overflow-hidden relative">
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       {/* Header Visuel */}
-      <div className={`h-32 bg-gradient-to-br ${TEMPLATE_GRADIENTS[page.template] || 'from-gray-100 to-white'} relative flex items-center justify-center`}>
+      <div className={`h-24 bg-gradient-to-br ${TEMPLATE_GRADIENTS[page.template] || 'from-gray-100 to-white'} relative flex items-center justify-center`}>
          <div className="absolute inset-0 bg-white/20 backdrop-blur-[1px]" />
-         <span className="relative z-10 text-5xl drop-shadow-md group-hover:scale-110 transition-transform duration-500">{TEMPLATE_ICONS[page.template] ?? '🛍️'}</span>
+         <span className="relative z-10 text-4xl drop-shadow-md group-hover:scale-110 transition-transform duration-500">{TEMPLATE_ICONS[page.template] ?? '🛍️'}</span>
          
-         <div className="absolute top-3 right-3 z-10">
+         <div className="absolute top-2 right-2 z-10">
             <button
               onClick={handleToggle}
               disabled={pending}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black tracking-widest uppercase border transition-all shadow-sm ${
+              className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase border transition-all shadow-sm ${
                 pending ? 'opacity-50 cursor-wait' : page.active 
-                ? 'bg-emerald text-white border-emerald/10 shadow-emerald/20 hover:bg-emerald/90' 
+                ? 'bg-[#0F7A60] text-white border-emerald/10 shadow-emerald/20 hover:bg-emerald/90' 
                 : 'bg-white/90 backdrop-blur-sm text-gray-500 border-gray-200 hover:text-emerald hover:border-emerald/20'
               }`}
             >
@@ -234,49 +234,49 @@ function PageCard({ page }: { page: SalePage }) {
       </div>
 
       {/* Corps */}
-      <div className="p-5 flex-1 flex flex-col">
-          <Link href={`/dashboard/pages/${page.id}/edit`} className="font-display font-black text-ink text-lg hover:text-gold transition-colors line-clamp-2 block mb-2 leading-tight">
+      <div className="p-4 flex-1 flex flex-col">
+          <Link href={`/dashboard/pages/${page.id}/edit`} className="font-display font-black text-ink text-[15px] hover:text-[#0F7A60] transition-colors line-clamp-2 block mb-1 leading-snug">
             {page.title}
           </Link>
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xs text-emerald font-black tracking-widest uppercase bg-emerald/5 px-2 py-0.5 rounded-md border border-emerald/10 max-w-full truncate">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-[10px] text-[#0F7A60] font-black tracking-widest uppercase bg-emerald/5 px-2 py-0.5 rounded-md border border-emerald/10 max-w-full truncate">
               /{page.slug}
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 mt-auto pt-4 border-t border-gray-50 mb-4">
+          <div className="grid grid-cols-3 gap-2 mt-auto pt-3 border-t border-gray-50 mb-3">
             <div className="text-center">
               <p className="text-sm font-black text-ink">{page.views_count || 0}</p>
-              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Vues</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Vues</p>
             </div>
             <div className="text-center border-l items-center border-gray-50">
               <p className="text-sm font-black text-ink">{page.sales_count || 0}</p>
-              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Ventes</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Ventes</p>
             </div>
             <div className="text-center border-l items-center border-gray-50">
               <p className="text-sm font-black text-emerald">
                 {page.views_count && page.views_count > 0 ? (((page.sales_count || 0) / page.views_count) * 100).toFixed(1) : '0'}%
               </p>
-              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Taux</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Taux</p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between border-t border-gray-50 pt-3">
-            <div className="text-xs text-gray-400 font-bold uppercase tracking-wider truncate">
+          <div className="flex items-center justify-between border-t border-gray-50 pt-2">
+            <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest truncate">
               {TEMPLATE_LABELS[page.template] || page.template}
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={handleCopyLink} className="p-2 text-gray-400 hover:text-ink hover:bg-gray-50 rounded-lg transition" title="Copier le lien d'accès">
-                {copied ? <Check size={16} className="text-emerald" /> : <LinkIcon size={16} />}
+              <button onClick={handleCopyLink} className="p-1.5 text-gray-400 hover:text-ink hover:bg-gray-50 rounded-lg transition" title="Copier le lien d'accès">
+                {copied ? <Check size={14} className="text-emerald" /> : <LinkIcon size={14} />}
               </button>
-              <button onClick={handleDuplicate} className="p-2 text-gray-400 hover:text-ink hover:bg-gray-50 rounded-lg transition" title="Dupliquer la page">
-                <Copy size={16} />
+              <button onClick={handleDuplicate} className="p-1.5 text-gray-400 hover:text-ink hover:bg-gray-50 rounded-lg transition" title="Dupliquer la page">
+                <Copy size={14} />
               </button>
-              <Link href={`/dashboard/pages/${page.id}/edit`} className="p-2 text-gray-400 hover:text-gold hover:bg-gold/5 rounded-lg transition" title="Modifier le design">
-                <Edit size={16} />
+              <Link href={`/dashboard/pages/${page.id}/edit`} className="p-1.5 text-gray-400 hover:text-[#0F7A60] hover:bg-emerald/5 rounded-lg transition" title="Modifier le design">
+                <Edit size={14} />
               </Link>
-              <button onClick={handleDelete} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition" title="Supprimer">
-                <Trash2 size={16} />
+              <button onClick={handleDelete} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition" title="Supprimer">
+                <Trash2 size={14} />
               </button>
             </div>
           </div>

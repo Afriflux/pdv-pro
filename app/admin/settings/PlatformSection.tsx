@@ -43,6 +43,7 @@ const SEO_FIELDS = [
 ]
 
 const COMMUNICATIONS_FIELDS = [
+  { key: 'BREVO_API_KEY',        label: 'Clé API Brevo (v3)',            placeholder: 'xkeysib-xxxxxxxxxxxxxxxxxxx', type: 'password', helper: 'Clé requise pour activer la synchronisation et la création de campagnes ciblées' },
   { key: 'email_sender_address', label: 'E-mail système par défaut',     placeholder: 'no-reply@yayyam.com', type: 'text', helper: 'L\'email utilisé par la plateforme pour envoyer les alertes' },
   { key: 'email_sender_name',    label: 'Nom affiché de l\'expéditeur',  placeholder: 'L\'Équipe Yayyam', type: 'text' },
 ]

@@ -205,21 +205,21 @@ export default function KYCClient({
            </div>
         </div>
 
-        {/* ── LAYOUT 2 COLONNES (Onglets & Contenu) ── */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start animate-in fade-in slide-in-from-bottom-2 duration-500">
+        {/* ── TABLE & FILTERS LAYOUT ── */}
+        <div className="flex flex-col gap-6 lg:gap-8 items-start animate-in fade-in slide-in-from-bottom-2 duration-500 w-full">
           
-          {/* ── COLONNE GAUCHE : ONGLETS LATÉRAUX ── */}
-          <aside className="w-full lg:w-[280px] flex-shrink-0 sticky top-[80px] z-10">
-            <h2 className="text-xs font-black uppercase text-gray-400 tracking-widest pl-4 mb-3">Statuts KYC</h2>
-            
-            <nav className="bg-white/80 backdrop-blur-2xl border border-white/50 rounded-3xl p-3 flex flex-col gap-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-              <Link 
+          {/* ── NAVIGATION (Top Tabs) ── */}
+          <div className="w-full relative z-20">
+            <h2 className="text-xs font-black uppercase text-gray-400 tracking-widest pl-4 mb-3 hidden lg:block">Statuts KYC</h2>
+            <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible bg-white/80 backdrop-blur-2xl p-2 border border-white/50 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+              <nav className="flex flex-row gap-2 min-w-max lg:min-w-0">
+                <Link 
                 href="/admin/kyc?status=submitted" 
-                className={`flex items-center justify-between gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 relative overflow-hidden group ${currentStatus === 'submitted' ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-md shadow-amber-500/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-amber-500 border border-transparent'}`}
+                className={`flex items-center gap-3 px-5 py-3 rounded-[1.5rem] text-sm font-bold transition-all duration-300 relative overflow-hidden group shrink-0 ${currentStatus === 'submitted' ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-md shadow-amber-500/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-amber-500 border border-transparent'}`}
               >
                 <div className="flex items-center gap-2 relative z-10">
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 shadow-sm ${currentStatus === 'submitted' ? 'bg-white' : 'bg-amber-400'}`} />
-                  <span>En attente</span>
+                  <span className="whitespace-nowrap">En attente</span>
                 </div>
                 <span className={`text-xs font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${currentStatus === 'submitted' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-600'}`}>
                   {totalSubmitted}
@@ -228,11 +228,11 @@ export default function KYCClient({
 
               <Link 
                 href="/admin/kyc?status=verified" 
-                className={`flex items-center justify-between gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 relative overflow-hidden group ${currentStatus === 'verified' ? 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-[#0F7A60] border border-transparent'}`}
+                className={`flex items-center gap-3 px-5 py-3 rounded-[1.5rem] text-sm font-bold transition-all duration-300 relative overflow-hidden group shrink-0 ${currentStatus === 'verified' ? 'bg-gradient-to-r from-[#0F7A60] to-teal-600 text-white shadow-md shadow-[#0F7A60]/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-[#0F7A60] border border-transparent'}`}
               >
                 <div className="flex items-center gap-2 relative z-10">
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 shadow-sm ${currentStatus === 'verified' ? 'bg-white' : 'bg-[#0F7A60]'}`} />
-                  <span>Vérifiés</span>
+                  <span className="whitespace-nowrap">Vérifiés</span>
                 </div>
                 <span className={`text-xs font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${currentStatus === 'verified' ? 'bg-white/20 text-white' : 'bg-teal-50 text-teal-600'}`}>
                   {totalVerified}
@@ -241,19 +241,19 @@ export default function KYCClient({
 
               <Link 
                 href="/admin/kyc?status=rejected" 
-                className={`flex items-center justify-between gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 relative overflow-hidden group ${currentStatus === 'rejected' ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-500/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-red-500 border border-transparent'}`}
+                className={`flex items-center gap-3 px-5 py-3 rounded-[1.5rem] text-sm font-bold transition-all duration-300 relative overflow-hidden group shrink-0 ${currentStatus === 'rejected' ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-md shadow-red-500/20' : 'bg-transparent text-gray-500 hover:bg-white hover:text-red-500 border border-transparent'}`}
               >
                 <div className="flex items-center gap-2 relative z-10">
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 shadow-sm ${currentStatus === 'rejected' ? 'bg-white' : 'bg-red-500'}`} />
-                  <span>Rejetés</span>
+                  <span className="whitespace-nowrap">Rejetés</span>
                 </div>
                 <span className={`text-xs font-black tabular-nums relative z-10 px-2 py-0.5 rounded-md ${currentStatus === 'rejected' ? 'bg-white/20 text-white' : 'bg-red-50 text-red-600'}`}>
                   {totalRejected}
                 </span>
               </Link>
             </nav>
-          </aside>
-
+          </div>
+        </div>
           {/* ── COLONNE DROITE : CONTENU PRINCIPAL ── */}
           <div className="flex-1 w-full space-y-6">
 

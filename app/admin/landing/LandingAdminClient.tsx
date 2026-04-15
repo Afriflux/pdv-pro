@@ -186,7 +186,7 @@ export default function LandingAdminClient(props: Props) {
   const cardClass = "bg-white border border-slate-100 rounded-[2rem] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.04)] relative z-10 transition-all duration-500"
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 pb-24 items-start w-full relative">
+    <div className="flex flex-col gap-6 pb-24 w-full relative">
       
       {/* BOUTON PREVIEW FLOTTANT */}
       <a 
@@ -205,9 +205,9 @@ export default function LandingAdminClient(props: Props) {
         <ExternalLink size={18} className="group-hover:translate-x-1 transition-transform" />
       </a>
 
-      {/* MAC-STYLE VERTICAL TABS SIDEBAR */}
-      <div className="w-full lg:w-72 shrink-0 sticky top-8 z-20">
-        <div className="flex flex-col p-3 bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-[2rem] gap-2 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+      {/* HORIZONTAL TABS MENU */}
+      <div className="w-full relative z-20">
+        <div className="flex flex-row items-center gap-2 overflow-x-auto hide-scrollbar bg-white/80 backdrop-blur-md p-2 rounded-2xl border border-slate-200/50 shadow-[0_4px_15px_rgba(0,0,0,0.02)] w-fit max-w-full">
           {TABS.map(tab => {
             const isActive = activeTab === tab.id
             const Icon = tab.icon
@@ -218,19 +218,14 @@ export default function LandingAdminClient(props: Props) {
                 aria-label={`Ouvrir l'onglet ${tab.label}`}
                 title={`Onglet ${tab.label}`}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex items-center justify-start gap-4 px-4 py-3 text-[15px] font-bold rounded-2xl transition-all duration-300 w-full group ${
+                className={`flex items-center gap-2 shrink-0 px-5 py-2.5 rounded-xl text-[14px] font-bold transition-all duration-300 group ${
                   isActive 
-                    ? 'text-emerald-900 bg-white shadow-[0_4px_15px_rgba(0,0,0,0.06)] ring-1 ring-slate-100' 
+                    ? 'text-emerald-900 bg-white shadow-sm ring-1 ring-slate-100' 
                     : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/50'
                 }`}
               >
-                <div className={`p-2.5 rounded-xl transition-colors ${isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-transparent text-slate-400 group-hover:bg-slate-200/50 group-hover:text-slate-600'}`}>
-                  <Icon size={18} />
-                </div>
-                {tab.label}
-                {isActive && (
-                   <span className="absolute right-4 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
-                )}
+                <Icon size={16} className={`${isActive ? 'text-emerald-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                <span className="whitespace-nowrap">{tab.label}</span>
               </button>
             )
           })}

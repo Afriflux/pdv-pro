@@ -1,0 +1,97 @@
+'use server'
+
+import { createClient } from '@/lib/supabase/server'
+import { prisma } from '@/lib/prisma'
+
+/**
+ * Generate a 6-digit OTP for COD order validation.
+ * Called when the closer confirms the order (closing → cod_confirmed).
+ */
+export async function generateDeliveryOTP(orderId: string): Promise<{ success: boolean; otp?: string; error?: string }> {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: 'Non autorisé' }
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { id: true, payment_method: true, status: true, store_id: true }
+    })
+
+    if (!order) return { success: false, error: 'Commande introuvable' }
+    if (order.payment_method !== 'cod') return { success: false, error: 'OTP uniquement pour les commandes COD' }
+
+    // Generate 6-digit OTP
+    const otp = String(Math.floor(100000 + Math.random() * 900000))
+
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        delivery_otp: otp,
+        delivery_otp_created_at: new Date()
+      }
+    })
+
+    return { success: true, otp }
+  } catch (error: any) {
+    console.error('[GenerateOTP] Error:', error)
+    return { success: false, error: error.message }
+  }
+}
+
+/**
+ * Verify OTP at delivery. If valid, the order can transition to 'delivered'.
+ */
+export async function verifyDeliveryOTP(orderId: string, otpInput: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: 'Non autorisé' }
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: {
+        id: true,
+        delivery_otp: true,
+        delivery_otp_created_at: true,
+        payment_method: true,
+        status: true,
+        store_id: true,
+        store: { select: { user_id: true } }
+      }
+    })
+
+    if (!order) return { success: false, error: 'Commande introuvable' }
+    if (order.payment_method !== 'cod') return { success: false, error: 'OTP uniquement pour les commandes COD' }
+    if (!order.delivery_otp) return { success: false, error: 'Aucun OTP généré pour cette commande' }
+
+    // OTP expiration: 24 hours
+    if (order.delivery_otp_created_at) {
+      const expiresAt = new Date(order.delivery_otp_created_at.getTime() + 24 * 60 * 60 * 1000)
+      if (new Date() > expiresAt) {
+        return { success: false, error: 'OTP expiré. Veuillez en regénérer un.' }
+      }
+    }
+
+    // Verify OTP
+    if (order.delivery_otp !== otpInput.trim()) {
+      return { success: false, error: 'Code OTP incorrect' }
+    }
+
+    // OTP valid → mark as delivered
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: 'delivered',
+        delivery_otp: null, // Clear OTP after use
+        delivery_otp_created_at: null,
+        updated_at: new Date()
+      }
+    })
+
+    return { success: true }
+  } catch (error: any) {
+    console.error('[VerifyOTP] Error:', error)
+    return { success: false, error: error.message }
+  }
+}

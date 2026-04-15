@@ -47,12 +47,12 @@ export default function MarketingHubClient({ store, products, links, domain }: M
   const storeUrl = `https://${domain}/${store.slug}`
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
+    <div className="flex flex-col gap-6">
       
-      {/* SIDEBAR NAVIGATION */}
-      <div className="w-full lg:w-72 shrink-0 space-y-2">
-        <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4 px-4 px-2">Menu</h3>
-        <nav className="flex flex-col space-y-1 bg-white p-2 rounded-3xl border border-gray-100 shadow-sm">
+      {/* HORIZONTAL NAVIGATION */}
+      <div className="w-full space-y-4 mb-4">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#1A1A1A] sr-only">Menu Marketing</h3>
+        <nav className="flex flex-row items-center gap-2 overflow-x-auto hide-scrollbar bg-white/60 backdrop-blur-md p-2 rounded-2xl border border-slate-100 shadow-sm w-fit">
           {tabs.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -60,39 +60,33 @@ export default function MarketingHubClient({ store, products, links, domain }: M
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center justify-between w-full p-4 rounded-2xl text-left transition-all duration-300 ${
+                className={`flex items-center gap-2 shrink-0 px-6 py-3 rounded-xl transition-all duration-300 ${
                   isActive 
                   ? 'bg-[#0F7A60] text-white shadow-md' 
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-[#0F7A60]'
+                  : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <span className={`flex items-center justify-center w-10 h-10 rounded-xl ${isActive ? 'bg-white/10' : 'bg-gray-100 text-gray-400'}`}>
-                    <Icon size={18} />
-                  </span>
-                  <div>
-                    <p className={`font-bold text-sm ${isActive ? 'text-white' : 'text-[#1A1A1A]'}`}>{tab.label}</p>
-                    <p className={`text-xs uppercase font-bold tracking-wider mt-0.5 ${isActive ? 'text-white/50' : 'text-gray-400'}`}>{tab.desc}</p>
-                  </div>
-                </div>
-                {isActive && <ChevronRight size={16} className="text-white/50" />}
+                <Icon size={18} />
+                <span className="font-bold text-sm tracking-tight">{tab.label}</span>
               </button>
             )
           })}
         </nav>
 
         {/* Info card motivante */}
-        <div className="mt-8 bg-emerald-50 border border-emerald-100 p-6 rounded-3xl text-emerald-800">
-          <span className="text-2xl mb-2 block">💡</span>
-          <h4 className="font-bold text-sm mb-1">Stratégie du jour</h4>
-          <p className="text-xs font-medium text-emerald-700 leading-relaxed">
-            Astuce : Installez vos Pixels puis générez un Script Pub IA. Vous pourrez ainsi cibler exactement les personnes intéressées par vos produits.
-          </p>
+        <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl text-emerald-800 flex items-center gap-4 max-w-4xl">
+          <span className="text-2xl shrink-0">💡</span>
+          <div>
+            <h4 className="font-bold text-sm mb-0.5">Stratégie du jour</h4>
+            <p className="text-xs font-medium text-emerald-700">
+              Installez vos Pixels puis générez un Script Pub IA. Vous pourrez ainsi cibler exactement les personnes intéressées par vos produits.
+            </p>
+          </div>
         </div>
       </div>
 
       {/* CONTENT AREA */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 w-full">
         
         {/* TAB 1: OVERVIEW */}
         {activeTab === 'overview' && (

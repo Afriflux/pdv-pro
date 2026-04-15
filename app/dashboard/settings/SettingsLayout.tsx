@@ -71,70 +71,72 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
   }
 
   return (
-    <div className="flex flex-col lg:flex-row w-full pb-20 items-start relative z-20">
+    <div className="flex flex-col lg:flex-row w-full gap-6 lg:gap-8 pb-20 relative z-20 px-4 md:px-6 lg:px-8 mx-auto">
       
-      {/* ── MENU LATÉRAL ACCOLÉ ── */}
-      <aside className="w-full lg:w-[300px] flex-shrink-0 sticky top-[80px] z-10 lg:h-[calc(100vh-80px)] overflow-y-auto bg-white/80 backdrop-blur-3xl border-r border-gray-200 p-5 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col gap-6">
-        <nav className="flex lg:flex-col gap-1.5 min-w-max lg:min-w-0" aria-label="Menu des paramètres du vendeur">
-          <MenuBtn active={activeSection === 'profil'} icon={<User className="w-5 h-5" />} label="Général" onClick={() => setActiveSection('profil')} />
-          <MenuBtn active={activeSection === 'lien'} icon={<Globe className="w-5 h-5" />} label="Lien Boutique" onClick={() => setActiveSection('lien')} />
-          <MenuBtn active={activeSection === 'apparence'} icon={<Palette className="w-5 h-5" />} label="Apparence" onClick={() => setActiveSection('apparence')} />
-          <MenuBtn active={activeSection === 'vendor'} icon={<StoreIcon className="w-5 h-5" />} label="Type de Vendeur" onClick={() => setActiveSection('vendor')} />
-          <div className="hidden lg:block h-6" />
-          <MenuBtn active={activeSection === 'reseaux'} icon={<Share2 className="w-5 h-5" />} label="Réseaux Sociaux" onClick={() => setActiveSection('reseaux')} />
-          <MenuBtn active={activeSection === 'seo'} icon={<Search className="w-5 h-5" />} label="Référencement & SEO" onClick={() => setActiveSection('seo')} />
-          <MenuBtn active={activeSection === 'securite'} icon={<ShieldCheck className="w-5 h-5" />} label="Sécurité" onClick={() => setActiveSection('securite')} />
-          <MenuBtn active={activeSection === 'notifications'} icon={<Bell className="w-5 h-5" />} label="Notifications" onClick={() => setActiveSection('notifications')} />
-          <div className="hidden lg:block h-6" />
-          <MenuBtn active={activeSection === 'retrait'} icon={<Wallet className="w-5 h-5" />} label="Retraits" onClick={() => setActiveSection('retrait')} />
-          <MenuBtn active={activeSection === 'kyc'} icon={<CheckCircle2 className="w-5 h-5" />} label="Vérification KYC" onClick={() => setActiveSection('kyc')} />
-          <MenuBtn active={activeSection === 'contrat'} icon={<FileText className="w-5 h-5" />} label="Contrat Partenaire" onClick={() => setActiveSection('contrat')} />
-          
-          {store?.installedApps?.some((a: { app_id: string; status: string }) => a.app_id === 'whatsapp-bot' && a.status === 'active') && (
-            <MenuBtn active={activeSection === 'whatsapp-bot'} icon={<Phone className="w-5 h-5" />} label="WhatsApp Bot" onClick={() => setActiveSection('whatsapp-bot')} />
-          )}
-
-          {store?.installedApps?.some((a: { app_id: string; status: string }) => a.app_id === 'loyalty-points' && a.status === 'active') && (
-            <MenuBtn active={activeSection === 'loyalty'} icon={<Trophy className="w-5 h-5" />} label="Fidélité (Points)" onClick={() => setActiveSection('loyalty')} />
-          )}
-
-          <div className="hidden lg:block h-6" />
-          <button 
-            onClick={() => setActiveSection('danger')}
-            aria-current={activeSection === 'danger' ? 'page' : undefined}
-            className={`w-full flex items-center gap-3 px-5 py-4 rounded-[1.2rem] text-sm font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-400 ${
-              activeSection === 'danger' ? 'bg-red-50 text-red-600 ring-1 ring-red-200 shadow-sm' : 'text-red-400 hover:bg-white/80 hover:text-red-600 hover:translate-x-1 hover:shadow-sm'
-            }`}
-          >
-            <AlertTriangle className="w-5 h-5 flex-shrink-0" /> <span className={activeSection !== 'danger' ? 'hidden lg:inline' : 'inline'}>Zone de Danger</span>
-          </button>
-          
-          <div className="hidden lg:block mt-10 p-6 bg-white/80 backdrop-blur-xl rounded-3xl border border-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] group-hover:shadow-[0_4px_30px_rgb(0,0,0,0.06)] transition-all">
-            <p className="text-[12px] font-black text-gray-900 mb-3 tracking-widest uppercase">Progression</p>
-            <div className="w-full bg-gray-100/50 rounded-full h-2 mb-3 overflow-hidden shadow-inner">
-              {/* eslint-disable-next-line */}
-              <div className={`bg-[#0F7A60] h-2 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(15,122,96,0.5)] ${completionPercent === 0 ? 'w-0' : completionPercent === 20 ? 'w-1/5' : completionPercent === 40 ? 'w-2/5' : completionPercent === 60 ? 'w-3/5' : completionPercent === 80 ? 'w-4/5' : 'w-full'}`}></div>
-            </div>
-            <p className="text-[12px] font-medium text-gray-500">{completionPercent === 100 ? 'Boutique parfaitement configurée ! 🎉' : 'Complétez votre profil pour vendre.'}</p>
+      {/* ── MENU HYBRIDE ── */}
+      <aside className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start z-20">
+        
+        {/* PROGRESS BAR DANS SIDEBAR (Desktop seulement, optionnel) ou en haut */}
+        <div className="hidden lg:block px-6 py-4 bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 shadow-sm w-full">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-black text-gray-900 tracking-widest uppercase">Progression</span>
+            <span className="text-[11px] font-bold text-gray-500">{completionPercent}%</span>
           </div>
-        </nav>
+          <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+            {/* eslint-disable-next-line */}
+            <div className="bg-[#0F7A60] h-full transition-all duration-1000 shadow-[0_0_10px_rgba(15,122,96,0.5)]" style={{ width: `${completionPercent}%` }}></div>
+          </div>
+        </div>
+
+        <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible bg-white/80 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none p-2 lg:p-0 rounded-2xl lg:rounded-none border border-gray-200/50 lg:border-none shadow-[0_4px_15px_rgba(0,0,0,0.02)] lg:shadow-none">
+          <nav className="flex flex-row lg:flex-col items-center lg:items-stretch gap-2 min-w-max lg:min-w-0" aria-label="Menu des paramètres du vendeur">
+            <MenuBtn active={activeSection === 'profil'} icon={<User size={16} />} label="Général" onClick={() => setActiveSection('profil')} />
+            <MenuBtn active={activeSection === 'lien'} icon={<Globe size={16} />} label="Lien Boutique" onClick={() => setActiveSection('lien')} />
+            <MenuBtn active={activeSection === 'apparence'} icon={<Palette size={16} />} label="Apparence" onClick={() => setActiveSection('apparence')} />
+            <MenuBtn active={activeSection === 'vendor'} icon={<StoreIcon size={16} />} label="Vendeur" onClick={() => setActiveSection('vendor')} />
+            <MenuBtn active={activeSection === 'reseaux'} icon={<Share2 size={16} />} label="Réseaux" onClick={() => setActiveSection('reseaux')} />
+            <MenuBtn active={activeSection === 'seo'} icon={<Search size={16} />} label="SEO" onClick={() => setActiveSection('seo')} />
+            <MenuBtn active={activeSection === 'securite'} icon={<ShieldCheck size={16} />} label="Sécurité" onClick={() => setActiveSection('securite')} />
+            <MenuBtn active={activeSection === 'notifications'} icon={<Bell size={16} />} label="Notifications" onClick={() => setActiveSection('notifications')} />
+            <MenuBtn active={activeSection === 'retrait'} icon={<Wallet size={16} />} label="Retraits" onClick={() => setActiveSection('retrait')} />
+            <MenuBtn active={activeSection === 'kyc'} icon={<CheckCircle2 size={16} />} label="KYC" onClick={() => setActiveSection('kyc')} />
+            <MenuBtn active={activeSection === 'contrat'} icon={<FileText size={16} />} label="Contrat" onClick={() => setActiveSection('contrat')} />
+            
+            {store?.installedApps?.some((a: { app_id: string; status: string }) => a.app_id === 'whatsapp-bot' && a.status === 'active') && (
+              <MenuBtn active={activeSection === 'whatsapp-bot'} icon={<Phone size={16} />} label="WhatsApp" onClick={() => setActiveSection('whatsapp-bot')} />
+            )}
+            {store?.installedApps?.some((a: { app_id: string; status: string }) => a.app_id === 'loyalty-points' && a.status === 'active') && (
+              <MenuBtn active={activeSection === 'loyalty'} icon={<Trophy size={16} />} label="Fidélité" onClick={() => setActiveSection('loyalty')} />
+            )}
+
+            <button 
+              onClick={() => setActiveSection('danger')}
+              aria-current={activeSection === 'danger' ? 'page' : undefined}
+              className={`shrink-0 flex items-center lg:justify-start justify-center gap-2 px-5 py-2.5 lg:py-4 rounded-[1.2rem] text-[14.5px] font-bold transition-all duration-300 outline-none w-full lg:w-auto ${
+                activeSection === 'danger' ? 'bg-red-50 text-red-600 ring-1 ring-red-200 shadow-sm' : 'text-red-400 hover:bg-red-50 hover:text-red-600'
+              }`}
+            >
+              <AlertTriangle size={16} /> <span className="whitespace-nowrap">Danger</span>
+            </button>
+          </nav>
+        </div>
       </aside>
 
       {/* ── CONTENU (Sections) ── */}
-      <div className="flex-1 w-full relative z-10 p-4 md:p-6 lg:p-8 max-w-5xl">
+      <main className="flex-1 w-full min-w-0 relative z-10 max-w-4xl mx-auto">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeSection}
-            initial={{ opacity: 0, scale: 0.96, x: 20 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            exit={{ opacity: 0, scale: 0.96, x: -20 }}
-            transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+            initial={{ opacity: 0, scale: 0.98, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, y: -10 }}
+            transition={{ duration: 0.3 }}
             className="w-full relative"
           >
             {renderActiveSection()}
           </motion.div>
         </AnimatePresence>
-      </div>
+      </main>
 
     </div>
   )
