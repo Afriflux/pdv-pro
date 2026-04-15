@@ -321,6 +321,7 @@ export function AdminSidebar({
   const [mobileOpen, setMobileOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -336,26 +337,25 @@ export function AdminSidebar({
     }
   }, [collapsed, mounted])
 
+  const isEffectivelyCollapsed = collapsed && mounted && !hovered
+
   return (
     <>
       {/* ── DESKTOP ── */}
       <aside 
-        className={`hidden lg:flex flex-col flex-shrink-0 bg-white border-r border-gray-200 shadow-xl relative overflow-hidden h-screen sticky top-0 z-30 ${
-          collapsed && mounted ? 'w-[80px]' : 'w-[280px]'
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className={`hidden lg:flex flex-col flex-shrink-0 bg-white border-r border-gray-200 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] relative overflow-hidden h-screen sticky top-0 z-30 ${
+          isEffectivelyCollapsed ? 'w-[84px]' : 'w-[280px]'
         }`}
       >
-        {/* Desktop Noise */}
-        
-        
-        
-
         <div className="relative z-10 flex flex-col h-full w-full">
           <AdminSidebarContent 
             adminName={adminName}
             adminEmail={_adminEmail}
             avatarUrl={avatarUrl}
             adminRole={adminRole}
-            collapsed={collapsed && mounted}
+            collapsed={isEffectivelyCollapsed}
             setCollapsed={setCollapsed}
           />
         </div>
