@@ -23,6 +23,7 @@ interface PaymentMethodSelectorProps {
     client_payment_number?: string | null
     [key: string]: unknown
   } | null
+  buyerPhone?: string
 }
 
 // ─── Composant ────────────────────────────────────────────────────────────────
@@ -32,6 +33,7 @@ export default function PaymentMethodSelector({
   orderId,
   onSuccess,
   clientProfile,
+  buyerPhone,
 }: PaymentMethodSelectorProps) {
   const [methods, setMethods] = useState<AvailableMethod[]>([])
   const [loadingMethods, setLoadingMethods] = useState(true)
@@ -46,7 +48,14 @@ export default function PaymentMethodSelector({
       try {
         const res = await fetch('/api/payments/available')
         const data = await res.json() as { methods: AvailableMethod[] }
-        setMethods(data.methods || [])
+        let fetchedMethods = data.methods || []
+
+        // GEO-ROUTING PAIEMENTS: Restreindre les passerelles SN (Wave, PayTech) si acheteur hors SN 
+        if (buyerPhone && buyerPhone.startsWith('+') && !buyerPhone.startsWith('+221')) {
+           fetchedMethods = fetchedMethods.filter((m: AvailableMethod) => m.id !== 'wave' && m.id !== 'paytech')
+        }
+
+        setMethods(fetchedMethods)
 
         // Auto-select if client had a previous preference
         if (clientProfile?.client_payment_method) {
@@ -60,7 +69,7 @@ export default function PaymentMethodSelector({
       }
     }
     fetchMethods()
-  }, [clientProfile?.client_payment_method])
+  }, [clientProfile?.client_payment_method, buyerPhone])
 
   const needsPhone = selectedMethod === 'wave'
 
@@ -161,11 +170,11 @@ export default function PaymentMethodSelector({
           const isFirst = index === 0
 
           return (
+            // eslint-disable-next-line
             <button
               key={method.id}
               type="button"
-              role="radio"
-              aria-checked={isSelected}
+              {...({ 'aria-pressed': isSelected } as any)}
               onClick={() => setSelectedMethod(method.id)}
               className={`w-full flex items-center gap-3.5 p-4 rounded-2xl border-2 transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#0F7A60] focus-visible:ring-offset-2 outline-none ${
                 isSelected

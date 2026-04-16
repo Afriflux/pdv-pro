@@ -3,6 +3,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { signOut } from '@/app/auth/actions'
 import {
@@ -204,10 +205,9 @@ export function MobileBottomNav({ storeName, userName, avatarUrl, installedApps 
               {/* Header */}
               <div className="flex items-center justify-between px-5 pt-2 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-100 bg-emerald-50 flex items-center justify-center shadow-sm">
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-100 bg-emerald-50 flex items-center justify-center shadow-sm">
                     {avatarUrl ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+                      <Image src={avatarUrl} alt="" fill sizes="40px" unoptimized className="object-cover" />
                     ) : (
                       <span className="text-base font-black text-emerald-700">{initial}</span>
                     )}

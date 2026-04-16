@@ -1,3 +1,4 @@
+/* noinspection CssInlineStyle */
 import { ImageResponse } from 'next/og'
 
 // Image metadata
@@ -11,17 +12,7 @@ export const contentType = 'image/png'
 export default function Icon() {
   return new ImageResponse(
     (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#0F7A60',
-          borderRadius: '120px',
-        }}
-      >
+      <div tw="flex items-center justify-center w-full h-full bg-[#0F7A60] rounded-[120px]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="250"

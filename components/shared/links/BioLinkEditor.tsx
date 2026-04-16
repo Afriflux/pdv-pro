@@ -3,7 +3,7 @@
 'use client'
 
 import { useState, useTransition, useRef } from 'react'
-import { Plus, Trash2, GripVertical, Save, CheckCircle2, ExternalLink, UploadCloud, Loader2, Image as ImageIcon, Link2, Copy } from 'lucide-react'
+import { Plus, Trash2, GripVertical, Save, CheckCircle2, ExternalLink, UploadCloud, Loader2, Image as ImageIcon, Link2, Copy, Grid2X2, List, Eye, Palette, Share2 } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { createClient } from '@/lib/supabase/client'
 import { saveBioLink } from '@/app/actions/biolink'
@@ -15,11 +15,34 @@ interface BioLinkEditorProps {
   userId: string
   initialBioLink?: any
   domain: string
+  onBack?: () => void
 }
 
-export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLinkEditorProps) {
+export default function BioLinkEditor({ userId, initialBioLink, domain, onBack }: BioLinkEditorProps) {
   const [isPending, startTransition] = useTransition()
+  const [themeView, setThemeView] = useState<'grid' | 'list'>('grid')
   
+  const AVAILABLE_THEMES = [
+    { id: 'light', name: 'Light', icon: '⚪️', tailwindClass: 'border-gray-200 bg-white text-gray-800' },
+    { id: 'dark', name: 'Dark', icon: '⚫️', tailwindClass: 'border-gray-800 bg-black text-white' },
+    { id: 'glass', name: 'Glass Premium', icon: '✨', tailwindClass: 'bg-gradient-to-br from-indigo-500 to-pink-500 text-white border-transparent' },
+    { id: 'girly', name: 'Girly Pink', icon: '🌸', tailwindClass: 'bg-pink-50 border-pink-200 text-pink-600' },
+    { id: 'pinky', name: 'Hot Pinky', icon: '💅', tailwindClass: 'bg-pink-500 border-pink-400 text-white' },
+    { id: 'luxury', name: 'Luxury Gold', icon: '👑', tailwindClass: 'bg-black border-[#FFD700] text-[#FFD700]' },
+    { id: 'richy', name: 'Richy Emerald', icon: '💎', tailwindClass: 'bg-[#082212] border-emerald-500 text-emerald-400' },
+    { id: 'pro', name: 'Pro Corporate', icon: '💼', tailwindClass: 'bg-slate-100 border-slate-300 text-slate-800' },
+    { id: 'magnet', name: 'Magnet Gradient', icon: '🧲', tailwindClass: 'bg-gradient-to-tr from-rose-600 to-indigo-600 border-transparent text-white' },
+    { id: 'argenté', name: 'Silver Metal', icon: '💿', tailwindClass: 'bg-gradient-to-b from-gray-100 to-gray-300 border-gray-400 text-gray-800' },
+    { id: 'services', name: 'Blue Services', icon: '🛠', tailwindClass: 'bg-blue-50 border-blue-200 text-blue-600' },
+    { id: 'expresse', name: 'Red Express', icon: '🚀', tailwindClass: 'bg-red-50 border-red-200 text-red-600' },
+    { id: 'été', name: 'Summer Vibes', icon: '⛱', tailwindClass: 'bg-gradient-to-br from-yellow-300 to-orange-400 border-transparent text-white' },
+    { id: 'show', name: 'Show Neon', icon: '🎭', tailwindClass: 'bg-zinc-950 border-purple-500 text-purple-400' },
+    { id: 'shadow', name: 'Shadow Black', icon: '🌑', tailwindClass: 'bg-[#0a0a0a] border-gray-800 text-gray-400' },
+    { id: 'ambiance', name: 'Ambiance', icon: '🕯', tailwindClass: 'bg-gradient-to-tr from-amber-900 to-black border-amber-800 text-amber-500' },
+    { id: 'music', name: 'Night Music', icon: '🎵', tailwindClass: 'bg-indigo-950 border-indigo-500 text-indigo-400' },
+    { id: 'custom', name: 'Total Custom', icon: '🎨', tailwindClass: 'bg-white border-2 border-dashed border-[#0F7A60] text-[#0F7A60]' }
+  ]
+
   const [formData, setFormData] = useState({
     title: initialBioLink?.title || '',
     slug: initialBioLink?.slug || '',
@@ -35,25 +58,113 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
     phone_active: initialBioLink?.phone_active || false,
     phone_number: initialBioLink?.phone_number || '',
     phone_text: initialBioLink?.phone_text || 'Appeler Maintenant 📞',
+    custom_appearance: initialBioLink?.custom_appearance || {
+      bg_type: 'color',
+      bg_value: '#FAFAF7',
+      font_family: 'inter',
+      button_shape: 'rounded-xl',
+      button_style: 'solid'
+    }
   })
+
+  const isDarkTheme = ['dark', 'luxury', 'richy', 'show', 'shadow', 'ambiance', 'music'].includes(formData.theme);
+  const isGlassTheme = ['glass', 'magnet', 'été'].includes(formData.theme);
+  const isLightTheme = !isDarkTheme && !isGlassTheme;
+
+  let bgClass = "bg-[#FAFAF7] text-gray-900";
+  let wrapperClass = "bg-white text-gray-900 border-gray-100";
+  
+  switch(formData.theme) {
+    case 'dark':
+      bgClass = "bg-black text-white";
+      wrapperClass = "bg-[#1A1A1A] text-white border-gray-800";
+      break;
+    case 'glass':
+      bgClass = "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white";
+      wrapperClass = "bg-white/10 backdrop-blur-xl border border-white/20 text-white";
+      break;
+    case 'girly':
+      bgClass = "bg-pink-50 text-pink-900";
+      wrapperClass = "bg-white text-pink-900 border-pink-100";
+      break;
+    case 'pinky':
+      bgClass = "bg-pink-500 text-white";
+      wrapperClass = "bg-pink-400 text-white border-pink-300";
+      break;
+    case 'luxury':
+      bgClass = "bg-black text-amber-100";
+      wrapperClass = "bg-[#0A0A0A] text-amber-100 border-[#FFD700]/30";
+      break;
+    case 'richy':
+      bgClass = "bg-[#082212] text-emerald-50";
+      wrapperClass = "bg-[#0A2E18] text-emerald-50 border-emerald-500/20";
+      break;
+    case 'pro':
+      bgClass = "bg-slate-100 text-slate-900";
+      wrapperClass = "bg-white text-slate-900 border-slate-200";
+      break;
+    case 'magnet':
+      bgClass = "bg-gradient-to-tr from-rose-600 via-purple-600 to-indigo-600 text-white";
+      wrapperClass = "bg-white/10 backdrop-blur-2xl border-white/20 text-white";
+      break;
+    case 'argenté':
+      bgClass = "bg-gradient-to-b from-gray-100 to-gray-300 text-gray-900";
+      wrapperClass = "bg-gradient-to-br from-white to-gray-50 text-gray-900 border-white/50";
+      break;
+    case 'services':
+      bgClass = "bg-blue-50 text-blue-950";
+      wrapperClass = "bg-white text-blue-950 border-blue-100";
+      break;
+    case 'expresse':
+      bgClass = "bg-red-50 text-red-950";
+      wrapperClass = "bg-white text-red-950 border-red-100";
+      break;
+    case 'été':
+      bgClass = "bg-gradient-to-br from-yellow-300 via-orange-400 to-red-500 text-white";
+      wrapperClass = "bg-white/20 backdrop-blur-xl border-white/30 text-white";
+      break;
+    case 'show':
+      bgClass = "bg-zinc-950 text-white";
+      wrapperClass = "bg-zinc-900 text-white border-purple-500/30";
+      break;
+    case 'shadow':
+      bgClass = "bg-[#050505] text-gray-300";
+      wrapperClass = "bg-[#0A0A0A] text-gray-300 shadow-[inset_0_0_50px_rgba(255,255,255,0.02)] border-gray-800/50";
+      break;
+    case 'ambiance':
+      bgClass = "bg-gradient-to-tr from-orange-900 via-amber-900 to-black text-amber-50";
+      wrapperClass = "bg-black/40 backdrop-blur-xl text-amber-50 border-amber-900/50";
+      break;
+    case 'music':
+      bgClass = "bg-indigo-950 text-indigo-50";
+      wrapperClass = "bg-indigo-900/40 backdrop-blur-xl text-indigo-50 border-indigo-500/30";
+      break;
+    case 'custom':
+      const c = formData.custom_appearance;
+      bgClass = c?.bg_type === 'gradient' ? c.bg_value : "bg-transparent";
+      wrapperClass = c?.button_style === 'glass' ? "bg-white/10 backdrop-blur-xl border border-white/20" : "bg-white/80 border-gray-200";
+      break;
+  }
   const [links, setLinks] = useState<any[]>(initialBioLink?.links || [])
   const [message, setMessage] = useState({ text: '', type: '' })
   
   const avatarFileRef = useRef<HTMLInputElement>(null)
   const bannerFileRef = useRef<HTMLInputElement>(null)
+  const customBgFileRef = useRef<HTMLInputElement>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [uploadingBanner, setUploadingBanner] = useState(false)
+  const [uploadingBg, setUploadingBg] = useState(false)
   
   // Cropper states
   const [cropFileSrc, setCropFileSrc] = useState<string | null>(null)
-  const [cropType, setCropType] = useState<'avatar_url' | 'banner_url' | null>(null)
+  const [cropType, setCropType] = useState<'avatar_url' | 'banner_url' | 'custom_bg' | null>(null)
   const [openEmojiId, setOpenEmojiId] = useState<string | null>(null)
   
   const supabase = createClient()
 
   const handleFileSelect = (
     e: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>, 
-    field: 'avatar_url' | 'banner_url'
+    field: 'avatar_url' | 'banner_url' | 'custom_bg'
   ) => {
     e.preventDefault()
     let file: File | null = null
@@ -80,12 +191,13 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
     reader.readAsDataURL(file)
   }
 
-  const handleFileUpload = async (file: File, field: 'avatar_url' | 'banner_url') => {
+  const handleFileUpload = async (file: File, field: 'avatar_url' | 'banner_url' | 'custom_bg') => {
     setCropFileSrc(null)
     setCropType(null)
 
     if (field === 'avatar_url') setUploadingAvatar(true)
-    else setUploadingBanner(true)
+    else if (field === 'banner_url') setUploadingBanner(true)
+    else setUploadingBg(true)
 
     const ext = file.name.split('.').pop()
     const path = `products/biolinks/${userId}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
@@ -100,8 +212,12 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
         setMessage({ text: `Erreur d'upload: ${error.message}`, type: 'error' })
       } else {
         const { data: urlData } = supabase.storage.from('products').getPublicUrl(path)
-        setFormData(prev => ({ ...prev, [field]: urlData.publicUrl }))
-        toast.success(`Image ${field === 'avatar_url' ? 'de profil' : 'de couverture'} uploadée !`)
+        if (field === 'custom_bg') {
+          setFormData(prev => ({ ...prev, custom_appearance: { ...prev.custom_appearance, bg_value: urlData.publicUrl } }))
+        } else {
+          setFormData(prev => ({ ...prev, [field]: urlData.publicUrl }))
+        }
+        toast.success(`Image ${field === 'avatar_url' ? 'de profil' : field === 'banner_url' ? 'de couverture' : 'de fond'} uploadée !`)
         setMessage({ text: 'Image uploadée avec succès ! N\'oubliez pas de Sauvegarder.', type: 'success' })
       }
     } catch (err: any) {
@@ -109,7 +225,8 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
       setMessage({ text: 'Erreur inattendue.', type: 'error' })
     } finally {
       if (field === 'avatar_url') setUploadingAvatar(false)
-      else setUploadingBanner(false)
+      else if (field === 'banner_url') setUploadingBanner(false)
+      else setUploadingBg(false)
     }
   }
 
@@ -175,6 +292,14 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
     return L > 0.179;
   };
   const ctaTextColor = isLight(formData.brand_color) ? '#000000' : '#FFFFFF';
+  let customBgStyle = ''
+  if (formData.theme === 'custom') {
+    if (formData.custom_appearance?.bg_type === 'color') {
+       customBgStyle = `.custom-editor-bg { background-color: ${formData.custom_appearance.bg_value} !important; }`
+    } else if (formData.custom_appearance?.bg_type === 'image') {
+       customBgStyle = `.custom-editor-bg { background-image: url('${formData.custom_appearance.bg_value}') !important; background-size: cover !important; background-position: center !important; }`
+    }
+  }
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
@@ -186,16 +311,47 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
               <ExternalLink size={14} /> {publicUrl}
             </a>
           </div>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(publicUrl);
-              toast.success('Lien copié dans le presse-papier !');
-            }}
-            className="flex items-center gap-2 bg-[#FAFAF7] hover:bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold transition-all active:scale-95"
-          >
-            <Copy size={16} /> Copier le lien
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: formData.title || 'Mon Link-in-Bio',
+                    url: publicUrl
+                  }).catch(() => {});
+                } else {
+                  navigator.clipboard.writeText(publicUrl);
+                  toast.success('Lien copié dans le presse-papier !');
+                }
+              }}
+              className="flex items-center justify-center p-2.5 bg-[#FAFAF7] hover:bg-gray-100 border border-gray-200 text-gray-700 rounded-xl transition-all active:scale-95"
+              title="Partager"
+            >
+              <Share2 size={16} />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(publicUrl);
+                toast.success('Lien copié dans le presse-papier !');
+              }}
+              className="flex items-center gap-2 bg-[#FAFAF7] hover:bg-gray-100 border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold transition-all active:scale-95"
+            >
+              <Copy size={16} /> Copier
+            </button>
+          </div>
         </div>
+
+        {onBack && (
+          <button 
+            type="button"
+            onClick={onBack}
+            className="mb-4 flex items-center text-sm font-bold text-gray-500 hover:text-[#0F7A60] transition-colors"
+          >
+            ← Retour à mes pages
+          </button>
+        )}
 
         {/* PROFIL CARD */}
         <div className="bg-white rounded-[32px] p-6 sm:p-8 shadow-sm border border-gray-100">
@@ -203,7 +359,7 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-[13px] font-bold text-gray-400 mb-1">Nom du profil</label>
+              <label className="block text-[13px] font-bold text-gray-400 mb-1">Intitulé de la page (Nom du profil)</label>
               <input 
                 title="Nom du profil"
                 type="text" 
@@ -336,29 +492,139 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
                 placeholder="Une courte description de qui vous êtes..."
               />
             </div>
-            <div>
-              <label className="block text-[13px] font-bold text-gray-400 mb-2">Thème de base</label>
-              <div className="flex gap-3">
-                <button 
-                  onClick={() => setFormData(prev => ({...prev, theme: 'light'}))} 
-                  className={`flex-1 py-3 border-2 rounded-xl text-sm font-bold ${formData.theme === 'light' ? 'border-[#0F7A60] bg-[#0F7A60]/5 text-[#0F7A60]' : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50 text-gray-600'}`}
-                >
-                  Light
-                </button>
-                <button 
-                  onClick={() => setFormData(prev => ({...prev, theme: 'dark'}))} 
-                  className={`flex-1 py-3 border-2 rounded-xl text-sm font-bold ${formData.theme === 'dark' ? 'border-[#0F7A60] bg-[#0F7A60]/5 text-[#0F7A60]' : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50 text-gray-600'}`}
-                >
-                  Dark
-                </button>
-                <button 
-                  onClick={() => setFormData(prev => ({...prev, theme: 'glass'}))} 
-                  className={`flex-1 py-3 border-2 rounded-xl text-sm font-bold bg-gradient-to-r from-indigo-500 to-pink-500 text-white ${formData.theme === 'glass' ? 'ring-4 ring-pink-500/30' : 'opacity-70 hover:opacity-100'}`}
-                >
-                  Glass Premium
-                </button>
+            <div className="pt-2">
+              <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-2">
+                <label className="block text-sm font-black text-[#1A1A1A]">Design & Thème de Base</label>
+                <div className="flex bg-gray-100 rounded-lg p-0.5 shadow-inner">
+                  <button onClick={() => setThemeView('grid')} className={`p-1.5 rounded-md transition-colors ${themeView === 'grid' ? 'bg-white shadow-sm text-[#0F7A60]' : 'text-gray-400 hover:text-gray-600'}`} title="Vue Grille"><Grid2X2 size={16} /></button>
+                  <button onClick={() => setThemeView('list')} className={`p-1.5 rounded-md transition-colors ${themeView === 'list' ? 'bg-white shadow-sm text-[#0F7A60]' : 'text-gray-400 hover:text-gray-600'}`} title="Vue Liste"><List size={16} /></button>
+                </div>
+              </div>
+              
+              <div className="h-64 overflow-y-auto pr-2 custom-scrollbar">
+                {themeView === 'grid' ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pb-2 w-full">
+                    {AVAILABLE_THEMES.map(t => (
+                      <button 
+                        key={t.id}
+                        onClick={() => setFormData(prev => ({...prev, theme: t.id}))} 
+                        className={`group flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all relative overflow-hidden ${formData.theme === t.id ? 'border-[#0F7A60] bg-[#0F7A60]/5 shadow-sm' : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'}`}
+                      >
+                        <div className={`w-full h-12 rounded-xl mb-2 flex items-center justify-center shadow-inner border opacity-90 group-hover:opacity-100 transition-opacity ${t.tailwindClass}`}>
+                          {formData.theme === t.id ? <CheckCircle2 size={20} className="drop-shadow-md" /> : <Eye size={18} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
+                        </div>
+                        <span className="text-[11px] font-bold text-gray-700 w-full text-center truncate">{t.icon} {t.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2 pb-2">
+                    {AVAILABLE_THEMES.map(t => (
+                      <button 
+                        key={t.id}
+                        onClick={() => setFormData(prev => ({...prev, theme: t.id}))} 
+                        className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all ${formData.theme === t.id ? 'border-[#0F7A60] bg-[#0F7A60]/5 shadow-sm' : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-inner border ${t.tailwindClass}`}>
+                            <span className="text-[10px] opacity-70">A/a</span>
+                          </div>
+                          <span className="text-[13px] font-bold text-gray-700">{t.icon} {t.name}</span>
+                        </div>
+                        {formData.theme === t.id && <CheckCircle2 size={16} className="text-[#0F7A60]" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
+
+            {formData.theme === 'custom' && (
+              <div className="mt-4 bg-[#FAFAF7] rounded-2xl p-5 border border-[#0F7A60]/20 animate-in fade-in">
+                <h4 className="font-black text-sm text-[#0F7A60] mb-4 flex items-center gap-2">
+                  <Palette size={16} /> Apparence Customisée Principale
+                </h4>
+                <div className="space-y-4">
+                  {/* Custom BG */}
+                  <div>
+                    <label className="block text-[12px] font-bold text-gray-500 mb-2">Type d'arrière-plan</label>
+                    <div className="flex gap-2">
+                      <button onClick={() => setFormData(p => ({...p, custom_appearance: {...p.custom_appearance, bg_type: 'color'}}))} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border ${formData.custom_appearance.bg_type === 'color' ? 'bg-white border-[#0F7A60] text-[#0F7A60]' : 'border-gray-200 text-gray-400'}`}>Couleur Unie</button>
+                      <button onClick={() => setFormData(p => ({...p, custom_appearance: {...p.custom_appearance, bg_type: 'gradient'}}))} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border ${formData.custom_appearance.bg_type === 'gradient' ? 'bg-white border-[#0F7A60] text-[#0F7A60]' : 'border-gray-200 text-gray-400'}`}>Dégradé (CSS)</button>
+                      <button onClick={() => setFormData(p => ({...p, custom_appearance: {...p.custom_appearance, bg_type: 'image'}}))} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border ${formData.custom_appearance.bg_type === 'image' ? 'bg-white border-[#0F7A60] text-[#0F7A60]' : 'border-gray-200 text-gray-400'}`}>Image (Upload)</button>
+                    </div>
+                    {formData.custom_appearance.bg_type === 'color' && (
+                       <input type="color" title="Couleur" value={formData.custom_appearance.bg_value} onChange={e => setFormData(p => ({...p, custom_appearance: {...p.custom_appearance, bg_value: e.target.value}}))} className="mt-2 w-full h-10 p-1 border border-gray-200 rounded-lg cursor-pointer" />
+                    )}
+                    {formData.custom_appearance.bg_type === 'gradient' && (
+                       <select title="Gradient CSS" value={formData.custom_appearance.bg_value} onChange={e => setFormData(p => ({...p, custom_appearance: {...p.custom_appearance, bg_value: e.target.value}}))} className="mt-2 w-full text-xs p-2.5 border border-gray-200 rounded-lg outline-none">
+                         <option value="" disabled>Choisir un dégradé...</option>
+                         <option value="bg-gradient-to-tr from-orange-400 to-rose-400">Sunrise (Orange/Rose)</option>
+                         <option value="bg-gradient-to-r from-cyan-500 to-blue-500">Ocean (Cyan/Bleu)</option>
+                         <option value="bg-gradient-to-tr from-pink-500 to-purple-500">Candy (Rose/Violet)</option>
+                         <option value="bg-gradient-to-tr from-emerald-500 to-teal-500">Forest (Émeraude/Bleu canard)</option>
+                         <option value="bg-gradient-to-b from-gray-900 to-black">Night (Gris/Noir)</option>
+                         <option value="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">Sunset (Indigo/Violet/Rose)</option>
+                         <option value="bg-gradient-to-bl from-rose-100 to-teal-100">Soft (Rose pastel/Bleu pastel)</option>
+                       </select>
+                    )}
+                    {formData.custom_appearance.bg_type === 'image' && (
+                       <div className="mt-2 w-full">
+                         {uploadingBg ? (
+                            <div className="flex justify-center items-center h-12 bg-gray-50 border border-gray-200 rounded-lg text-[#0F7A60]">
+                               <Loader2 className="animate-spin" size={20} />
+                            </div>
+                         ) : formData.custom_appearance.bg_value?.startsWith('http') ? (
+                            <div className="relative group rounded-lg overflow-hidden border border-gray-200 h-20">
+                               <img src={formData.custom_appearance.bg_value} className="w-full h-full object-cover" alt="Custom BG" />
+                               <div onClick={() => customBgFileRef.current?.click()} className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition">
+                                  <span className="text-white text-xs font-bold">Changer l'image</span>
+                               </div>
+                            </div>
+                         ) : (
+                            <button onClick={() => customBgFileRef.current?.click()} className="w-full h-12 flex items-center justify-center gap-2 bg-gray-50 border border-dashed border-gray-300 rounded-lg text-xs font-bold text-gray-500 hover:bg-[#0F7A60]/5 hover:text-[#0F7A60] hover:border-[#0F7A60]/50 transition">
+                               <UploadCloud size={16} /> Importer une image (WebP/JPG)
+                            </button>
+                         )}
+                         <input title="Custom BG Upload" ref={customBgFileRef} type="file" accept="image/*" className="hidden" onClick={(e) => e.stopPropagation()} onChange={(e) => handleFileSelect(e, 'custom_bg')} />
+                       </div>
+                    )}
+                  </div>
+                  
+                  {/* Font */}
+                  <div>
+                     <label className="block text-[12px] font-bold text-gray-500 mb-2">Police (Typographie)</label>
+                     <select title="Police" value={formData.custom_appearance.font_family} onChange={e => setFormData(p => ({...p, custom_appearance: {...p.custom_appearance, font_family: e.target.value}}))} className="w-full text-sm p-2 border border-gray-200 rounded-lg outline-none">
+                       <option value="inter">Inter (Moderne & Clean)</option>
+                       <option value="playfair">Playfair Display (Luxe/Sérif)</option>
+                       <option value="poppins">Poppins (Rond & Amical)</option>
+                       <option value="outfit">Outfit (Tech & Bold)</option>
+                     </select>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="grid grid-cols-2 gap-3">
+                     <div>
+                       <label className="block text-[12px] font-bold text-gray-500 mb-2">Forme des Boutons</label>
+                       <select title="Forme" value={formData.custom_appearance.button_shape} onChange={e => setFormData(p => ({...p, custom_appearance: {...p.custom_appearance, button_shape: e.target.value}}))} className="w-full text-xs p-2.5 border border-gray-200 rounded-lg outline-none">
+                         <option value="rounded-none">Carré (Hard Edge)</option>
+                         <option value="rounded-xl">Pilule (Rounded)</option>
+                         <option value="rounded-full">Ovale (Full Rounded)</option>
+                       </select>
+                     </div>
+                     <div>
+                       <label className="block text-[12px] font-bold text-gray-500 mb-2">Style des Boutons</label>
+                       <select title="Style" value={formData.custom_appearance.button_style} onChange={e => setFormData(p => ({...p, custom_appearance: {...p.custom_appearance, button_style: e.target.value}}))} className="w-full text-xs p-2.5 border border-gray-200 rounded-lg outline-none">
+                         <option value="solid">Couleur Pleine</option>
+                         <option value="outline">Contour Minimaliste</option>
+                         <option value="glass">Glassmorphism (Tansparent)</option>
+                       </select>
+                     </div>
+                  </div>
+                  
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -450,6 +716,23 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
                            <input type="color" title="Couleur du texte" value={link.textColor || '#000000'} onChange={(e) => updateLink(index, 'textColor', e.target.value)} className="h-8 w-10 border-0 p-0 rounded-l-md cursor-pointer shrink-0" />
                            <input type="text" value={link.textColor || ''} onChange={(e) => updateLink(index, 'textColor', e.target.value)} placeholder="Défaut" className="flex-1 border border-gray-200 border-l-0 rounded-r-md px-2 text-xs font-medium focus:outline-none" />
                          </div>
+                       </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 mt-2">
+                       <div className="flex flex-col flex-1">
+                         <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Forme Personnalisée</label>
+                         <select
+                           title="Forme du bouton locale"
+                           value={link.buttonShape || 'default'}
+                           onChange={(e) => updateLink(index, 'buttonShape', e.target.value === 'default' ? '' : e.target.value)}
+                           className="w-full text-xs p-2 border border-gray-200 rounded-lg outline-none"
+                         >
+                           <option value="default">Par défaut (Thème)</option>
+                           <option value="rounded-none">Carré</option>
+                           <option value="rounded-xl">Pilule</option>
+                           <option value="rounded-full">Ovale</option>
+                         </select>
                        </div>
                     </div>
 
@@ -604,11 +887,10 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
 
           <div className="mt-4 w-full">
             <MobileSimulator title="Rendu public">
-              <div className={`w-full flex flex-col items-center min-h-[600px] text-center ${
-                formData.theme === 'dark' ? 'bg-[#1A1A1A] text-white' : 
-                formData.theme === 'glass' ? 'bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white' : 
-                'bg-gray-50 text-gray-900'
-              }`}>
+              {customBgStyle && <style>{customBgStyle}</style>}
+              <div 
+                className={`w-full flex flex-col items-center min-h-[600px] text-center ${wrapperClass} ${formData.theme === 'custom' ? ('font-' + (formData.custom_appearance?.font_family || 'inter') + ' custom-editor-bg') : ''}`}
+              >
                 {/* Banner */}
                 {formData.banner_url ? (
                   <>
@@ -623,14 +905,14 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
                 )}
                 {/* Sticky Profile Header */}
                 <div className={`sticky top-0 z-20 w-full flex flex-col items-center px-6 pt-1 pb-3 backdrop-blur-xl shadow-sm ${
-                   formData.theme === 'dark' ? 'bg-[#1A1A1A]/80 border-b border-gray-800' : 
-                   formData.theme === 'glass' ? 'bg-white/10 border-b border-white/20' : 
-                   'bg-gray-50/90 border-b border-gray-200'
+                   isDarkTheme ? 'bg-black/40 border-b border-gray-800/50' : 
+                   isGlassTheme ? 'bg-white/10 border-b border-white/20' : 
+                   'bg-white/80 border-b border-gray-100'
                 }`}>
                   <div className={`w-20 h-20 rounded-full -mt-10 mb-2 flex items-center justify-center text-2xl font-black shadow-lg shrink-0 overflow-hidden transition-all duration-300 ${
-                    formData.theme === 'dark' ? 'bg-gray-800 border-4 border-[#1A1A1A] text-white' :
-                    formData.theme === 'glass' ? 'bg-white/20 backdrop-blur-md border-2 border-white/30 text-white' :
-                    'bg-white border-4 border-gray-50 text-[#0F7A60]'
+                    isDarkTheme ? 'bg-gray-800 border-4 border-black text-white' :
+                    isGlassTheme ? 'bg-white/20 backdrop-blur-md border-2 border-white/30 text-white' :
+                    'bg-white border-4 border-gray-50 text-current'
                   }`}>
                     {formData.avatar_url ? (
                       <img src={formData.avatar_url} alt="Profile" className="w-full h-full object-cover" />
@@ -644,45 +926,68 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
                 
                 <div className="px-6 flex flex-col items-center w-full">
                   <p className={`text-[13px] font-medium mb-8 mt-3 whitespace-pre-wrap ${
-                    formData.theme === 'dark' ? 'text-gray-400' :
-                    formData.theme === 'glass' ? 'text-white/80' :
+                    isDarkTheme ? 'text-gray-400' :
+                    isGlassTheme ? 'text-white/80' :
                     'text-gray-500'
                   }`}>
                     {formData.bio || 'Votre biographie apparaitra ici.'}
                   </p>
                   
                   <div className="w-full space-y-3 pb-10">
-                    {links.map((link) => (
-                      <div key={link.id} className="w-full">
-                        <a 
-                          href={link.url || '#'} 
-                          ref={(el) => {
-                            if (el) {
-                              const bg = link.isPrimary 
-                                ? (link.bgColor || (formData.theme === 'glass' ? 'rgba(255, 255, 255, 0.95)' : formData.brand_color))
-                                : (link.bgColor || (formData.theme === 'dark' ? '#2A2A2A' : formData.theme === 'glass' ? 'rgba(255, 255, 255, 0.2)' : '#FFFFFF'))
-                              const color = link.isPrimary
-                                ? (link.textColor || (formData.theme === 'glass' ? formData.brand_color : ctaTextColor))
-                                : (link.textColor || (formData.theme === 'dark' || formData.theme === 'glass' ? '#FFFFFF' : '#000000'))
-                              const border = link.isPrimary
-                                ? (link.bgColor ? 'none' : (formData.theme === 'glass' ? '1px solid rgba(255, 255, 255, 1)' : `1px solid ${formData.brand_color}`))
-                                : (link.bgColor ? 'none' : (formData.theme === 'glass' ? '1px solid rgba(255, 255, 255, 0.3)' : formData.theme === 'light' ? '1px solid #E5E7EB' : 'none'))
-                              el.style.backgroundColor = bg
-                              el.style.color = color
-                              el.style.border = border
-                            }
-                          }}
-                          className={`w-full rounded-2xl py-4 px-4 shadow-sm hover:shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold text-sm text-center flex items-center justify-center gap-2 ${
-                            link.isPrimary ? 'shadow-lg' : ''
-                          } ${link.animation === 'pulse' ? 'animate-pulse' : link.animation === 'bounce' ? 'animate-bounce' : ''}`}
-                        >
-                          {link.icon && <span>{link.icon}</span>}
-                          {link.title || 'Nouveau Lien'}
-                        </a>
-                      </div>
-                    ))}
+                    {links.map((link) => {
+                      const shapeClass = link.buttonShape && link.buttonShape !== 'default' ? link.buttonShape : formData.theme === 'custom' ? formData.custom_appearance?.button_shape : 'rounded-2xl';
+                      const animClass = link.animation === 'pulse' ? 'animate-pulse' : link.animation === 'bounce' ? 'animate-bounce' : '';
+                      
+                      return (
+                        <div key={link.id} className="w-full">
+                          <a 
+                            href={link.url || '#'} 
+                            ref={(el) => {
+                              if (el) {
+                                const bg = link.isPrimary 
+                                  ? (link.bgColor || (isGlassTheme ? 'rgba(255, 255, 255, 0.95)' : formData.brand_color))
+                                  : (link.bgColor || (isDarkTheme ? '#2A2A2A' : isGlassTheme ? 'rgba(255, 255, 255, 0.1)' : '#FFFFFF'))
+                                const color = link.isPrimary
+                                  ? (link.textColor || (isGlassTheme ? formData.brand_color : '#FFFFFF'))
+                                  : (link.textColor || (isDarkTheme || isGlassTheme ? '#FFFFFF' : '#000000'))
+                                const border = link.isPrimary
+                                  ? (link.bgColor ? 'none' : (isGlassTheme ? '1px solid rgba(255, 255, 255, 1)' : 'transparent'))
+                                  : (link.bgColor ? 'none' : (isGlassTheme ? '1px solid rgba(255, 255, 255, 0.2)' : isLightTheme ? '1px solid #E5E7EB' : 'none'))
+                                
+                                // Custom theme button style override
+                                if (formData.theme === 'custom' && !link.bgColor) {
+                                   if (formData.custom_appearance?.button_style === 'outline') {
+                                     el.style.backgroundColor = 'transparent';
+                                     el.style.border = `1px solid ${formData.brand_color}`;
+                                     el.style.color = formData.brand_color;
+                                   } else if (formData.custom_appearance?.button_style === 'glass') {
+                                     el.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                                     el.style.border = '1px solid rgba(255,255,255,0.2)';
+                                     el.style.backdropFilter = 'blur(10px)';
+                                   } else {
+                                      el.style.backgroundColor = bg;
+                                      el.style.color = color;
+                                      el.style.border = border;
+                                   }
+                                } else {
+                                   el.style.backgroundColor = bg;
+                                   el.style.color = color;
+                                   el.style.border = border;
+                                }
+                              }
+                            }}
+                            className={`w-full py-4 px-4 shadow-sm hover:shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold text-sm text-center flex items-center justify-center gap-2 ${shapeClass} ${
+                              link.isPrimary ? 'shadow-lg' : ''
+                            } ${animClass}`}
+                          >
+                            {link.icon && <span>{link.icon}</span>}
+                            {link.title || 'Nouveau Lien'}
+                          </a>
+                        </div>
+                      )
+                    })}
                     {formData.newsletter_active && (
-                      <div className={`w-full p-4 rounded-2xl text-left shadow-sm mt-4 backdrop-blur-md ${formData.theme === 'dark' ? 'bg-[#2A2A2A]' : formData.theme === 'glass' ? 'bg-white/10' : 'bg-white border border-gray-100'}`}>
+                      <div className={`w-full p-4 rounded-2xl text-left shadow-sm mt-4 backdrop-blur-md ${isDarkTheme ? 'bg-black/20 border border-white/5' : isGlassTheme ? 'bg-white/10 border border-white/10' : 'bg-white border border-gray-100'}`}>
                         <h4 className="font-bold text-sm mb-2">{formData.newsletter_text}</h4>
                         <div className="flex gap-2">
                           <input type="email" title="Email" placeholder="Votre email" className={`flex-1 border-none rounded-xl text-xs px-3 focus:ring-0 min-w-0 ${formData.theme === 'dark' ? 'bg-gray-800 text-white' : formData.theme === 'glass' ? 'bg-white/20 text-white placeholder-white/50' : 'bg-gray-50 text-gray-900'}`} disabled />
@@ -715,7 +1020,7 @@ export default function BioLinkEditor({ userId, initialBioLink, domain }: BioLin
           setCropFileSrc(null)
           setCropType(null)
         }}
-        aspectRatio={cropType === 'avatar_url' ? 1 : 3/1}
+        aspectRatio={cropType === 'avatar_url' ? 1 : cropType === 'custom_bg' ? 9/16 : 3/1}
         onCropComplete={(file) => {
           if (cropType) {
             handleFileUpload(file, cropType)

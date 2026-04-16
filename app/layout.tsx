@@ -96,20 +96,11 @@ export async function generateMetadata(): Promise<Metadata> {
     verification: {
       google: 'BuV3odayhfQipIFEfebOQHI3w2EU8nO7Skjh5s8FI_0',
     },
-    icons: {
-      icon: [
-        { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
-        { url: '/favicon-48.png', sizes: '48x48', type: 'image/png' },
-      ],
-      apple: [
-        { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-      ],
-    },
   }
 }
 
 import FooterWrapper from '@/components/FooterWrapper'
-import { WhatsAppFloatingButton } from '@/components/WhatsAppFloatingButton'
+import { UnifiedHelpWidget } from '@/components/shared/UnifiedHelpWidget'
 import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo/JsonLd'
 import { Suspense } from 'react'
 import AffiliateTracker from '@/components/affiliation/AffiliateTracker'
@@ -161,7 +152,7 @@ export default async function RootLayout({
             </Suspense>
             {children}
             <FooterWrapper />
-            <WhatsAppFloatingButton dynamicAgents={dynamicAgents} />
+            <UnifiedHelpWidget dynamicAgents={dynamicAgents} />
             </ToastProvider>
           </>
         )}

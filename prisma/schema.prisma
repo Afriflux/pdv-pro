@@ -14,6 +14,7 @@ model User {
   id                                String                @id
   role                              Role                  @default(acheteur)
   name                              String
+  target_countries                  String[]              @default([])
   phone                             String?               @unique
   email                             String?
   address                           String?
@@ -47,7 +48,7 @@ model User {
   adminLogs                         AdminLog[]
   Ambassador                        Ambassador?
   securityAuditLogs                 AuditLog[]
-  BioLink                           BioLink?
+  BioLinks                          BioLink[]
   blockedDates                      BlockedDate[]
   bookings                          Booking[]
   CloserWithdrawal                  CloserWithdrawal[]
@@ -69,7 +70,7 @@ model User {
   payoutMethods                     PayoutMethod[]
   payoutRequests                    PayoutRequest[]
   lessonProgresses                  UserLessonProgress[]
-  assignedTickets                   Complaint[]      @relation("HelpdeskAdmin")
+  assignedTickets                   Complaint[]           @relation("HelpdeskAdmin")
 
   @@schema("public")
 }
@@ -99,6 +100,8 @@ model Store {
   user_id                                             String                 @unique
   name                                                String
   slug                                                String                 @unique
+  base_country                                        String                 @default("SN")
+  target_countries                                    String[]               @default([])
   logo_url                                            String?
   primary_color                                       String?
   created_at                                          DateTime               @default(now())
@@ -480,6 +483,7 @@ model Affiliate {
   id                   String                 @id @default(dbgenerated("(gen_random_uuid())::text"))
   store_id             String
   code                 String                 @unique
+  target_countries     String[]               @default([])
   balance              Decimal?               @default(0) @db.Decimal(12, 2)
   total_earned         Float?                 @default(0)
   total_referred       Int?                   @default(0)
@@ -1620,6 +1624,7 @@ model Ambassador {
   user_id                                        String                  @unique
   store_id                                       String?
   code                                           String                  @unique
+  target_countries                               String[]                @default([])
   name                                           String
   bio                                            String?
   commission_per_vendor                          Decimal                 @default(1000) @db.Decimal(10, 2)
@@ -1882,7 +1887,7 @@ model Lead {
 
 model BioLink {
   id                String   @id @default(uuid())
-  user_id           String   @unique
+  user_id           String
   slug              String   @unique
   title             String?
   bio               String?
@@ -1903,6 +1908,7 @@ model BioLink {
   phone_active      Boolean? @default(false)
   phone_number      String?
   phone_text        String?  @default("Appeler Maintenant 📞")
+  custom_appearance Json?    @default("{}")
   user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
@@ -2354,7 +2360,7 @@ model PaymentIntegration {
   commission_rate       Float    @default(0.0) // ex: 1.0, 2.5
   priority_order        Int      @default(0)
   credentials_encrypted String?
-  supported_methods     Json?    // ex: ["orange_money", "wave", "card"]
+  supported_methods     Json? // ex: ["orange_money", "wave", "card"]
   created_at            DateTime @default(now())
   updated_at            DateTime @updatedAt
 
@@ -2362,32 +2368,32 @@ model PaymentIntegration {
 }
 
 model PayoutMethod {
-  id             String          @id @default(uuid())
-  user_id        String
-  channel        String          // ex: "wave", "orange_money", "bank_transfer"
-  destination    String          // ex: numero de tel ou IBAN
-  is_default     Boolean         @default(false)
-  created_at     DateTime        @default(now())
-  updated_at     DateTime        @updatedAt
-  
-  user           User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  PayoutRequest  PayoutRequest[]
+  id          String   @id @default(uuid())
+  user_id     String
+  channel     String // ex: "wave", "orange_money", "bank_transfer"
+  destination String // ex: numero de tel ou IBAN
+  is_default  Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  user          User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  PayoutRequest PayoutRequest[]
 
   @@schema("public")
 }
 
 model PayoutRequest {
-  id               String       @id @default(uuid())
+  id               String    @id @default(uuid())
   user_id          String
   amount           Float
   payout_method_id String
-  status           String       @default("pending") // "pending", "completed", "failed"
+  status           String    @default("pending") // "pending", "completed", "failed"
   processed_at     DateTime?
-  created_at       DateTime     @default(now())
-  updated_at       DateTime     @updatedAt
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
 
-  user             User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  method           PayoutMethod @relation(fields: [payout_method_id], references: [id])
+  user   User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  method PayoutMethod @relation(fields: [payout_method_id], references: [id])
 
   @@index([status])
   @@index([user_id])
@@ -2403,7 +2409,7 @@ model Course {
   updated_at  DateTime       @updatedAt
   product     Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
   modules     CourseModule[]
-  
+
   @@schema("public")
 }
 
@@ -2417,38 +2423,52 @@ model CourseModule {
   updated_at  DateTime       @updatedAt
   course      Course         @relation(fields: [course_id], references: [id], onDelete: Cascade)
   lessons     CourseLesson[]
-  
+
   @@schema("public")
 }
 
 model CourseLesson {
-  id          String         @id @default(uuid())
+  id          String               @id @default(uuid())
   module_id   String
   title       String
   content     String?
   video_url   String?
-  is_free     Boolean        @default(false)
-  order_index Int            @default(0)
-  created_at  DateTime       @default(now())
-  updated_at  DateTime       @updatedAt
-  module      CourseModule   @relation(fields: [module_id], references: [id], onDelete: Cascade)
+  is_free     Boolean              @default(false)
+  order_index Int                  @default(0)
+  created_at  DateTime             @default(now())
+  updated_at  DateTime             @updatedAt
+  module      CourseModule         @relation(fields: [module_id], references: [id], onDelete: Cascade)
   progresses  UserLessonProgress[]
-  
+
   @@schema("public")
 }
 
 model UserLessonProgress {
-  id          String       @id @default(uuid())
-  user_id     String
-  lesson_id   String
-  completed   Boolean      @default(false)
+  id           String    @id @default(uuid())
+  user_id      String
+  lesson_id    String
+  completed    Boolean   @default(false)
   completed_at DateTime?
-  created_at  DateTime     @default(now())
-  updated_at  DateTime     @updatedAt
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
-  user        User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  lesson      CourseLesson @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
+  user   User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  lesson CourseLesson @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, lesson_id])
+  @@schema("public")
+}
+
+model SystemWebhookLog {
+  id           String    @id @default(uuid())
+  provider     String
+  event_type   String?
+  payload      Json
+  status       String    @default("pending")
+  error_msg    String?
+  processed_at DateTime?
+  created_at   DateTime  @default(now())
+
+  @@index([provider, status])
   @@schema("public")
 }

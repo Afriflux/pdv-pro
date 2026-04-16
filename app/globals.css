@@ -173,3 +173,10 @@
   transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   filter: url(#glow);
 }
+
+/* ── Custom Theme Web Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Poppins:wght@400;500;700;900&family=Outfit:wght@400;500;700;900&display=swap');
+.font-inter { font-family: 'Inter', sans-serif !important; }
+.font-playfair { font-family: 'Playfair Display', serif !important; }
+.font-poppins { font-family: 'Poppins', sans-serif !important; }
+.font-outfit { font-family: 'Outfit', sans-serif !important; }

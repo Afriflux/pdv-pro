@@ -678,6 +678,7 @@ export function CheckoutForm({
           orderId={createdOrderId}
           onSuccess={handlePaymentSuccess}
           clientProfile={clientProfile}
+          buyerPhone={phone}
         />
 
         {/* Retour étape 1 */}

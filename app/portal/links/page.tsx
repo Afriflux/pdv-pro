@@ -34,9 +34,14 @@ export default async function AffiliateLinksPage() {
   }
 
   // Get BioLink from prisma
-  const bioLink = await prisma.bioLink.findUnique({
-    where: { user_id: user.id }
+  const bioLinks = await prisma.bioLink.findMany({
+    where: { user_id: user.id },
+    orderBy: { created_at: 'desc' }
   })
+
+  // Quota for BioLinks
+  const { checkUserQuota } = await import('@/lib/admin/quota')
+  const bioLinkQuota = await checkUserQuota(user.id, 'link_bio')
 
   const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'yayyam.com'
 
@@ -57,7 +62,8 @@ export default async function AffiliateLinksPage() {
         domain={domain}
         products={affiliate.Store.products as any}
         salePages={affiliate.Store.pages as any}
-        initialBioLink={bioLink}
+        bioLinks={bioLinks}
+        bioLinkQuota={bioLinkQuota}
       />
     </div>
   )

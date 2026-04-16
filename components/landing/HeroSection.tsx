@@ -90,7 +90,7 @@ function HeroStatsInline() {
       </div>
       <div className="h-10 w-px bg-line hidden md:block"></div>
       <div className="flex flex-col items-center text-center gap-2 min-w-[200px]">
-        <div className="font-display font-black text-4xl text-charcoal">{stat2} F</div>
+        <div className="font-display font-black text-4xl text-charcoal">{stat2} <span className="text-2xl text-emerald-600">FCFA</span></div>
         <div className="text-sm font-bold text-slate uppercase tracking-wider">d&apos;abonnement<br/>pour démarrer</div>
       </div>
       <div className="h-10 w-px bg-line hidden md:block"></div>
@@ -191,9 +191,10 @@ export function HeroSection({
               <FloatingDiv className="relative w-full h-full rounded-[3rem] border-[1px] border-white/80 shadow-[0_40px_100px_-20px_rgba(13,92,74,0.3)] bg-white/50 motion-safe:backdrop-blur-2xl p-4 overflow-hidden group">
                 <div className="relative w-full h-full rounded-[2rem] overflow-hidden bg-white/50 shadow-inner">
                   <Image sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
-                    src="/landing/hero_mockup.png" 
+                    src="/landing/hero_mockup.png?v=2" 
                     alt="Plateforme Yayyam E-commerce Dashboard Mobile" 
                     fill 
+                    unoptimized
                     className="object-cover md:object-contain object-center scale-[1.02] group-hover:scale-105 transition-transform duration-[1.5s] ease-out"
                     priority
                   />
@@ -207,7 +208,7 @@ export function HeroSection({
                  <div className="w-11 h-11 bg-blue-50 text-blue-600 font-bold rounded-xl flex items-center justify-center shadow-sm">W</div>
                  <div>
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Retrait Instantané</p>
-                    <p className="text-xl font-black text-[#0A1F1A]">+45.000 <span className="text-sm">FCFA</span></p>
+                    <p className="text-xl font-black text-[#0A1F1A] flex items-baseline gap-1">+45.000 <span className="text-sm font-bold bg-[#0D5C4A]/10 text-[#0D5C4A] px-1.5 py-0.5 rounded border border-[#0D5C4A]/20">FCFA</span></p>
                  </div>
               </div>
 

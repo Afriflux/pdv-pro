@@ -50,19 +50,6 @@ export async function getIntegrationKey(baseKey: string, env: PaymentEnvironment
   return data?.value || null
 }
 
-/**
- * Vérifie si le basculement d'urgence (Smart Routing Fallback) est actif pour un service donné
- */
-export async function isFallbackActive(fallbackKey: string): Promise<boolean> {
-  const supabase = createAdminClient()
-  const { data } = await supabase
-    .from('IntegrationKey')
-    .select('value')
-    .eq('key', fallbackKey)
-    .single()
-    
-  return data?.value === 'true'
-}
 
 import { triggerSystemAlertTelegram } from '@/lib/telegram/notify-hooks'
 

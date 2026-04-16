@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { captureError } from '@/lib/monitoring'
 import { verifyPaytechWebhook, PaytechWebhookPayload } from '@/lib/payments/paytech/webhook'
 import { confirmOrder } from '@/lib/payments/confirmOrder'
+import { prisma } from '@/lib/prisma'
 
 export async function POST(req: Request) {
   try {
@@ -15,7 +16,6 @@ export async function POST(req: Request) {
     // Paytech logs environment? Defaulting to production verification if not explicitly passed
     const env = payload.env === 'test' ? 'test' : 'prod'
     
-    // 1. Vérification cryptographique stricte
     const isValid = await verifyPaytechWebhook(payload, env)
     if (!isValid) {
       console.error('[Paytech Webhook] Tentative de fraude ignorée - Hash invalide')
@@ -24,13 +24,32 @@ export async function POST(req: Request) {
 
     const { type_event, ref_command, token } = payload as unknown as PaytechWebhookPayload
 
-    // 2. Traitement BDD via confirmOrder
-    if (type_event === 'sale_complete') {
-      await confirmOrder(ref_command, token)
-      console.log(`[Paytech Webhook] Paiement validé et exécuté pour la commande: ${ref_command}`)
-    } else if (type_event === 'sale_canceled') {
-      // Pour une annulation, un appel simple ou l'ignorer
-      console.log(`[Paytech Webhook] Paiement annulé pour la commande: ${ref_command}`)
+    const webhookLog = await prisma.systemWebhookLog.create({
+      data: {
+        provider: 'paytech',
+        payload: payload,
+        event_type: type_event || null,
+        status: 'pending'
+      }
+    })
+
+    try {
+      // 2. Traitement BDD via confirmOrder
+      if (type_event === 'sale_complete') {
+        await confirmOrder(ref_command, token)
+        console.log(`[Paytech Webhook] Paiement validé et exécuté pour la commande: ${ref_command}`)
+      } else if (type_event === 'sale_canceled') {
+        // Pour une annulation, un appel simple ou l'ignorer
+        console.log(`[Paytech Webhook] Paiement annulé pour la commande: ${ref_command}`)
+      }
+
+      await prisma.systemWebhookLog.update({ where: { id: webhookLog.id }, data: { status: 'completed', processed_at: new Date() }})
+    } catch (err: any) {
+      await prisma.systemWebhookLog.update({ 
+        where: { id: webhookLog.id }, 
+        data: { status: 'failed', error_msg: err.message || 'Unknown processing error', processed_at: new Date() }
+      })
+      throw err;
     }
 
     return NextResponse.json({ success: true })

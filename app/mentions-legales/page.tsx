@@ -22,8 +22,8 @@ export default function LegalNoticesPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">1. Éditeur du site</h2>
             <p>
-              La plateforme Yayyam est éditée par la société <span className="font-bold">Yayyam Senegal SARL</span>, 
-              immatriculée au Registre du Commerce et du Crédit Mobilier (RCCM) de Dakar.
+              La plateforme écosystème Yayyam est éditée par la société <span className="font-bold">Yayyam SAS</span>, 
+              déployée pour opérer dans l'ensemble des zones UEMOA et CEMAC.
             </p>
             <ul className="mt-4 space-y-1">
               <li><span className="font-semibold">Siège social :</span> Dakar, Sénégal.</li>
@@ -58,11 +58,10 @@ export default function LegalNoticesPage() {
               Yayyam utilise les services de passerelles de paiement tierces agréées :
             </p>
             <ul className="list-disc ml-6 mt-2 space-y-1">
-              <li>Wave Mobile Money</li>
-              <li>CinetPay</li>
-              <li>PayTech</li>
-              <li>Bictorys</li>
-              <li>KKiaPay</li>
+              <li>Wave Mobile Money (Sénégal, Côte d'Ivoire, Mali)</li>
+              <li>Orange Money (UEMOA & CEMAC)</li>
+              <li>MTN MoMo, Moov Africa</li>
+              <li>CinetPay, PayTech et autres agrégateurs certifiés PCI-DSS</li>
             </ul>
           </section>
 
@@ -76,7 +75,7 @@ export default function LegalNoticesPage() {
           </section>
 
           <section className="pt-8 border-t border-gray-100">
-            <p className="text-sm text-gray-500">Dernière mise à jour : Mars 2026</p>
+            <p className="text-sm text-gray-500">Dernière mise à jour : Avril 2026</p>
           </section>
         </div>
       </main>

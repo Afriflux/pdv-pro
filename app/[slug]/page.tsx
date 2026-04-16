@@ -8,7 +8,7 @@ import SocialProofBanner from '@/components/widgets/SocialProofBanner'
 import { PoweredByBadge } from '@/components/branding/PoweredByBadge'
 import { StorefrontClient } from './StorefrontClient'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60 // 1 minute Edge Caching
 
 interface StorePageProps {
   params: { slug: string }

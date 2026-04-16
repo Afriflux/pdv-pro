@@ -3,6 +3,7 @@ import { captureError } from '@/lib/monitoring'
 import { verifyWaveWebhook, WaveWebhookPayload } from '@/lib/payments/wave/webhook'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { confirmOrder } from '@/lib/payments/confirmOrder'
+import { prisma } from '@/lib/prisma'
 
 export async function POST(req: Request) {
   try {
@@ -21,23 +22,50 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const payload = JSON.parse(rawBody) as WaveWebhookPayload
-    const { type, data } = payload
-    
-    // Wave envoie `checkout_session.completed` lorsque la session de paiement réussit
-    if (type !== 'checkout_session.completed') {
-      return NextResponse.json({ message: 'Unhandled event type' }, { status: 200 })
-    }
+    let parsedPayload: any;
+    try { parsedPayload = JSON.parse(rawBody) } catch(e) { parsedPayload = { rawBody } }
 
-    const orderId = data.client_reference
+    const webhookLog = await prisma.systemWebhookLog.create({
+      data: {
+        provider: 'wave',
+        payload: parsedPayload,
+        status: 'pending'
+      }
+    })
 
-    if (data.payment_status === 'succeeded') {
-      await confirmOrder(orderId)
-      console.log(`[Wave Webhook] Paiement validé pour la commande: ${orderId}`)
-    } else {
-      const supabase = createAdminClient()
-      await supabase.from('Order').update({ status: 'cancelled' }).eq('id', orderId)
-      console.log(`[Wave Webhook] Paiement échoué pour la commande: ${orderId}`)
+    try {
+      const payload = JSON.parse(rawBody) as WaveWebhookPayload
+      const { type, data } = payload
+      
+      await prisma.systemWebhookLog.update({
+        where: { id: webhookLog.id },
+        data: { event_type: type }
+      })
+      
+      // Wave envoie `checkout_session.completed` lorsque la session de paiement réussit
+      if (type !== 'checkout_session.completed') {
+        await prisma.systemWebhookLog.update({ where: { id: webhookLog.id }, data: { status: 'completed', processed_at: new Date() }})
+        return NextResponse.json({ message: 'Unhandled event type' }, { status: 200 })
+      }
+
+      const orderId = data.client_reference
+
+      if (data.payment_status === 'succeeded') {
+        await confirmOrder(orderId)
+        console.log(`[Wave Webhook] Paiement validé pour la commande: ${orderId}`)
+      } else {
+        const supabase = createAdminClient()
+        await supabase.from('Order').update({ status: 'cancelled' }).eq('id', orderId)
+        console.log(`[Wave Webhook] Paiement échoué pour la commande: ${orderId}`)
+      }
+
+      await prisma.systemWebhookLog.update({ where: { id: webhookLog.id }, data: { status: 'completed', processed_at: new Date() }})
+    } catch (err: any) {
+      await prisma.systemWebhookLog.update({ 
+        where: { id: webhookLog.id }, 
+        data: { status: 'failed', error_msg: err.message || 'Unknown processing error', processed_at: new Date() }
+      })
+      throw err;
     }
 
     return NextResponse.json({ success: true })

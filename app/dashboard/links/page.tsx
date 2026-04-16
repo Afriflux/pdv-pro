@@ -33,34 +33,25 @@ export default async function VendorLinksPage({ searchParams }: { searchParams: 
   }
 
   // Get BioLink from prisma
-  let bioLink = await prisma.bioLink.findUnique({
-    where: { user_id: user.id }
+  const bioLinks = await prisma.bioLink.findMany({
+    where: { user_id: user.id },
+    orderBy: { created_at: 'desc' }
   })
 
-  // If a templateId is provided, merge its data
+  // Set default template data if requested
+  let defaultThemeData = {}
   if (searchParams.templateId) {
     const template = await prisma.themeTemplate.findUnique({
       where: { id: searchParams.templateId }
     })
-    
     if (template && template.data) {
-      const td = template.data as any
-      // If it's a new biolink, initialize it with template data
-      // If it exists, we might overwrite theme/brand_color
-      bioLink = {
-         ...bioLink,
-         id: bioLink?.id || '',
-         slug: bioLink?.slug || '',
-         user_id: user.id,
-         theme: td.theme || bioLink?.theme || 'light',
-         brand_color: td.brand_color || bioLink?.brand_color || '#0F7A60',
-         links: td.links || bioLink?.links || [],
-         socials: td.socials || bioLink?.socials || [],
-         created_at: bioLink?.created_at || new Date(),
-         updated_at: new Date()
-      } as any
+      defaultThemeData = template.data
     }
   }
+
+  // Quota for BioLinks
+  const { checkUserQuota } = await import('@/lib/admin/quota')
+  const bioLinkQuota = await checkUserQuota(user.id, 'link_bio')
 
   const domain = process.env.NEXT_PUBLIC_APP_URL?.replace(/^https?:\/\//, '') || 'yayyam.com'
 
@@ -86,7 +77,9 @@ export default async function VendorLinksPage({ searchParams }: { searchParams: 
           domain={domain}
           products={store.products as any}
           salePages={store.pages as any}
-          initialBioLink={bioLink}
+          bioLinks={bioLinks}
+          bioLinkQuota={bioLinkQuota}
+          defaultThemeData={defaultThemeData}
         />
       </div>
     </main>

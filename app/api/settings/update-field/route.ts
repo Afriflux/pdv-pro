@@ -12,7 +12,8 @@ const ALLOWED_FIELDS = [
   'primary_color',
   'logo_url',
   'banner_url',
-  'vendor_type'
+  'vendor_type',
+  'geo'
 ]
 
 export async function PATCH(request: Request) {
@@ -56,8 +57,14 @@ export async function PATCH(request: Request) {
     }
 
     const updatePayload: Record<string, any> = {
-      [field]: value || null,
       updated_at: new Date().toISOString()
+    }
+
+    if (field === 'geo') {
+      updatePayload['base_country'] = value?.base_country || 'SN'
+      updatePayload['target_countries'] = Array.isArray(value?.target_countries) ? value.target_countries : []
+    } else {
+      updatePayload[field] = value || null
     }
 
     // Si on met à jour le vendor_type, on actualise aussi la date de modification

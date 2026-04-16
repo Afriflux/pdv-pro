@@ -3,15 +3,17 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { Metadata } from 'next'
 
 import MarketplaceClient from './MarketplaceClient'
+import { GeoProvider } from '@/components/providers/GeoProvider'
+import { unstable_cache } from 'next/cache'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Marketplace Yayyam | Découvrez les meilleurs espaces',
-  description: 'Explorez des centaines d&apos;espaces de vente certifiés. Mode, Cosmétiques, Électronique, Alimentation. Achetez en toute sécurité avec Wave & Orange Money.',
+  title: 'Marketplace Yayyam | Découvrez les meilleurs espaces Panafricains',
+  description: 'Explorez des centaines d&apos;espaces de vente certifiés couvrant les zones UEMOA et CEMAC. Achetez en toute sécurité avec Wave, Orange Money et CinetPay. Franc CFA garanti.',
   openGraph: {
-    title: 'Marketplace Yayyam',
-    description: 'Découvrez les meilleurs espaces de vente d&apos;Afrique de l&apos;Ouest.',
+    title: 'Marketplace D\'Excellence Yayyam',
+    description: 'Découvrez les meilleurs espaces de vente d&apos;Afrique Francophone.',
     url: 'https://yayyam.com/vendeurs',
     siteName: 'Yayyam',
     images: [{ url: '/og-marketplace.png', width: 1200, height: 630 }],
@@ -39,22 +41,30 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
     else dashboardUrl = '/dashboard'
   }
 
-  // On récupère les boutiques avec leurs scores et leurs infos de base.
-  const { data: storesData } = await supabase
-    .from('Store')
-    .select(`
-      id, 
-      name, 
-      store_name,
-      slug, 
-      logo_url, 
-      category,
-      created_at,
-      products:Product(id),
-      score:StoreScore(score, featured)
-    `)
-    .order('name', { ascending: true })
-    .limit(100)
+  const { data: storesData } = await unstable_cache(
+    async () => {
+      const supabaseAdmin = createAdminClient()
+      const { data } = await supabaseAdmin
+        .from('Store')
+        .select(`
+          id, 
+          name, 
+          store_name,
+          slug, 
+          logo_url, 
+          category,
+          created_at,
+          target_countries,
+          products:Product(!inner, id),
+          score:StoreScore(score, featured)
+        `)
+        .order('name', { ascending: true })
+        .limit(100)
+      return { data }
+    },
+    ['marketplace-stores-list-cache'],
+    { revalidate: 60 }
+  )()
  
   const TEMP_NAMES = ['Baobab', 'Panthère', 'Léopard', 'Hibiscus', 'Flamant', 'Gazelle', 'Guépard', 'Éléphant', 'Zèbre', 'Colibri', 'Acacia']
   const hashStr = (str: string) => str.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0)
@@ -70,6 +80,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
       slug: s.slug,
       logoUrl: s.logo_url,
       category: s.category || 'Vente générale',
+      target_countries: s.target_countries || [],
       score: scoreData?.score || 0,
       featured: scoreData?.featured || false,
       productCount: s.products?.length || 0,
@@ -81,5 +92,9 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   else if (sort === 'products') validatedStores.sort((a, b) => b.productCount - a.productCount)
   else if (sort === 'newest') validatedStores.sort((a, b) => b.joinedAt.getTime() - a.joinedAt.getTime())
 
-  return <MarketplaceClient stores={validatedStores} sort={sort} isLoggedIn={isLoggedIn} dashboardUrl={dashboardUrl} />
+  return (
+    <GeoProvider>
+      <MarketplaceClient stores={validatedStores} sort={sort} isLoggedIn={isLoggedIn} dashboardUrl={dashboardUrl} />
+    </GeoProvider>
+  )
 }

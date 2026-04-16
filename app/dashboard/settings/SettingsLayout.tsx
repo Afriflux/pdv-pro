@@ -23,6 +23,7 @@ import { DangerZoneTab } from './tabs/DangerZoneTab'
 import { SeoTab } from './tabs/SeoTab'
 import { WhatsappBotTab } from './tabs/WhatsappBotTab'
 import { LoyaltyTab } from './tabs/LoyaltyTab'
+import { GeoFencingTab } from './tabs/GeoFencingTab'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SettingsLayout({ store, profile, userId }: { store: any, profile?: { name?: string; phone?: string; email?: string | null }, userId: string }) {
@@ -31,7 +32,7 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.hash) {
       const hash = window.location.hash.replace('#', '')
-      if (['profil', 'lien', 'apparence', 'vendor', 'reseaux', 'securite', 'notifications', 'retrait', 'kyc', 'seo', 'contrat', 'whatsapp-bot', 'loyalty', 'anti-fraude'].includes(hash)) {
+      if (['profil', 'lien', 'apparence', 'vendor', 'reseaux', 'securite', 'notifications', 'retrait', 'kyc', 'seo', 'contrat', 'whatsapp-bot', 'loyalty', 'anti-fraude', 'geofence'].includes(hash)) {
         if (hash === 'anti-fraude') setActiveSection('securite')
         else setActiveSection(hash)
       }
@@ -65,6 +66,7 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
       case 'contrat': return <ContractTab store={store} />
       case 'whatsapp-bot': return <WhatsappBotTab store={store} />
       case 'loyalty': return <LoyaltyTab store={store} />
+      case 'geofence': return <GeoFencingTab store={store} />
       case 'danger': return <DangerZoneTab />
       default: return <ProfileTab profile={profile} userId={userId!} store={store} />
     }
@@ -93,6 +95,7 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
             <MenuBtn active={activeSection === 'lien'} icon={<Globe size={16} />} label="Lien Boutique" onClick={() => setActiveSection('lien')} />
             <MenuBtn active={activeSection === 'apparence'} icon={<Palette size={16} />} label="Apparence" onClick={() => setActiveSection('apparence')} />
             <MenuBtn active={activeSection === 'vendor'} icon={<StoreIcon size={16} />} label="Vendeur" onClick={() => setActiveSection('vendor')} />
+            <MenuBtn active={activeSection === 'geofence'} icon={<Globe size={16} />} label="Ciblage Pays" onClick={() => setActiveSection('geofence')} />
             <MenuBtn active={activeSection === 'reseaux'} icon={<Share2 size={16} />} label="Réseaux" onClick={() => setActiveSection('reseaux')} />
             <MenuBtn active={activeSection === 'seo'} icon={<Search size={16} />} label="SEO" onClick={() => setActiveSection('seo')} />
             <MenuBtn active={activeSection === 'securite'} icon={<ShieldCheck size={16} />} label="Sécurité" onClick={() => setActiveSection('securite')} />

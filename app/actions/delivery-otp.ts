@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
+import { sendStoreSMS } from '@/lib/sms/intech-sms'
 
 /**
  * Generate a 6-digit OTP for COD order validation.
@@ -37,12 +38,23 @@ export async function generateDeliveryOTP(orderId: string): Promise<{ success: b
     if (order.buyer_phone) {
       try {
         const storeName = order.store?.name || 'Yayyam'
+        
+        // 1. Envoi par SMS (Prioritaire et hors-ligne) COD = Gratuit
+        await sendStoreSMS(
+          order.store_id,
+          [order.buyer_phone], 
+          `CODE DE SECURITE: ${otp}\nVotre commande sur ${storeName} est confirmée. Veuillez donner ce code au livreur.`,
+          true // isCod = true (Gratuit)
+        ).catch(e => console.error('Failed to send OTP SMS:', e))
+
+        // 2. Envoi WhatsApp (En backup / confort)
         await sendWhatsApp({
           to: order.buyer_phone,
           body: `Bonjour ! Votre commande sur ${storeName} est confirmée.\n\n🔒 *CODE DE SÉCURITÉ : ${otp}*\n\nVeuillez communiquer ce code d'accès de 6 chiffres au livreur à la réception de votre colis pour valider la livraison.`
-        })
+        }).catch(e => console.error('Failed to send OTP WP:', e))
+        
       } catch (e) {
-        console.error('Failed to send OTP WP:', e)
+        console.error('Failed to send OTP notifications:', e)
       }
     }
 

@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { 
   ArrowRight, 
   CheckCircle2, 
@@ -9,7 +10,9 @@ import {
   Shield, 
   ChevronDown,
   Sparkles,
-  Users
+  Users,
+  MessageCircle,
+  Globe
 } from 'lucide-react'
 import { getCommissionTiers } from '@/lib/commission/commission-service'
 import { LandingHeader } from '@/components/landing/LandingHeader'
@@ -229,28 +232,31 @@ export default async function LandingPage() {
           title={get("landing_problem_title", "Une seule application. Résultat infini.")} 
         />
 
-        {/* 5. TEMPLATES & SECTEURS */}
+        {/* 5. TEMPLATES & SECTEURS (Refonte Visuelle Massive) */}
         <section className="py-32 px-6 bg-ink text-white overflow-hidden relative border-y border-line/10">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl bg-emerald/10 blur-[150px] rounded-full pointer-events-none"></div>
+          <div className="absolute inset-0 z-0">
+             <Image src="/landing/business_categories_mockup.png" alt="Secteurs d'activité" fill className="object-cover opacity-30 mix-blend-screen" unoptimized />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-transparent z-0"></div>
           
-          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 relative z-10 text-center">
+          <div className="w-full max-w-[1500px] mx-auto px-4 relative z-10 text-center">
              <div className="mb-14 max-w-3xl mx-auto">
-                <p className="font-bold text-gold uppercase tracking-widest text-sm mb-4">{get('landing_sectors_supertitle', "Déjà utilisé au Sénégal, en Côte d'Ivoire et au Mali.")}</p>
-                <h2 className="text-4xl md:text-5xl font-display font-black mb-6 text-white">{get('landing_sectors_title', "Parfait pour tous les business.")}</h2>
-                <p className="text-xl text-cream/70 font-light max-w-2xl mx-auto">{get('landing_sectors_subtitle', "Peu importe ce que vous vendez, nous gérons le processus de la vitrine jusqu'à votre poche.")}</p>
+                <p className="font-bold text-gold bg-gold/10 inline-block px-4 py-1.5 rounded-full uppercase tracking-widest text-xs mb-6 shadow-sm">{get('landing_sectors_supertitle', "Déjà utilisé au Sénégal, en Côte d'Ivoire et au Mali.")}</p>
+                <h2 className="text-4xl md:text-5xl font-display font-black mb-6 text-white leading-tight">{get('landing_sectors_title', "Parfait pour tous les business.")}</h2>
+                <p className="text-xl text-cream/80 font-light max-w-2xl mx-auto">{get('landing_sectors_subtitle', "Peu importe ce que vous vendez, nous gérons le processus de la vitrine jusqu'à votre poche.")}</p>
              </div>
 
-             <div className="flex flex-wrap justify-center gap-4 mb-16 max-w-[1800px] mx-auto w-full px-4 md:px-8">
+             <div className="flex flex-wrap justify-center gap-3 mb-16 max-w-4xl mx-auto">
                {['Prêt-à-porter', 'Cosmétiques', 'Électronique', 'Alimentation', 'Services (RDV)', 'Restauration', 'Art & Déco', 'Produits Digitaux', 'B2B & Gros', 'Santé & Bien-être'].map((tag, i) => (
-                 <div key={i} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-sm font-bold tracking-widest text-cream/80 hover:border-emerald hover:text-white hover:bg-emerald/20 shadow-sm hover:shadow-emerald/20 transition-all cursor-default transform hover:-translate-y-1">
+                 <div key={i} className="px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-sm font-bold tracking-widest text-cream/90 shadow-[0_4px_30px_rgba(0,0,0,0.1)] hover:border-emerald hover:text-white hover:bg-emerald/20 transition-all cursor-default transform hover:scale-105">
                    {tag.toUpperCase()}
                  </div>
                ))}
              </div>
 
              <div>
-               <Link suppressHydrationWarning href="/vendeurs" className="inline-flex items-center bg-white text-ink px-8 py-4 rounded-xl font-bold hover:bg-emerald hover:text-white transition gap-2 shadow-xl shadow-white/5">
-                  <span suppressHydrationWarning>Voir les boutiques actives</span> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+               <Link suppressHydrationWarning href="/vendeurs" className="inline-flex items-center bg-white text-ink px-8 py-4 rounded-xl font-bold hover:bg-emerald-50 hover:scale-105 transition gap-2 shadow-[0_0_30px_rgba(255,255,255,0.15)]">
+                  <span suppressHydrationWarning>Voir les boutiques actives</span> <ArrowRight size={20} />
                </Link>
              </div>
           </div>
@@ -272,41 +278,34 @@ export default async function LandingPage() {
           founderImageUrl={get('founder_image_url', '') || undefined}
         />
 
-        {/* 6.5 PREUVES DE RETRAITS (Mode Cash) */}
-        <section className="py-20 px-6 bg-white overflow-hidden relative">
-          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-8 text-center">
-            <span className="inline-block bg-emerald/10 text-emerald font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 border border-emerald/20">Transparence Totale</span>
-            <h2 className="text-3xl md:text-4xl font-display font-black mb-6 text-ink">L'argent va <span className="text-emerald">directement</span> sur votre téléphone.</h2>
-            <p className="text-lg text-slate font-light max-w-2xl mx-auto mb-12">Retraits traités tous les jours vers Wave et Orange Money. Pas de blocage, pas de délai artificiel. C'est votre argent, vous en disposez quand vous voulez (dès 5 000 FCFA).</p>
-            
-            <div className="flex justify-center gap-4 flex-wrap">
-               {/* Mockup Preuve de retrait Wave */}
-               <div className="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-5 w-72 text-left shadow-sm hover:shadow-md transition-shadow transform hover:-translate-y-1">
-                 <div className="flex justify-between items-center mb-4">
-                   <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-black text-xs">Y</div>
-                   <span className="text-xs text-gray-400 font-medium">Aujourd'hui, 09:42</span>
+        {/* 6.5 PREUVES DE RETRAITS (Mode Cash - Visuel Split) */}
+        <section className="py-24 px-6 bg-white overflow-hidden relative">
+          <div className="w-full max-w-[1500px] mx-auto flex flex-col lg:flex-row items-center gap-16 relative z-10">
+            <div className="lg:w-1/2 space-y-8 text-left">
+              <span className="inline-flex items-center gap-2 bg-emerald/10 text-emerald font-bold px-4 py-2 rounded-full text-xs tracking-widest uppercase border border-emerald/20">
+                <Zap size={16} /> Transparence Totale
+              </span>
+              <h2 className="text-4xl md:text-5xl font-display font-black text-ink leading-tight">
+                L'argent va <span className="text-emerald">directement</span> sur votre téléphone en Franc CFA.
+              </h2>
+              <p className="text-lg text-slate font-light leading-relaxed">
+                Retraits traités tous les jours vers Wave et Orange Money (XOF/XAF). Pas de blocage, pas de délai artificiel. C'est votre argent, vous en disposez quand vous voulez (dès 5 000 FCFA).
+              </p>
+              
+              <div className="mt-8 flex items-center gap-3 bg-gray-50 border border-gray-100 p-4 rounded-2xl w-max">
+                 <div className="bg-white p-2 rounded-xl shadow-sm"><Shield className="w-6 h-6 text-emerald-500" /></div>
+                 <div>
+                    <h4 className="font-bold text-ink text-sm">Fonds garantis</h4>
+                    <p className="text-xs text-gray-500">Sécurisés par des institutions financières.</p>
                  </div>
-                 <p className="text-xs text-emerald-900/60 font-bold mb-1 uppercase tracking-wider">Transfert reçu avec succès</p>
-                 <p className="text-2xl font-black text-emerald-600 mb-2">+ 45 000 F</p>
-                 <p className="text-xs text-gray-500 font-medium">De: YAYYAM</p>
-                 <p className="text-xs text-gray-400 mt-2">Nouveau solde: 124 500 F</p>
-               </div>
-
-               {/* Mockup Preuve de retrait OM */}
-               <div className="bg-orange-50/50 border border-orange-100 rounded-2xl p-5 w-72 text-left shadow-sm hover:shadow-md transition-shadow transform hover:-translate-y-1">
-                 <div className="flex justify-between items-center mb-4">
-                   <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white font-black text-xs">OM</div>
-                   <span className="text-xs text-gray-400 font-medium">Hier, 18:15</span>
-                 </div>
-                 <p className="text-xs text-orange-900/60 font-bold mb-1 uppercase tracking-wider">Paiement reçu</p>
-                 <p className="text-2xl font-black text-orange-600 mb-2">+ 120 000 F</p>
-                 <p className="text-xs text-gray-500 font-medium">De: YAYYAM PAYMENTS</p>
-                 <p className="text-xs text-gray-400 mt-2">Nouveau solde: 450 000 F</p>
-               </div>
+              </div>
             </div>
-            <div className="mt-10 flex items-center justify-center gap-2 text-sm text-gray-500 font-medium bg-gray-50 inline-flex px-6 py-2 rounded-full border border-gray-100 mx-auto">
-               <Shield className="w-4 h-4 text-emerald" />
-               Vos fonds sont sécurisés et garantis.
+
+            <div className="lg:w-1/2 relative w-full aspect-square md:h-[500px] group">
+               <div className="absolute inset-0 bg-emerald/10 blur-[80px] rounded-[3rem] -z-10 group-hover:scale-105 transition-transform duration-700"></div>
+               <div className="relative w-full h-full rounded-[2rem] overflow-hidden shadow-2xl">
+                 <Image src="/landing/cashout_wave_om_mockup.png" alt="Cashout Wave Orange Money" fill className="object-cover transform group-hover:scale-[1.03] transition-transform duration-700" unoptimized />
+               </div>
             </div>
           </div>
         </section>
@@ -350,210 +349,159 @@ export default async function LandingPage() {
                </div>
             </div>
 
-            <p className="text-center text-slate max-w-2xl mx-auto mb-16 bg-white py-4 px-6 rounded-2xl border border-line shadow-sm">
-              <span className="mr-2">💡</span> Vous ne payez qu&apos;une commission sur vos ventes réelles. Plus vous vendez, moins vous payez. Le système s'ajuste pour vous.
-            </p>
+            <div className="relative max-w-4xl mx-auto mb-16 overflow-hidden rounded-[2rem] shadow-xl group border border-emerald-900/10">
+               <div className="absolute inset-0">
+                  <Image src="/landing/pricing_commission_mockup.png" alt="Réduction des commissions Yayyam" fill className="object-cover transform group-hover:scale-105 transition-transform duration-1000" unoptimized />
+               </div>
+               <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/90 via-emerald-900/70 to-transparent"></div>
+               <div className="relative z-10 p-10 flex items-center gap-6">
+                 <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)] shrink-0">
+                   <span className="text-4xl leading-none block">💡</span>
+                 </div>
+                 <div>
+                   <h4 className="text-white font-black text-2xl mb-2 font-display">Système de commission décroissante</h4>
+                   <p className="text-emerald-100/90 text-lg leading-relaxed">
+                     Vous ne payez qu'une commission sur vos ventes réelles. Plus vous vendez, moins vous payez. Le système s'ajuste pour vous.
+                   </p>
+                 </div>
+               </div>
+            </div>
 
             <PricingCalculator tiers={dynamicTiers} />
 
           </div>
         </section>
-        {/* 7.5 MACHINE A CASH (Paniers & Upsells & Retraits Auto) */}
+        {/* --- NOUVELLE STRUCTURE VISUELLE ZIG-ZAG --- */}
+
+        {/* Feature 1: App Store Intégré */}
         <section className="py-24 px-6 bg-white overflow-hidden relative border-y border-line/10">
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald/5 blur-[100px] rounded-full pointer-events-none"></div>
-          
-          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 relative z-10">
-            <div className="text-center mb-16 max-w-3xl mx-auto">
-              <span className="inline-block bg-emerald/10 text-emerald font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 border border-emerald/20">La Machine à Cash</span>
-              <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-ink">Trois leviers natifs pour <span className="text-emerald">exploser</span> votre C.A.</h2>
-              <p className="text-xl text-slate font-light">
-                Ne laissez plus d'argent sur la table. Yayyam intègre un arsenal de conversion secret, activable en un clic sans abonnement externe.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Levier 1: Paniers Abandonnés / Call Center */}
-              <div className="bg-pearl rounded-[2rem] p-10 border border-line flex flex-col relative overflow-hidden group hover:shadow-2xl hover:shadow-emerald/10 hover:border-emerald/30 transition-all duration-300 transform hover:-translate-y-2">
-                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Users size={80} />
-                </div>
-                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-emerald shadow-sm mb-8 border border-line group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-3xl">📞</span>
-                </div>
-                <h3 className="text-2xl font-display font-black text-ink mb-4">Relance & Call Center Intégré</h3>
-                <p className="text-slate leading-relaxed font-light mb-6 flex-1">
-                  Dès qu'un client commence à remplir ses informations sans payer, le système capture son numéro. Nos <span className="font-bold text-ink">Closers partenaires</span> le relancent par téléphone pour clôturer la vente. Vous récupérez 30% de chiffre additionnel.
-                </p>
-                <div className="bg-white border border-line rounded-xl p-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald/10 flex items-center justify-center text-emerald shrink-0"><CheckCircle2 size={18} /></div>
-                  <div>
-                    <p className="text-xs text-slate uppercase tracking-wider font-bold">Résultat Moyen</p>
-                    <p className="text-ink font-black text-lg">+30% de ventes sauvées</p>
-                  </div>
-                </div>
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald/5 blur-[100px] rounded-full pointer-events-none"></div>
+          <div className="w-full max-w-[1500px] mx-auto flex flex-col lg:flex-row items-center gap-16 relative z-10">
+            <div className="lg:w-1/2 space-y-8">
+              <div className="inline-flex items-center gap-2 bg-emerald/10 text-emerald font-bold px-4 py-2 rounded-full text-xs tracking-widest uppercase border border-emerald/20">
+                <Sparkles size={16} /> Hub Central
               </div>
-
-              {/* Levier 2: Upsell 1-Click */}
-              <div className="bg-emerald rounded-[2rem] p-10 flex flex-col relative overflow-hidden group hover:shadow-2xl hover:shadow-emerald/40 transition-all duration-300 transform hover:-translate-y-2 md:-translate-y-4">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald to-emerald-rich"></div>
-                {/* SVG pattern overlay */}
-                <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-                  <pattern id="diagonalHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                    <line x1="0" y1="0" x2="0" y2="10" stroke="#fff" strokeWidth="2" />
-                  </pattern>
-                  <rect width="100%" height="100%" fill="url(#diagonalHatch)" />
-                </svg>
-                
-                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shadow-sm mb-8 border border-white/20 relative z-10 group-hover:scale-110 transition-transform duration-300">
-                  <Zap size={32} />
-                </div>
-                <h3 className="text-2xl font-display font-black text-white mb-4 relative z-10">L'Upsell Magique (O-T-O)</h3>
-                <p className="text-cream leading-relaxed font-light mb-6 flex-1 relative z-10">
-                  Dès que le client valide sa commande (ex: à la livraison), une page <span className="font-bold">One-Time Offer</span> s'affiche avec un compte à rebours de 10 min, lui proposant un article premium à -x%. L'ajout au panier se fait en 1 seul clic.
-                </p>
-                <div className="bg-black/20 backdrop-blur-md rounded-xl p-4 flex items-center gap-3 relative z-10 border border-white/10">
-                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0"><Sparkles size={18} /></div>
-                  <div>
-                    <p className="text-xs text-cream/70 uppercase tracking-wider font-bold">Panier Moyen</p>
-                    <p className="text-white font-black text-lg">Doublé instantanément</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Levier 3: Retraits Automatisés */}
-              <div className="bg-pearl rounded-[2rem] p-10 border border-line flex flex-col relative overflow-hidden group hover:shadow-2xl hover:shadow-emerald/10 hover:border-emerald/30 transition-all duration-300 transform hover:-translate-y-2">
-                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Store size={80} />
-                </div>
-                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-emerald shadow-sm mb-8 border border-line group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-3xl">🏦</span>
-                </div>
-                <h3 className="text-2xl font-display font-black text-ink mb-4">Retraits 100% Automatisés</h3>
-                <p className="text-slate leading-relaxed font-light mb-6 flex-1">
-                  Vendeurs, Affiliés, Closers... Fixez votre seuil (ex: 50 000 F). Dès qu'il est atteint, notre robot intelligent génère la demande et l'argent atterrit sur votre Wave/Orange Money de façon transparente, que vous soyez réveillé ou non.
-                </p>
-                <div className="bg-white border border-line rounded-xl p-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald/10 flex items-center justify-center text-emerald shrink-0"><ArrowRight size={18} /></div>
-                  <div>
-                    <p className="text-xs text-slate uppercase tracking-wider font-bold">Friction Zéro</p>
-                    <p className="text-ink font-black text-lg">Paiement passif garanti</p>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </section>
-
-        {/* 8. ECOSYSTEME RICHESSE PARTAGÉE (Affiliation & Closing) */}
-        <section className="py-24 px-6 bg-[#FAFAF7] overflow-hidden relative">
-          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-emerald/5 blur-[100px] rounded-full pointer-events-none"></div>
-          
-          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 lg:px-20 xl:px-32 relative z-10">
-            <div className="text-center mb-16 max-w-3xl mx-auto">
-              <span className="inline-block bg-ink/10 text-ink font-bold px-4 py-1.5 rounded-full text-xs tracking-widest uppercase mb-6 shadow-sm border border-ink/10">Sans Boutiques & Sans Produits</span>
-              <h2 className="text-3xl md:text-5xl font-display font-black mb-6 text-ink">L'Écosystème de <span className="text-emerald">Richesse Partagée</span></h2>
-              <p className="text-xl text-slate font-light">
-                Vous n'avez pas de produit à vendre ? Aucun problème. Yayyam est le terrain de jeu ultime pour générer des revenus passifs ou actifs en devenant partenaire des meilleurs vendeurs.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-[1800px] mx-auto px-4 md:px-8">
-              {/* Affiliation */}
-              <div className="bg-white rounded-[2rem] p-10 border-2 border-emerald/20 flex flex-col relative overflow-hidden group shadow-lg hover:shadow-2xl hover:shadow-emerald/20 transition-all duration-300 transform hover:-translate-y-2">
-                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
-                  <Share2 size={120} />
-                </div>
-                <div className="w-16 h-16 rounded-2xl bg-emerald/10 flex items-center justify-center text-emerald mb-8 border border-emerald/20">
-                  <TrendingUp size={32} />
-                </div>
-                <h3 className="text-2xl font-display font-black text-ink mb-2">Programme Affiliés</h3>
-                <h4 className="text-sm font-bold text-emerald uppercase tracking-wider mb-4">Revenus Passifs Maximisés</h4>
-                <p className="text-slate leading-relaxed font-light mb-8">
-                  Accédez à un catalogue exclusif de produits à fort taux de conversion. Partagez votre lien de tracking intelligent et touchez jusqu'à <span className="font-bold text-ink">50% de commission</span> sur chaque vente. L'argent est transféré automatiquement sur votre Mobile Money à chaque seuil atteint.
-                </p>
-                <Link suppressHydrationWarning href="/register?role=affiliate" className="mt-auto inline-flex items-center gap-2 text-emerald font-bold hover:text-emerald-rich transition-colors group/link w-fit">
-                  <span suppressHydrationWarning>Devenir Affilié</span> 
-                  <svg className="group-hover/link:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                </Link>
-              </div>
-
-              {/* Closing */}
-              <div className="bg-ink rounded-[2rem] p-10 flex flex-col relative overflow-hidden group shadow-lg hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:-translate-y-2">
-                <div className="absolute inset-0 bg-gradient-to-br from-ink to-[#0a1a1f]"></div>
-                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
-                  <PhoneCall size={120} className="text-white" />
-                </div>
-                
-                <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-emerald mb-8 border border-white/10 relative z-10">
-                  <Phone size={32} />
-                </div>
-                <h3 className="text-2xl font-display font-black text-white mb-2 relative z-10">L'Agence de Closing In-App</h3>
-                <h4 className="text-sm font-bold text-emerald-light uppercase tracking-wider mb-4 relative z-10">Revenus Actifs Garantis</h4>
-                <p className="text-cream/80 leading-relaxed font-light mb-8 relative z-10">
-                  Transformez votre téléphone en machine à cash. Connectez-vous sur votre <span className="font-bold text-white">Terminal Closer</span> et rappelez les paniers abandonnés des gros vendeurs. Chaque client convaincu vous rapporte une commission fixe. Zéro prospection, uniquement des leads ultra-qualifiés avec intention d'achat.
-                </p>
-                <Link suppressHydrationWarning href="/register?role=closer" className="relative z-10 mt-auto inline-flex items-center gap-2 text-emerald-light font-bold hover:text-white transition-colors group/link w-fit">
-                  <span suppressHydrationWarning>Rejoindre les Closers</span> 
-                  <svg className="group-hover/link:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                </Link>
-              </div>
-
-            </div>
-          </div>
-        </section>
-
-        {/* ── Section Communautés Telegram ──────────────────────────────── */}
-        <section className="py-20 bg-ink border-y border-white/5 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald/5 blur-[120px] rounded-full pointer-events-none" />
-          <div className="w-full max-w-[1800px] mx-auto px-4 md:px-12 px-4 relative z-10">
-            <div className="text-center mb-12">
-              <span className="inline-block bg-emerald/10 border border-emerald/30 text-emerald text-xs font-bold px-3 py-1 rounded-full mb-4 shadow-sm">
-                {get('landing_telegram_supertitle', "EXCLUSIF YAYYAM")}
-              </span>
-              <h2 className="text-3xl md:text-4xl font-black text-white mb-4 whitespace-pre-wrap">
-                {get('landing_telegram_title', "Vendez l'accès à vos groupes\nTelegram privés")}
+              <h2 className="text-4xl md:text-5xl font-display font-black text-ink leading-tight">
+                L'App Store de <span className="text-emerald">l'E-commerce Africain.</span>
               </h2>
-              <p className="text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                {get('landing_telegram_subtitle', "Formations, coaching, contenus exclusifs — créez un produit, liez-le à votre groupe Telegram, et vos clients reçoivent automatiquement leur invitation après paiement.")}
+              <p className="text-lg text-slate font-light leading-relaxed">
+                Connectez vos outils préférés en un seul clic, sans écrire une ligne de code. Automatisez vos processus avec les bots WhatsApp, gérez vos communautés Telegram, et synchronisez vos publicités avec les Pixels Meta ou TikTok en natif.
               </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-colors">
-                <span className="text-4xl block mb-3">🔐</span>
-                <h3 className="font-bold text-white mb-2 text-lg">Accès automatique</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">Le client paie → reçoit son lien d&apos;invitation par WhatsApp en quelques secondes</p>
-              </div>
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-colors">
-                <span className="text-4xl block mb-3">💰</span>
-                <h3 className="font-bold text-white mb-2 text-lg">Monétisez votre expertise</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">Fixez votre prix, recevez vos paiements via Wave ou Orange Money directement</p>
-              </div>
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-colors">
-                <span className="text-4xl block mb-3">📊</span>
-                <h3 className="font-bold text-white mb-2 text-lg">Gérez vos membres</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">Suivez les invitations, le nombre de membres, et révoquez les accès si nécessaire</p>
-              </div>
-            </div>
-
-            {/* Cas d'usage concrets */}
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald/5 rounded-full -translate-y-32 translate-x-32 pointer-events-none blur-3xl"></div>
-              <h3 className="font-black text-white text-xl mb-6 text-center relative z-10">Qui utilise cette fonctionnalité ?</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+              <ul className="space-y-4">
                 {[
-                  { emoji: '🎓', label: 'Formateurs', desc: 'Cours en ligne + groupe de suivi' },
-                  { emoji: '💪', label: 'Coachs', desc: 'Coaching sportif, business, dev perso' },
-                  { emoji: '📈', label: 'Traders', desc: 'Signaux, analyses, communauté VIP' },
-                  { emoji: '🎨', label: 'Créateurs', desc: 'Contenus exclusifs, backstage' },
-                ].map(u => (
-                  <div key={u.label} className="text-center group cursor-default">
-                    <span className="text-3xl block mb-2 group-hover:scale-110 transition-transform">{u.emoji}</span>
-                    <p className="font-bold text-white text-sm mb-1">{u.label}</p>
-                    <p className="text-white/60 text-xs">{u.desc}</p>
-                  </div>
+                  "Bot WhatsApp (relance auto & Tracking)",
+                  "Notion & Zapier Webhooks",
+                  "Pixels Facebook & CAPI Server-Side"
+                ].map((feat, i) => (
+                  <li key={i} className="flex items-center gap-3 text-ink font-bold">
+                    <CheckCircle2 className="text-emerald shrink-0" size={20} />
+                    {feat}
+                  </li>
                 ))}
+              </ul>
+            </div>
+            <div className="lg:w-1/2 relative">
+               <div className="absolute inset-0 bg-emerald/20 blur-[80px] rounded-[3rem] -z-10"></div>
+               <div className="relative rounded-[2rem] overflow-hidden border border-line shadow-2xl shadow-emerald/10 group">
+                 <Image src="/landing/app_store_mockup.png" alt="Yayyam App Store Mockup" width={800} height={800} className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700" unoptimized />
+               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Feature 2: Anti-Fraude COD */}
+        <section className="py-24 px-6 bg-pearl overflow-hidden relative">
+          <div className="w-full max-w-[1500px] mx-auto flex flex-col lg:flex-row-reverse items-center gap-16 relative z-10">
+            <div className="lg:w-1/2 space-y-8">
+              <div className="inline-flex items-center gap-2 bg-orange-500/10 text-orange-600 font-bold px-4 py-2 rounded-full text-xs tracking-widest uppercase border border-orange-500/20">
+                <Shield size={16} /> Sécurité Absolue
+              </div>
+              <h2 className="text-4xl md:text-5xl font-display font-black text-ink leading-tight">
+                Le premier bouclier <span className="text-orange-500">Anti-Fraude COD.</span>
+              </h2>
+              <p className="text-lg text-slate font-light leading-relaxed">
+                Fini les colis refusés à la porte et les livreurs complices. Au moment de la validation, le client reçoit un code OTP par SMS. Le livreur ne peut valider que s'il a le bon code.
+              </p>
+              <div className="bg-white border border-line rounded-2xl p-6 shadow-sm">
+                 <p className="text-sm text-slate uppercase font-bold tracking-widest mb-1">Impact Immédiat</p>
+                 <p className="text-2xl font-black text-ink mb-2">Taux de livraison réussi doublé</p>
+                 <p className="text-gray-500 text-sm">Le paiement à la livraison (Cash-on-Delivery) redevient enfin rentable sur le marché africain.</p>
+              </div>
+            </div>
+            <div className="lg:w-1/2 relative">
+               <div className="absolute inset-0 bg-orange-500/20 blur-[80px] rounded-[3rem] -z-10 animate-pulse-slow"></div>
+               <div className="relative rounded-[2rem] overflow-hidden border border-line shadow-2xl shadow-orange-500/10 group">
+                 <Image src="/landing/cod_otp_mockup.png" alt="Anti Fraude OTP Mockup" width={800} height={800} className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700" unoptimized />
+               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Feature 3: Affiliation & Retraits Auto */}
+        <section className="py-24 px-6 bg-ink text-white overflow-hidden relative">
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gold/10 blur-[120px] rounded-full pointer-events-none"></div>
+          <div className="w-full max-w-[1500px] mx-auto flex flex-col lg:flex-row items-center gap-16 relative z-10">
+            <div className="lg:w-1/2 space-y-8">
+              <div className="inline-flex items-center gap-2 bg-gold/10 text-gold font-bold px-4 py-2 rounded-full text-xs tracking-widest uppercase border border-gold/20">
+                <Store size={16} /> Écosystème Passif
+              </div>
+              <h2 className="text-4xl md:text-5xl font-display font-black text-white leading-tight">
+                Vendeur, Closers et Affiliés <span className="text-gold">payés automatiquement.</span>
+              </h2>
+              <p className="text-lg text-cream/80 font-light leading-relaxed">
+                Notre robot gère l'argent. Fixez votre seuil (ex: 50 000 FCFA), et dès qu'il est atteint, vos fonds atterrissent directement sur votre compte Wave ou Orange Money, où que vous soyez dans la zone UEMOA/CEMAC.
+              </p>
+              <ul className="space-y-4">
+                {[
+                  "Retraits instantanés vers Mobile Money",
+                  "Tracking d'Affiliation Millimétré",
+                  "Terminal de Closing In-App"
+                ].map((feat, i) => (
+                  <li key={i} className="flex items-center gap-3 text-white font-bold">
+                    <ArrowRight className="text-gold shrink-0" size={20} />
+                    {feat}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="lg:w-1/2 relative">
+               <div className="absolute inset-0 bg-gold/20 blur-[80px] rounded-[3rem] -z-10"></div>
+               <div className="relative rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl shadow-black/50 group">
+                 <Image src="/landing/affiliation_cash_mockup.png" alt="Affiliation Dashboard Mockup" width={800} height={800} className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700" unoptimized />
+               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Section Communautés Telegram VIP ──────────────────────────────── */}
+        <section className="py-24 px-6 bg-ink text-white overflow-hidden relative border-y border-white/5">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-turquoise/10 blur-[120px] rounded-full pointer-events-none" />
+          <div className="w-full max-w-[1500px] mx-auto flex flex-col lg:flex-row-reverse items-center gap-16 relative z-10">
+            <div className="lg:w-1/2 space-y-8">
+              <div className="inline-flex items-center gap-2 bg-turquoise/10 border border-turquoise/30 text-turquoise text-xs font-bold px-4 py-2 rounded-full uppercase tracking-widest shadow-sm">
+                <MessageCircle size={16} /> {get('landing_telegram_supertitle', "Communautés VIP")}
+              </div>
+              <h2 className="text-4xl md:text-5xl font-display font-black text-white leading-tight">
+                {get('landing_telegram_title', "Vendez l'accès à vos groupes\nTelegram privés.")}
+              </h2>
+              <p className="text-lg text-cream/80 font-light leading-relaxed">
+                {get('landing_telegram_subtitle', "Formations, coaching, contenus exclusifs — créez un produit lié à votre groupe Telegram. Le client paie, puis reçoit instantanément son lien VIP.")}
+              </p>
+              <div className="grid grid-cols-2 gap-6 pt-4">
+                <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
+                  <span className="text-2xl mb-2 block">🔐</span>
+                  <p className="font-bold text-white text-sm">Zéro tâche manuelle</p>
+                </div>
+                <div className="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
+                  <span className="text-2xl mb-2 block">💰</span>
+                  <p className="font-bold text-white text-sm">Monétisation immédiate</p>
+                </div>
+              </div>
+            </div>
+            <div className="lg:w-1/2 relative w-full aspect-square md:aspect-auto md:h-[600px] group">
+              <div className="absolute inset-0 bg-turquoise/20 blur-[80px] rounded-[3rem] -z-10 group-hover:bg-turquoise/30 transition-colors duration-700"></div>
+              <div className="relative w-full h-full rounded-[2rem] overflow-hidden shadow-2xl shadow-black/50 border border-white/10">
+                <Image src="/landing/telegram_vip_mockup.png" alt="Telegram VIP Access Mockup" fill className="object-cover transform group-hover:scale-105 transition-transform duration-700" unoptimized />
               </div>
             </div>
           </div>
@@ -582,53 +530,76 @@ export default async function LandingPage() {
             </div>
         </section>
 
-        {/* 9. REAL-TIME SOCIAL PROOF */}
-        <LiveCounters 
-          vendorsCount={vendorsCount ?? 200} 
-          productsCount={productsCount ?? 1200} 
-          ordersCount={ordersCount ?? 8500} 
-        />
+        {/* 9. REAL-TIME SOCIAL PROOF : IMPACT VISUEL */}
+        <section className="py-24 bg-ink border-b border-white/10 relative overflow-hidden">
+           {/* Background décoratif Africain */}
+           <div className="absolute inset-0 z-0 opacity-10">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-gradient-to-tr from-emerald-900 to-transparent rounded-full blur-[150px]"></div>
+           </div>
 
-        {/* COMPARAISON WHATSAPP VS YAYYAM */}
-        <section className="py-16 bg-gray-50 border-t border-line">
-          <div className="max-w-[1800px] mx-auto w-full px-6 md:px-12 lg:px-20 xl:px-32">
-            <h2 className="text-2xl md:text-3xl font-display font-bold text-center mb-10 text-ink">
-              Pourquoi passer de WhatsApp à Yayyam ?
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Colonne WhatsApp */}
-              <div className="bg-white rounded-2xl p-6 border-2 border-red-100 flex flex-col">
-                <div className="text-center mb-6">
-                  <span className="text-4xl block mb-2">📱</span>
-                  <h3 className="font-bold text-xl text-red-600">Vendre sur WhatsApp</h3>
-                </div>
-                <ul className="space-y-4 text-sm text-gray-600 flex-1">
-                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Pas de vitrine professionnelle</li>
-                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Gestion des stocks manuelle</li>
-                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Pas de paiement en ligne automatisé</li>
-                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Pas de suivi de commandes direct</li>
-                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Pas d'analytics ni d'IA</li>
-                  <li className="flex items-start gap-3"><span className="text-red-400 mt-0.5 shrink-0"><AlertCircle size={16}/></span> Confiance client limitée</li>
-                </ul>
+           <div className="max-w-[1500px] mx-auto text-center px-6 relative z-10">
+             <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-cream font-bold px-4 py-2 rounded-full text-xs tracking-widest uppercase mb-8 shadow-sm backdrop-blur-md">
+               <Globe size={16} className="text-emerald-500" /> Écosystème Panafricain
+             </div>
+             <h3 className="font-display font-black text-4xl md:text-6xl text-white mb-6 leading-tight">
+               Déjà utilisé au <span className="text-emerald-500">Sénégal 🇸🇳</span><br/>
+               en <span className="text-orange-500">Côte d'Ivoire 🇨🇮</span> <br className="md:hidden" />
+               et au <span className="text-gold">Mali 🇲🇱</span>.
+             </h3>
+             <p className="text-xl md:text-2xl text-cream/70 font-light mb-16 max-w-2xl mx-auto">
+               L'écosystème Yayyam en temps réel. <br/><strong className="text-white">Parfait pour tous les business.</strong>
+             </p>
+             
+             {/* Enveloppement des compteurs dans un conteneur verre immersif */}
+             <div className="relative p-1 rounded-3xl bg-gradient-to-b from-white/10 to-transparent max-w-5xl mx-auto shadow-2xl">
+               <div className="bg-[#0A1F1A]/80 backdrop-blur-xl rounded-[1.4rem] p-8 md:p-12 border border-white/5">
+                 <LiveCounters 
+                   vendorsCount={vendorsCount ?? 200} 
+                   productsCount={productsCount ?? 1200} 
+                   ordersCount={ordersCount ?? 8500} 
+                 />
+               </div>
+             </div>
+           </div>
+        </section>
+
+        {/* COMPARAISON WHATSAPP VS YAYYAM (Zig-Zag Visuel) */}
+        <section className="py-24 px-6 bg-white overflow-hidden relative border-t border-line">
+          <div className="w-full max-w-[1500px] mx-auto flex flex-col lg:flex-row items-center gap-16 relative z-10">
+            <div className="lg:w-1/2 space-y-8">
+              <div className="inline-flex items-center gap-2 bg-red-100 text-red-600 font-bold px-4 py-2 rounded-full text-xs tracking-widest uppercase border border-red-200">
+                <AlertCircle size={16} /> Le Chaos vs L'Ordre
               </div>
-              {/* Colonne Yayyam */}
-              <div className="bg-white rounded-2xl p-6 border-2 border-[#0F7A60] shadow-xl shadow-emerald/10 relative flex flex-col">
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#0F7A60] text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
-                  Recommandé
+              <h2 className="text-4xl md:text-5xl font-display font-black text-ink leading-tight">
+                Pourquoi passer de <span className="text-red-500 line-through decoration-red-500/50">WhatsApp</span> à <span className="text-emerald">Yayyam ?</span>
+              </h2>
+              <p className="text-lg text-slate font-light leading-relaxed">
+                Répondre manuellement aux messages "Prix ?" et courir après les adresses de livraison tue votre croissance. Passez de la messagerie chaotique à un Dashboard e-commerce 100% automatisé.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-1"><span className="text-red-500 font-black text-xs">✗</span></div>
+                  <div>
+                    <h4 className="font-bold text-ink">Le Passé (WhatsApp)</h4>
+                    <p className="text-sm text-gray-500">Gestion de stock papier, paiements manuels, commandes perdues.</p>
+                  </div>
                 </div>
-                <div className="text-center mb-6">
-                  <span className="text-4xl block mb-2">🏪</span>
-                  <h3 className="font-bold text-xl text-[#0F7A60]">Vendre sur Yayyam</h3>
+                <div className="flex items-start gap-4">
+                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 mt-1"><CheckCircle2 className="text-emerald-600" size={16} /></div>
+                  <div>
+                    <h4 className="font-bold text-ink">Le Futur (Yayyam)</h4>
+                    <p className="text-sm text-gray-500">Boutique pro, paiements Wave/OM automatisés, Analytics en temps réel.</p>
+                  </div>
                 </div>
-                <ul className="space-y-4 text-sm text-gray-700 font-medium flex-1">
-                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Boutique pro avec votre marque</li>
-                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Stock et commandes automatisés</li>
-                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Wave, Orange Money, carte bancaire</li>
-                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Suivi en temps réel pour vos clients</li>
-                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Analytics + IA marketing intégrés</li>
-                  <li className="flex items-start gap-3"><span className="text-[#0F7A60] mt-0.5 shrink-0"><CheckCircle2 size={18}/></span> Badge vendeur vérifié (KYC)</li>
-                </ul>
               </div>
+            </div>
+
+            <div className="lg:w-1/2 relative w-full aspect-square md:h-[600px] group">
+               <div className="absolute inset-0 bg-emerald/20 blur-[80px] rounded-[3rem] -z-10 group-hover:scale-105 transition-transform duration-700"></div>
+               <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-line shadow-2xl group">
+                 <Image src="/landing/whatsapp_yayyam_split.png" alt="WhatsApp vs Yayyam" fill className="object-cover transform group-hover:scale-[1.03] transition-transform duration-700" unoptimized />
+               </div>
             </div>
           </div>
         </section>
@@ -661,20 +632,18 @@ export default async function LandingPage() {
                 </thead>
                 <tbody className="text-sm">
                   {[
-                    { feat: 'Wave / Orange Money natif',           y: 'green',  wa: 'red',    ch: 'yellow', sh: 'red',    sy: 'red' },
-                    { feat: 'Paiement à la livraison (COD)',       y: 'green',  wa: 'yellow', ch: 'green',  sh: 'red',    sy: 'red' },
-                    { feat: 'Abonnement mensuel',                  y: '0 FCFA', wa: '0 FCFA', ch: '~5 000 F', sh: '39$/mo', sy: '27€/mo' },
+                    { feat: 'Wave / Orange Money UEMOA & CEMAC',   y: 'green',  wa: 'red',    ch: 'yellow', sh: 'red',    sy: 'red' },
+                    { feat: 'Hub SMS : Anti-Fraude COD (OTP)',     y: 'green',  wa: 'red',    ch: 'red',    sh: 'orange', sy: 'red' },
+                    { feat: 'App Store (Notion, Zapier, Bots)',    y: 'green',  wa: 'red',    ch: 'red',    sh: 'green',  sy: 'orange' },
+                    { feat: 'Paiement à la livraison complet',     y: 'green',  wa: 'yellow', ch: 'green',  sh: 'red',    sy: 'red' },
+                    { feat: 'Abonnement mensuel',                  y: '0 FCFA', wa: '0 FCFA', ch: '~5 000 FCFA', sh: '39$/mo', sy: '27€/mo' },
                     { feat: 'Commission dégressive (5-8%)',        y: 'green',  wa: 'red',    ch: 'red',    sh: 'red',    sy: 'red' },
-                    { feat: 'Boutique e-commerce complète',        y: 'green',  wa: 'red',    ch: 'green',  sh: 'green',  sy: 'orange' },
-                    { feat: 'Bot WhatsApp automatisé',             y: 'green',  wa: 'orange', ch: 'red',    sh: 'red',    sy: 'red' },
-                    { feat: 'Communautés Telegram payantes',       y: 'green',  wa: 'red',    ch: 'red',    sh: 'red',    sy: 'red' },
+                    { feat: 'Relances WhatsApp / Paniers',         y: 'green',  wa: 'orange', ch: 'red',    sh: 'orange', sy: 'red' },
                     { feat: 'IA Marketing (Check360°)',            y: 'green',  wa: 'red',    ch: 'red',    sh: 'orange', sy: 'red' },
                     { feat: "Programme d'affiliation intégré",     y: 'green',  wa: 'red',    ch: 'red',    sh: 'orange', sy: 'green' },
-                    { feat: 'Call Center / Closers intégrés',      y: 'green',  wa: 'red',    ch: 'red',    sh: 'red',    sy: 'red' },
-                    { feat: 'Retrait Mobile Money immédiat',       y: 'green',  wa: 'red',    ch: 'yellow', sh: 'red',    sy: 'red' },
-                    { feat: 'Analytics + Export PDF',              y: 'green',  wa: 'red',    ch: 'orange', sh: 'green',  sy: 'orange' },
-                    { feat: 'Support WhatsApp direct',             y: 'green',  wa: 'yellow', ch: 'green',  sh: 'red',    sy: 'red' },
-                    { feat: 'Produits digitaux (formations, PDF)', y: 'green',  wa: 'red',    ch: 'red',    sh: 'green',  sy: 'green' },
+                    { feat: 'Call Center / Closers en live',       y: 'green',  wa: 'red',    ch: 'red',    sh: 'red',    sy: 'red' },
+                    { feat: 'Retrait Express Mobile Money',        y: 'green',  wa: 'red',    ch: 'yellow', sh: 'red',    sy: 'red' },
+                    { feat: 'Communautés Telegram & Académie',     y: 'green',  wa: 'red',    ch: 'red',    sh: 'red',    sy: 'red' },
                   ].map((row, i) => {
                     const renderCell = (val: string, isYayyam = false) => {
                       if (val === 'green') return (
@@ -732,24 +701,44 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* 10. CTA FINAL */}
-        <section className="py-32 px-6 bg-ink relative overflow-hidden border-t border-line/10">
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-600/10 blur-[150px] rounded-full pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gold/10 blur-[120px] rounded-full pointer-events-none" />
+        {/* 10. CTA FINAL : MANIFESTE DE CONFIANCE */}
+        <section className="py-32 px-6 bg-[#030e0b] relative overflow-hidden">
+          {/* Image de fond de la carte d'Afrique */}
+          <div className="absolute inset-0 z-0">
+             <Image src="/landing/trust_africa_bg.png" alt="Pan-African Scale Yayyam" fill className="object-cover opacity-40 mix-blend-screen" unoptimized />
+          </div>
+          {/* Overlay gradient pour la lisibilité */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#030e0b] via-[#030e0b]/80 to-transparent z-0"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/10 blur-[150px] rounded-full pointer-events-none z-0" />
 
-          <div className="max-w-[1800px] mx-auto w-full px-4 md:px-8 text-center relative z-10">
-            <h2 className="text-4xl md:text-6xl font-display font-black mb-6 tracking-tight text-white leading-tight whitespace-pre-line">
-              {get('landing_cta_title', 'La confiance se construit.\nLe commerce suit.')}
-            </h2>
-            <div className="text-xl text-cream/80 font-light mb-12 max-w-2xl mx-auto space-y-2 whitespace-pre-line">
-              <p>{get('landing_cta_subtitle', 'Rejoignez Yayyam — la plateforme née de la confiance africaine.\nZéro abonnement. Vous ne payez que quand vous vendez.')}</p>
+          <div className="max-w-[1000px] mx-auto w-full px-4 text-center relative z-10 flex flex-col items-center">
+            
+            <div className="inline-flex items-center gap-2 bg-gold/10 text-gold-light font-bold px-6 py-2 rounded-full text-xs tracking-widest uppercase mb-8 border border-gold/20 shadow-xl backdrop-blur-sm">
+              <Shield size={16} /> Transparence Totale
             </div>
-            <Link href={isLoggedIn ? dashboardUrl : "/register"} className="inline-block px-14 py-6 bg-red-600 text-white rounded-2xl font-black text-xl hover:bg-red-700 hover:scale-105 transition-all shadow-2xl shadow-red-600/20 mb-8 animate-pulse">
-              {isLoggedIn ? "Mon espace" : get('landing_cta_button', 'Créer ma boutique maintenant')}
+            
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-display font-black mb-8 tracking-tight text-white leading-tight">
+              La confiance se construit.<br/>
+              <span className="text-gold bg-clip-text text-transparent bg-gradient-to-r from-gold to-emerald-400">Le commerce suit.</span>
+            </h2>
+            
+            <div className="text-xl md:text-2xl text-cream/90 font-light mb-12 max-w-3xl mx-auto leading-relaxed">
+              <p className="mb-4">
+                L'argent va <strong className="text-white">directement sur votre téléphone</strong> en Franc CFA.
+              </p>
+              <p className="text-lg text-cream/70">
+                Rejoignez Yayyam — la plateforme née de la confiance africaine.<br/>
+                <span className="text-emerald-400 font-bold border-b border-emerald-400/30 pb-1">Zéro abonnement. Vous ne payez que quand vous vendez.</span>
+              </p>
+            </div>
+            
+            <Link href={isLoggedIn ? dashboardUrl : "/register"} className="inline-flex items-center gap-3 px-12 py-5 bg-white text-ink rounded-2xl font-black text-xl hover:bg-emerald-50 hover:scale-105 transition-all shadow-[0_0_40px_rgba(16,185,129,0.3)] mb-8">
+              {isLoggedIn ? "Mon espace" : get('landing_cta_button', 'Créer ma boutique gratuitement')} <ArrowRight size={24} className="text-emerald-600" />
             </Link>
+            
             {!isLoggedIn && (
-              <div className="mt-8 pt-8 border-t border-white/10">
-                <Link href="/login" className="text-cream/60 hover:text-white transition font-medium text-lg">
+              <div className="mt-4 pt-8 border-t border-white/10 w-full max-w-sm">
+                <Link href="/login" className="text-cream/50 hover:text-white transition font-medium">
                   Déjà vendeur ? Connectez-vous →
                 </Link>
               </div>

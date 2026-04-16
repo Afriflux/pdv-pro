@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { BioLinkClientModules, TrackedLink } from './BioLinkClientModules'
 import BioLinkHeaderClient from './BioLinkHeaderClient'
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any, react/forbid-dom-props */
 export const dynamic = 'force-dynamic'
 
 export default async function BioLinkPage({ params }: { params: { slug: string } }) {
@@ -49,27 +49,110 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
   };
   const ctaTextColor = isLight(brandColor) ? '#000000' : '#FFFFFF';
 
+  const isDarkTheme = ['dark', 'luxury', 'richy', 'show', 'shadow', 'ambiance', 'music'].includes(theme);
+  const isGlassTheme = ['glass', 'magnet', 'été'].includes(theme);
+  const isLightTheme = !isDarkTheme && !isGlassTheme;
+
+  const customApp = (bioLink as any).custom_appearance || { bg_type: 'color', bg_value: '#FAFAF7', button_shape: 'rounded-xl', font_family: 'inter' };
+  
   let bgClass = "bg-[#FAFAF7] text-gray-900";
   let wrapperClass = "bg-white text-gray-900 shadow-xl border-gray-100";
-  if (theme === 'dark') {
-    bgClass = "bg-black text-white";
-    wrapperClass = "bg-[#1A1A1A] text-white border-gray-800 shadow-2xl";
-  } else if (theme === 'glass') {
-    bgClass = "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white";
-    wrapperClass = "bg-white/10 backdrop-blur-xl border border-white/20 shadow-[-10px_10px_30px_rgba(0,0,0,0.1)] text-white";
+  
+  switch(theme) {
+    case 'dark':
+      bgClass = "bg-black text-white";
+      wrapperClass = "bg-[#1A1A1A] text-white border-gray-800 shadow-2xl";
+      break;
+    case 'glass':
+      bgClass = "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white";
+      wrapperClass = "bg-white/10 backdrop-blur-xl border border-white/20 shadow-[-10px_10px_30px_rgba(0,0,0,0.1)] text-white";
+      break;
+    case 'girly':
+      bgClass = "bg-pink-50 text-pink-900";
+      wrapperClass = "bg-white text-pink-900 border-pink-100 shadow-[0_10px_40px_rgba(236,72,153,0.1)]";
+      break;
+    case 'pinky':
+      bgClass = "bg-pink-500 text-white";
+      wrapperClass = "bg-pink-400 text-white border-pink-300 shadow-xl";
+      break;
+    case 'luxury':
+      bgClass = "bg-black text-amber-100";
+      wrapperClass = "bg-[#0A0A0A] text-amber-100 border-[#FFD700]/30 shadow-[0_0_40px_rgba(255,215,0,0.1)]";
+      break;
+    case 'richy':
+      bgClass = "bg-[#082212] text-emerald-50";
+      wrapperClass = "bg-[#0A2E18] text-emerald-50 border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.15)]";
+      break;
+    case 'pro':
+      bgClass = "bg-slate-100 text-slate-900";
+      wrapperClass = "bg-white text-slate-900 shadow-2xl border-slate-200";
+      break;
+    case 'magnet':
+      bgClass = "bg-gradient-to-tr from-rose-600 via-purple-600 to-indigo-600 text-white";
+      wrapperClass = "bg-white/10 backdrop-blur-2xl border-white/20 shadow-2xl text-white";
+      break;
+    case 'argenté':
+      bgClass = "bg-gradient-to-b from-gray-100 to-gray-300 text-gray-900";
+      wrapperClass = "bg-gradient-to-br from-white to-gray-50 text-gray-900 shadow-2xl border-white/50";
+      break;
+    case 'services':
+      bgClass = "bg-blue-50 text-blue-950";
+      wrapperClass = "bg-white text-blue-950 border-blue-100 shadow-xl shadow-blue-900/5";
+      break;
+    case 'expresse':
+      bgClass = "bg-red-50 text-red-950";
+      wrapperClass = "bg-white text-red-950 border-red-100 shadow-xl shadow-red-900/5";
+      break;
+    case 'été':
+      bgClass = "bg-gradient-to-br from-yellow-300 via-orange-400 to-red-500 text-white";
+      wrapperClass = "bg-white/20 backdrop-blur-xl border-white/30 text-white shadow-2xl";
+      break;
+    case 'show':
+      bgClass = "bg-zinc-950 text-white";
+      wrapperClass = "bg-zinc-900 text-white border-purple-500/30 shadow-[0_0_50px_rgba(168,85,247,0.15)]";
+      break;
+    case 'shadow':
+      bgClass = "bg-[#050505] text-gray-300";
+      wrapperClass = "bg-[#0A0A0A] text-gray-300 shadow-[inset_0_0_50px_rgba(255,255,255,0.02)] border-gray-800/50";
+      break;
+    case 'ambiance':
+      bgClass = "bg-gradient-to-tr from-orange-900 via-amber-900 to-black text-amber-50";
+      wrapperClass = "bg-black/40 backdrop-blur-xl text-amber-50 border-amber-900/50 shadow-2xl";
+      break;
+    case 'music':
+      bgClass = "bg-indigo-950 text-indigo-50";
+      wrapperClass = "bg-indigo-900/40 backdrop-blur-xl text-indigo-50 border-indigo-500/30 shadow-2xl shadow-indigo-900/50";
+      break;
+    case 'custom':
+      bgClass = customApp?.bg_type === 'gradient' ? customApp.bg_value : "bg-transparent";
+      wrapperClass = customApp?.button_style === 'glass' ? "bg-white/10 backdrop-blur-xl border border-white/20" : "bg-white/80 border-gray-200 shadow-2xl";
+      break;
+  }
+
+  let customBgStyle = ''
+  if (theme === 'custom') {
+    if (customApp?.bg_type === 'color') {
+       customBgStyle = `.custom-bg { background-color: ${customApp.bg_value} !important; }`
+    } else if (customApp?.bg_type === 'image') {
+       customBgStyle = `.custom-bg { background-image: url('${customApp.bg_value}') !important; background-size: cover !important; background-position: center !important; background-attachment: fixed !important; }`
+    }
   }
 
   return (
-    <main className={`min-h-screen flex flex-col items-center selection:bg-black/10 transition-colors duration-500 ${bgClass}`}>
+    <>
+      <main 
+        className={`min-h-screen flex flex-col items-center selection:bg-black/10 transition-colors duration-500 ${bgClass} ${theme === 'custom' ? ('font-' + (customApp.font_family || 'inter') + ' custom-bg') : ''}`}
+      >
+        {customBgStyle && <style>{customBgStyle}</style>}
       <div className={`w-full max-w-lg min-h-screen md:min-h-[90vh] md:my-10 md:rounded-[40px] flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out border ${wrapperClass}`}>
         {/* Sticky Header with Banner & Profile */}
-        <BioLinkHeaderClient bioLink={bioLink} brandColor={brandColor} theme={theme} />
+        <BioLinkHeaderClient bioLink={bioLink} brandColor={brandColor} theme={theme} customAppearance={customApp} />
 
         <div className="px-6 md:px-10 pb-16 flex flex-col items-center w-full relative z-10 flex-1">
           {bioLink.bio && (
             <p className={`mt-3 text-sm md:text-base font-medium leading-relaxed max-w-sm mx-auto whitespace-pre-wrap text-center ${
-              theme === 'dark' ? 'text-gray-400' :
-              theme === 'glass' ? 'text-white/80' :
+              isDarkTheme ? 'text-gray-400' :
+              isGlassTheme ? 'text-white/80' :
               'text-gray-500'
             }`}>
               {bioLink.bio}
@@ -105,25 +188,43 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
               
               const autoIcon = link.icon || detectIcon(link.url)
               
+              const shapeClass = link.buttonShape && link.buttonShape !== 'default' ? link.buttonShape : theme === 'custom' ? customApp?.button_shape : 'rounded-2xl';
+              
               return (
                 <TrackedLink 
                   key={link.id} 
                   href={link.url}
                   slug={bioLink.slug}
-                  className={`w-full rounded-2xl py-4 px-4 shadow-sm hover:shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold text-sm text-center flex items-center justify-center gap-2 ${
+                  className={`w-full py-4 px-4 shadow-sm hover:shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold text-sm text-center flex items-center justify-center gap-2 ${shapeClass} ${
                     isPrimary ? 'shadow-lg' : ''
                   } ${link.animation === 'pulse' ? 'animate-pulse' : link.animation === 'bounce' ? 'animate-bounce' : ''}`}
                   {...{ style: {
                     animationDelay: delay, 
                     animationFillMode: 'both',
-                    ...(isPrimary ? {
-                      backgroundColor: link.bgColor ? link.bgColor : (theme === 'glass' ? 'rgba(255, 255, 255, 0.95)' : brandColor),
-                      color: link.textColor ? link.textColor : (theme === 'glass' ? brandColor : ctaTextColor),
-                      borderColor: link.bgColor ? 'transparent' : (theme === 'glass' ? 'rgba(255, 255, 255, 1)' : brandColor),
+                    ...(theme === 'custom' && !link.bgColor && customApp?.button_style === 'outline' ? {
+                      backgroundColor: 'transparent',
+                      borderColor: brandColor,
+                      color: brandColor,
+                      borderWidth: '1px',
+                      borderStyle: 'solid'
+                    } : theme === 'custom' && !link.bgColor && customApp?.button_style === 'glass' ? {
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      borderColor: 'rgba(255,255,255,0.2)',
+                      backdropFilter: 'blur(10px)',
+                      color: '#ffffff',
+                      borderWidth: '1px',
+                      borderStyle: 'solid'
+                    } :
+                    isPrimary ? {
+                      backgroundColor: link.bgColor ? link.bgColor : (isGlassTheme ? 'rgba(255, 255, 255, 0.95)' : brandColor),
+                      color: link.textColor ? link.textColor : (isGlassTheme ? brandColor : ctaTextColor),
+                      borderColor: link.bgColor ? 'transparent' : (isGlassTheme ? 'rgba(255, 255, 255, 1)' : brandColor),
+                      borderWidth: '1px',
+                      borderStyle: 'solid'
                     } : {
-                      backgroundColor: link.bgColor ? link.bgColor : (theme === 'dark' ? '#2A2A2A' : theme === 'glass' ? 'rgba(255,255,255,0.1)' : '#FFFFFF'),
-                      color: link.textColor ? link.textColor : (theme === 'dark' || theme === 'glass' ? '#FFFFFF' : '#1A1A1A'),
-                      border: link.bgColor ? 'none' : (theme === 'glass' ? '1px solid rgba(255,255,255,0.2)' : theme === 'light' ? '1px solid #E5E7EB' : '1px solid transparent')
+                      backgroundColor: link.bgColor ? link.bgColor : (isDarkTheme ? '#2A2A2A' : isGlassTheme ? 'rgba(255,255,255,0.1)' : '#FFFFFF'),
+                      color: link.textColor ? link.textColor : (isDarkTheme || isGlassTheme ? '#FFFFFF' : '#1A1A1A'),
+                      border: link.bgColor ? 'none' : (isGlassTheme ? '1px solid rgba(255,255,255,0.2)' : isLightTheme ? '1px solid #E5E7EB' : '1px solid transparent')
                     })
                   } }}
                 >
@@ -155,17 +256,18 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
               target="_blank" 
               rel="noreferrer"
               className={`inline-flex items-center gap-2 text-xs font-bold transition-colors ${
-                theme === 'glass' ? 'text-white/60 hover:text-white' : 
-                theme === 'dark' ? 'text-gray-600 hover:text-gray-400' :
+                isGlassTheme ? 'text-white/60 hover:text-white' : 
+                isDarkTheme ? 'text-gray-600 hover:text-gray-400' :
                 'text-gray-400 hover:text-[#0F7A60]'
               }`}
             >
               Propulsé par 
-              <span className={`font-black tracking-tight ${theme === 'light' ? 'text-gray-900' : 'text-current'}`}>Yayyam</span>
+              <span className={`font-black tracking-tight ${isLightTheme ? 'text-gray-900' : 'text-current'}`}>Yayyam</span>
             </a>
           </div>
         </div>
       </div>
-    </main>
+      </main>
+    </>
   )
 }

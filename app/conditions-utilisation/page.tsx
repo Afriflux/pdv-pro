@@ -22,8 +22,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">1. Objet</h2>
             <p>
-              Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de la plateforme Yayyam, 
-              qui permet aux commerçants de créer des pages de vente et d'accepter des paiements mobiles.
+              Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'écosystème Yayyam (plateforme SaaS e-commerce, application web, systèmes de paiement et intégrations intelligentes). Cet environnement permet aux marchands, affiliés et closers d'opérer sur les marchés Panafricains, notamment dans les zones UEMOA et CEMAC.
             </p>
           </section>
 
@@ -40,6 +39,7 @@ export default function TermsPage() {
               <p className="font-bold text-[#0F7A60]">Ventes en COD (Paiement à la livraison) :</p>
               <ul className="list-disc ml-6 space-y-1">
                 <li>Commission fixe de 5% sur les ventes COD terminées.</li>
+                <li>Le coût de l'authentification Anti-Fraude par OTP (SMS) est inclus dans cette commission.</li>
                 <li>Zéro frais fixe mensuel.</li>
               </ul>
             </div>
@@ -48,9 +48,9 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">3. Paiements et Retraits</h2>
             <p>
-              Les paiements sont effectués via Wave, CinetPay, PayTech, Bictorys ou KKiaPay. 
-              Le vendeur reçoit le montant net (H.T. commission) sur son solde Yayyam. 
-              Les retraits vers un compte Wave Mobile Money sont gratuits dans le plan gratuit.
+              Les paiements sont effectués via les agrégateurs partenaires officiels de la plateforme (Wave, CinetPay, PayTech, Orange Money, etc.) couvrant les monnaies XOF, XAF, GNF et autres devises supportées. 
+              Le vendeur reçoit les fonds instantanément ou avec compensation selon la passerelle utilisée. 
+              Les retraits automatisés (Payouts) vers un portefeuille mobile sont déclenchés selon les plafonds configurés.
             </p>
           </section>
 
@@ -58,17 +58,17 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold mb-4">4. Obligations de l'Utilisateur</h2>
             <p>L'utilisateur s'engage à :</p>
             <ul className="list-disc ml-6 mt-2 space-y-2">
-              <li>Fournir des informations exactes lors de l'inscription.</li>
-              <li>Ne pas vendre de produits illégaux ou interdits par la législation sénégalaise.</li>
+              <li>Fournir des informations exactes lors de l'inscription (processus de vérification KYC).</li>
+              <li>Ne pas vendre de produits illégaux ou interdits par les législations locales, nationales et internationales.</li>
               <li>Respecter les délais de livraison annoncés à ses clients.</li>
+              <li>Ne pas utiliser les intégrations SMS (Hub SMS) ou les Bots WhatsApp à des fins de spam ou d'escroquerie.</li>
             </ul>
           </section>
 
           <section>
             <h2 className="text-xl font-bold mb-4">5. Responsabilité</h2>
             <p>
-              Yayyam agit en tant qu'intermédiaire technique. Nous ne sommes pas responsables de la qualité 
-              des produits vendus ou des litiges de livraison entre le vendeur et l'acheteur.
+              Yayyam SAS met à disposition une infrastructure logicielle ("Software-as-a-Service"). Bien que nous utilisions l'Intelligence Artificielle (Check360°) et l'Anti-Fraude (OTP) pour assister nos usagers, nous de sommes pas responsables de la qualité des produits vendus ou des défauts de service incombant directement aux transporteurs ou aux marchands. Yayyam décline toute responsabilité en cas de litige commercial entre le vendeur et l'acheteur. Toutefois, nos algorithmes de sécurité peuvent suspendre préventivement tout compte signalé.
             </p>
           </section>
 
@@ -80,7 +80,7 @@ export default function TermsPage() {
           </section>
 
           <section className="pt-8 border-t border-gray-100">
-            <p className="text-sm text-gray-500">Dernière mise à jour : Mars 2026</p>
+            <p className="text-sm text-gray-500">Dernière mise à jour : Avril 2026</p>
           </section>
         </div>
       </main>
@@ -88,7 +88,7 @@ export default function TermsPage() {
       {/* Footer */}
       <footer className="bg-gray-50 py-10 px-6 border-t border-gray-200">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-gray-600 text-sm">© 2026 Yayyam — La solution de vente de référence au Sénégal.</p>
+          <p className="text-gray-600 text-sm">© 2026 Yayyam — L'écosystème de vente le plus avancé d'Afrique Panafricaine.</p>
         </div>
       </footer>
     </div>

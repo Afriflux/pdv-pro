@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Store, Star, Award, TrendingUp, Compass, Search } from 'lucide-react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
+import { useGeo, COUNTRIES } from '@/components/providers/GeoProvider'
 
 const CATEGORIES = [
   { label: 'Tout', value: '' },
@@ -30,13 +32,19 @@ export default function MarketplaceClient({
 }) {
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('')
+  const { currentCountry, setCurrentCountry } = useGeo()
 
   const filtered = stores.filter(s => {
     const matchSearch = !search || 
       s.name?.toLowerCase().includes(search.toLowerCase()) ||
       s.category?.toLowerCase().includes(search.toLowerCase())
     const matchCat = !category || s.category?.toLowerCase().includes(category)
-    return matchSearch && matchCat
+    
+    // Filtre Geo-Fencing (Le magasin doit autoriser le currentCountry, ou le currentCountry doit être ALL, ou le Store est ALL)
+    const storeTarget = s.target_countries || []
+    const matchGeo = storeTarget.length === 0 || currentCountry === 'ALL' || storeTarget.includes(currentCountry)
+
+    return matchSearch && matchCat && matchGeo
   })
 
   return (
@@ -64,6 +72,22 @@ export default function MarketplaceClient({
               className="w-full bg-cream/50 border border-pearl focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 rounded-[100px] py-3 pl-12 pr-6 text-sm font-medium transition-all shadow-inner outline-none"
             />
           </div>
+
+          <div className="hidden lg:flex items-center gap-2 mr-4 relative shrink-0">
+            <span className="text-xs font-bold text-dust uppercase tracking-widest">📍 Zone</span>
+            <select
+              title="Zone"
+              value={currentCountry}
+              onChange={(e) => setCurrentCountry(e.target.value)}
+              className="bg-white/50 border border-pearl focus:border-emerald-500 rounded-full px-3 py-1.5 text-xs font-black text-ink outline-none cursor-pointer hover:bg-white/80 transition-all"
+            >
+              <option value="ALL">🌍 Mondiale</option>
+              {COUNTRIES.filter(c => c.code !== 'ALL').map(c => (
+                <option key={c.code} value={c.code}>{c.emoji} {c.code}</option>
+              ))}
+            </select>
+          </div>
+
           {isLoggedIn ? (
             <Link href={dashboardUrl || '/login'} className="bg-ink hover:bg-black text-white px-6 py-3 rounded-full text-sm font-bold transition-all shadow-xl hover:shadow-2xl hover:-translate-y-0.5 whitespace-nowrap">
               Mon espace
@@ -87,10 +111,10 @@ export default function MarketplaceClient({
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} className="max-w-2xl">
             <span className="inline-block py-1 px-3 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-black uppercase tracking-widest mb-6">Marketplace Officielle</span>
             <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-[1.1]">
-              Découvrez la crème <br className="hidden md:block"/> de l'écosystème.
+              Découvrez la crème <br className="hidden md:block"/> de l'Écosystème.
             </h1>
             <p className="text-dust text-lg md:text-xl font-medium leading-relaxed max-w-xl">
-              Les meilleurs vendeurs, agences et créateurs utilisent Yayyam. Explorez les boutiques certifiées qui génèrent les plus hauts taux de satisfaction.
+              Les meilleurs vendeurs, agences et créateurs d'Afrique Francophone (UEMOA/CEMAC) utilisent Yayyam. Explorez les boutiques certifiées Panafricaines.
             </p>
           </motion.div>
           
@@ -147,6 +171,22 @@ export default function MarketplaceClient({
           </div>
         </div>
 
+        {/* Barre de zone Mobile (Si très petit écran) */}
+        <div className="lg:hidden flex items-center justify-between bg-white border border-pearl px-4 py-3 rounded-2xl mb-8">
+          <span className="text-sm font-black text-ink">📍 Emplacement Actuel</span>
+          <select
+              title="Emplacement"
+              value={currentCountry}
+              onChange={(e) => setCurrentCountry(e.target.value)}
+              className="bg-cream border border-pearl rounded-lg px-3 py-2 text-sm font-bold text-ink outline-none"
+          >
+              <option value="ALL">🌍 Offres Mondiales</option>
+              {COUNTRIES.filter(c => c.code !== 'ALL').map(c => (
+                <option key={c.code} value={c.code}>{c.emoji} {c.name}</option>
+              ))}
+          </select>
+        </div>
+
         {stores.length === 0 ? (
           <div className="text-center py-32 bg-white/60 backdrop-blur-3xl rounded-[48px] border border-white shadow-2xl shadow-[rgba(0,0,0,0.02)]">
             <Store className="mx-auto text-line mb-6" size={64} />
@@ -191,10 +231,16 @@ export default function MarketplaceClient({
                   
                   <div className="px-6 pb-6 flex-1 flex flex-col relative z-10">
                     {/* Photo de profil (Logo) */}
-                    <div className="w-20 h-20 rounded-full bg-white border-[6px] border-white shadow-xl mx-auto -mt-10 mb-4 overflow-hidden shrink-0">
+                    <div className="w-20 h-20 rounded-full bg-white border-[6px] border-white shadow-xl mx-auto -mt-10 mb-4 overflow-hidden shrink-0 relative">
                       {s.logoUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={s.logoUrl} alt={`Logo ${s.name}`} className="w-full h-full object-cover" />
+                        <Image 
+                          src={s.logoUrl} 
+                          alt={`Logo ${s.name}`} 
+                          fill 
+                          sizes="80px"
+                          unoptimized
+                          className="object-cover" 
+                        />
                       ) : (
                         <div className="w-full h-full bg-emerald-50 flex items-center justify-center text-emerald-600 font-black text-2xl">
                           {s.name.charAt(0).toUpperCase()}

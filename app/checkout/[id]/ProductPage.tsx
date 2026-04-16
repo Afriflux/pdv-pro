@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { format, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Minus, Plus, Lock, ShieldCheck, BadgeCheck, MessageCircle, ChevronDown, Facebook, Link2, Check, Timer, Tags, Home, Compass, Store } from 'lucide-react'
+import Image from 'next/image'
 import { CheckoutForm } from './CheckoutForm'
 import { EleganceTemplate } from './templates/EleganceTemplate'
 import { SalesLetterTemplate } from './templates/SalesLetterTemplate'
@@ -232,12 +233,13 @@ function ImageGallery({
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={images[activeIndex]}
           alt={`${productName} — image ${activeIndex + 1}`}
-          className={`w-full h-full object-cover transition-transform ${isHovering ? 'duration-150 ease-out' : 'duration-500 ease-in-out'}`}
-          {...{ style: isHovering && window.innerWidth >= 1024 ? zoomStyle : {} }} // Zoom only on desktop lg
+          fill
+          unoptimized
+          className={`object-cover transition-transform ${isHovering ? 'duration-150 ease-out' : 'duration-500 ease-in-out'}`}
+          {...{ style: isHovering && window.innerWidth >= 1024 ? zoomStyle : {} }}
         />
 
         {/* Navigation flèches (visible si plusieurs images) */}
@@ -299,8 +301,7 @@ function ImageGallery({
               }`}
               {...{ style: i === activeIndex ? { borderColor: accent } : {} }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt={productName || "Image produit"} className="w-full h-full object-cover" />
+              <Image fill sizes="64px" unoptimized src={src} alt={productName || "Image produit"} className="object-cover" />
             </button>
           ))}
         </div>
@@ -633,12 +634,16 @@ export default function ProductPage({
           {/* Logo + Nom boutique */}
           <Link href={`/${product.store.slug}`} className="flex items-center gap-2.5 group">
             {product.store.logo_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={product.store.logo_url}
-                alt={product.store.name}
-                className="w-8 h-8 rounded-full object-cover"
-              />
+              <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0">
+                <Image
+                  src={product.store.logo_url}
+                  alt={product.store.name}
+                  fill
+                  sizes="32px"
+                  unoptimized
+                  className="object-cover"
+                />
+              </div>
             ) : (
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white font-black text-sm"

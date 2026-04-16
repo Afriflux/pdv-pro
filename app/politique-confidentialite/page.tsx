@@ -22,8 +22,8 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="text-xl font-bold mb-4">1. Introduction</h2>
             <p>
-              Yayyam ("nous", "notre") s'engage à protéger la vie privée des utilisateurs de notre plateforme. 
-              Cette politique explique comment nous collectons, utilisons et protégeons vos données personnelles.
+              Yayyam ("nous", "notre") s'engage à protéger la vie privée des marchands, affiliés, closers et clients finaux.
+              Cette politique de protection des données et de la vie privée explique comment nous collectons, traitons et protégeons les informations transistant par notre écosystème e-commerce (y compris l'utilisation de l'Intelligence Artificielle "Check360°" et de la validation anti-fraude par OTP).
               En utilisant Yayyam, vous acceptez les pratiques décrites ici.
             </p>
           </section>
@@ -32,10 +32,10 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-bold mb-4">2. Collecte des données</h2>
             <p>Nous collectons les informations suivantes :</p>
             <ul className="list-disc ml-6 mt-2 space-y-2">
-              <li>Informations d'identification (Nom, Prénom, Email).</li>
-              <li>Informations de boutique (Nom de l'espace, numéro de téléphone).</li>
-              <li>Données de transaction (Historique des ventes, montants collectés).</li>
-              <li>Informations de paiement (Via nos passerelles partenaires : Wave, CinetPay, PayTech, Bictorys, KKiaPay).</li>
+              <li>Informations d'identification (Nom, Prénom, Email, Numéro de téléphone pour le KYC).</li>
+              <li>Informations de boutique et statistiques générées (Nom de l'espace, chiffre d'affaires).</li>
+              <li>Données de transaction et de détection anti-fraude (Historique des ventes, scores de confiance, logs de confirmation OTP par SMS).</li>
+              <li>Informations de paiement (Via nos passerelles partenaires : Wave, CinetPay, PayTech, Orange Money, etc.).</li>
             </ul>
           </section>
 
@@ -43,10 +43,10 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-bold mb-4">3. Utilisation des données</h2>
             <p>Vos données sont utilisées pour :</p>
             <ul className="list-disc ml-6 mt-2 space-y-2">
-              <li>Fournir et gérer vos services de vente en ligne.</li>
-              <li>Traiter les transactions et faciliter les retraits de fonds.</li>
-              <li>Améliorer nos services et assurer la sécurité de la plateforme.</li>
-              <li>Communiquer avec vous concernant votre compte ou nos mises à jour.</li>
+              <li>Fournir et gérer vos services de vente en ligne et vos réseaux (Affiliation/Closing).</li>
+              <li>Permettre le traitement de l'IA (Check360°) pour analyser vos performances (les données traitées par l'IA restent strictement anonymisées et cloisonnées à votre espace).</li>
+              <li>Traiter les transactions et faciliter les retraits de fonds (Automatisés ou manuels).</li>
+              <li>Auditer et bloquer les commandes frauduleuses via le score de confiance acheteur et la vérification SMS (Hub SMS).</li>
             </ul>
           </section>
 
@@ -75,7 +75,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section className="pt-8 border-t border-gray-100">
-            <p className="text-sm text-gray-500">Dernière mise à jour : Mars 2026</p>
+            <p className="text-sm text-gray-500">Dernière mise à jour : Avril 2026</p>
           </section>
         </div>
       </main>
@@ -83,7 +83,7 @@ export default function PrivacyPolicyPage() {
       {/* Footer */}
       <footer className="bg-gray-50 py-10 px-6 border-t border-gray-200">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-gray-600 text-sm">© 2026 Yayyam — L'outil de vente intelligent pour l'Afrique de l'Ouest.</p>
+          <p className="text-gray-600 text-sm">© 2026 Yayyam — L'écosystème de vente le plus avancé d'Afrique Panafricaine.</p>
         </div>
       </footer>
     </div>

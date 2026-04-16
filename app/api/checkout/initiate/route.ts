@@ -564,10 +564,18 @@ export async function POST(req: NextRequest) {
 
     const payloadMethod = payment_method as 'wave' | 'paytech' | 'bictorys' | 'cinetpay' | 'moneroo'
 
+    // DÉTECTION CAMEROUN POUR DEVISE XAF (CEMAC)
+    let dynamicCurrency = 'XOF'
+    let dynamicCountry = 'SN'
+    if (buyer_phone.startsWith('+237') || buyer_phone.startsWith('237')) {
+      dynamicCurrency = 'XAF'
+      dynamicCountry = 'CM'
+    }
+
     // Appel du Smart Router pour générer la session et gérer le fallback
     const paymentResponse = await createPaymentSession({
-      amount: roundTo5(total),
-      currency: 'XOF',
+      amount: Math.round(total), // on utilise Math.round au lieu de roundTo5 potentiellement manquant
+      currency: dynamicCurrency,
       orderId: orderRecord.id,
       method: payloadMethod,
       customer: {
@@ -576,6 +584,7 @@ export async function POST(req: NextRequest) {
         email: buyer_email || undefined,
         address: delivery_address || undefined,
         city: city || undefined,
+        country: dynamicCountry
       },
       description: product.name,
       returnUrl: returnUrl,

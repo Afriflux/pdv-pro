@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { signOut } from '@/app/auth/actions'
@@ -82,6 +83,7 @@ export const NAV: NavSection[] = [
     title: 'FINANCES',
     items: [
       { name: 'Portefeuille', href: '/dashboard/wallet', icon: Wallet },
+      { name: 'Crédits SMS', href: '/dashboard/sms', icon: MessageSquare },
       { name: 'Commissions', href: '/dashboard/abonnements', icon: Gem },
       { name: 'Abonnements', href: '/dashboard/apps/subscriptions', icon: Repeat, appId: 'subscriptions' },
     ]
@@ -263,7 +265,7 @@ function SidebarContent({
             </div>
           ) : (
             <div className="flex items-center gap-1.5 px-1 py-1 rounded-xl group-hover/logo:bg-white/5 transition-colors">
-              <Logo variant="text" textClassName="text-gray-900" />
+              <Logo variant="full" size="md" textClassName="text-gray-900" />
             </div>
           )}
         </Link>
@@ -352,8 +354,7 @@ function SidebarContent({
           <div className={`flex items-center ${collapsed ? '' : 'gap-3 mb-3'}`}>
             <div className="relative w-10 h-10 rounded-full border border-gray-200 overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0 shadow-[0_4px_10px_rgba(0,0,0,0.1)]">
               {avatarUrl ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                <Image src={avatarUrl} alt="Avatar" fill sizes="40px" unoptimized className="object-cover" />
               ) : (
                 <span className="text-lg font-black text-gold/80">{userName[0]}</span>
               )}
@@ -474,13 +475,7 @@ export function Sidebar({
       <div className="lg:hidden">
         <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-3 h-14">
           <Link href="/" className="flex items-center gap-2 focus:outline-none ml-1">
-            <div className="w-8 h-8 rounded-xl bg-[#0F7A60] flex items-center justify-center shadow-sm">
-               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-white">
-                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 9.5L12 3l9 6.5V20a2 2 0 01-2 2H5a2 2 0 01-2-2V9.5z" />
-                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 22V12h6v10" />
-               </svg>
-            </div>
-            <Logo variant="text" size="sm" textClassName="text-gray-900" />
+            <Logo variant="full" size="sm" textClassName="text-gray-900" />
           </Link>
           <div className="flex items-center gap-2 mr-1">
             <Link href="/dashboard/settings#profil" className="w-9 h-9 rounded-full overflow-hidden border-2 border-emerald-100 bg-emerald-50 flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all">

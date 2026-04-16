@@ -8,9 +8,10 @@ interface BioLinkHeaderClientProps {
   bioLink: any
   brandColor: string
   theme: string
+  customAppearance?: any
 }
 
-export default function BioLinkHeaderClient({ bioLink, brandColor, theme }: BioLinkHeaderClientProps) {
+export default function BioLinkHeaderClient({ bioLink, brandColor, theme, customAppearance }: BioLinkHeaderClientProps) {
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
@@ -46,11 +47,13 @@ export default function BioLinkHeaderClient({ bioLink, brandColor, theme }: BioL
 
       {/* Profile Header Block */}
       <div className={`w-full flex flex-col items-center px-6 md:px-10 pb-4 backdrop-blur-xl transition-colors duration-500 ${
+        theme === 'custom' ? (customAppearance?.button_style === 'glass' ? 'bg-white/10 border-b border-white/20' : 'bg-white/80 border-b border-gray-100') :
         theme === 'dark' ? 'bg-[#1A1A1A]/90 border-b border-gray-800' : 
         theme === 'glass' ? 'bg-white/20 border-b border-white/20' : 
         'bg-white/95 border-b border-gray-100'
       }`}>
         <div className={`rounded-full flex items-center justify-center font-black shadow-lg shrink-0 overflow-hidden transition-all duration-300 ${avatarSizeClass} ${
+          theme === 'custom' ? (customAppearance?.button_style === 'glass' ? 'bg-white/20 backdrop-blur-md ring-transparent text-white border-white/40' : 'bg-white ring-white text-current border-white') :
           theme === 'dark' ? 'bg-gray-800 ring-[#1A1A1A] text-white border-[#1A1A1A]' :
           theme === 'glass' ? 'bg-white/20 backdrop-blur-md ring-transparent text-white border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.3)]' :
           'bg-white ring-white text-[#0F7A60] border-white'
