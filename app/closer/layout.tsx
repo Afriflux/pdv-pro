@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { CloserSidebar } from '@/components/closer/CloserSidebar'
 import { CloserMobileBottomNav } from '@/components/closer/CloserMobileBottomNav'
-import GlobalCoach from '@/components/dashboard/GlobalCoach'
 
 export default async function CloserLayout({
   children,
@@ -51,9 +50,6 @@ export default async function CloserLayout({
         storeName="Espace Closer"
         avatarUrl={avatarUrl}
       />
-
-      {/* Le Coach IA Ultime Omniprésent */}
-      <GlobalCoach />
     </div>
   )
 }

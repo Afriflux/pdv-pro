@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PortalSidebar } from '@/components/portal/PortalSidebar'
 import { PortalMobileBottomNav } from '@/components/portal/PortalMobileBottomNav'
-import GlobalCoach from '@/components/dashboard/GlobalCoach'
 import AffiliateContractBanner from '@/components/affiliate/AffiliateContractBanner'
 
 
@@ -88,8 +87,6 @@ export default async function PortalLayout({
         storeName={storeName}
         avatarUrl={avatarUrl}
       />
-
-      <GlobalCoach />
     </div>
   )
 }

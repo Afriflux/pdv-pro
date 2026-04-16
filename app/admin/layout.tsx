@@ -4,7 +4,6 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { AdminMobileBottomNav } from '@/components/admin/AdminMobileBottomNav'
-import GlobalCoach from '@/components/dashboard/GlobalCoach'
 
 // ----------------------------------------------------------------
 // TYPES
@@ -91,9 +90,6 @@ export default async function AdminLayout({
         adminRole={userData?.role ?? 'support'}
         avatarUrl={userData?.avatar_url ?? null}
       />
-
-      {/* Le Cerveau IA pour les Admins aussi ! */}
-      <GlobalCoach />
     </div>
   )
 }
