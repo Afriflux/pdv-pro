@@ -237,10 +237,10 @@ export function BentoGrid({ title, supertitle }: BentoGridProps) {
               delay={i * 0.05}
               className={`${f.col} ${f.row} ${f.theme} rounded-[2rem] p-6 md:p-8 overflow-hidden relative group transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl border`}
             >
-              {/* Effet / Image de Fond */}
               {f.image && (
-                <div className="absolute top-0 right-0 w-[55%] h-full opacity-90 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-1">
-                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
+                <div 
+                  className="absolute top-0 right-0 w-[55%] h-full opacity-90 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-1 [mask-image:linear-gradient(to_right,transparent,black_40%)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_40%)]"
+                >
                   <Image src={f.image} alt={f.title} fill className="object-cover object-left" unoptimized />
                 </div>
               )}
@@ -248,7 +248,7 @@ export function BentoGrid({ title, supertitle }: BentoGridProps) {
                 <div className={`absolute ${f.eff} w-64 h-64 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-700`}></div>
               )}
               
-              <div className={`relative z-20 h-full flex flex-col ${f.image ? 'w-[65%]' : ''} ${f.center ? 'items-center text-center justify-center' : 'justify-between'}`}>
+              <div className={`relative z-20 h-full flex flex-col ${f.image ? 'w-[80%] md:w-[65%]' : ''} ${f.center ? 'items-center text-center justify-center' : 'justify-between'}`}>
                 <div className={`w-12 h-12 rounded-[1rem] flex items-center justify-center mb-6 shrink-0 transition-transform duration-300 group-hover:scale-110 ${f.iconClass} ${f.center ? 'w-20 h-20 rounded-[1.5rem] mb-8' : ''}`}>
                   {f.icon}
                 </div>

@@ -53,6 +53,7 @@ const NAV: NavSection[] = [
       { name: 'Tableau de bord', href: '/portal', icon: LayoutDashboard },
       { name: 'Programmes / Marché', href: '/portal/marketplace', icon: ShoppingBag },
       { name: 'Générateur de liens', href: '/portal/links', icon: LinkIcon },
+      { name: 'Link-in-Bio', href: '/portal/bio-link', icon: LinkIcon },
     ]
   },
   {

@@ -26,6 +26,7 @@ import {
   LogOut,
   Truck,
   GraduationCap,
+  BookOpen,
   Blocks,
   Link as LinkIcon,
   Palette,
@@ -65,18 +66,25 @@ export const NAV: NavSection[] = [
     title: 'PRINCIPAL',
     items: [
       { name: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
-      { name: 'Mes Produits', href: '/dashboard/products', icon: Package },
-      { name: 'Pages de Vente', href: '/dashboard/pages', icon: LayoutTemplate },
+      { name: 'SAV & Aide', href: '/dashboard/helpdesk', icon: LifeBuoy },
+    ]
+  },
+  {
+    title: 'VITRINE & VENTES',
+    items: [
+      { name: 'Catalogue (Produits)', href: '/dashboard/products', icon: Package },
+      { name: 'Tunnels (Funnels)', href: '/dashboard/pages', icon: LayoutTemplate },
+      { name: 'Link-in-Bio', href: '/dashboard/links', icon: LinkIcon, appId: 'links' },
       { name: 'Commandes', href: '/dashboard/orders', icon: ShoppingCart },
       { name: 'Clients & CRM', href: '/dashboard/customers', icon: Users, badge: 'LTV' },
-      { name: 'SAV & Aide', href: '/dashboard/helpdesk', icon: LifeBuoy },
       { name: 'Livraisons', href: '/dashboard/livraisons', icon: Truck, for: ['physical', 'hybrid'], appId: 'livraisons' },
     ]
   },
   {
     title: 'FORMATION',
     items: [
-      { name: 'Yayyam Académie', href: '/dashboard/academy', icon: GraduationCap, badge: 'Freemium', appId: 'academy' },
+      { name: 'Yayyam Académie', href: '/dashboard/tips', icon: GraduationCap, badge: 'Gratuit' },
+      { name: 'Espace Formations', href: '/dashboard/academy', icon: BookOpen, badge: 'PRO', appId: 'academy' },
     ]
   },
   {
@@ -95,7 +103,6 @@ export const NAV: NavSection[] = [
       { name: 'API & Webhooks', href: '/dashboard/webhooks', icon: Webhook, appId: 'webhooks' },
       { name: 'Devis & Factures', href: '/dashboard/quotes', icon: ShoppingCart, appId: 'quotes' },
       { name: 'Liens de Paiement', href: '/dashboard/payment-links', icon: CreditCard, appId: 'payment-links' },
-      { name: 'Link-in-Bio', href: '/dashboard/links', icon: LinkIcon, appId: 'links' },
       { name: 'Pixels CAPI', href: '/dashboard/apps/server-side-pixels', icon: Target, appId: 'server-side-pixels' },
       { name: 'Marketing', href: '/dashboard/marketing', icon: Share2, appId: 'marketing' },
       { name: 'SMS Marketing', href: '/dashboard/marketing/sms', icon: MessageSquare, appId: 'sms-marketing' },

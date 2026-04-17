@@ -51,7 +51,7 @@ export async function bulkUpdateOrdersStatus(
     // 1. Lire l'état actuel des commandes avant modification
     const { data: previousOrders } = await supabase
       .from('Order')
-      .select('id, status, vendor_amount, buyer_name, buyer_phone, Product(name)')
+      .select('id, status, vendor_amount, payment_method, platform_fee, delivery_commission, buyer_name, buyer_phone, Product(name)')
       .in('id', orderIds)
       .eq('store_id', store.id)
 
@@ -111,19 +111,42 @@ export async function bulkUpdateOrdersStatus(
       let pendingDelta = 0;
 
       for (const old of previousOrders) {
-         const amount = Number(old.vendor_amount) || 0;
+         // SEULEMENT LE COD GÉNÈRE UNE MISE À JOUR FINANCIÈRE EN FONCTION DU STATUT MANUEL
+         if (old.payment_method === 'cod') {
+           const commissionDue = (Number(old.platform_fee) || 0) + (Number(old.delivery_commission) || 0);
+           
+           const getCat = (st: string) => {
+             if (['delivered', 'completed', 'paid'].includes(st)) return 'CONSUMED';
+             if (['cancelled', 'no_answer'].includes(st)) return 'REFUNDED';
+             return 'FROZEN';
+           };
 
-         const wasCompleted = ['delivered', 'completed', 'paid'].includes(old.status)
-         const isCompleted = ['delivered', 'completed', 'paid'].includes(status)
-         
-         const wasPending = ['pending', 'confirmed', 'processing', 'preparing', 'shipped', 'cod_pending', 'cod_confirmed'].includes(old.status)
-         const isPending = ['pending', 'confirmed', 'processing', 'preparing', 'shipped', 'cod_pending', 'cod_confirmed'].includes(status)
+           const oldCat = getCat(old.status);
+           const newCat = getCat(status);
 
-         if (!wasCompleted && isCompleted) balanceDelta += amount;
-         else if (wasCompleted && !isCompleted) balanceDelta -= amount;
-
-         if (!wasPending && isPending) pendingDelta += amount;
-         else if (wasPending && !isPending) pendingDelta -= amount;
+           if (oldCat !== newCat) {
+             if (oldCat === 'FROZEN' && newCat === 'CONSUMED') {
+               pendingDelta -= commissionDue;
+             }
+             else if (oldCat === 'FROZEN' && newCat === 'REFUNDED') {
+               pendingDelta -= commissionDue;
+               balanceDelta += commissionDue;
+             }
+             else if (oldCat === 'CONSUMED' && newCat === 'REFUNDED') {
+               balanceDelta += commissionDue;
+             }
+             else if (oldCat === 'REFUNDED' && newCat === 'CONSUMED') {
+               balanceDelta -= commissionDue;
+             }
+             else if (oldCat === 'CONSUMED' && newCat === 'FROZEN') {
+               pendingDelta += commissionDue;
+             }
+             else if (oldCat === 'REFUNDED' && newCat === 'FROZEN') {
+               balanceDelta -= commissionDue;
+               pendingDelta += commissionDue;
+             }
+           }
+         }
          
          // 4. Notifications WhatsApp pour Mises à Jour Statut
          const buyerPhone = old.buyer_phone as string;

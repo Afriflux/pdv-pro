@@ -231,10 +231,10 @@ export function AppearanceTab({ store }: { store: Record<string, any> }) {
                 {/* Live Preview Btn */}
                 {/* eslint-disable-next-line */}
                 <div 
-                  className="w-full py-4 rounded-[1rem] flex items-center justify-center font-bold text-white shadow-lg transition-transform hover:scale-[1.02] cursor-default select-none"
+                  className="w-full py-4 px-4 rounded-[1rem] flex items-center justify-center font-bold text-white shadow-lg transition-transform hover:scale-[1.02] cursor-default select-none text-center text-sm md:text-base leading-tight"
                   ref={el => { if (el) { el.style.backgroundColor = safeColor; el.style.boxShadow = `0 8px 25px -4px ${safeColor}60`; } }}
                 >
-                  <span className="flex items-center gap-2">Votre bouton ressemblera à ça <CheckCircle2 size={16} /></span>
+                  <span className="flex items-center justify-center gap-2 flex-wrap">Votre bouton ressemblera à ça <CheckCircle2 size={16} className="shrink-0" /></span>
                 </div>
               </div>
             </div>

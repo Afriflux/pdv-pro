@@ -72,6 +72,7 @@ const NAV: NavSection[] = [
     title: 'PLATEFORME & BUSINESS',
     items: [
       { name: 'Quotas Freemium', href: '/admin/quotas', icon: Zap },
+      { name: 'Monétisation SaaS', href: '/admin/monetization', icon: Zap, badge: 'SaaS' },
       { name: 'Référencement & SEO', href: '/admin/branding', icon: Globe },
       { name: 'Marketing', href: '/admin/marketing', icon: Megaphone, badge: 'NEW' },
       { name: 'Emails & Campagnes', href: '/admin/email', icon: Mail },

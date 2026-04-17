@@ -1,6 +1,7 @@
 import { verifyCronSecret, cronResponse } from '@/lib/cron/cron-helpers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logCronExecution } from '@/lib/cron/cronLogger'
+import { prisma } from '@/lib/prisma'
 
 export async function POST(req: Request) {
   // 1. Secret vérification
@@ -37,8 +38,11 @@ export async function POST(req: Request) {
       console.error(`[CRON] Retrait ${w.id} rejeté: Montant (${w.amount}) < minimum (${minWithdrawal})`)
       await supabase.from('Withdrawal').update({ status: 'rejected', notes: 'Montant inférieur au minimum' }).eq('id', w.id)
       
-      // Restauration atomique: Balance +, Pending -
-      await supabase.rpc('unfreeze_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
+      // Restauration atomique: On recrédite uniquement la balance (le pending n'a jamais été touché)
+      await prisma.wallet.update({
+        where: { vendor_id: w.store_id },
+        data: { balance: { increment: w.amount } }
+      })
       failed++
       continue
     }
@@ -64,7 +68,11 @@ export async function POST(req: Request) {
     if (!vendorPhone) {
       console.error(`[CRON] Retrait ${w.id} échoué: phone_or_iban introuvable.`)
       await supabase.from('Withdrawal').update({ status: 'rejected', notes: 'Téléphone introuvable' }).eq('id', w.id)
-      await supabase.rpc('unfreeze_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
+      
+      await prisma.wallet.update({
+        where: { vendor_id: w.store_id },
+        data: { balance: { increment: w.amount } }
+      })
       failed++
       continue
     }
@@ -83,8 +91,8 @@ export async function POST(req: Request) {
         // Succès: Statut paid
         await supabase.from('Withdrawal').update({ status: 'paid', notes: payoutResult.transactionId }).eq('id', w.id)
         
-        // Nettoyage: la demande de retrait a déjà débité la balance pour geler dans 'pending'. Il faut déduire 'pending'
-        await supabase.rpc('release_commission', { p_vendor_id: w.store_id, p_commission: w.amount })
+        // La balance a déjà été déduite lors de la demande de retrait (app/actions/wallet.ts).
+        // Aucune incidence sur "pending" car les retraits n'utilisent pas de caution.
         processed++
       } else {
         // Réfus API (CinetPay / Wave error / Insufficient Balance)

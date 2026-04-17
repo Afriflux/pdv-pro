@@ -4,7 +4,8 @@
 // Modal de signature du contrat partenaire vendeur Yayyam
 // POST /api/vendor/contract/accept → { storeId }
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { toast } from '@/lib/toast'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -36,6 +37,11 @@ export default function VendorContractModal({
 }: VendorContractModalProps) {
   const [accepted, setAccepted] = useState(false)
   const [signing,  setSigning]  = useState(false)
+  const [mounted,  setMounted]  = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const today = formatDate()
 
@@ -63,7 +69,9 @@ export default function VendorContractModal({
     }
   }
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200">
 
@@ -262,6 +270,7 @@ export default function VendorContractModal({
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

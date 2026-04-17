@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateAIResponse } from '@/lib/ai/router'
+import { prisma } from '@/lib/prisma'
 
 // Rate limiting en mémoire : 1 appel max / 30s par utilisateur
 const rateLimitMap = new Map<string, number>()
@@ -58,12 +59,34 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
   }
 
-  // Vérification rate limit
+  // Fonctionnement interne : Limite RAM
   const lastCall = rateLimitMap.get(user.id) ?? 0
   if (Date.now() - lastCall < 30000) {
     return NextResponse.json(FALLBACK_ACTIONS, { status: 200 })
   }
   rateLimitMap.set(user.id, Date.now())
+
+  // SÉCURISATION MONÉTISATION : VÉRIFICATION DES TOKENS IA
+  let store;
+  try {
+    store = await prisma.store.findUnique({
+      where: { user_id: user.id },
+      select: { id: true, ai_credits: true } as any
+    }) as { id: string, ai_credits: number } | null
+    
+    if (!store || store.ai_credits <= 0) {
+      console.warn(`[AI/Check360] Plus de crédits IA pour Boutique: ${store?.id ?? 'inconnue'}`);
+      return NextResponse.json(FALLBACK_ACTIONS, { status: 200 }) // Renvoie les actions statiques gratuites (sans GPT)
+    }
+
+    // Déduction SaaS
+    await prisma.store.update({
+      where: { id: store.id },
+      data: { ai_credits: { decrement: 1 } } as any
+    })
+  } catch (err) {
+    console.error('[AI/Check360] Erreur vérif crédit:', err)
+  }
 
   let body: Check360Body
   try {

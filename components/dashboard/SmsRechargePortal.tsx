@@ -5,13 +5,16 @@ import { MessageSquare, Zap, ShieldCheck, CreditCard, ChevronRight } from 'lucid
 // Suposons une intégration /api/checkout/initiate commune
 import { useRouter } from 'next/navigation'
 import { toast } from '@/lib/toast'
+import { PlatformCheckoutModal } from '@/components/shared/billing/PlatformCheckoutModal'
+import { purchaseSmsAction } from '@/app/dashboard/sms/actions'
 
 interface SmsRechargePortalProps {
   currentCredits: number
   storeId: string
+  wallet: { balance: number, total_earned: number }
 }
 
-export function SmsRechargePortal({ currentCredits, storeId }: SmsRechargePortalProps) {
+export function SmsRechargePortal({ currentCredits, storeId, wallet }: SmsRechargePortalProps) {
   const router = useRouter()
   const [loadingCode, setLoadingCode] = useState<string | null>(null)
 
@@ -21,33 +24,10 @@ export function SmsRechargePortal({ currentCredits, storeId }: SmsRechargePortal
     { code: 'sms_1000', count: 1000, price: 40000, label: 'Pro', color: 'from-indigo-500 to-purple-600', popular: false },
   ]
 
-  const handlePurchase = async (pkg: typeof packages[0]) => {
-    try {
-      setLoadingCode(pkg.code)
-      // Call to internal checkout API. Assuming we can pass a dummy product or generic billing.
-      const res = await fetch('/api/billing/initiate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'sms_recharge',
-          packageCode: pkg.code,
-          storeId: storeId,
-          amount: pkg.price
-        })
-      })
+  const [selectedPkg, setSelectedPkg] = useState<typeof packages[0] | null>(null)
 
-      const data = await res.json()
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl
-      } else {
-        toast.error("Action réussie ou erreur, veuillez vérifier.")
-      }
-    } catch (err) {
-      console.error(err)
-      toast.error("Erreur lors de l'initialisation du paiement.")
-    } finally {
-      setLoadingCode(null)
-    }
+  const handlePurchase = async (pkg: typeof packages[0]) => {
+     setSelectedPkg(pkg)
   }
 
   return (
@@ -126,10 +106,30 @@ export function SmsRechargePortal({ currentCredits, storeId }: SmsRechargePortal
         <div>
           <h4 className="text-sm font-bold text-blue-900">Paiement Sécurisé</h4>
           <p className="text-xs text-blue-700/80 leading-relaxed mt-1 font-medium">
-            Les rechargements sont effectués via les portefeuilles locaux (Wave, Orange Money) de manière instantanée et chiffrée. Les crédits s'ajoutent à votre solde automatiquement.
+            Le rechargement peut se faire directement depuis votre solde Yayyam ou de manière instantanée via vos moyens locaux (Wave, Cartes).
           </p>
         </div>
       </div>
+
+      {selectedPkg && (
+        <PlatformCheckoutModal
+          isOpen={!!selectedPkg}
+          onClose={() => setSelectedPkg(null)}
+          productDetails={{
+            id: selectedPkg.code,
+            type: 'SMS',
+            title: `Pack SMS - ${selectedPkg.label} (${selectedPkg.count} crédits)`,
+            price: selectedPkg.price,
+            emoji: '💬',
+            color: 'bg-emerald-100'
+          }}
+          wallet={wallet}
+          onPurchaseViaWallet={async () => {
+             const res = await purchaseSmsAction(selectedPkg.code, selectedPkg.count, selectedPkg.price)
+             return res as any;
+          }}
+        />
+      )}
     </div>
   )
 }

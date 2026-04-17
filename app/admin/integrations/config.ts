@@ -185,6 +185,16 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
         ]
       },
       {
+        id: 'resend',
+        name: 'Configuration Resend',
+        description: 'Moteur ultra-rapide d\'emails transactionnels purs (Factures, Accès produits digitaux).',
+        icon: '📨',
+        docsUrl: 'https://resend.com/api-keys',
+        fields: [
+          { key: 'RESEND_API_KEY', label: 'API Key', type: 'password', placeholder: 're_...' }
+        ]
+      },
+      {
         id: 'whatsapp-meta',
         name: 'Configuration WhatsApp Business',
         description: 'Communication Cloud API Meta (Bots, Templates, Relances).',

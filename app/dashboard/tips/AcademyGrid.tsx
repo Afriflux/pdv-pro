@@ -25,7 +25,9 @@ interface Article {
 
 import { markMasterclassCompleted } from '@/app/actions/masterclass'
 
-export default function AcademyGrid({ articles, completedIds: initialCompletedIds = [], purchasedAssetIds = [] }: { articles: Article[], completedIds?: string[], purchasedAssetIds?: string[] }) {
+import { PlatformCheckoutModal } from '@/components/shared/billing/PlatformCheckoutModal'
+
+export default function AcademyGrid({ articles, completedIds: initialCompletedIds = [], purchasedAssetIds = [], wallet = { balance: 0, total_earned: 0 } }: { articles: Article[], completedIds?: string[], purchasedAssetIds?: string[], wallet?: any }) {
   const router = useRouter()
   const [localCompletedIds, setLocalCompletedIds] = useState<string[]>(initialCompletedIds)
   const [filter, setFilter] = useState('Tous')
@@ -154,61 +156,25 @@ export default function AcademyGrid({ articles, completedIds: initialCompletedId
         })}
       </div>
 
-      {/* ── MODAL ACHAT (FREEMIUM) ── */}
+      {/* ── MODAL ACHAT (FREEMIUM) MULTI-GATEWAYS ── */}
       {purchaseModalArticle && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
-            <button 
-              onClick={() => setPurchaseModalArticle(null)} 
-              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
-              aria-label="Fermer"
-              title="Fermer"
-            >
-              <X size={16} className="text-gray-500" />
-            </button>
-            
-            <div className="text-center mb-6 mt-4">
-              <div className={`w-16 h-16 ${purchaseModalArticle.color} rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm text-3xl`}>
-                {purchaseModalArticle.emoji}
-              </div>
-              <h3 className="text-2xl font-black text-ink">Cours Premium</h3>
-              <p className="text-gray-500 mt-2 text-sm">Débloquez le cours <strong>{purchaseModalArticle.title}</strong> pour un accès à vie à ces stratégies exclusives.</p>
-            </div>
-
-            <div className="bg-gray-50 rounded-2xl p-4 mb-6 border border-gray-100">
-              <div className="flex items-center justify-between font-bold">
-                <span className="text-gray-500">Prix :</span>
-                <span className="text-ink text-xl">{purchaseModalArticle.price} FCFA</span>
-              </div>
-            </div>
-
-            {purchaseError && (
-              <div className="mb-6 p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm font-medium text-center">
-                {purchaseError}
-              </div>
-            )}
-
-            <button
-              disabled={purchaseLoading}
-              onClick={async () => {
-                setPurchaseLoading(true)
-                setPurchaseError(null)
-                const res = await purchaseAssetAction(purchaseModalArticle.id.toString(), 'MASTERCLASS', purchaseModalArticle.price || 0, purchaseModalArticle.title)
-                if (res.success) {
-                  setPurchaseModalArticle(null)
-                  router.refresh()
-                } else {
-                  setPurchaseError(res.error || 'Erreur inconnue')
-                }
-                setPurchaseLoading(false)
-              }}
-              className="w-full bg-ink hover:bg-black text-white font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {purchaseLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><CreditCard size={18} /> Payer avec mon Solde</>}
-            </button>
-            <p className="text-center text-xs mt-4 text-gray-400 font-medium">Le montant sera déduit de votre solde de ventes.</p>
-          </div>
-        </div>
+        <PlatformCheckoutModal 
+          isOpen={!!purchaseModalArticle}
+          onClose={() => setPurchaseModalArticle(null)}
+          productDetails={{
+            id: purchaseModalArticle.id.toString(),
+            type: 'MASTERCLASS',
+            title: purchaseModalArticle.title,
+            price: purchaseModalArticle.price || 0,
+            emoji: purchaseModalArticle.emoji,
+            color: purchaseModalArticle.color
+          }}
+          wallet={wallet}
+          onPurchaseViaWallet={async () => {
+             const res = await purchaseAssetAction(purchaseModalArticle.id.toString(), 'MASTERCLASS', purchaseModalArticle.price || 0, purchaseModalArticle.title);
+             return res as any;
+          }}
+        />
       )}
 
       {/* ── MODAL LECTURE FOCUS ── */}

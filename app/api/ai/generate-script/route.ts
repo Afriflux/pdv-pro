@@ -6,6 +6,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateAIResponse } from '@/lib/ai/router'
+import { prisma } from '@/lib/prisma'
 
 interface ScriptBody {
   productName: string
@@ -44,25 +45,32 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
 
-    // ── 2. Rate limit : 10 générations script / heure ─────────────────────────
-    const oneHourAgo = new Date(Date.now() - 3_600_000).toISOString()
-    const { count: genCount } = await supabase
-      .from('AIGenerationLog')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('type', 'script')
-      .gte('created_at', oneHourAgo)
+    // ── SÉCURISATION MONÉTISATION : VÉRIFICATION DES TOKENS IA ───────────────
+    // Au lieu du vieux rate-limiting gratuit, on exige que le Vendeur paie.
+    const store = await prisma.store.findUnique({
+      where: { user_id: user.id },
+      select: { id: true, ai_credits: true }
+    })
 
-    if ((genCount ?? 0) >= 10) {
+    if (!store) {
+      return NextResponse.json({ error: 'Boutique introuvable' }, { status: 404 })
+    }
+
+    if (store.ai_credits <= 0) {
       return NextResponse.json(
-        { error: 'Limite atteinte (10/h). Réessayez dans 1h.' },
-        { status: 429 }
+        { error: 'Vos crédits IA sont épuisés. Obtenez un Pack IA ou passez en illimité sur votre tableau de bord.' },
+        { status: 402 } // Payment Required
       )
     }
 
-    // Logger la génération
-    await supabase.from('AIGenerationLog')
-      .insert({ user_id: user.id, type: 'script' })
+    // Déduit un crédit (Péage SaaS)
+    await prisma.store.update({
+      where: { id: store.id },
+      data: { ai_credits: { decrement: 1 } }
+    })
+
+    // On log aussi historiquement
+    await supabase.from('AIGenerationLog').insert({ user_id: user.id, type: 'script' })
 
     // ── 3. Parser et valider le body ──────────────────────────────────────────
     const body = await req.json() as ScriptBody

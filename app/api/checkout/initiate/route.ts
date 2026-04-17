@@ -11,7 +11,7 @@ import { orderConfirmationEmail } from '@/lib/brevo/email-templates'
 import { sendWhatsApp, msgVendorNewOrder, msgOrderConfirmed } from '@/lib/whatsapp/sendWhatsApp'
 import { sendSaleNotification } from '@/lib/telegram/community-service'
 import { executeWorkflows } from '@/lib/workflows/execution'
-import { sendMetaCAPIPurchaseEvent } from '@/lib/tracking/capi'
+import { triggerPurchasePixels } from '@/lib/tracking/trigger-pixels'
 import { checkBuyerForCOD } from '@/lib/anti-fraud/buyer-check'
 import { createPaymentSession } from '@/lib/payments/routing'
 import { validate, checkoutSchema } from '@/lib/validation'
@@ -210,9 +210,11 @@ export async function POST(req: NextRequest) {
     }
 
     let actualLoyaltyDiscount = 0
+    let loyaltyAccountId = null;
     if (redeemed_points > 0) {
       const dbLoyalty = await prisma.loyaltyAccount.findUnique({ where: { phone: buyer_phone } })
       if (dbLoyalty && dbLoyalty.balance >= redeemed_points) {
+        loyaltyAccountId = dbLoyalty.id;
         // Recalcul serveur: 1 point = 1 FCFA, plafonné par le max_redeem_pct de la boutique
         const loyaltyConfig = await prisma.loyaltyConfig.findUnique({ where: { store_id: store_id } })
         const maxPct = loyaltyConfig?.max_redeem_pct ?? 20
@@ -318,10 +320,33 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 5. TRANSACTION ATOMIQUE ───────────────────────────────────
+    const generatedOrderId = crypto.randomUUID()
     let orderRecord
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const operations: any[] = []
+
+      // Réservation atomique (stricte) de la fidélité
+      if (actualLoyaltyDiscount > 0 && loyaltyAccountId) {
+         operations.push(
+            prisma.loyaltyAccount.update({
+               where: { id: loyaltyAccountId },
+               data: { balance: { decrement: actualLoyaltyDiscount } }
+            })
+         )
+         operations.push(
+            prisma.loyaltyTransaction.create({
+               data: {
+                  account_id: loyaltyAccountId,
+                  type: 'redeem',
+                  points: -Math.abs(actualLoyaltyDiscount),
+                  description: 'Paiement utilisé',
+                  order_id: generatedOrderId,
+                  store_id: store_id
+               }
+            })
+         )
+      }
 
       // Baisse de stock atomique (si variante)
       if (variant_id) {
@@ -349,6 +374,7 @@ export async function POST(req: NextRequest) {
       operations.push(
         prisma.order.create({
           data: {
+            id: generatedOrderId,
             product_id, store_id, variant_id: variant_id ?? null, quantity,
             bump_product_id: bump_product_id ?? null,
             buyer_name, buyer_email: buyer_email?.trim() || null, buyer_phone, delivery_address: delivery_address ?? null,
@@ -381,15 +407,8 @@ export async function POST(req: NextRequest) {
       )
 
       const results = await prisma.$transaction(operations)
-      orderRecord = results[results.length - 1] // La commande est la dernière op
-
-      // ── Mettre en attente (dépenser) les points de fidélité ──
-      try {
-        if (actualLoyaltyDiscount > 0) {
-           const { redeemLoyaltyPoints } = await import('@/app/actions/loyalty')
-           await redeemLoyaltyPoints(buyer_phone, store_id, actualLoyaltyDiscount, orderRecord.id)
-        }
-      } catch(e) { console.error('[Checkout] Loyalty redemption failed:', e) }
+      orderRecord = results[results.length - 1] // La commande est la dernière op (si pas offsettee par loyalty)
+      orderRecord = results.find(r => (r as any).buyer_phone) || orderRecord; // Sécurité pour récupérer l'objet commande
 
       // Nettoyer les paniers abandonnés du prospect
       try {
@@ -524,23 +543,12 @@ export async function POST(req: NextRequest) {
         store_name: storeRecordData?.name || 'Yayyam',
       }).catch(e => console.error('[Workflow Engine Error]', e));
 
-      // Trigger Meta CAPI si activé
-      if (product.store?.meta_pixel_id && product.store?.meta_capi_token) {
-        sendMetaCAPIPurchaseEvent({
-          pixelId: product.store.meta_pixel_id,
-          capiToken: product.store.meta_capi_token,
-          eventId: orderRecord.id,
-          orderId: orderRecord.id,
-          value: total,
-          currency: 'XOF',
-          contentName: product.name,
-          customerEmail: buyer_email || undefined,
-          customerPhone: buyer_phone,
-          customerName: buyer_name,
-          clientIp: req.headers.get('x-forwarded-for') || undefined,
-          clientUserAgent: req.headers.get('user-agent') || undefined
-        }).catch(e => console.error('[CAPI COD Error]', e));
-      }
+      // Trigger Unifié CAPI (Meta, TikTok, Google)
+      triggerPurchasePixels(
+        orderRecord.id,
+        req.headers.get('x-forwarded-for') || undefined,
+        req.headers.get('user-agent') || undefined
+      ).catch(e => console.error('[CAPI Trigger COD Error]', e));
 
       if (product.oto_active && product.oto_product_id) {
          return NextResponse.json({ 
@@ -557,6 +565,26 @@ export async function POST(req: NextRequest) {
     const baseUrl = `${req.nextUrl.protocol}//${req.nextUrl.host}`
     const returnUrl = `${baseUrl}/checkout/success?order=${orderRecord.id}`
     const notifyUrlBase = `${baseUrl}/api/webhooks`
+
+    // BYPASS: Commande 100% offerte (Loyalty ou Code Promo total)
+    if (total === 0 && payment_method !== 'cod') {
+      const { confirmOrder } = await import('@/lib/payments/confirmOrder')
+      await confirmOrder(orderRecord.id, 'FREE_ORDER')
+      
+      if (product.oto_active && product.oto_product_id) {
+         return NextResponse.json({ 
+           order_id: orderRecord.id, 
+           oto: true, 
+           oto_url: `/checkout/upsell?o=${orderRecord.id}&p=${product.oto_product_id}&d=${product.oto_discount ?? 0}` 
+         })
+      }
+      return NextResponse.json({ order_id: orderRecord.id, payment_url: returnUrl })
+    }
+
+    // BOUCLIER API: Micro-transactions (< 100 FCFA) non gérables par Wave/CinetPay
+    if (total > 0 && total < 100 && payment_method !== 'cod') {
+       return NextResponse.json({ error: 'Le montant minimum par mobile money est fixé à 100 FCFA. Veuillez supprimer vos points ou payer à la livraison.' }, { status: 400 })
+    }
 
     if (!['wave', 'paytech', 'bictorys', 'cinetpay', 'moneroo'].includes(payment_method)) {
       return NextResponse.json({ error: 'Moyen de paiement invalide.' }, { status: 400 })

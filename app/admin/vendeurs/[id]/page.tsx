@@ -45,8 +45,9 @@ interface WalletRow {
 
 interface OrderRow {
   id:           string
-  total_amount: number
+  total:        number
   vendor_amount:number
+  delivery_fee: number
   status:       string
   created_at:   string
 }
@@ -142,7 +143,7 @@ export default async function VendeurDetailPage({
 
     supabaseAdmin
       .from('Order')
-      .select('id, total_amount, vendor_amount, status, created_at')
+      .select('id, total, vendor_amount, delivery_fee, status, created_at')
       .eq('store_id', storeId)
       .gte('created_at', thirtyDaysAgo)
       .order('created_at', { ascending: false }),
@@ -365,7 +366,8 @@ export default async function VendeurDetailPage({
                          <RefundButton 
                            storeId={store.id}
                            orderId={order.id}
-                           totalAmount={Number(order.total_amount)}
+                           totalAmount={Number(order.total)}
+                           deliveryFee={Number(order.delivery_fee || 0)}
                          />
                        )}
                     </div>

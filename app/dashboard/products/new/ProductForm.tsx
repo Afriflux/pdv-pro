@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { UniversalAIGenerator } from '@/components/shared/ai/UniversalAIGenerator'
-import { Sparkles, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Sparkles, HelpCircle, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
 import { MobilePreviewer } from '@/components/ui/MobilePreviewer'
 
 // ----------------------------------------------------------------
@@ -1551,7 +1551,7 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
           type="button"
           onClick={handlePrev}
           disabled={currentStep === 1 || loading}
-          className={`px-8 py-4 rounded-2xl font-bold transition-colors shadow-sm backdrop-blur-md ${currentStep === 1 ? 'opacity-0 cursor-default pointer-events-none' : 'bg-white/80 border border-gray-200 text-gray-700 hover:bg-white hover:shadow-md'}`}
+          className={`px-8 py-4 rounded-2xl font-bold transition-all shadow-sm backdrop-blur-md active:scale-[0.98] ${currentStep === 1 ? 'opacity-0 cursor-default pointer-events-none' : 'bg-white/80 border border-gray-200 text-gray-700 hover:bg-white hover:shadow-md'}`}
         >
           ← Retour
         </button>
@@ -1560,21 +1560,29 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
           <button
             type="button"
             onClick={handleNext}
-            className="flex-1 max-w-sm bg-[#0F7A60] text-white hover:bg-[#0D5C4A] font-bold py-4 rounded-2xl transition shadow-lg flex items-center justify-center gap-2"
+            className="flex-1 max-w-sm bg-[#0F7A60] text-white hover:bg-[#0D5C4A] font-bold py-4 rounded-2xl transition hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 relative overflow-hidden group"
           >
-            Étape Suivante →
+            <span className="relative z-10 flex items-center gap-2">Étape Suivante →</span>
+            <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-300"></div>
           </button>
         ) : (
           <button
             type="submit"
             disabled={loading || !canSubmitTimeout}
-            className={`flex-1 max-w-sm font-bold py-4 rounded-2xl transition shadow-lg flex items-center justify-center gap-2 text-base ${
+            className={`flex-1 max-w-sm font-bold py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 text-base active:scale-[0.98] relative overflow-hidden group ${
               loading || !canSubmitTimeout 
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none' 
-                : 'bg-gold hover:bg-gold-light text-white shadow-gold/20'
+                : 'bg-gold hover:bg-gold-light text-white shadow-gold/20 hover:-translate-y-1'
             }`}
           >
-            {loading ? 'Création en cours…' : 'Créer le produit ✔'}
+            {loading ? (
+               <><Loader2 className="animate-spin" size={20}/> Création en cours…</>
+            ) : (
+               <>
+                 <span className="relative z-10">Créer le produit ✔</span>
+                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[0%] transition-transform duration-500 rounded-2xl"></div>
+               </>
+            )}
           </button>
         )}
       </div>

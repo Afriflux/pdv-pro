@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { captureError } from '@/lib/monitoring'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { confirmOrder } from '@/lib/payments/confirmOrder'
+import { confirmB2BAssetPurchase } from '@/lib/payments/confirmB2BAssetPurchase'
+import { confirmTip } from '@/lib/payments/confirmTip'
+import { triggerPurchasePixels } from '@/lib/tracking/trigger-pixels'
 
 export async function POST(req: Request) {
   try {
@@ -75,11 +78,24 @@ export async function POST(req: Request) {
     const status = (monerooData.status || '').toLowerCase()
     
     if (['success', 'successful', 'paid', 'completed'].includes(status)) {
-      await confirmOrder(orderId)
-      console.log(`[Moneroo Webhook] Paiement validé pour la commande: ${orderId}`)
+      if (orderId.startsWith('B2B_')) {
+         await confirmB2BAssetPurchase(orderId)
+         console.log(`[Moneroo Webhook] Paiement B2B validé pour: ${orderId}`)
+      } else if (orderId.startsWith('TIP_')) {
+         await confirmTip(orderId)
+         console.log(`[Moneroo Webhook] Tip/Don payé: ${orderId}`)
+      } else {
+         await confirmOrder(orderId)
+         console.log(`[Moneroo Webhook] Paiement validé pour la commande: ${orderId}`)
+         triggerPurchasePixels(orderId).catch(e => console.error('[CAPI Trigger Moneroo Error]', e))
+      }
     } else if (['failed', 'cancelled', 'error'].includes(status)) {
-      await supabase.from('Order').update({ status: 'cancelled' }).eq('id', orderId)
-      console.log(`[Moneroo Webhook] Paiement échoué/annulé pour la commande: ${orderId}`)
+      if (orderId.startsWith('B2B_')) {
+         console.log(`[Moneroo Webhook] Paiement B2B échoué/annulé pour: ${orderId}`)
+      } else {
+         await supabase.from('Order').update({ status: 'cancelled' }).eq('id', orderId)
+         console.log(`[Moneroo Webhook] Paiement échoué/annulé pour la commande: ${orderId}`)
+      }
     } else {
       console.log(`[Moneroo Webhook] Statut non décisif (${status}) ignoré pour la commande: ${orderId}`)
     }

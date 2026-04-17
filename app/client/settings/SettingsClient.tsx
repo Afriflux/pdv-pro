@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { User, Lock, ShieldCheck, Camera, Trash2, Save, CheckCircle2, AlertCircle, Loader2, MapPin, Plus, Edit3, X } from 'lucide-react'
+import { User, Lock, ShieldCheck, Camera, Trash2, Save, CheckCircle2, AlertCircle, Loader2, MapPin, Plus, Edit3, X, AlertTriangle } from 'lucide-react'
 import Image from 'next/image'
 import { updateClientProfile, addDeliveryAddress, deleteDeliveryAddress, deleteClientAccount } from './actions'
 import { createClient } from '@/lib/supabase/client'
 import { PhoneInput } from '@/components/ui/PhoneInput'
 import { useRouter } from 'next/navigation'
+import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 
 interface SettingsClientProps {
   profile: any
@@ -31,15 +32,28 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
   const [addrLoading, setAddrLoading] = useState(false)
 
   const [deleteLoading, setDeleteLoading] = useState(false)
+  
+  // Custom Modals states
+  const [addressToDelete, setAddressToDelete] = useState<string | null>(null)
+  const [showAccountDeleteModal, setShowAccountDeleteModal] = useState(false)
+  const [accountDeleteConfirmText, setAccountDeleteConfirmText] = useState('')
 
   const supabase = createClient()
   const router = useRouter()
 
+  const [cropModalFile, setCropModalFile] = useState<File | null>(null)
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    setAvatarFile(file)
-    setAvatarPreview(URL.createObjectURL(file))
+    setCropModalFile(file)
+    e.target.value = ''
+  }
+
+  const handleCropDone = (croppedFile: File, previewUrl: string) => {
+    setAvatarFile(croppedFile)
+    setAvatarPreview(previewUrl)
+    setCropModalFile(null)
   }
 
   const uploadFile = async (file: File, bucket: string, path: string) => {
@@ -120,23 +134,12 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
     setAddrLoading(false)
   }
 
-  const handleDeleteAddress = async (id: string) => {
-    const Swal = (await import('sweetalert2')).default
-    const result = await Swal.fire({
-      title: 'Confirmation',
-      text: 'Êtes-vous sûr de vouloir supprimer cette adresse ?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Oui, supprimer',
-      cancelButtonText: 'Annuler',
-      confirmButtonColor: '#ef4444'
-    })
-    if (!result.isConfirmed) return
-    
+  const confirmDeleteAddress = async () => {
+    if (!addressToDelete) return
     setAddrLoading(true)
     setError('')
     setSuccess('')
-    const res = await deleteDeliveryAddress(id)
+    const res = await deleteDeliveryAddress(addressToDelete)
     if (res.error) {
       setError(res.error)
     } else {
@@ -144,21 +147,15 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
       setTimeout(() => setSuccess(''), 3000)
     }
     setAddrLoading(false)
+    setAddressToDelete(null)
   }
 
-  const handleDeleteAccount = async () => {
-    const Swal = (await import('sweetalert2')).default
-    const result = await Swal.fire({
-      title: 'Suppression définitive',
-      text: 'Ceci supprimera définitivement votre compte et tout l’historique associé. Tapez "CONFIRMER" pour procéder.',
-      input: 'text',
-      icon: 'error',
-      showCancelButton: true,
-      confirmButtonText: 'Supprimer définitivement',
-      cancelButtonText: 'Annuler',
-      confirmButtonColor: '#ef4444'
-    })
-    if (!result.isConfirmed || result.value !== 'CONFIRMER') return
+  const handleDeleteAddress = (id: string) => {
+    setAddressToDelete(id)
+  }
+
+  const confirmDeleteAccount = async () => {
+    if (accountDeleteConfirmText !== 'CONFIRMER') return
     
     setDeleteLoading(true)
     setError('')
@@ -170,6 +167,12 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
     } else {
       router.push('/login')
     }
+    setShowAccountDeleteModal(false)
+  }
+
+  const handleDeleteAccount = () => {
+    setAccountDeleteConfirmText('')
+    setShowAccountDeleteModal(true)
   }
 
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'address' | 'danger'>('profile')
@@ -180,7 +183,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
       {/* ── HEADER PREMIUM ÉMERAUDE ── */}
       <header className="bg-gradient-to-br from-[#0F7A60] via-[#0b5341] to-[#1A1A1A] border border-[#0F7A60]/50 rounded-[2.5rem] px-8 py-10 shadow-[0_10px_40px_rgba(15,122,96,0.3)] mb-10 w-full relative z-10 overflow-hidden text-white flex flex-col md:flex-row md:items-end justify-between gap-6 group">
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
-          <div className="absolute top-0 left-0 w-64 h-64 bg-[#0F7A60]/20 blur-3xl rounded-full -translate-x-1/3 -translate-y-1/3 pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
+          <div className="absolute top-0 left-0 w-64 h-64 bg-[#0F7A60]/20 blur-[40px] md:blur-[80px] rounded-full -translate-x-1/3 -translate-y-1/3 pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
           
           <div className="relative z-10 flex items-center gap-5">
             <div className="flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-xl rounded-[1.2rem] text-[#0F7A60] border border-white/10 shadow-lg">
@@ -198,7 +201,7 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
         
         {/* ── MENU HYBRIDE ── */}
         <aside className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start z-20">
-          <div className="w-full relative z-10 overflow-x-auto scrollbar-hide lg:overflow-visible bg-white/80 lg:bg-transparent backdrop-blur-3xl lg:backdrop-blur-none p-3 lg:p-0 border border-gray-200/60 lg:border-none rounded-[2rem] lg:rounded-none shadow-[0_8px_30px_rgb(0,0,0,0.02)] lg:shadow-none">
+          <div className="w-full relative z-10 overflow-x-auto scrollbar-hide lg:overflow-visible bg-white/80 lg:bg-transparent backdrop-blur-lg lg:backdrop-blur-none p-3 lg:p-0 border border-gray-200/60 lg:border-none rounded-[2rem] lg:rounded-none shadow-[0_8px_30px_rgb(0,0,0,0.02)] lg:shadow-none">
             <nav className="flex flex-row lg:flex-col gap-2 min-w-max lg:min-w-0" aria-label="Menu des paramètres client">
               <MenuBtn active={activeTab === 'profile'} icon={<User size={18} />} label="Général" onClick={() => { setActiveTab('profile'); setError(''); setSuccess('') }} />
               <MenuBtn active={activeTab === 'address'} icon={<MapPin size={18} />} label="Adresses" onClick={() => { setActiveTab('address'); setError(''); setSuccess('') }} />
@@ -295,22 +298,24 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
                       </div>
 
                       <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-[13px] font-black uppercase tracking-wider text-gray-500 ml-1">
+                        <label htmlFor="client-email" className="flex items-center gap-2 text-[13px] font-black uppercase tracking-wider text-gray-500 ml-1">
                           Email 
                         </label>
                         <div className="relative group/input">
                           <input
+                            id="client-email"
+                            title="Adresse email"
                             type="email"
                             value={profile?.email || user.email || ''}
                             className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] pl-5 pr-12 py-4 text-[15px] font-semibold text-gray-500 focus:border-red-500 transition-all cursor-not-allowed shadow-inner"
                             readOnly
                             disabled
-                            title="L'email est verrouillé."
                           />
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 border border-gray-200 bg-white p-1 rounded-md shadow-sm" title="L'email principal ne peut pas être modifié.">
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 border border-gray-200 bg-white p-1 rounded-md shadow-sm">
                             <Lock size={12} />
                           </div>
                         </div>
+                        <p className="text-[12px] text-gray-400 font-medium">L'adresse de sécurité liée à vos achats. Modifiable uniquement via <a href="mailto:support@yayyam.com" className="underline hover:text-gray-600">le support</a>.</p>
                       </div>
                     </div>
                   </div>
@@ -482,6 +487,86 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
         </div>
       </div>
 
+      {/* MODAL SUPPRESSION ADRESSE */}
+      {addressToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300 pointer-events-auto">
+          <div className="bg-white rounded-[2rem] w-full max-w-sm p-8 shadow-2xl relative animate-in zoom-in-95 duration-500">
+            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-[1.5rem] flex items-center justify-center mb-6 mx-auto">
+              <AlertTriangle size={32} />
+            </div>
+            <h3 className="text-xl font-black text-gray-900 text-center mb-3">Supprimer l'adresse ?</h3>
+            <p className="text-gray-500 text-center mb-8 font-medium leading-relaxed text-[14px]">
+              Êtes-vous sûr de vouloir retirer cette adresse de livraison de votre carnet ?
+            </p>
+            <div className="flex flex-col gap-3">
+               <button 
+                type="button"
+                onClick={confirmDeleteAddress}
+                disabled={addrLoading}
+                className="w-full px-6 py-3.5 rounded-xl font-black bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/30 transition-all disabled:opacity-50"
+              >
+                Oui, supprimer
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setAddressToDelete(null)}
+                disabled={addrLoading}
+                className="w-full px-6 py-3.5 rounded-xl font-bold bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL SUPPRESSION COMPTE */}
+      {showAccountDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300 pointer-events-auto">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl relative animate-in zoom-in-95 duration-500">
+            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-[1.5rem] flex items-center justify-center mb-6 mx-auto">
+              <AlertTriangle size={32} />
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 text-center mb-3">Suppression définitive</h3>
+            <p className="text-gray-500 text-center mb-6 font-medium leading-relaxed text-[14px]">
+              Ceci supprimera définitivement votre compte client, privant l'accès à votre historique de commandes et votre bibliothèque.
+            </p>
+            
+            <div className="bg-red-50/50 border border-red-100 rounded-xl p-4 mb-8">
+              <label className="text-[13px] font-black uppercase text-red-900/80 tracking-wider mb-2 block text-center">
+                Tapez "CONFIRMER"
+              </label>
+              <input 
+                type="text" 
+                value={accountDeleteConfirmText}
+                onChange={(e) => setAccountDeleteConfirmText(e.target.value)}
+                placeholder="CONFIRMER"
+                className="w-full bg-white outline-none border border-red-200 rounded-[1rem] px-5 py-4 text-[15px] font-bold text-gray-900 focus:border-red-500 text-center uppercase shadow-inner"
+              />
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button 
+                type="button" 
+                onClick={() => setShowAccountDeleteModal(false)}
+                disabled={deleteLoading}
+                className="flex-1 px-6 py-4 rounded-xl font-bold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Annuler
+              </button>
+              <button 
+                type="button"
+                onClick={confirmDeleteAccount}
+                disabled={accountDeleteConfirmText !== 'CONFIRMER' || deleteLoading}
+                className="flex-1 px-6 py-4 rounded-xl font-black bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/40 transition-all disabled:opacity-50 disabled:grayscale"
+              >
+                {deleteLoading ? 'Suppression...' : 'Adieu Yayyam'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MODAL AJOUT ADRESSE */}
       {isAddressModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -536,6 +621,14 @@ export default function SettingsClient({ profile, user, addresses = [] }: Settin
             </form>
           </div>
         </div>
+      )}
+
+      {cropModalFile && (
+        <ImageCropperModal
+          imageFile={cropModalFile}
+          onClose={() => setCropModalFile(null)}
+          onCrop={handleCropDone}
+        />
       )}
     </div>
   )

@@ -17,7 +17,7 @@ export function LandingHeader({ isLoggedIn, dashboardUrl }: LandingHeaderProps) 
   const closeMenu = () => setMobileMenuOpen(false)
 
   return (
-    <div className="sticky top-4 z-50 px-4 md:px-0 flex justify-center pointer-events-none">
+    <div className="fixed top-4 left-0 w-full z-50 px-4 md:px-0 flex justify-center pointer-events-none">
       <header className="pointer-events-auto w-full max-w-4xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl shadow-emerald/5 rounded-full h-16 flex items-center justify-between px-6 transition-all duration-300 hover:bg-white/80 relative">
         
         {/* LOGO */}

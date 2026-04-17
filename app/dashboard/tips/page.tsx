@@ -16,7 +16,7 @@ export default async function TipsPage() {
 
   const store = await prisma.store.findUnique({
     where: { user_id: user.id },
-    include: { subscriptions: { orderBy: { created_at: 'desc' }, take: 1 } }
+    include: { subscriptions: { orderBy: { created_at: 'desc' }, take: 1 }, wallet: true }
   })
   const isPro = store?.subscriptions?.[0]?.plan === 'pro'
   
@@ -81,7 +81,8 @@ export default async function TipsPage() {
                 </div>
               </div>
               <div className="h-2.5 w-full bg-white/10 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[#0F7A60] to-emerald-400 rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, userProgress)}%` }}></div>
+                <style>{`.dynamic-progress-bar { width: ${Math.min(100, userProgress)}%; }`}</style>
+                <div className="h-full bg-gradient-to-r from-[#0F7A60] to-emerald-400 rounded-full transition-all duration-1000 dynamic-progress-bar"></div>
               </div>
               {userProgress < 100 ? (
                 <p className="text-xs text-gray-500 mt-3">🎯 Lisez encore {Math.max(0, totalArticles - completedCount)} guides pour devenir un <strong className="text-gray-300">Maître Vendeur</strong>.</p>
@@ -123,6 +124,7 @@ export default async function TipsPage() {
             articles={dbArticles as any} 
             completedIds={completedIds} 
             purchasedAssetIds={purchasedAssetIds} 
+            wallet={store?.wallet || { balance: 0, total_earned: 0 }}
           />
         </div>
 

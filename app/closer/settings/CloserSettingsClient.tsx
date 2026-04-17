@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { User, Lock, Trash2, Save, CheckCircle2, AlertCircle, Loader2, Landmark, Wallet, Smartphone, Building2, CreditCard, Camera } from 'lucide-react'
+import { User, Lock, Trash2, Save, CheckCircle2, AlertCircle, Loader2, Landmark, Wallet, Smartphone, Building2, CreditCard, Camera, AlertTriangle } from 'lucide-react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { updateClientProfile, deleteClientAccount } from '@/app/client/settings/actions'
@@ -9,6 +9,7 @@ import { updateCloserFinance } from '@/app/closer/settings/actions'
 import { PhoneInput } from '@/components/ui/PhoneInput'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 
 interface CloserSettingsClientProps {
   profile: any
@@ -27,6 +28,10 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
   const [resetSent, setResetSent] = useState(false)
   const [resetLoading, setResetLoading] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
+
+  // Custom Modals states
+  const [showAccountDeleteModal, setShowAccountDeleteModal] = useState(false)
+  const [accountDeleteConfirmText, setAccountDeleteConfirmText] = useState('')
 
   // Finance states
   const [withdrawalMethod, setWithdrawalMethod] = useState<'wave' | 'orange_money' | 'bank'>(
@@ -52,11 +57,19 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
     }
   }, [])
 
+  const [cropModalFile, setCropModalFile] = useState<File | null>(null)
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    setAvatarFile(file)
-    setAvatarPreview(URL.createObjectURL(file))
+    setCropModalFile(file)
+    e.target.value = ''
+  }
+
+  const handleCropDone = (croppedFile: File, previewUrl: string) => {
+    setAvatarFile(croppedFile)
+    setAvatarPreview(previewUrl)
+    setCropModalFile(null)
   }
 
   const uploadFile = async (file: File, bucket: string, path: string) => {
@@ -139,26 +152,8 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
     setResetLoading(false)
   }
 
-  const handleDeleteAccount = async () => {
-    const Swal = (await import('sweetalert2')).default
-    const result = await Swal.fire({
-      title: 'Zone de Danger',
-      text: 'Ceci supprimera définitivement votre compte et tout l’historique associé. Tapez "CONFIRMER" pour procéder.',
-      input: 'text',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Supprimer',
-      cancelButtonText: 'Annuler',
-      confirmButtonColor: '#ef4444',
-      preConfirm: (inputValue) => {
-        if (inputValue !== 'CONFIRMER') {
-          Swal.showValidationMessage('Vous devez taper CONFIRMER pour valider')
-        }
-        return inputValue
-      }
-    })
-    
-    if (!result.isConfirmed || result.value !== 'CONFIRMER') return
+  const confirmDeleteAccount = async () => {
+    if (accountDeleteConfirmText !== 'CONFIRMER') return
     
     setDeleteLoading(true)
     setError('')
@@ -170,6 +165,12 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
     } else {
       router.push('/login')
     }
+    setShowAccountDeleteModal(false)
+  }
+
+  const handleDeleteAccount = () => {
+    setAccountDeleteConfirmText('')
+    setShowAccountDeleteModal(true)
   }
 
   return (
@@ -178,7 +179,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
       {/* ── HEADER PREMIUM ÉMERAUDE ── */}
       <header className="bg-gradient-to-br from-[#0F7A60] via-[#0b5341] to-[#1A1A1A] border border-[#0F7A60]/50 rounded-[2.5rem] px-8 py-10 shadow-[0_10px_40px_rgba(15,122,96,0.3)] mb-10 w-full relative z-10 overflow-hidden text-white flex flex-col md:flex-row md:items-end justify-between gap-6 group">
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none"></div>
-          <div className="absolute top-0 left-0 w-64 h-64 bg-[#0F7A60]/20 blur-3xl rounded-full -translate-x-1/3 -translate-y-1/3 pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
+          <div className="absolute top-0 left-0 w-64 h-64 bg-[#0F7A60]/20 blur-[30px] md:blur-3xl rounded-full -translate-x-1/3 -translate-y-1/3 pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-1000"></div>
           
           <div className="relative z-10 flex items-center gap-5">
             <div className="flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-xl rounded-[1.2rem] text-[#0F7A60] border border-white/10 shadow-lg">
@@ -293,12 +294,13 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                       </div>
 
                       <div className="space-y-2">
-                        <label className="flex items-center gap-2 text-[13px] font-black uppercase tracking-wider text-gray-500 ml-1">
+                        <label htmlFor="closer-email" className="flex items-center gap-2 text-[13px] font-black uppercase tracking-wider text-gray-500 ml-1">
                           Email 
                         </label>
                         <div className="relative group/input">
                           <input
-                            title="L'email est verrouillé."
+                            id="closer-email"
+                            title="Adresse email"
                             type="email"
                             value={profile?.email || user.email || ''}
                             className="w-full bg-gray-50/50 outline-none border border-gray-200/60 rounded-[1rem] pl-5 pr-12 py-4 text-[15px] font-semibold text-gray-500 focus:border-red-500 transition-all cursor-not-allowed shadow-inner"
@@ -309,6 +311,7 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
                             <Lock size={12} />
                           </div>
                         </div>
+                        <p className="text-[12px] text-gray-400 font-medium">L'adresse de sécurité liée à votre compte. Modifiable uniquement via <a href="mailto:support@yayyam.com" className="underline hover:text-gray-600">le support</a>.</p>
                       </div>
                     </div>
                   </div>
@@ -604,6 +607,61 @@ export default function CloserSettingsClient({ profile, user }: CloserSettingsCl
           </div>
         </div>
       </div>
+
+      {/* MODAL SUPPRESSION COMPTE CLOSER */}
+      {showAccountDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300 pointer-events-auto">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl relative animate-in zoom-in-95 duration-500">
+            <div className="w-16 h-16 bg-red-100 text-red-600 rounded-[1.5rem] flex items-center justify-center mb-6 mx-auto">
+              <AlertTriangle size={32} />
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 text-center mb-3">Suppression définitive</h3>
+            <p className="text-gray-500 text-center mb-6 font-medium leading-relaxed text-[14px]">
+              Ceci supprimera définitivement votre compte Closer et tout l’historique associé. Privant l'accès à vos gains non retirés.
+            </p>
+            
+            <div className="bg-red-50/50 border border-red-100 rounded-xl p-4 mb-8">
+              <label className="text-[13px] font-black uppercase text-red-900/80 tracking-wider mb-2 block text-center">
+                Tapez "CONFIRMER"
+              </label>
+              <input 
+                type="text" 
+                value={accountDeleteConfirmText}
+                onChange={(e) => setAccountDeleteConfirmText(e.target.value)}
+                placeholder="CONFIRMER"
+                className="w-full bg-white outline-none border border-red-200 rounded-[1rem] px-5 py-4 text-[15px] font-bold text-gray-900 focus:border-red-500 text-center uppercase shadow-inner"
+              />
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button 
+                type="button" 
+                onClick={() => setShowAccountDeleteModal(false)}
+                disabled={deleteLoading}
+                className="flex-1 px-6 py-4 rounded-xl font-bold border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Annuler
+              </button>
+              <button 
+                type="button"
+                onClick={confirmDeleteAccount}
+                disabled={accountDeleteConfirmText !== 'CONFIRMER' || deleteLoading}
+                className="flex-1 px-6 py-4 rounded-xl font-black bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/40 transition-all disabled:opacity-50 disabled:grayscale"
+              >
+                {deleteLoading ? 'Suppression...' : 'Oui, supprimer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {cropModalFile && (
+        <ImageCropperModal
+          imageFile={cropModalFile}
+          onClose={() => setCropModalFile(null)}
+          onCrop={handleCropDone}
+        />
+      )}
     </div>
   )
 }

@@ -8,7 +8,9 @@ export async function savePixelsConfigAction(data: {
   meta_pixel_id: string | null
   meta_capi_token: string | null
   tiktok_pixel_id: string | null
+  tiktok_capi_token: string | null
   google_tag_id: string | null
+  google_api_secret: string | null
 }) {
   try {
     const supabase = await createClient()
@@ -32,7 +34,9 @@ export async function savePixelsConfigAction(data: {
         meta_pixel_id: data.meta_pixel_id || null,
         meta_capi_token: data.meta_capi_token || null,
         tiktok_pixel_id: data.tiktok_pixel_id || null,
+        tiktok_capi_token: data.tiktok_capi_token || null,
         google_tag_id: data.google_tag_id || null,
+        google_api_secret: data.google_api_secret || null,
       }
     })
 

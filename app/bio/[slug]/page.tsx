@@ -3,8 +3,48 @@ import { prisma } from '@/lib/prisma'
 import { BioLinkClientModules, TrackedLink } from './BioLinkClientModules'
 import BioLinkHeaderClient from './BioLinkHeaderClient'
 
+import { Metadata } from 'next'
+
 /* eslint-disable @typescript-eslint/no-explicit-any, react/forbid-dom-props */
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const bioLink = await prisma.bioLink.findUnique({
+    where: { slug: params.slug },
+    include: {
+      user: {
+        select: { name: true, store: { select: { store_name: true, name: true } } }
+      }
+    }
+  })
+
+  if (!bioLink) return { title: 'Lien introuvable | Yayyam' }
+
+  const storeData = bioLink.user?.store
+  const storeName = Array.isArray(storeData) ? (storeData[0]?.store_name || storeData[0]?.name) : (storeData?.store_name || storeData?.name)
+  const title = bioLink.title || `Le Link-in-Bio de ${storeName || bioLink.user?.name || 'Yayyam'}`
+  const description = bioLink.bio || 'Découvrez tous mes liens et tunnels de vente.'
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `https://yayyam.com/bio/${params.slug}`,
+      siteName: 'Yayyam',
+      images: bioLink.avatar_url ? [{ url: bioLink.avatar_url, width: 400, height: 400, alt: title }] : [{ url: 'https://yayyam.com/og-image.svg', width: 1200, height: 630, alt: 'Yayyam' }],
+      locale: 'fr_FR',
+      type: 'profile',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+      images: bioLink.avatar_url ? [bioLink.avatar_url] : [],
+    }
+  }
+}
 
 export default async function BioLinkPage({ params }: { params: { slug: string } }) {
   const bioLink = await prisma.bioLink.findUnique({
@@ -236,7 +276,7 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
           </div>
 
           <BioLinkClientModules 
-            storeId={bioLink.user_id} 
+            storeId={bioLink.user?.store?.id || bioLink.user_id} 
             theme={theme}
             brandColor={brandColor}
             ctaTextColor={ctaTextColor}

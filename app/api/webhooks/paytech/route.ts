@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { captureError } from '@/lib/monitoring'
 import { verifyPaytechWebhook, PaytechWebhookPayload } from '@/lib/payments/paytech/webhook'
 import { confirmOrder } from '@/lib/payments/confirmOrder'
+import { confirmB2BAssetPurchase } from '@/lib/payments/confirmB2BAssetPurchase'
+import { confirmTip } from '@/lib/payments/confirmTip'
+import { triggerPurchasePixels } from '@/lib/tracking/trigger-pixels'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(req: Request) {
@@ -36,11 +39,24 @@ export async function POST(req: Request) {
     try {
       // 2. Traitement BDD via confirmOrder
       if (type_event === 'sale_complete') {
-        await confirmOrder(ref_command, token)
-        console.log(`[Paytech Webhook] Paiement validé et exécuté pour la commande: ${ref_command}`)
+        if (ref_command.startsWith('B2B_')) {
+           await confirmB2BAssetPurchase(ref_command)
+           console.log(`[Paytech Webhook] Paiement B2B validé et exécuté pour: ${ref_command}`)
+        } else if (ref_command.startsWith('TIP_')) {
+           await confirmTip(ref_command)
+           console.log(`[Paytech Webhook] Tip/Don payé: ${ref_command}`)
+        } else {
+           await confirmOrder(ref_command, token)
+           console.log(`[Paytech Webhook] Paiement validé et exécuté pour la commande: ${ref_command}`)
+           triggerPurchasePixels(ref_command).catch(e => console.error('[CAPI Trigger Paytech Error]', e))
+        }
       } else if (type_event === 'sale_canceled') {
         // Pour une annulation, un appel simple ou l'ignorer
-        console.log(`[Paytech Webhook] Paiement annulé pour la commande: ${ref_command}`)
+        if (ref_command.startsWith('B2B_')) {
+           console.log(`[Paytech Webhook] Paiement B2B annulé pour: ${ref_command}`)
+        } else {
+           console.log(`[Paytech Webhook] Paiement annulé pour la commande: ${ref_command}`)
+        }
       }
 
       await prisma.systemWebhookLog.update({ where: { id: webhookLog.id }, data: { status: 'completed', processed_at: new Date() }})

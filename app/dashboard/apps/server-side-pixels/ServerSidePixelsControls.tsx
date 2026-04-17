@@ -10,7 +10,9 @@ interface Props {
     meta_pixel_id: string | null
     meta_capi_token: string | null
     tiktok_pixel_id: string | null
+    tiktok_capi_token: string | null
     google_tag_id: string | null
+    google_api_secret: string | null
   }
 }
 
@@ -25,7 +27,9 @@ export default function ServerSidePixelsControls({ initialConfig }: Props) {
     meta_pixel_id: initialConfig.meta_pixel_id || '',
     meta_capi_token: initialConfig.meta_capi_token || '',
     tiktok_pixel_id: initialConfig.tiktok_pixel_id || '',
+    tiktok_capi_token: initialConfig.tiktok_capi_token || '',
     google_tag_id: initialConfig.google_tag_id || '',
+    google_api_secret: initialConfig.google_api_secret || '',
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +45,9 @@ export default function ServerSidePixelsControls({ initialConfig }: Props) {
       meta_pixel_id: form.meta_pixel_id,
       meta_capi_token: form.meta_capi_token,
       tiktok_pixel_id: form.tiktok_pixel_id,
+      tiktok_capi_token: form.tiktok_capi_token,
       google_tag_id: form.google_tag_id,
+      google_api_secret: form.google_api_secret,
     })
 
     setLoading(false)
@@ -165,6 +171,23 @@ export default function ServerSidePixelsControls({ initialConfig }: Props) {
                  className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-shadow"
                />
              </div>
+             
+             <div className="relative">
+               <label className="block text-xs font-black text-gray-500 mb-1.5 uppercase flex items-center gap-1">
+                 CAPI Access Token <ShieldCheck size={14} className="text-emerald-500" />
+               </label>
+               <input 
+                 type="password" 
+                 name="tiktok_capi_token"
+                 value={form.tiktok_capi_token}
+                 onChange={handleChange}
+                 placeholder="Généré via TikTok Events Manager"
+                 className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-shadow"
+               />
+               <p className="text-xs text-gray-400 font-medium mt-2 leading-relaxed">
+                 Le token d'accès permet les événements Server-Side TikTok Event API.
+               </p>
+             </div>
           </div>
         </div>
 
@@ -200,6 +223,23 @@ export default function ServerSidePixelsControls({ initialConfig }: Props) {
                />
                <p className="text-xs text-gray-400 font-medium mt-2 leading-relaxed">
                  Déploie l'ID de suivi Google Global Site Tag pour analyser votre trafic via GA4.
+               </p>
+             </div>
+
+             <div className="relative">
+               <label className="block text-xs font-black text-gray-500 mb-1.5 uppercase flex items-center gap-1">
+                 Measurement Protocol API Secret <ShieldCheck size={14} className="text-emerald-500" />
+               </label>
+               <input 
+                 type="password" 
+                 name="google_api_secret"
+                 value={form.google_api_secret}
+                 onChange={handleChange}
+                 placeholder="ex: xyz123ABC_secret"
+                 className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-shadow"
+               />
+               <p className="text-xs text-gray-400 font-medium mt-2 leading-relaxed">
+                 Nécessaire pour envoyer des événements de Purchase au Google Server-Side (Measurement Protocol).
                </p>
              </div>
           </div>

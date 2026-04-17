@@ -4,6 +4,7 @@ import {
   Search, Users, UserCircle,
   Phone, Mail, Calendar, Filter, ChevronLeft, ChevronRight
 } from 'lucide-react'
+import UsersSearchInput from './UsersSearchInput'
 
 // ----------------------------------------------------------------
 // TYPES
@@ -125,38 +126,33 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
             </div>
           </div>
 
-          <div className="relative w-full md:w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
-            <form method="GET">
-              <input
-                type="text"
-                name="q"
-                defaultValue={query}
-                placeholder="Rechercher par nom, email ou téléphone..."
-                className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-white
-                  focus:bg-white/20 focus:border-white/40 focus:ring-4 focus:ring-white/10 outline-none transition-all placeholder:text-white/50 shadow-inner"
-              />
-              <input type="hidden" name="role" value={roleFilter} />
-            </form>
-          </div>
+          <UsersSearchInput />
         </div>
 
         {/* ── KPIs ── */}
         <div className="relative z-10 mt-10 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           {[
-            { label: 'Total', value: totalUsers, color: 'text-white' },
-            { label: 'Vendeurs', value: vendeurC, color: 'text-emerald-300' },
-            { label: 'Clients', value: acheteurC + clientC, color: 'text-amber-300' },
-            { label: 'Affiliés', value: affilieC, color: 'text-cyan-300' },
-            { label: 'Ambassadeurs', value: ambassadeurC, color: 'text-pink-300' },
-            { label: 'Closers', value: closerC, color: 'text-orange-300' },
-            { label: 'Admins', value: adminC + gestC, color: 'text-red-300' },
-            { label: 'Support', value: supportC, color: 'text-blue-300' },
+            { label: 'Total', value: totalUsers, color: 'text-white', filter: 'all' },
+            { label: 'Vendeurs', value: vendeurC, color: 'text-emerald-300', filter: 'vendeur' },
+            { label: 'Clients', value: acheteurC + clientC, color: 'text-amber-300', filter: 'acheteur' },
+            { label: 'Affiliés', value: affilieC, color: 'text-cyan-300', filter: 'affilie' },
+            { label: 'Ambassadeurs', value: ambassadeurC, color: 'text-pink-300', filter: 'ambassadeur' },
+            { label: 'Closers', value: closerC, color: 'text-orange-300', filter: 'closer' },
+            { label: 'Admins', value: adminC + gestC, color: 'text-red-300', filter: 'super_admin' },
+            { label: 'Support', value: supportC, color: 'text-blue-300', filter: 'support' },
           ].map(kpi => (
-            <div key={kpi.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3 lg:p-4 flex flex-col">
+            <Link 
+              href={`/admin/users?role=${kpi.filter}&q=${query}`}
+              key={kpi.label} 
+              className={`bg-white/10 backdrop-blur-md border rounded-2xl p-3 lg:p-4 flex flex-col hover:-translate-y-1 transition-all cursor-pointer ${
+                roleFilter === kpi.filter 
+                ? 'border-white/60 shadow-[0_0_20px_rgba(255,255,255,0.15)] ring-2 ring-white/20' 
+                : 'border-white/20 hover:border-white/40'
+              }`}
+            >
               <span className="text-white/50 text-xs font-black uppercase tracking-widest mb-1">{kpi.label}</span>
               <span className={`text-xl font-black ${kpi.color}`}>{kpi.value}</span>
-            </div>
+            </Link>
           ))}
         </div>
       </header>

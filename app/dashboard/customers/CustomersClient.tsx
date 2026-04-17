@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Search, Crown, CheckCircle2, AlertCircle, MessageCircle } from 'lucide-react'
+import { Search, Crown, CheckCircle2, AlertCircle, MessageCircle, Download, Plus } from 'lucide-react'
 import Swal from 'sweetalert2'
 
 // ----------------------------------------------------------------
@@ -57,8 +57,47 @@ export default function CustomersClient({ customers, storeName }: CustomersClien
   const avgLtv = customers.length ? (totalLtv / customers.length) : 0
   const vips = customers.filter(c => c.orderCount >= 2).length
 
+  // Action d'export CSV
+  const handleExportCSV = () => {
+    if (customers.length === 0) {
+      Swal.fire('Erreur', 'Aucun client à exporter.', 'error')
+      return
+    }
+    
+    // Construction du CSV
+    const headers = ['Nom', 'Telephone', 'Email', 'Total Depense (FCFA)', 'Nombre Achats', 'Score', 'Dernier Achat']
+    const rows = filtered.map(c => [
+      `"${c.name.replace(/"/g, '""')}"`,
+      `"${c.phone}"`,
+      `"${c.email || ''}"`,
+      c.totalSpent,
+      c.orderCount,
+      c.score || '',
+      new Date(c.lastOrderAt).toLocaleDateString('fr-FR')
+    ])
+    
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join("\n")
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", `Yayyam_Clients_${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <div className="px-6 pb-20 w-full space-y-6">
+      
+      {/* HEADER ACTIONS CRM */}
+      <div className="flex flex-col sm:flex-row justify-end gap-3 w-full">
+         <button onClick={handleExportCSV} className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl font-bold text-sm text-gray-700 hover:bg-gray-50 transition shadow-sm">
+            <Download size={16} /> Exporter (CSV)
+         </button>
+         <button onClick={() => Swal.fire('Info', 'L\'ajout manuel arrive dans une prochaine mise à jour.', 'info')} className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-ink text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition shadow-sm">
+            <Plus size={16} /> Ajout manuel
+         </button>
+      </div>
 
       {/* KPIs CRM */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -108,7 +147,7 @@ export default function CustomersClient({ customers, storeName }: CustomersClien
 
         <div className="divide-y divide-gray-100">
           {filtered.length === 0 ? (
-            <div className="p-16 text-center text-gray-400">Aucun client trouvé.</div>
+            <div className="p-16 text-center text-gray-400 font-bold">Aucun client trouvé. Réalisez des ventes pour remplir votre CRM automatiquement.</div>
           ) : (
             filtered.sort((a,b) => b.totalSpent - a.totalSpent).map((c, i) => {
               const tag = getCustomerTag(c)

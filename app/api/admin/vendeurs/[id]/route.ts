@@ -204,12 +204,12 @@ export async function PATCH(
 
     // ── REMBOURSEMENT COMMANDE ────────────────────────────────────
     if (action === 'refund_order') {
-      const { orderId, reason, confirmAmount } = body
+      const { orderId, reason, confirmAmount, refundRule = 'A' } = body
 
       // 1. Charger la commande
       const { data: order, error: orderErr } = await supabaseAdmin
         .from('Order')
-        .select('id, status, total_amount, vendor_amount, platform_fee, store_id, closer_id, closer_commission, affiliate_commission')
+        .select('id, status, total, vendor_amount, platform_fee, delivery_fee, delivery_commission, store_id, closer_id, closer_commission, affiliate_commission')
         .eq('id', orderId)
         .single()
 
@@ -221,14 +221,23 @@ export async function PATCH(
         return NextResponse.json({ error: 'Commande déjà remboursée/annulée' }, { status: 400 })
       }
 
-      // 2. Double validation montant
-      if (confirmAmount !== Number(order.total_amount)) {
-        return NextResponse.json({ error: 'Le montant de confirmation ne correspond pas' }, { status: 400 })
+      // 2. Double validation montant (Adaptation Règle A ou B)
+      const isRuleA = refundRule === 'A'
+      const deliveryFee = Number(order.delivery_fee || 0)
+      const expectedConfirm = isRuleA ? Number(order.total) - deliveryFee : Number(order.total)
+
+      if (confirmAmount !== expectedConfirm) {
+        return NextResponse.json({ error: `Le montant de confirmation doit être exactement de ${expectedConfirm} FCFA pour cette règle` }, { status: 400 })
       }
 
       // 3. Restituer les fonds — Vendeur
-      const vendorAmount = Number(order.vendor_amount || 0)
-      if (vendorAmount > 0) {
+      let vendorDeduction = Number(order.vendor_amount || 0)
+      if (!isRuleA) {
+        // En Règle B, c'est le vendeur qui absorbe la course du livreur !
+        vendorDeduction += Number(order.delivery_commission || 0)
+      }
+
+      if (vendorDeduction > 0) {
         const { data: vendorWallet } = await supabaseAdmin
           .from('Wallet')
           .select('id, balance')
@@ -236,10 +245,28 @@ export async function PATCH(
           .single()
 
         if (vendorWallet) {
+          const newBalance = Number(vendorWallet.balance) - vendorDeduction
+          
           await supabaseAdmin
             .from('Wallet')
-            .update({ balance: Math.max(0, Number(vendorWallet.balance) - vendorAmount) })
+            .update({ balance: newBalance })
             .eq('id', vendorWallet.id)
+
+          // Plafond rouge : si dette dépasse 10 000 FCFA (-10 000), on restreint la boutique
+          if (newBalance < -10000) {
+              await supabaseAdmin
+                 .from('Store')
+                 .update({ is_active: false })
+                 .eq('id', order.store_id)
+                 
+              await supabaseAdmin.from('AdminLog').insert({
+                 admin_id: user.id,
+                 action: 'AUTO_SUSPEND_VENDOR_DEBT',
+                 target_type: 'vendor',
+                 target_id: order.store_id,
+                 details: { reason: 'Plafond de dette atteint suite au remboursement', balance: newBalance }
+              })
+          }
         }
       }
 
@@ -253,10 +280,19 @@ export async function PATCH(
           .maybeSingle()
 
         if (closerWallet) {
+          const newCloserBalance = Number(closerWallet.balance) - closerAmount
           await supabaseAdmin
             .from('Wallet')
-            .update({ balance: Math.max(0, Number(closerWallet.balance) - closerAmount) })
+            .update({ balance: newCloserBalance })
             .eq('id', closerWallet.id)
+            
+          // Si le closer avait un Store, le bloquer s'il descend à < -10000
+          if (newCloserBalance < -10000) {
+               await supabaseAdmin
+                 .from('Store')
+                 .update({ is_active: false })
+                 .eq('id', order.closer_id)
+          }
         }
       }
 
@@ -288,8 +324,8 @@ export async function PATCH(
         target_id: orderId,
         details: {
           reason: reason || 'Remboursement admin',
-          total_amount: Number(order.total_amount),
-          vendor_amount: vendorAmount,
+          total: Number(order.total),
+          vendor_amount: vendorDeduction,
           platform_fee: Number(order.platform_fee || 0),
           closer_commission: closerAmount,
           affiliate_commission: affiliateAmount,
@@ -297,7 +333,7 @@ export async function PATCH(
         }
       })
 
-      return NextResponse.json({ success: true, refunded: Number(order.total_amount) })
+      return NextResponse.json({ success: true, refunded: Number(order.total) })
     }
 
     // ── ACTIONS RAPIDES (suspend, activate, verify, reject) ───────

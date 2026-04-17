@@ -11,7 +11,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
 
-    // Rate limit Optionnel (pour éviter l'abus de tokens)
+    // Rate limit Strict: 5 générations par jour (Anti-botting)
+    const startOfDay = new Date()
+    startOfDay.setHours(0, 0, 0, 0)
+    
+    const { count: genCount } = await supabase
+      .from('AIGenerationLog')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('type', 'affiliate_copy')
+      .gte('created_at', startOfDay.toISOString())
+
+    if ((genCount ?? 0) >= 5) {
+      return NextResponse.json(
+        { error: 'Limite journalière atteinte. Revenez demain pour générer d\'autres textes.' },
+        { status: 429 }
+      )
+    }
+
+    // Validation du Body
     const { productName, productDescription, link, platform } = await req.json()
     
     if (!productName || !link || !platform) {
@@ -54,6 +72,9 @@ Plateforme ciblée : ${platform}`
       prompt: userPrompt,
       temperature: 0.7
     })
+
+    // Log the request
+    await supabase.from('AIGenerationLog').insert({ user_id: user.id, type: 'affiliate_copy' })
 
     return NextResponse.json({ result: response.content.trim() })
 

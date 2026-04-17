@@ -72,6 +72,7 @@ export async function POST(req: NextRequest) {
         platform_fee: finalPlatformFee,
         vendor_amount: finalVendorAmount,
         status: 'pending',
+        order_type: 'payment_link'
       }
     })
 

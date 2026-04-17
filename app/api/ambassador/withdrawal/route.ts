@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { prisma } from '@/lib/prisma'
 
 // ─── POST /api/ambassador/withdrawal ────────────────────────────────────────
 
@@ -67,43 +68,42 @@ export async function POST(req: Request): Promise<Response> {
       return NextResponse.json({ error: 'Compte ambassadeur désactivé' }, { status: 403 })
     }
 
-    // 4. Vérifier le solde
-    if (amb.balance < amount) {
-      return NextResponse.json(
-        { error: `Solde insuffisant. Disponible : ${amb.balance.toLocaleString('fr-FR')} FCFA` },
-        { status: 400 }
-      )
-    }
+    // 4. SÉCURISATION TRANSACTIONNELLE PRISMA (Anti Double-Spend / Hack)
+    // Sécurise la déduction asynchrone contre l'envoi massif de la même requête
+    let newTxId: string | null = null
 
-    // 5. Déduire le montant du solde ambassadeur
-    const newBalance = amb.balance - amount
+    try {
+      await prisma.$transaction(async (tx) => {
+        // Déduction stricte et atomique (Lock gte: amount)
+        const updateResult = await tx.ambassador.updateMany({
+          where: { id: ambassadorId, balance: { gte: amount } },
+          data: { balance: { decrement: amount } }
+        })
+        
+        if (updateResult.count === 0) {
+          throw new Error('INSUFFICIENT_BALANCE')
+        }
 
-    const { error: updateError } = await supabaseAdmin
-      .from('Ambassador')
-      .update({ balance: newBalance })
-      .eq('id', ambassadorId)
-
-    if (updateError) {
-      console.error('[Ambassador Withdrawal] Erreur update balance:', updateError.message)
-      throw new Error('Erreur lors de la mise à jour du solde.')
-    }
-
-    // 6. Enregistrer la transaction de retrait (en statut pending d'abord)
-    const { error: txError, data: newTx } = await supabaseAdmin
-      .from('AmbassadorTransaction')
-      .insert({
-        ambassador_id: ambassadorId,
-        referral_id:   null,
-        type:          'withdrawal',
-        amount:        amount,
-        description:   `Retrait via ${method === 'wave' ? 'Wave' : 'Orange Money'} — ${phone}`,
-        status:        'pending',
+        // Enregistrer la transaction de retrait
+        const createdTx = await tx.ambassadorTransaction.create({
+          data: {
+             ambassador_id: ambassadorId,
+             type: 'withdrawal',
+             amount: amount,
+             status: 'pending',
+             description: `Retrait via ${method === 'wave' ? 'Wave' : 'Orange Money'} — ${phone}`
+          }
+        })
+        newTxId = createdTx.id
       })
-      .select('id')
-      .single()
-
-    if (txError) {
-      console.error('[Ambassador Withdrawal] Erreur insert transaction:', txError.message)
+    } catch (txError: any) {
+      if (txError.message === 'INSUFFICIENT_BALANCE') {
+        return NextResponse.json(
+          { error: `Solde insuffisant ou traitement déjà en cours.` },
+          { status: 400 }
+        )
+      }
+      throw txError
     }
 
     // Payout automatique via Wave/CinetPay
@@ -111,22 +111,31 @@ export async function POST(req: Request): Promise<Response> {
     const payoutResult = await executePayout({
       phone,
       amount,
-      reference: newTx?.id || `${ambassadorId}-${Date.now()}`,
+      reference: newTxId || `${ambassadorId}-${Date.now()}`,
       method
     })
 
     if (!payoutResult.success) {
-      // Échec du payout : on annule
-      await supabaseAdmin.from('Ambassador').update({ balance: amb.balance }).eq('id', ambassadorId)
-      if (newTx) {
-        await supabaseAdmin.from('AmbassadorTransaction').update({ status: 'failed' }).eq('id', newTx.id)
+      // Échec du payout : on restitue le solde (rollback manuel post-API)
+      await prisma.ambassador.update({
+        where: { id: ambassadorId },
+        data: { balance: { increment: amount } }
+      })
+      if (newTxId) {
+        await prisma.ambassadorTransaction.update({
+           where: { id: newTxId },
+           data: { status: 'failed' }
+        })
       }
       return NextResponse.json({ error: 'Une erreur est survenue. Veuillez réessayer.' }, { status: 500 })
     }
 
-    // Succès
-    if (newTx) {
-      await supabaseAdmin.from('AmbassadorTransaction').update({ status: 'completed' }).eq('id', newTx.id)
+    // Succès total
+    if (newTxId) {
+      await prisma.ambassadorTransaction.update({
+         where: { id: newTxId },
+         data: { status: 'completed' }
+      })
     }
 
     return NextResponse.json(

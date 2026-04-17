@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Loader2, Smartphone, LayoutTemplate, Workflow, BookOpen, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { getVendorPurchasedAssetsAction, installAppAction, purchaseAssetAction } from './actions'
+import { PlatformCheckoutModal } from '@/components/shared/billing/PlatformCheckoutModal'
 import { toast } from '@/lib/toast'
 import Link from 'next/link'
 
@@ -22,7 +23,7 @@ type AssetItem = {
 }
 
 type MarketplaceClientProps = {
-  walletBalance: number
+  wallet: { balance: number, total_earned: number }
   apps: AssetItem[]
   themes: AssetItem[]
   workflows: AssetItem[]
@@ -30,11 +31,12 @@ type MarketplaceClientProps = {
   userRole: string
 }
 
-export default function MarketplaceClient({ walletBalance, apps, themes, workflows, courses, userRole: _userRole }: MarketplaceClientProps) {
+export default function MarketplaceClient({ wallet, apps, themes, workflows, courses, userRole: _userRole }: MarketplaceClientProps) {
   const [activeTab, setActiveTab] = useState<'apps' | 'themes' | 'workflows' | 'academy'>('apps')
   const [searchQuery, setSearchQuery] = useState('')
   const [purchasedIds, setPurchasedIds] = useState<string[]>([])
   const [installedAppIds, setInstalledAppIds] = useState<string[]>([])
+  const [checkoutAsset, setCheckoutAsset] = useState<AssetItem | null>(null)
   
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
@@ -117,13 +119,24 @@ export default function MarketplaceClient({ walletBalance, apps, themes, workflo
         </div>
         <div className="flex-1">
           <h4 className="text-amber-900 font-bold text-sm">Gérez votre portefeuille</h4>
-          <p className="text-amber-700 text-xs font-medium mt-0.5">Pour débloquer les modules premium, assurez-vous d'avoir assez de fonds. Solde actuel : <strong className="text-ink">{walletBalance} FCFA</strong></p>
+          <p className="text-amber-700 text-xs font-medium mt-0.5">Pour débloquer les modules premium, utilisez votre solde ou payez via Wave/Cartes. Solde actuel : <strong className="text-ink">{wallet.balance} FCFA</strong></p>
         </div>
-        <Link href="/dashboard/wallet" prefetch={false} className="shrink-0 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs px-5 py-2.5 rounded-xl transition-all flex items-center gap-2">
-          Recharger <span className="ml-1 leading-none">→</span>
-        </Link>
       </div>
     )
+  }
+
+  // Define checkout helper
+  const handleFinalCheckout = async (asset: AssetItem) => {
+      const type = activeTab === 'apps' ? 'APP' : activeTab === 'themes' ? 'TEMPLATE' : activeTab === 'workflows' ? 'WORKFLOW' : 'MASTERCLASS';
+      if (type === 'APP') {
+         const res = await installAppAction(asset.id, asset.price, asset.name || 'App');
+         if(res.success) setInstalledAppIds(prev => [...prev, asset.id]);
+         return res;
+      } else {
+         const res = await purchaseAssetAction(asset.id, type as any, asset.price, asset.name || asset.title || 'Ressource');
+         if(res.success) setPurchasedIds(prev => [...prev, asset.id]);
+         return res;
+      }
   }
 
   return (
@@ -155,7 +168,7 @@ export default function MarketplaceClient({ walletBalance, apps, themes, workflo
         </div>
       </div>
 
-      {walletBalance < 1000 && renderInsufficientFundsWarning()}
+      {wallet.balance < 1000 && renderInsufficientFundsWarning()}
 
       {/* Grid d'affichage dynamique */}
       <div className="min-h-[500px]">
@@ -187,10 +200,14 @@ export default function MarketplaceClient({ walletBalance, apps, themes, workflo
                 const typeLabel = activeTab === 'apps' ? 'APP' : activeTab === 'themes' ? 'THÈME' : activeTab === 'workflows' ? 'WORKFLOW' : 'COURS'
                 
                 const handleAcquire = () => {
-                  if (activeTab === 'apps') handleInstallApp(item)
-                  else if (activeTab === 'themes') handlePurchaseAsset(item, 'TEMPLATE')
-                  else if (activeTab === 'workflows') handlePurchaseAsset(item, 'WORKFLOW')
-                  else if (activeTab === 'academy') handlePurchaseAsset(item, 'MASTERCLASS')
+                  if (item.is_premium && item.price > 0) {
+                     setCheckoutAsset(item);
+                  } else {
+                    if (activeTab === 'apps') handleInstallApp(item)
+                    else if (activeTab === 'themes') handlePurchaseAsset(item, 'TEMPLATE')
+                    else if (activeTab === 'workflows') handlePurchaseAsset(item, 'WORKFLOW')
+                    else if (activeTab === 'academy') handlePurchaseAsset(item, 'MASTERCLASS')
+                  }
                 }
 
                 return (
@@ -267,6 +284,24 @@ export default function MarketplaceClient({ walletBalance, apps, themes, workflo
         )}
       </div>
 
+      {checkoutAsset && (
+        <PlatformCheckoutModal 
+          isOpen={!!checkoutAsset}
+          onClose={() => setCheckoutAsset(null)}
+          productDetails={{
+            id: checkoutAsset.id,
+            type: activeTab === 'apps' ? 'APP' : activeTab === 'themes' ? 'TEMPLATE' : activeTab === 'workflows' ? 'WORKFLOW' : 'MASTERCLASS',
+            title: checkoutAsset.name || checkoutAsset.title || 'Ressource Premium',
+            price: checkoutAsset.price,
+            emoji: activeTab === 'apps' ? '📦' : activeTab === 'themes' ? '🎨' : activeTab === 'workflows' ? '⚙️' : '🎓'
+          }}
+          wallet={wallet}
+          onPurchaseViaWallet={async () => {
+             const res = await handleFinalCheckout(checkoutAsset);
+             return res as any;
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -49,9 +49,6 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
       case 'closers': return <Briefcase className="w-8 h-8 text-amber-600" />
       case 'academy': return <BookOpen className="w-8 h-8 text-emerald-600" />
       case 'quotes': return <Briefcase className="w-8 h-8 text-neutral-600" />
-      case 'cinetpay': return <CreditCard className="w-8 h-8 text-green-500" />
-      case 'paytech': return <Banknote className="w-8 h-8 text-indigo-400" />
-      case 'intouch': return <CreditCard className="w-8 h-8 text-slate-800" />
       case 'payment-links': return <Banknote className="w-8 h-8 text-[#0F7A60]" />
       case 'server-side-pixels': return <Zap className="w-8 h-8 text-indigo-600" />
       case 'social-proof': return <Users className="w-8 h-8 text-rose-600" />
@@ -62,7 +59,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
       // Nouvelles Apps
       case 'fraud-cod': return <ShieldCheck className="w-8 h-8 text-red-500" />
       case 'coach-ia': return <Sparkles className="w-8 h-8 text-yellow-500" />
-      case 'sms-marketing': return <MessageSquare className="w-8 h-8 text-blue-500" />
+      case 'email-sms-marketing': return <MessageSquare className="w-8 h-8 text-blue-500" />
       case 'whatsapp-bot': return <Phone className="w-8 h-8 text-green-500" />
       case 'loyalty-points': return <Trophy className="w-8 h-8 text-orange-500" />
 
@@ -220,7 +217,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
           <div className="flex flex-col md:flex-row gap-8 items-start">
             
             {/* Sidebar Filtres d'état */}
-            <div className="w-full md:w-56 shrink-0 bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col gap-2 sticky top-4">
+            <div className="w-full md:w-56 shrink-0 bg-white rounded-[24px] p-5 shadow-sm border border-gray-100 flex flex-col gap-2 md:sticky md:top-4 z-10">
               <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2 mb-2">Bibliothèque</h3>
               <button 
                 onClick={() => setInstallFilter('all')}
@@ -368,6 +365,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                           'fraud-cod': '/dashboard/settings#anti-fraude',
                           'coach-ia': '/dashboard/ai-generator',
                           'sms-marketing': '/dashboard/marketing/sms',
+                          'email-sms-marketing': '/dashboard/sms',
                           'whatsapp-bot': '/dashboard/settings#whatsapp-bot',
                           'loyalty-points': '/dashboard/loyalty-points',
                           'social-proof': '/dashboard/social-proof',
@@ -376,6 +374,7 @@ export function AppStoreClient({ initialInstalled, dbApps }: { initialInstalled:
                           'helpdesk': '/dashboard/helpdesk',
                           'payment-links': '/dashboard/payment-links',
                           'quotes': '/dashboard/quotes',
+                          'subscriptions': '/dashboard/abonnements',
                         };
                         const configRoute = routeMap[app.id] || `/dashboard/apps/${app.id}`;
                         const isPlugin = ['fraud-cod', 'whatsapp-bot', 'loyalty-points', 'cinetpay', 'paytech', 'intouch'].includes(app.id);

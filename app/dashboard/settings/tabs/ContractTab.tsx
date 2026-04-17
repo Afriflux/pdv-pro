@@ -10,6 +10,7 @@ export function ContractTab({ store }: { store: any }) {
   const [downloading, setDownloading] = useState(false)
   const [emailing, setEmailing] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [isSigning, setIsSigning] = useState(false)
   
   const isSigned = !!store?.contract_accepted_at
 
@@ -33,11 +34,31 @@ export function ContractTab({ store }: { store: any }) {
     }, 1500)
   }
 
+  const handleSign = async () => {
+    setIsSigning(true)
+    try {
+      const res = await fetch('/api/settings/update-field', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ field: 'contract_accepted', value: 'true' }),
+      })
+      if (!res.ok) throw new Error('Erreur signature')
+      
+      toast.success('Contrat officiellement signé avec succès !')
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
+    } catch {
+      toast.error('Erreur lors de la signature.')
+      setIsSigning(false)
+    }
+  }
+
   return (
     <div className="animate-in fade-in zoom-in-95 duration-700 relative w-full xl:col-span-3">
       
       {/* 🌟 Master Container Glassmorphism 🌟 */}
-      <div className="bg-white/80 backdrop-blur-xl border border-gray-200/60 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden relative">
+      <div className="bg-white/80 backdrop-blur-md md:backdrop-blur-xl border border-gray-200/60 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden relative">
         
         {/* === HEADER / BANNER LÉGAL (Gradients Emerald) === */}
         <div className="h-48 sm:h-72 w-full relative bg-[#041D14] overflow-hidden">
@@ -45,10 +66,10 @@ export function ContractTab({ store }: { store: any }) {
           <div className="absolute inset-0 bg-gradient-to-br from-[#0A3D2C] via-[#05261B] to-[#041D14] opacity-90"></div>
           
           {/* Motifs classiques */}
-          <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #FFF 0, #FFF 1px, transparent 0, transparent 50%)', backgroundSize: '20px 20px' }}></div>
+          <div className="absolute inset-0 opacity-[0.05] bg-[repeating-linear-gradient(45deg,#FFF_0,#FFF_1px,transparent_0,transparent_50%)] bg-[length:20px_20px]"></div>
           
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 animate-pulse duration-[10000ms] pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-700/10 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[40px] md:blur-[80px] -translate-y-1/2 translate-x-1/3 md:animate-pulse duration-[10000ms] pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-700/10 rounded-full blur-[30px] md:blur-[60px] translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
           <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.05] mix-blend-overlay pointer-events-none"></div>
 
           {/* Top Actions flottantes */}
@@ -171,7 +192,7 @@ export function ContractTab({ store }: { store: any }) {
             </div>
             
             {/* Contenu Scrollable (Style papier légal) */}
-            <div className="p-6 sm:p-10 overflow-y-auto text-[14px] sm:text-[15px] text-gray-600 leading-relaxed bg-[#FAFAFA] flex-1 relative" style={{ backgroundImage: 'linear-gradient(#f0f0f0 1px, transparent 1px)', backgroundSize: '100% 2em', backgroundPosition: '0 1em' }}>
+            <div className="p-6 sm:p-10 overflow-y-auto text-[14px] sm:text-[15px] text-gray-600 leading-relaxed bg-[#FAFAFA] flex-1 relative bg-[linear-gradient(#f0f0f0_1px,transparent_1px)] bg-[length:100%_2em] bg-[position:0_1em]">
               
               <div className="max-w-prose mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-200/60 relative">
                 
@@ -228,13 +249,25 @@ export function ContractTab({ store }: { store: any }) {
                 </button>
               </div>
 
-              <button 
-                type="button" 
-                onClick={() => setShowContract(false)} 
-                className="w-full sm:w-auto px-8 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-[14px] transition-colors shadow-lg shadow-emerald-600/20 active:scale-95 order-1 sm:order-2"
-              >
-                Compris & Fermer
-              </button>
+              {isSigned ? (
+                <button 
+                  type="button" 
+                  onClick={() => setShowContract(false)} 
+                  className="w-full sm:w-auto px-8 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl text-[14px] transition-colors shadow-lg active:scale-95 order-1 sm:order-2"
+                >
+                  Fermer
+                </button>
+              ) : (
+                <button 
+                  type="button" 
+                  onClick={handleSign} 
+                  disabled={isSigning}
+                  className="w-full sm:w-auto px-8 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-[14px] transition-colors shadow-lg shadow-emerald-600/30 active:scale-95 order-1 sm:order-2 flex items-center justify-center gap-2"
+                >
+                  {isSigning ? <Loader2 size={16} className="animate-spin" /> : <Shield size={16} />}
+                  Je certifie avoir lu et j'accepte
+                </button>
+              )}
               
             </div>
           </div>

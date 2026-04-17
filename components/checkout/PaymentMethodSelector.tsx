@@ -16,7 +16,9 @@ interface AvailableMethod {
 
 interface PaymentMethodSelectorProps {
   amount: number
-  orderId: string
+  orderId?: string
+  storeId?: string
+  paymentApiEndpoint?: string
   onSuccess: (checkoutUrl: string) => void
   clientProfile?: {
     client_payment_method?: string | null
@@ -31,6 +33,8 @@ interface PaymentMethodSelectorProps {
 export default function PaymentMethodSelector({
   amount,
   orderId,
+  storeId,
+  paymentApiEndpoint = '/api/payments/initiate',
   onSuccess,
   clientProfile,
   buyerPhone,
@@ -84,11 +88,13 @@ export default function PaymentMethodSelector({
     setPayingLabel(method?.label || '')
 
     try {
-      const res = await fetch('/api/payments/initiate', {
+      const res = await fetch(paymentApiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           orderId,
+          storeId,
+          amount,
           method: selectedMethod,
           customerPhone: needsPhone ? customerPhone.trim() : undefined,
         }),
@@ -231,7 +237,7 @@ export default function PaymentMethodSelector({
             value={customerPhone}
             onChange={(e) => setCustomerPhone(e.target.value)}
             placeholder="Ex: 77 123 45 67"
-            className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 px-4 text-sm font-bold focus:border-[#0F7A60] focus:bg-white outline-none transition-all placeholder:text-gray-300"
+            className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 px-4 text-sm font-bold text-gray-900 focus:border-[#0F7A60] focus:bg-white outline-none transition-all placeholder:text-gray-300"
             autoFocus
           />
         </div>

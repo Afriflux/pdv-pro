@@ -8,7 +8,7 @@ import Image from 'next/image'
 import { PhoneInput } from '@/components/ui/PhoneInput'
 import { AffiliateContractTab } from './tabs/AffiliateContractTab'
 import { KycTab } from './tabs/KycTab'
-
+import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 
 interface SettingsClientProps {
   userProfile: any
@@ -35,11 +35,19 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
   
   const socialJson = (userProfile.social_links as Record<string, string>) || {}
 
+  const [cropModalFile, setCropModalFile] = useState<File | null>(null)
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    setAvatarFile(file)
-    setAvatarPreview(URL.createObjectURL(file))
+    setCropModalFile(file)
+    e.target.value = ''
+  }
+
+  const handleCropDone = (croppedFile: File, previewUrl: string) => {
+    setAvatarFile(croppedFile)
+    setAvatarPreview(previewUrl)
+    setCropModalFile(null)
   }
 
   const uploadFile = async (file: File, bucket: string, path: string) => {
@@ -104,7 +112,7 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
       
       {/* ── MENU HYBRIDE ── */}
       <aside className="w-full lg:w-64 flex-shrink-0 flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start z-20">
-        <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible bg-white/80 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none p-2 lg:p-0 rounded-2xl lg:rounded-none border border-gray-200/50 lg:border-none shadow-[0_4px_15px_rgba(0,0,0,0.02)] lg:shadow-none">
+        <div className="w-full overflow-x-auto scrollbar-hide lg:overflow-visible bg-white/80 lg:bg-transparent backdrop-blur-lg lg:backdrop-blur-none p-2 lg:p-0 rounded-2xl lg:rounded-none border border-gray-200/50 lg:border-none shadow-[0_4px_15px_rgba(0,0,0,0.02)] lg:shadow-none">
           <nav className="flex flex-row lg:flex-col items-center lg:items-stretch gap-2 min-w-max lg:min-w-0" aria-label="Menu des paramètres affilié">
             <MenuBtn active={activeTab === 'profile'} icon={<User size={16} />} label="Général" onClick={() => { setActiveTab('profile'); setError(''); setSuccess('') }} />
             <MenuBtn active={activeTab === 'social'} icon={<Globe size={16} />} label="Réseaux" onClick={() => { setActiveTab('social'); setError(''); setSuccess('') }} />
@@ -138,8 +146,8 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
             {/* === HEADER / BANNER ABSTRAIT === */}
             <div className="h-48 sm:h-72 w-full relative bg-[#041D14] overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-[#0A3D2C] via-[#05261B] to-[#041D14] opacity-90"></div>
-              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 animate-pulse duration-[10000ms]"></div>
-              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#0F7A60]/20 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4"></div>
+              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[40px] md:blur-[80px] -translate-y-1/2 translate-x-1/3 md:animate-pulse duration-[10000ms]"></div>
+              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#0F7A60]/20 rounded-full blur-[30px] md:blur-[60px] translate-y-1/2 -translate-x-1/4"></div>
               <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.06] mix-blend-overlay"></div>
 
               {/* Bouton de sauvegarde global rapide depuis le banner */}
@@ -262,7 +270,6 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
                           name="email"
                           type="email"
                           readOnly
-                          title="Adresse Email"
                           placeholder="votre@email.com"
                           aria-label="Adresse Email"
                           defaultValue={userProfile.email as string}
@@ -272,6 +279,7 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
                           🔒 Verrouillé
                         </div>
                       </div>
+                      <p className="text-[12px] text-gray-400 font-medium">L'adresse de sécurité liée à vos achats. Modifiable uniquement via <a href="mailto:support@yayyam.com" className="underline hover:text-gray-600">le support</a>.</p>
                     </div>
                   </>
                 )}
@@ -624,7 +632,14 @@ export default function SettingsClient({ userProfile, authUser, affiliateId, tel
           </div>
         </form>
       </div>
-
+      
+      {cropModalFile && (
+        <ImageCropperModal
+          imageFile={cropModalFile}
+          onClose={() => setCropModalFile(null)}
+          onCrop={handleCropDone}
+        />
+      )}
     </div>
   )
 }

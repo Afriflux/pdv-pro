@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
 // ----------------------------------------------------------------
@@ -78,43 +79,54 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Coordonnées de paiement (téléphone ou IBAN) requises' }, { status: 400 })
     }
 
-    // 4. INSERT AffiliateTransaction (type withdrawal)
-    const { data: _transaction, error: txError } = await supabaseAdmin
-      .from('AffiliateTransaction')
-      .insert({
-        affiliate_id: affiliate.id,
-        type: 'withdrawal',
-        amount: amount,
-        status: 'pending',
-        description: `Retrait vers ${method.toUpperCase()} - ${phoneOrIban}`
+    // 4. TRANSACTION ATOMIQUE PRISMA (Anti-Fraude Multi-Clonage)
+    // Sécurise contre un script envoyant 100 requêtes asynchrones en 1 ms
+    try {
+      await prisma.$transaction(async (tx) => {
+        // Déduction stricte et atomique (Lock gte: amount)
+        const updateResult = await tx.affiliate.updateMany({
+          where: { id: affiliate.id, balance: { gte: amount } },
+          data: { balance: { decrement: amount } }
+        })
+
+        if (updateResult.count === 0) {
+          throw new Error('INSUFFICIENT_BALANCE')
+        }
+
+        // Log de la Transaction
+        await tx.affiliateTransaction.create({
+          data: {
+             affiliate_id: affiliate.id,
+             type: 'withdrawal',
+             amount: amount,
+             status: 'pending',
+             description: `Retrait vers ${method.toUpperCase()} - ${phoneOrIban}`
+          }
+        })
+
+        // Créer l'entrée backend de retrait
+        const withdrawalId = `AFF_WTD_${Date.now()}`
+        await tx.affiliateWithdrawal.create({
+          data: {
+             id: withdrawalId,
+             affiliate_id: affiliate.id,
+             amount: amount,
+             payment_method: method,
+             phone: phoneOrIban,
+             status: 'pending'
+          }
+        }).catch(() => {
+          console.warn('[Affiliate WTD] Fallback si table AffiliateWithdrawal vide')
+        })
       })
-      .select()
-      .single()
+    } catch (txError: any) {
+       if (txError.message === 'INSUFFICIENT_BALANCE') {
+         return NextResponse.json({ error: 'Solde insuffisant pour ce retrait' }, { status: 400 })
+       }
+       throw txError
+    }
 
-    if (txError) throw txError
-
-    // 5. UPDATE Affiliate balance
     const newBalance = affiliate.balance - amount
-    const { error: balError } = await supabaseAdmin
-      .from('Affiliate')
-      .update({ balance: newBalance })
-      .eq('id', affiliate.id)
-
-    if (balError) throw balError
-
-    // 6. INSERT WithdrawalRequest pour l'admin
-    const { error: reqError } = await supabaseAdmin
-      .from('WithdrawalRequest')
-      .insert({
-        store_id: store.id,
-        wallet_id: affiliate.id, // ID Affilié lié pour traçabilité
-        amount: amount,
-        method: method,
-        phone_or_iban: phoneOrIban,
-        status: 'pending'
-      })
-
-    if (reqError) throw reqError
 
     return NextResponse.json({
       success: true,

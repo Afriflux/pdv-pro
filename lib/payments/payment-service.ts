@@ -1,5 +1,7 @@
 // ─── Types unifiés ────────────────────────────────────────────────────────────
 
+import { getIntegrationKey } from './routing'
+
 export type PaymentMethod = 'wave' | 'bictorys' | 'paytech' | 'cinetpay' | 'moneroo'
 
 export interface PaymentIntent {
@@ -220,8 +222,10 @@ export async function initiateCardPayment(
 export async function initiateBictorysPayment(
   intent: PaymentIntent
 ): Promise<{ checkoutUrl: string }> {
-  const apiKey = process.env.BICTORYS_API_KEY
-  if (!apiKey) throw new Error('[Bictorys] BICTORYS_API_KEY non configurée')
+  const envStatus = process.env.NODE_ENV === 'production' ? 'prod' : 'test'
+  const apiKey = await getIntegrationKey('BICTORYS_SECRET_KEY', envStatus)
+  
+  if (!apiKey) throw new Error('[Bictorys] BICTORYS_SECRET_KEY non configurée dans le Dashboard')
 
   const response = await fetch('https://api.bictorys.com/v1/payments', {
     method: 'POST',

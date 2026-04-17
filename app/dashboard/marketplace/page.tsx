@@ -23,7 +23,7 @@ export default async function MarketplacePage() {
   // We consider users without stores might not be able to buy apps/themes
   // But they can buy courses or workflows if they are affiliate/closer. 
   // Let's not strict block them, we pass wallet info.
-  const walletBalance = store?.wallet?.balance || 0
+  const wallet = store?.wallet || { balance: 0, total_earned: 0 }
 
   // Fetch all active assets
   const [appsRaw, themesRaw, workflowsRaw, masterclassRaw] = await Promise.all([
@@ -53,7 +53,7 @@ export default async function MarketplacePage() {
         </header>
 
         <MarketplaceClient 
-          walletBalance={walletBalance}
+          wallet={wallet}
           apps={apps}
           themes={themes}
           workflows={workflows}

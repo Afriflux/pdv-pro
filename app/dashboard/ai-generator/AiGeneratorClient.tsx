@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Sparkles, Copy, Check, Wand2, Loader2, ChevronDown, PenTool, Video, Info, Zap, LineChart, TrendingUp, AlertCircle } from 'lucide-react'
+import { Sparkles, Copy, Check, Wand2, Loader2, ChevronDown, PenTool, Video, Info, Zap, LineChart, TrendingUp, AlertCircle, ShoppingCart } from 'lucide-react'
 import { toast } from '@/lib/toast'
+import { PlatformCheckoutModal } from '@/components/shared/billing/PlatformCheckoutModal'
 
 interface Product {
   id: string
@@ -12,7 +13,21 @@ interface Product {
   type: string
 }
 
-export function AiGeneratorClient({ initialProducts, usageCount }: { initialProducts: Product[], usageCount: number }) {
+export function AiGeneratorClient({ 
+  initialProducts, 
+  usageCount,
+  dbCredits,
+  wallet,
+  aiVolume,
+  aiPrice
+}: { 
+  initialProducts: Product[], 
+  usageCount: number,
+  dbCredits: number,
+  wallet: { balance: number; total_earned: number },
+  aiVolume: number,
+  aiPrice: number
+}) {
   const [activeTab, setActiveTab] = useState<'script' | 'description' | 'coach'>('script')
 
   // Script State
@@ -30,6 +45,7 @@ export function AiGeneratorClient({ initialProducts, usageCount }: { initialProd
   const [descResult, setDescResult] = useState<{description: string} | null>(null)
 
   const [copied, setCopied] = useState(false)
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
   const handleCopy = async (text: string) => {
     await navigator.clipboard.writeText(text)
@@ -41,6 +57,10 @@ export function AiGeneratorClient({ initialProducts, usageCount }: { initialProd
   const generateScript = async () => {
     if (!productName.trim()) {
        toast.error('Entrez le nom de votre produit.')
+       return
+    }
+    if (dbCredits <= 0) {
+       toast.error('Plus de jetons IA disponibles. Veuillez recharger votre solde.')
        return
     }
     setGeneratingScript(true)
@@ -64,10 +84,12 @@ export function AiGeneratorClient({ initialProducts, usageCount }: { initialProd
        toast.error('Sélectionnez un produit.')
        return
     }
+    if (dbCredits <= 0) {
+       toast.error('Plus de jetons IA disponibles. Veuillez recharger votre solde.')
+       return
+    }
     setGeneratingDesc(true)
     try {
-      // Pour le moment on réutilise l'endpoint de scripts en simulant un prompt si un endpoint spécifique n'existe pas.
-      // Si vous développez /api/ai/generate-description plus tard, vous pourrez le brancher ici !
       const pName = initialProducts.find(p => p.id === selectedProduct)?.name || 'Ce produit'
       const res = await fetch('/api/ai/generate-script', {
         method:  'POST',
@@ -92,14 +114,22 @@ export function AiGeneratorClient({ initialProducts, usageCount }: { initialProd
         {/* Usage Card */}
         <div className="bg-purple-50 text-purple-900 border border-purple-200 rounded-3xl p-5 shadow-sm flex items-start gap-4">
           <Info className="w-6 h-6 text-purple-600 shrink-0 mt-0.5" />
-          <div>
-            <h3 className="font-bold text-sm">Crédits d'IA Restants</h3>
-            <p className="text-xs text-purple-700 mt-1 font-medium bg-purple-100 inline-block px-2 py-1 rounded-md">
-              {Math.max(0, 10 - usageCount)} requêtes / 10 par heure
-            </p>
-            <p className="text-xs font-medium text-purple-700/80 mt-2">
+          <div className="flex-1">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-sm">Crédits d'IA (Solde Actuel)</h3>
+              <p className={`text-xs font-bold leading-none px-2 py-1 rounded-md ${dbCredits > 0 ? "bg-purple-100 text-purple-800" : "bg-red-100 text-red-800"}`}>
+                {dbCredits} jetons
+              </p>
+            </div>
+            <p className="text-[11px] font-medium text-purple-700 mt-2 leading-relaxed">
               Nous utilisons le modèle Claude 3.5 Sonnet pour garantir une syntaxe culturelle adaptée au marché africain francophone.
             </p>
+            <button 
+              onClick={() => setIsCheckoutOpen(true)}
+              className="mt-3 w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors"
+            >
+              <ShoppingCart size={14} /> Acheter des Jetons
+            </button>
           </div>
         </div>
 
@@ -363,6 +393,23 @@ export function AiGeneratorClient({ initialProducts, usageCount }: { initialProd
           </div>
         )}
       </div>
+      
+      <PlatformCheckoutModal 
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        productDetails={{
+          id: `ai_${aiVolume}`,
+          type: 'AI',
+          title: `Pack de ${aiVolume} Tokens IA`,
+          price: aiPrice,
+          emoji: '🤖',
+          color: 'bg-purple-100 text-purple-600'
+        }}
+        wallet={wallet}
+        onPurchaseViaWallet={async () => {
+           return { success: false, error: 'Paiement via portefeuille non disponible pour les transactions SaaS directes.' }
+        }}
+      />
     </div>
   )
 }

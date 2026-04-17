@@ -76,11 +76,11 @@ export default async function AdminDashboard() {
   // Récupération de toutes les métriques en parallèle
   const [
     { data: userData },
-    { count: totalStores },
+    { count: totalVendors },
     { data: revenueData },
     { count: pendingWithdrawals },
     { data: withdrawalsAmount },
-    { count: newStoresWeek },
+    { count: newVendorsWeek },
     { data: latestOrders },
     { data: revenueAllTimeData },
     { data: weekOrdersRaw }, 
@@ -88,11 +88,11 @@ export default async function AdminDashboard() {
     { count: openComplaints },
   ] = await Promise.all([
     supabase.from('User').select('name').eq('id', user?.id).single(),
-    supabase.from('Store').select('*', { count: 'exact', head: true }),
+    supabase.from('User').select('*', { count: 'exact', head: true }).eq('role', 'vendeur'),
     supabase.from('Order').select('total, platform_fee').in('status', ['paid', 'confirmed', 'completed']).gte('created_at', todayISO),
     supabase.from('WithdrawalRequest').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('WithdrawalRequest').select('amount').eq('status', 'pending'),
-    supabase.from('Store').select('*', { count: 'exact', head: true }).gte('created_at', sevenDaysAgoISO),
+    supabase.from('User').select('*', { count: 'exact', head: true }).eq('role', 'vendeur').gte('created_at', sevenDaysAgoISO),
     supabase.from('Order')
       .select('id, total, status, created_at, Store(name)')
       .order('created_at', { ascending: false })
@@ -232,10 +232,10 @@ export default async function AdminDashboard() {
           <div className="bg-white/90 backdrop-blur-xl border border-white hover:border-[#0F7A60]/30 transition-all duration-300 rounded-2xl p-4 relative overflow-hidden group shadow-md">
             <p className="text-xs font-black uppercase tracking-widest text-[#0F7A60] mb-1 relative z-10 flex items-center justify-between">
               Vendeurs Actifs
-              <span className="bg-[#0F7A60]/10 text-[#0F7A60] px-2 py-0.5 rounded-md text-xs font-bold">+{newStoresWeek} (7j)</span>
+              <span className="bg-[#0F7A60]/10 text-[#0F7A60] px-2 py-0.5 rounded-md text-xs font-bold">+{newVendorsWeek} (7j)</span>
             </p>
             <p className="text-xl lg:text-2xl font-display font-black text-[#1A1A1A] relative z-10 tracking-tighter">
-              {totalStores ?? 0}
+              {totalVendors ?? 0}
             </p>
           </div>
 

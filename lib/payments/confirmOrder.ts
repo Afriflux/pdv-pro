@@ -9,7 +9,13 @@ import {
 import { notifyNewOrder, createNotification } from '@/lib/notifications/createNotification'
 import { createDigitalAccess }   from '@/lib/digital/token'
 import { createAndStoreInvoice } from '@/lib/invoice/createInvoice'
-import { sendMetaCAPIPurchaseEvent, sendTikTokCAPIPurchaseEvent, sendGoogleCAPIPurchaseEvent } from '@/lib/tracking/capi'
+import { 
+  sendFirstSaleEmail,
+} from '@/lib/brevo/brevo-service'
+import {
+  sendDigitalDeliveryEmail,
+  sendInvoiceEmail
+} from '@/lib/email/resend'
 import { 
   triggerNewOrderTelegram, 
   triggerPaymentTelegram 
@@ -17,6 +23,11 @@ import {
 import { triggerAffiliateCommission } from '@/lib/affiliation/commission-hook'
 import { triggerAmbassadorCommission } from '@/lib/affiliation/ambassador-hook'
 import { sendSaleNotification } from '@/lib/telegram/community-service'
+import { 
+  sendMetaCAPIPurchaseEvent, 
+  sendTikTokCAPIPurchaseEvent, 
+  sendGoogleCAPIPurchaseEvent 
+} from '@/lib/tracking/capi'
 
 // ─── Types internes ───────────────────────────────────────────────────────────
 
@@ -29,6 +40,7 @@ interface OrderRow {
   status:           string
   buyer_name:       string
   buyer_phone:      string
+  buyer_email:      string | null
   delivery_address: string | null
   payment_method:   string
   affiliate_token:  string | null
@@ -72,7 +84,7 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
   // ── 1. Charger la commande ─────────────────────────────────────────────────
   const { data: order } = await supabase
     .from('Order')
-    .select('id, store_id, product_id, vendor_amount, total, status, buyer_name, buyer_phone, delivery_address, payment_method, affiliate_token, affiliate_amount')
+    .select('id, store_id, product_id, vendor_amount, total, status, buyer_name, buyer_phone, buyer_email, delivery_address, payment_method, affiliate_token, affiliate_amount')
     .eq('id', orderId)
     .single<OrderRow>()
 
@@ -180,8 +192,13 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
   ;(async () => {
     try {
       await createAndStoreInvoice(orderId)
+      
+      // Envoi de l'email de reçu (Facture) si l'email existe
+      if (order.buyer_email) {
+        await sendInvoiceEmail(order.buyer_email, orderId, order.total, store?.name ?? 'Yayyam')
+      }
     } catch (err) {
-      console.error('[confirmOrder] Erreur création facture:', err)
+      console.error('[confirmOrder] Erreur création/envoi facture:', err)
     }
   })()
 
@@ -226,7 +243,6 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
 
           const { data: vendorUser } = await supabase.from('User').select('email').eq('id', store.user_id).single()
           if (vendorUser?.email) {
-            const { sendFirstSaleEmail } = await import('@/lib/brevo/brevo-service')
             sendFirstSaleEmail(vendorUser.email, product.name, order.total).catch(console.error)
           }
         }
@@ -260,7 +276,12 @@ export async function confirmOrder(orderId: string, paymentRef?: string) {
           }),
         })
 
-        console.log('[confirmOrder] DigitalAccess créé → WhatsApp envoyé')
+        // Envoi email Digital Delivery si l'acheteur a fourni son email
+        if (order.buyer_email) {
+          sendDigitalDeliveryEmail(order.buyer_email, product.name, access.downloadUrl, store?.name ?? 'Yayyam').catch(console.error)
+        }
+
+        console.log('[confirmOrder] DigitalAccess créé → WhatsApp + Email de livraison envoyés')
       } catch (err) {
         console.error('[confirmOrder] Erreur livraison digitale:', err)
       }

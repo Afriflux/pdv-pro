@@ -18,7 +18,7 @@ export default async function AiGeneratorPage() {
   // Vérifier qu'il a bien un store
   const { data: store } = await supabase
     .from('Store')
-    .select('id, store_name')
+    .select('id, store_name, ai_credits')
     .eq('user_id', user.id)
     .single()
 
@@ -34,7 +34,6 @@ export default async function AiGeneratorPage() {
     take: 10
   })
 
-  // Récupérer le log d'usage
   const oneHourAgo = new Date(Date.now() - 3_600_000)
   const logsCount = await prisma.aIGenerationLog.count({
     where: {
@@ -42,6 +41,17 @@ export default async function AiGeneratorPage() {
       created_at: { gte: oneHourAgo }
     }
   })
+
+  const wallet = await prisma.wallet.findFirst({ where: { vendor_id: store.id } })
+  const configs = await prisma.platformConfig.findMany({
+    where: { key: { in: ['PRICE_AI_PACK', 'PRICE_AI_PACK_100', 'VOLUME_AI_PACK'] } }
+  })
+  
+  const getConf = (k: string, def: string) => configs.find(c => c.key === k)?.value || def
+  const aiVolume = parseInt(getConf('VOLUME_AI_PACK', '100'))
+  const aiPrice = parseInt(getConf('PRICE_AI_PACK', getConf('PRICE_AI_PACK_100', '3000')))
+
+  const walletData = wallet ? { balance: wallet.balance, total_earned: wallet.total_earned } : { balance: 0, total_earned: 0 }
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -59,7 +69,14 @@ export default async function AiGeneratorPage() {
         </header>
 
         <main className="w-full relative z-10 px-6 lg:px-10 pb-20">
-          <AiGeneratorClient initialProducts={products as any} usageCount={logsCount} />
+          <AiGeneratorClient 
+            initialProducts={products as any} 
+            usageCount={logsCount} 
+            dbCredits={store.ai_credits} 
+            wallet={walletData} 
+            aiVolume={aiVolume} 
+            aiPrice={aiPrice} 
+          />
         </main>
       </div>
     </div>

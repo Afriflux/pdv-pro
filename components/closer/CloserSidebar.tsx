@@ -55,6 +55,7 @@ const NAV: NavSection[] = [
       { name: 'Appels programmés', href: '/closer/calls', icon: PhoneCall },
       { name: 'Mon Agenda', href: '/closer/agenda', icon: Calendar },
       { name: 'Mes Cibles', href: '/closer/targets', icon: Target },
+      { name: 'Link-in-Bio', href: '/closer/bio-link', icon: Store, badge: 'PROMO' },
     ]
   },
   {

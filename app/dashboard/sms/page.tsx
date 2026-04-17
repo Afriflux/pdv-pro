@@ -19,7 +19,8 @@ export default async function SmsDashboardPage() {
   const store = await prisma.store.findUnique({
     where: { user_id: user.id },
     include: {
-      sms_credits: true
+      sms_credits: true,
+      wallet: true
     }
   })
 
@@ -47,7 +48,7 @@ export default async function SmsDashboardPage() {
 
   return (
     <div className="p-4 md:p-8 space-y-6">
-      <SmsRechargePortal currentCredits={credits} storeId={store.id} />
+      <SmsRechargePortal currentCredits={credits} storeId={store.id} wallet={store.wallet || { balance: 0, total_earned: 0 }} />
     </div>
   )
 }

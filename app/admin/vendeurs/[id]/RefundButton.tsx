@@ -5,20 +5,24 @@ import { useRouter } from 'next/navigation'
 import { RotateCcw, Loader2, X, AlertTriangle } from 'lucide-react'
 import { toast } from '@/lib/toast'
 
-export default function RefundButton({ storeId, orderId, totalAmount }: {
+export default function RefundButton({ storeId, orderId, totalAmount, deliveryFee = 0 }: {
   storeId: string
   orderId: string
   totalAmount: number
+  deliveryFee?: number
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const [reason, setReason] = useState('')
   const [confirmAmount, setConfirmAmount] = useState('')
+  const [refundRule, setRefundRule] = useState<'A' | 'B'>('A')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
+  const expectedConfirm = refundRule === 'A' ? totalAmount - deliveryFee : totalAmount
+
   const handleRefund = async () => {
-    if (Number(confirmAmount) !== totalAmount) {
-      toast.error(`Le montant saisi (${confirmAmount}) ne correspond pas au total (${totalAmount.toLocaleString('fr-FR')})`)
+    if (Number(confirmAmount) !== expectedConfirm) {
+      toast.error(`Le montant saisi (${confirmAmount}) ne correspond pas au montant attendu (${expectedConfirm.toLocaleString('fr-FR')})`)
       return
     }
 
@@ -37,6 +41,7 @@ export default function RefundButton({ storeId, orderId, totalAmount }: {
           orderId,
           reason: reason.trim(),
           confirmAmount: Number(confirmAmount),
+          refundRule,
         })
       })
 
@@ -45,7 +50,7 @@ export default function RefundButton({ storeId, orderId, totalAmount }: {
         throw new Error(err.error || 'Erreur lors du remboursement')
       }
 
-      toast.success(`✅ Commande remboursée — ${totalAmount.toLocaleString('fr-FR')} FCFA restitués`)
+      toast.success(`✅ Commande remboursée — ${expectedConfirm.toLocaleString('fr-FR')} FCFA restitués`)
       setIsOpen(false)
       router.refresh()
     } catch (error: any) {
@@ -87,10 +92,38 @@ export default function RefundButton({ storeId, orderId, totalAmount }: {
             </div>
 
             <div className="p-6 space-y-5">
+              {/* Choix de la Règle */}
+              <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col gap-2">
+                 <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Politique de Remboursement</p>
+                 <div className="flex gap-2">
+                    <button 
+                       onClick={() => { setRefundRule('A'); setConfirmAmount('') }}
+                       className={`flex-1 p-2 rounded-lg text-[11px] uppercase tracking-wider font-bold transition-all border ${refundRule === 'A' ? 'bg-[#0F7A60] text-white border-[#0F7A60] shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
+                    >
+                       A. Standard
+                    </button>
+                    <button 
+                       onClick={() => { setRefundRule('B'); setConfirmAmount('') }}
+                       className={`flex-1 p-2 rounded-lg text-[11px] uppercase tracking-wider font-bold transition-all border ${refundRule === 'B' ? 'bg-red-600 text-white border-red-600 shadow-sm' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
+                    >
+                       B. Pénaliser
+                    </button>
+                 </div>
+                 {refundRule === 'A' ? (
+                    <p className="text-[10px] text-gray-500 mt-1 leading-snug">
+                       L'acheteur ne récupère pas les frais de livraison ({deliveryFee.toLocaleString()} F). Yayyam utilise cet argent pour payer son livreur. Le vendeur perd sa marge classique.
+                    </p>
+                 ) : (
+                    <p className="text-[10px] text-red-600 mt-1 leading-snug font-bold">
+                       L'acheteur récupère la totalité de son argent. Le vendeur est pénalisé et rembourse de sa poche la course du livreur ({deliveryFee.toLocaleString()} F).
+                    </p>
+                 )}
+              </div>
+
               {/* Montant total */}
               <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-center">
-                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Montant Total de la Commande</p>
-                <p className="text-2xl font-black text-[#1A1A1A]">{totalAmount.toLocaleString('fr-FR')} FCFA</p>
+                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Montant à restituer au client</p>
+                <p className="text-2xl font-black text-[#1A1A1A]">{expectedConfirm.toLocaleString('fr-FR')} FCFA</p>
                 <p className="text-xs text-gray-400 mt-1 font-mono">#{orderId.slice(-8).toUpperCase()}</p>
               </div>
 
@@ -129,7 +162,7 @@ export default function RefundButton({ storeId, orderId, totalAmount }: {
                   type="number"
                   value={confirmAmount}
                   onChange={(e) => setConfirmAmount(e.target.value)}
-                  placeholder={totalAmount.toString()}
+                  placeholder={expectedConfirm.toString()}
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-lg font-black text-gray-800 outline-none focus:border-red-400 transition-all"
                 />
               </div>
@@ -141,7 +174,7 @@ export default function RefundButton({ storeId, orderId, totalAmount }: {
                 </button>
                 <button
                   onClick={handleRefund}
-                  disabled={loading || !reason.trim() || Number(confirmAmount) !== totalAmount}
+                  disabled={loading || !reason.trim() || Number(confirmAmount) !== expectedConfirm}
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-black rounded-xl transition-all"
                 >
                   {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCcw className="w-3.5 h-3.5" />}

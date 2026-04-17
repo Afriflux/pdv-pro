@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { getActivePaymentGateway } from '@/lib/payments/manager'
 import { createClient } from '@/lib/supabase/server'
+import { processAutomatedPayout } from '@/lib/payments/payout-service'
 
 /**
  * Unified withdrawal request handler across all roles.
@@ -20,7 +21,7 @@ export async function handleUniversalWithdraw(
     const { data: { user }, error: authErr } = await supabase.auth.getUser()
     if (authErr || !user) return { error: 'Non autorisé : Session invalide.' }
 
-    if (amount <= 0) return { error: 'Montant invalide.' }
+    if (amount < 5000) return { error: 'Le montant minimum de retrait est fixé à 5 000 FCFA.' }
 
     switch (ownerType) {
       case 'vendor': {
@@ -37,20 +38,42 @@ export async function handleUniversalWithdraw(
           return { error: 'Opération refusée : Votre vérification d\'identité (KYC) n\'est pas validée par un Administrateur.' }
         }
         
+        // Atomic Decrement (Anti Double-Spend)
         await prisma.wallet.update({
           where: { id },
-          data: { balance: wallet.balance - amount }
+          data: { balance: { decrement: amount } }
         })
+        
+        const withdrawalId = `WTD_${Date.now()}`
+        
+        // ─── Payout Automatisé ───
+        const payout = await processAutomatedPayout(phone, amount, method, withdrawalId)
         
         await prisma.withdrawal.create({
           data: {
+            id: withdrawalId,
             wallet_id: id,
             amount: amount,
             payment_method: method,
             phone_or_iban: phone,
-            status: 'pending'
+            status: payout.success ? 'paid' : 'pending',
+            processed_at: payout.success ? new Date() : null,
+            notes: payout.success ? `Virement auto (TX_ID: ${payout.transactionId})` : `Échec API Virement, attente manuelle (${payout.error})`
           }
         })
+        
+        // --- Création d'une ligne Transaction pour logger l'activité financière
+        if (payout.success) {
+           await prisma.transaction.create({
+               data: {
+                   wallet_id: id,
+                   amount: amount,
+                   type: 'withdrawal',
+                   status: 'completed',
+                   label: `Retrait automatique vers ${method}`
+               }
+           })
+        }
         
         revalidatePath('/dashboard/wallet')
         break
@@ -62,21 +85,24 @@ export async function handleUniversalWithdraw(
         }
         if (affiliate.user_id !== user.id) return { error: 'Action non autorisée (IDOR).' }
         
+        // Atomic Decrement
         await prisma.affiliate.update({
           where: { id },
-          data: { balance: Number(affiliate.balance) - amount }
+          data: { balance: { decrement: amount } }
         })
         
+        const withdrawalId = String(Date.now()) + Math.floor(Math.random() * 1000)
+        const payout = await processAutomatedPayout(phone, amount, method, withdrawalId)
+
         // Ensure you have an AffiliateWithdrawal model or use a generic one if missing.
-        // Assuming AffiliateWithdrawal exists from your schema:
         await prisma.affiliateWithdrawal.create({
           data: {
-            id: String(Date.now()) + Math.floor(Math.random() * 1000),
+            id: withdrawalId,
             affiliate_id: id,
             amount,
             payment_method: method,
             phone,
-            status: 'pending'
+            status: payout.success ? 'paid' : 'pending'
           }
         }).catch(async (err) => {
           console.error('[Wallet] AffiliateWithdrawal create failed, trying fallback:', err)
@@ -86,8 +112,8 @@ export async function handleUniversalWithdraw(
                 affiliate_id: id,
                 amount,
                 type: 'withdrawal',
-                status: 'pending',
-                description: `Retrait vers ${method}`
+                status: payout.success ? 'paid' : 'pending',
+                description: `Retrait ${payout.success ? 'auto' : 'manuel'} vers ${method}`
               }
            }).catch((e) => { console.error('[Wallet] AffiliateTransaction fallback also failed:', e) })
         })
@@ -102,9 +128,10 @@ export async function handleUniversalWithdraw(
           return { error: 'Solde insuffisant.' }
         }
         
+        // Atomic Decrement
         await prisma.user.update({
           where: { id },
-          data: { closer_balance: closerUser.closer_balance - amount }
+          data: { closer_balance: { decrement: amount } }
         })
         
         // CloserWithdrawal model assumed present

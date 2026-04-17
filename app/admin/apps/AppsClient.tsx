@@ -2,7 +2,9 @@
 
 import { useState, useMemo } from 'react'
 
-import { Plus, Edit2, Trash2, X, Save, Eye, EyeOff, Search, Smartphone, Loader2, Code, Puzzle } from 'lucide-react'
+import { Plus, Edit2, Trash2, X, Save, Eye, EyeOff, Search, Smartphone, Loader2, Code, Puzzle, 
+  Link as LinkIcon, Zap, BookOpen, Trophy, CheckCircle2, Blocks, Star, Users, Briefcase, Gem,
+  MessageSquare, ShoppingBag, Truck, Calendar, CreditCard, Banknote, ShieldCheck, Sparkles, Phone } from 'lucide-react'
 import {
   createMarketplaceApp,
   updateMarketplaceApp,
@@ -56,6 +58,41 @@ export default function AppsClient({ initialApps }: { initialApps: MarketplaceAp
       a.category.toLowerCase().includes(searchQuery.toLowerCase())
     )
   }, [apps, searchQuery])
+
+  const getIcon = (id: string) => {
+    switch (id) {
+      case 'marketing': return <Zap className="w-12 h-12 text-blue-500" />
+      case 'workflows': return <Zap className="w-12 h-12 text-rose-500" />
+      case 'affilies': return <Trophy className="w-12 h-12 text-orange-500" />
+      case 'promotions': return <ShoppingBag className="w-12 h-12 text-pink-500" />
+      case 'telegram': return <MessageSquare className="w-12 h-12 text-sky-500" />
+      case 'ambassadeur': return <Gem className="w-12 h-12 text-emerald-400" />
+      case 'links': return <LinkIcon className="w-12 h-12 text-indigo-500" />
+      case 'ai-generator': return <Star className="w-12 h-12 text-amber-500" />
+      case 'webhooks': return <Zap className="w-12 h-12 text-violet-500" />
+      case 'customers': return <Users className="w-12 h-12 text-blue-400" />
+      case 'livraisons': return <Truck className="w-12 h-12 text-slate-500" />
+      case 'agenda': return <Calendar className="w-12 h-12 text-purple-500" />
+      case 'tasks': return <CheckCircle2 className="w-12 h-12 text-emerald-500" />
+      case 'communautes': return <Users className="w-12 h-12 text-cyan-600" />
+      case 'closers': return <Briefcase className="w-12 h-12 text-amber-600" />
+      case 'academy': return <BookOpen className="w-12 h-12 text-emerald-600" />
+      case 'quotes': return <Briefcase className="w-12 h-12 text-neutral-600" />
+      case 'payment-links': return <Banknote className="w-12 h-12 text-[#0F7A60]" />
+      case 'server-side-pixels': return <Zap className="w-12 h-12 text-indigo-600" />
+      case 'social-proof': return <Users className="w-12 h-12 text-rose-600" />
+      case 'volume-discounts': return <ShoppingBag className="w-12 h-12 text-amber-600" />
+      case 'smart-reviews': return <Star className="w-12 h-12 text-yellow-400" />
+      case 'helpdesk': return <MessageSquare className="w-12 h-12 text-teal-600" />
+      case 'subscriptions': return <CreditCard className="w-12 h-12 text-violet-600" />
+      case 'fraud-cod': return <ShieldCheck className="w-12 h-12 text-red-500" />
+      case 'coach-ia': return <Sparkles className="w-12 h-12 text-yellow-500" />
+      case 'email-sms-marketing': return <MessageSquare className="w-12 h-12 text-blue-500" />
+      case 'whatsapp-bot': return <Phone className="w-12 h-12 text-green-500" />
+      case 'loyalty-points': return <Trophy className="w-12 h-12 text-orange-500" />
+      default: return <Blocks className="w-12 h-12 text-[#0F7A60]" />
+    }
+  }
 
   const publishedCount = apps.filter((a: MarketplaceAppRecord) => a.active).length
 
@@ -254,13 +291,12 @@ export default function AppsClient({ initialApps }: { initialApps: MarketplaceAp
         ) : (
           <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
              {filteredApps.map((app: MarketplaceAppRecord) => {
-               const isTextIcon = app.icon_url && app.icon_url.length > 4;
                return (
                <div key={app.id} className="bg-white border text-left border-gray-100/80 rounded-[2.5rem] p-3 shadow-sm hover:shadow-md hover:border-[#0F7A60]/30 transition-all duration-300 flex flex-col group h-full">
                  {/* Visual Header */}
                  <div className="h-32 w-full bg-slate-50 border border-gray-100/50 rounded-[2rem] relative overflow-hidden flex items-center justify-center mb-4 isolate">
-                   <div className="text-5xl drop-shadow-sm group-hover:scale-110 transition-transform duration-500">
-                     {isTextIcon ? <Puzzle size={48} className="text-[#0F7A60]" /> : (app.icon_url || '🚀')}
+                   <div className="flex justify-center items-center drop-shadow-sm group-hover:scale-110 transition-transform duration-500">
+                     {getIcon(app.id)}
                    </div>
                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 text-[10px] font-black px-2.5 py-1 rounded-lg z-10 uppercase tracking-wide shadow-sm border border-black/5">
                      {app.category}

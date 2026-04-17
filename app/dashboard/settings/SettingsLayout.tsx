@@ -101,7 +101,6 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
             <MenuBtn active={activeSection === 'securite'} icon={<ShieldCheck size={16} />} label="Sécurité" onClick={() => setActiveSection('securite')} />
             <MenuBtn active={activeSection === 'notifications'} icon={<Bell size={16} />} label="Notifications" onClick={() => setActiveSection('notifications')} />
             <MenuBtn active={activeSection === 'retrait'} icon={<Wallet size={16} />} label="Retraits" onClick={() => setActiveSection('retrait')} />
-            <MenuBtn active={activeSection === 'kyc'} icon={<CheckCircle2 size={16} />} label="KYC" onClick={() => setActiveSection('kyc')} />
             <MenuBtn active={activeSection === 'contrat'} icon={<FileText size={16} />} label="Contrat" onClick={() => setActiveSection('contrat')} />
             
             {store?.installedApps?.some((a: { app_id: string; status: string }) => a.app_id === 'whatsapp-bot' && a.status === 'active') && (
@@ -114,11 +113,14 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
             <button 
               onClick={() => setActiveSection('danger')}
               aria-current={activeSection === 'danger' ? 'page' : undefined}
-              className={`shrink-0 flex items-center lg:justify-start justify-center gap-2 px-5 py-2.5 lg:py-4 rounded-[1.2rem] text-[14.5px] font-bold transition-all duration-300 outline-none w-full lg:w-auto ${
-                activeSection === 'danger' ? 'bg-red-50 text-red-600 ring-1 ring-red-200 shadow-sm' : 'text-red-400 hover:bg-red-50 hover:text-red-600'
+              className={`relative flex items-center gap-3 px-5 py-4 rounded-[1.2rem] text-[14.5px] transition-all duration-300 lg:w-full shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-red-500 overflow-hidden ${
+                activeSection === 'danger' ? 'font-bold text-red-600 bg-red-50/90 shadow-sm border border-red-100 scale-[1.03]' : 'font-medium text-red-400 hover:text-red-600 hover:bg-red-50 hover:shadow-sm hover:-translate-y-0.5 lg:hover:translate-x-1 border border-transparent'
               }`}
             >
-              <AlertTriangle size={16} /> <span className="whitespace-nowrap">Danger</span>
+              <div className="relative z-10 transition-transform duration-300 flex-shrink-0 flex items-center justify-center">
+                <AlertTriangle size={16} />
+              </div>
+              <span className={`relative z-10 ${activeSection !== 'danger' ? 'hidden lg:inline' : 'inline'}`}>Danger</span>
             </button>
           </nav>
         </div>

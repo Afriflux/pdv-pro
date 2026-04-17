@@ -3,7 +3,8 @@
 // ─── app/admin/orders/[id]/OrderStatusUpdater.tsx ────────────────────────────
 // Composant client — Changer le statut d'une commande (admin)
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { toast } from '@/lib/toast'
 import { X, ShieldAlert } from 'lucide-react'
@@ -36,6 +37,12 @@ export default function OrderStatusUpdater({ orderId, currentStatus }: Props) {
 
   const [reason,   setReason]   = useState('')
   const [showModal, setShowModal] = useState(false)
+
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const hasChanged = selected !== currentStatus
   const needsReason = ['cancelled', 'refunded'].includes(selected)
@@ -113,9 +120,9 @@ export default function OrderStatusUpdater({ orderId, currentStatus }: Props) {
       </button>
     </div>
 
-    {/* Modale de justification */}
-    {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    {/* Modale de justification avec Portal pour échapper aux conteneurs masqués */}
+    {showModal && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onClick={() => setShowModal(false)} />
           <div className="relative bg-white rounded-3xl shadow-xl w-full max-w-md p-6 animate-in zoom-in-95 duration-200">
             <div className="flex items-start justify-between mb-4">
@@ -154,7 +161,8 @@ export default function OrderStatusUpdater({ orderId, currentStatus }: Props) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

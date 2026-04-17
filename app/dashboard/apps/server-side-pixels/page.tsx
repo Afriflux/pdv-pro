@@ -22,7 +22,9 @@ export default async function ServerSidePixelsPage() {
       meta_pixel_id: true,
       meta_capi_token: true,
       tiktok_pixel_id: true,
+      tiktok_capi_token: true,
       google_tag_id: true,
+      google_api_secret: true,
     }
   })
 

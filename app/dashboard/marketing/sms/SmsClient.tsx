@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Send, CreditCard, ChevronRight, CheckCircle2, History, MessageSquare, AlertCircle } from 'lucide-react'
 import { toast } from '@/lib/toast'
+import { PlatformCheckoutModal } from '@/components/shared/billing/PlatformCheckoutModal'
 import { purchaseSmsCredits, createSmsCampaign, sendSmsCampaign } from '@/app/actions/sms'
 
 export interface SmsCampaign { id: string; name: string; status: string; created_at: string | Date; total_sent: number; [key: string]: unknown; }
@@ -15,12 +16,15 @@ interface SmsClientProps {
     used: number
     campaigns: SmsCampaign[]
   }
+  wallet: { balance: number; total_earned: number }
+  smsVolume: number
+  smsPrice: number
 }
 
-export default function SmsClient({ storeId, initialData }: SmsClientProps) {
+export default function SmsClient({ storeId, initialData, wallet, smsVolume, smsPrice }: SmsClientProps) {
   const [data, setData] = useState(initialData)
   const [loading, setLoading] = useState(false)
-  const [buyLoading, setBuyLoading] = useState(false)
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
   const [campaignName, setCampaignName] = useState('')
   const [message, setMessage] = useState('')
@@ -28,18 +32,6 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
 
   const totalCreditsEver = data.credits + data.used
   const usagePercent = totalCreditsEver > 0 ? (data.used / totalCreditsEver) * 100 : 0
-
-  const handlePurchase = async () => {
-    setBuyLoading(true)
-    const res = await purchaseSmsCredits(storeId, 100) // Dummy pack of 100
-    if (res.success) {
-      toast.success("Rechargement réussi")
-      setData(prev => ({ ...prev, credits: prev.credits + 100 }))
-    } else {
-      toast.error(res.error || 'Erreur')
-    }
-    setBuyLoading(false)
-  }
 
   const handleSendCampaign = async (isDraft = false) => {
     if (!campaignName || !message || !recipientPhones) {
@@ -202,15 +194,10 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
           </div>
 
           <button 
-            disabled={buyLoading}
-            onClick={handlePurchase}
-            className="w-full bg-white text-[#1A1A1A] hover:bg-emerald-50 hover:text-emerald-700 font-extrabold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-70 group"
+            onClick={() => setIsCheckoutOpen(true)}
+            className="w-full bg-white text-[#1A1A1A] hover:bg-emerald-50 hover:text-emerald-700 font-extrabold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 group"
           >
-            {buyLoading ? (
-               <span className="w-5 h-5 border-2 border-emerald-600/30 border-t-emerald-600 rounded-full animate-spin" />
-            ) : (
-              <><CreditCard size={18} /> Acheter un Pack de Crédits <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" /></>
-            )}
+             <><CreditCard size={18} /> Acheter un Pack de Crédits <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" /></>
           </button>
         </div>
 
@@ -250,6 +237,24 @@ export default function SmsClient({ storeId, initialData }: SmsClientProps) {
         </div>
 
       </div>
+
+      <PlatformCheckoutModal 
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        productDetails={{
+          id: `sms_${smsVolume}`,
+          type: 'SMS',
+          title: `Pack de ${smsVolume} Crédits SMS`,
+          price: smsPrice,
+          emoji: '✉️',
+          color: 'bg-emerald-50 text-emerald-600'
+        }}
+        wallet={wallet}
+        onPurchaseViaWallet={async () => {
+           // Purchase integration via Wallet here if you had an API, currently unimplemented in Yayyam 
+           return { success: false, error: 'Paiement via portefeuille pour les packs B2B non disponible. Veuillez payer via Wave ou CinetPay.' }
+        }}
+      />
     </div>
   )
 }

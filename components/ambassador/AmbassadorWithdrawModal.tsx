@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X, Banknote, Phone, Loader2 } from 'lucide-react'
 import { toast } from '@/lib/toast'
 
@@ -17,6 +18,11 @@ export default function AmbassadorWithdrawModal({ ambassadorId, balance }: Ambas
   const [phone, setPhone] = useState('')
   const [amount, setAmount] = useState<number>(balance)
   const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const minAmount = 5000
   const isValid = phone.trim().length >= 8 && amount >= minAmount && amount <= balance
@@ -65,7 +71,7 @@ export default function AmbassadorWithdrawModal({ ambassadorId, balance }: Ambas
       </button>
 
       {/* Overlay modal */}
-      {open && (
+      {open && mounted && createPortal(
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
 
@@ -195,7 +201,8 @@ export default function AmbassadorWithdrawModal({ ambassadorId, balance }: Ambas
               </p>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

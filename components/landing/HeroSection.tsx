@@ -182,7 +182,7 @@ export function HeroSection({
           </div>
 
           {/* Visuals */}
-          <div className="w-full lg:w-[45%] relative h-full">
+          <div className="w-full lg:w-[45%] relative h-full mt-16 lg:mt-0">
             <div className="relative w-full aspect-square xl:aspect-[4/5]">
               {/* Pulsing Backglow */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-[#0D5C4A]/20 to-[#0ABFAA]/20 motion-safe:blur-[100px] rounded-full animate-pulse-slow"></div>
@@ -203,7 +203,7 @@ export function HeroSection({
 
               {/* Floating Badges */}
               <div 
-                className="absolute -left-2 md:-left-12 top-16 md:top-32 scale-75 md:scale-100 origin-left bg-white/90 motion-safe:backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white/40 flex items-center gap-4 z-20 animate-[yayyamFloatAlt_6s_ease-in-out_infinite_1s]"
+                className="absolute -left-2 md:-left-12 top-4 sm:top-16 md:top-32 scale-[0.65] sm:scale-75 md:scale-100 origin-top-left md:origin-left bg-white/90 motion-safe:backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white/40 flex items-center gap-4 z-20 animate-[yayyamFloatAlt_6s_ease-in-out_infinite_1s]"
               >
                  <div className="w-11 h-11 bg-blue-50 text-blue-600 font-bold rounded-xl flex items-center justify-center shadow-sm">W</div>
                  <div>
@@ -213,7 +213,7 @@ export function HeroSection({
               </div>
 
               <div 
-                className="absolute -right-2 md:-right-8 bottom-16 md:bottom-40 scale-75 md:scale-100 origin-right bg-[#0A1F1A] rounded-2xl p-4 shadow-2xl border border-white/10 flex items-center gap-4 z-20 animate-[yayyamFloatAlt2_5s_ease-in-out_infinite_2s]"
+                className="absolute -right-2 md:-right-8 bottom-4 sm:bottom-16 md:bottom-40 scale-[0.65] sm:scale-75 md:scale-100 origin-bottom-right md:origin-right bg-[#0A1F1A] rounded-2xl p-4 shadow-2xl border border-white/10 flex items-center gap-4 z-20 animate-[yayyamFloatAlt2_5s_ease-in-out_infinite_2s]"
               >
                  <div className="w-11 h-11 bg-emerald-500/20 text-emerald-400 font-black rounded-xl flex items-center justify-center">🛍️</div>
                  <div>

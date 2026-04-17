@@ -13,7 +13,11 @@ const ALLOWED_FIELDS = [
   'logo_url',
   'banner_url',
   'vendor_type',
-  'geo'
+  'geo',
+  'notif_new_order',
+  'notif_weekly_report',
+  'notif_stock_alert',
+  'contract_accepted'
 ]
 
 export async function PATCH(request: Request) {
@@ -60,9 +64,16 @@ export async function PATCH(request: Request) {
       updated_at: new Date().toISOString()
     }
 
-    if (field === 'geo') {
+    if (field === 'contract_accepted') {
+      updatePayload['contract_accepted'] = true
+      updatePayload['contract_accepted_at'] = new Date().toISOString()
+    } else if (field === 'geo') {
       updatePayload['base_country'] = value?.base_country || 'SN'
       updatePayload['target_countries'] = Array.isArray(value?.target_countries) ? value.target_countries : []
+    } else if (value === 'true') {
+      updatePayload[field] = true
+    } else if (value === 'false') {
+      updatePayload[field] = false
     } else {
       updatePayload[field] = value || null
     }

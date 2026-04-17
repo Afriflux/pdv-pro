@@ -167,6 +167,7 @@ model Store {
   store_name                                          String?
   google_api_secret                                   String?
   tiktok_capi_token                                   String?
+  ai_credits                                          Int                    @default(5)
   Affiliate                                           Affiliate[]
   AffiliateReferral                                   AffiliateReferral?
   Ambassador_Ambassador_store_idToStore               Ambassador[]           @relation("Ambassador_store_idToStore")

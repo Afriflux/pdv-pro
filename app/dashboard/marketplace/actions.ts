@@ -35,12 +35,26 @@ export async function purchaseAssetAction(
     return { success: true, message: 'Déjà acheté' }
   }
 
-  // Check balance
-  if (wallet.balance < amount) {
-    return { 
-      success: false, 
-      error: 'Solde insuffisant.', 
-      details: `Votre solde est de ${wallet.balance} FCFA. Il vous manque ${amount - wallet.balance} FCFA.` 
+  // Check balance and Pay Later eligibility
+  const postPurchaseBalance = wallet.balance - amount;
+
+  if (postPurchaseBalance < 0) {
+    // Si Total Earned < 100000, ils n'ont pas droit au découvert
+    if (wallet.total_earned < 100000) {
+      return { 
+        success: false, 
+        error: 'Solde insuffisant.', 
+        details: `Solde actuel: ${wallet.balance} FCFA. Un Chiffre d'Affaire Global >= 100 000 FCFA est requis pour débloquer le crédit vendeur.` 
+      }
+    }
+    
+    // Si ça dépasse le plafond rouge de -10 000 FCFA
+    if (postPurchaseBalance < -10000) {
+      return {
+        success: false,
+        error: 'Plafond de Découvert Atteint.',
+        details: `Cette transaction ( ${amount} FCFA ) porterait votre dette à ${postPurchaseBalance} FCFA, dépassant la limite autorisée de -10 000 FCFA.`
+      }
     }
   }
 
@@ -130,11 +144,23 @@ export async function installAppAction(appId: string, amount: number, appName: s
     if (!wallet) {
       return { success: false, error: 'Portefeuille introuvable. Veuillez configurer votre wallet.' }
     }
-    if (wallet.balance < amount) {
-      return { 
-        success: false, 
-        error: 'Solde insuffisant.', 
-        details: `Il vous manque ${amount - wallet.balance} FCFA.` 
+    const postPurchaseBalance = wallet.balance - amount;
+
+    if (postPurchaseBalance < 0) {
+      if (wallet.total_earned < 100000) {
+        return { 
+          success: false, 
+          error: 'Solde insuffisant.', 
+          details: `Un Chiffre d'Affaire Global >= 100 000 FCFA est requis pour débloquer l'Achat à Découvert.` 
+        }
+      }
+      
+      if (postPurchaseBalance < -10000) {
+        return {
+          success: false,
+          error: 'Plafond de Découvert Atteint.',
+          details: `Cette transaction ( ${amount} FCFA ) porterait votre dette à ${postPurchaseBalance} FCFA, dépassant la limite autorisée de -10 000 FCFA.`
+        }
       }
     }
   }

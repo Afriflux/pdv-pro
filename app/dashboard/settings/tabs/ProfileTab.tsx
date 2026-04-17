@@ -8,6 +8,7 @@ import { User, Camera, CheckCircle2, Mail, Phone, Loader2, ShieldCheck, Trash2, 
 import { createClient } from '@/lib/supabase/client'
 import * as Actions from '@/app/actions/settings'
 import { toast } from '@/lib/toast'
+import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 
 export function ProfileTab({ profile, userId, store }: { profile: any; userId: string; store?: any }) {
   const [userName, setUserName] = useState(profile?.name || '')
@@ -20,11 +21,19 @@ export function ProfileTab({ profile, userId, store }: { profile: any; userId: s
   const [loading, setLoading] = useState(false)
   const supabase = createClient()
 
+  const [cropModalFile, setCropModalFile] = useState<File | null>(null)
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    setAvatarFile(file)
-    setAvatarPreview(URL.createObjectURL(file))
+    setCropModalFile(file)
+    e.target.value = '' // reset
+  }
+
+  const handleCropDone = (croppedFile: File, previewUrl: string) => {
+    setAvatarFile(croppedFile)
+    setAvatarPreview(previewUrl)
+    setCropModalFile(null)
   }
 
   const uploadFile = async (file: File, bucket: string, path: string) => {
@@ -75,8 +84,8 @@ export function ProfileTab({ profile, userId, store }: { profile: any; userId: s
         <div className="h-48 sm:h-72 w-full relative bg-[#041D14] overflow-hidden">
           {/* Gradients Flous Complexes Héroïques (Vert Nuit Sombre et Profond) */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#0A3D2C] via-[#05261B] to-[#041D14] opacity-90"></div>
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 animate-pulse duration-[10000ms]"></div>
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#0F7A60]/20 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4"></div>
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[40px] md:blur-[80px] -translate-y-1/2 translate-x-1/3 md:animate-pulse duration-[10000ms]"></div>
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#0F7A60]/20 rounded-full blur-[30px] md:blur-[60px] translate-y-1/2 -translate-x-1/4"></div>
           <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.06] mix-blend-overlay"></div>
 
           {/* Top Actions flottantes */}
@@ -229,14 +238,14 @@ export function ProfileTab({ profile, userId, store }: { profile: any; userId: s
                     <input 
                       readOnly 
                       aria-label="Adresse Email"
-                      title="Adresse Email"
                       placeholder="votre@email.com"
                       value={profile?.email || ''} 
                       className="w-full px-5 py-4 bg-gray-50/80 backdrop-blur-sm border border-gray-200/80 rounded-[1rem] text-gray-500 text-[15px] font-bold cursor-not-allowed shadow-inner focus:outline-none pr-32" 
                     />
-                    <div className="absolute top-1/2 -translate-y-1/2 right-4 flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-500 bg-gray-200/80 px-2.5 py-1.5 rounded-lg border border-gray-300">
+                    <div className="absolute top-1/4 right-4 flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-gray-500 bg-gray-200/80 px-2.5 py-1.5 rounded-lg border border-gray-300">
                        🔒 Verrouillé
                     </div>
+                    <p className="text-[12px] text-gray-400 font-medium mt-2">L'adresse de sécurité. Modifiable uniquement via <a href="mailto:support@yayyam.com" className="underline hover:text-gray-600">le support</a>.</p>
                   </div>
                 </div>
               </div>
@@ -258,6 +267,14 @@ export function ProfileTab({ profile, userId, store }: { profile: any; userId: s
 
         </div>
       </div>
+
+      {cropModalFile && (
+        <ImageCropperModal
+          imageFile={cropModalFile}
+          onClose={() => setCropModalFile(null)}
+          onCrop={handleCropDone}
+        />
+      )}
     </form>
   )
 }

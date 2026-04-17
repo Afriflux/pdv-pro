@@ -135,6 +135,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
   let orderQuery = supabase
     .from('Order')
     .select('id, total, status, payment_method, created_at, store_id, buyer_name, buyer_phone, cod_fraud_suspected', { count: 'exact' })
+    .neq('order_type', 'payment_link')
 
   // ── Application des filtres ──
   if (statusFilter !== 'all') {
@@ -190,6 +191,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
   const { data: allOrders } = await supabase
     .from('Order')
     .select('status, total')
+    .neq('order_type', 'payment_link')
 
   const countByStatus: Record<string, number> = {}
   let totalRevenue = 0

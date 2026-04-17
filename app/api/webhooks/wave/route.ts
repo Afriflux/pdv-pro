@@ -3,6 +3,9 @@ import { captureError } from '@/lib/monitoring'
 import { verifyWaveWebhook, WaveWebhookPayload } from '@/lib/payments/wave/webhook'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { confirmOrder } from '@/lib/payments/confirmOrder'
+import { confirmB2BAssetPurchase } from '@/lib/payments/confirmB2BAssetPurchase'
+import { confirmTip } from '@/lib/payments/confirmTip'
+import { triggerPurchasePixels } from '@/lib/tracking/trigger-pixels'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(req: Request) {
@@ -48,15 +51,28 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: 'Unhandled event type' }, { status: 200 })
       }
 
-      const orderId = data.client_reference
+      const orderId = data.client_reference // usually starts with ORD_ or B2B_
 
       if (data.payment_status === 'succeeded') {
-        await confirmOrder(orderId)
-        console.log(`[Wave Webhook] Paiement validé pour la commande: ${orderId}`)
+        if (orderId.startsWith('B2B_')) {
+           await confirmB2BAssetPurchase(orderId)
+           console.log(`[Wave Webhook] B2B Asset payé: ${orderId}`)
+        } else if (orderId.startsWith('TIP_')) {
+           await confirmTip(orderId)
+           console.log(`[Wave Webhook] Tip/Don payé: ${orderId}`)
+        } else {
+           await confirmOrder(orderId)
+           console.log(`[Wave Webhook] Paiement validé pour la commande: ${orderId}`)
+           triggerPurchasePixels(orderId).catch(e => console.error('[CAPI Trigger Wave Error]', e))
+        }
       } else {
-        const supabase = createAdminClient()
-        await supabase.from('Order').update({ status: 'cancelled' }).eq('id', orderId)
-        console.log(`[Wave Webhook] Paiement échoué pour la commande: ${orderId}`)
+        if (orderId.startsWith('B2B_')) {
+           console.log(`[Wave Webhook] Paiement B2B échoué: ${orderId}`)
+        } else {
+           const supabase = createAdminClient()
+           await supabase.from('Order').update({ status: 'cancelled' }).eq('id', orderId)
+           console.log(`[Wave Webhook] Paiement échoué pour la commande: ${orderId}`)
+        }
       }
 
       await prisma.systemWebhookLog.update({ where: { id: webhookLog.id }, data: { status: 'completed', processed_at: new Date() }})

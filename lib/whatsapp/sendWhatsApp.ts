@@ -12,8 +12,29 @@ export function normalizePhone(phone: string): string {
   return '+' + clean
 }
 
-export async function sendWhatsApp({ to, body }: { to: string; body: string }): Promise<boolean> {
+import { prisma } from '@/lib/prisma'
+
+export async function sendWhatsApp({ to, body, storeId }: { to: string; body: string, storeId?: string }): Promise<boolean> {
   const supabaseAdmin = createAdminClient()
+
+  // --- SÉCURISATION MONÉTISATION & CRÉDITS ---
+  if (storeId) {
+    try {
+      const smsBundle = await prisma.smsCredit.findUnique({ where: { store_id: storeId } })
+      if (!smsBundle || smsBundle.credits <= 0) {
+        console.warn(`[WhatsApp Péage] Bloqué: Crédits épuisés pour le store ${storeId}.`)
+        return false
+      }
+      // On décrémente un crédit (Péage SaaS)
+      await prisma.smsCredit.update({
+        where: { store_id: storeId },
+        data: { credits: { decrement: 1 }, used: { increment: 1 } }
+      })
+    } catch (e) {
+      console.error('[WhatsApp Péage] Erreur de vérification Prisma:', e)
+    }
+  }
+
   const { data: configRows } = await supabaseAdmin
     .from('PlatformConfig')
     .select('key, value')

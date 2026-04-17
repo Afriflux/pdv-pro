@@ -27,7 +27,7 @@ export default function ProductsHeaderImport() {
               <p className="text-gray-500 text-[15px] font-medium mt-1">Gérez votre inventaire, importez en masse ou générez avec l'IA.</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto pb-2 lg:pb-0">
             {/* Bouton Générateur IA */}
             <button
               onClick={() => setActiveView(v => v === 'ia' ? 'none' : 'ia')}

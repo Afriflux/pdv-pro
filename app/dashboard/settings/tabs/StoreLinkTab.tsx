@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Globe, Loader2, CheckCircle2, XCircle, Link as LinkIcon, ArrowUpRight, Copy } from 'lucide-react'
+import { Globe, Loader2, CheckCircle2, XCircle, Link as LinkIcon, ArrowUpRight, Copy, Share2 } from 'lucide-react'
 import * as Actions from '@/app/actions/settings'
 import { toast } from '@/lib/toast'
 
@@ -69,20 +69,36 @@ export function StoreLinkTab({ store }: { store: any }) {
     toast.success('Lien copié dans le presse-papier')
   }
 
+  const handleShare = async () => {
+    const url = `https://${baseUrl}${slug || store?.slug || ''}`
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: store?.name || 'Boutique Yayyam',
+          url: url
+        })
+      } catch (err) {
+        console.error('Erreur partage', err)
+      }
+    } else {
+      handleCopy()
+    }
+  }
+
   const isSaveDisabled = slugStatus === 'taken' || slugStatus === 'checking' || slug === store?.slug
 
   return (
     <form onSubmit={onSubmit} className="animate-in fade-in zoom-in-95 duration-700 relative w-full xl:col-span-3">
       
       {/* 🌟 Master Container Glassmorphism 🌟 */}
-      <div className="bg-white/80 backdrop-blur-xl border border-gray-200/60 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden relative">
+      <div className="bg-white/80 backdrop-blur-md md:backdrop-blur-xl border border-gray-200/60 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden relative">
         
         {/* === HEADER / BANNER ABSTRAIT === */}
         <div className="h-48 sm:h-72 w-full relative bg-[#022c22] overflow-hidden">
           {/* Gradients Flous Complexes Héroïques (Emeraude/Teal) */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#064E3B] via-[#022c22] to-[#0F766E] opacity-90"></div>
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/15 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 animate-pulse duration-[10000ms]"></div>
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-400/20 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4"></div>
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/15 rounded-full blur-[40px] md:blur-[80px] -translate-y-1/2 translate-x-1/3 md:animate-pulse duration-[10000ms]"></div>
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-400/20 rounded-full blur-[30px] md:blur-[60px] translate-y-1/2 -translate-x-1/4"></div>
           <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.06] mix-blend-overlay"></div>
 
           {/* Top Actions flottantes */}
@@ -145,6 +161,13 @@ export function StoreLinkTab({ store }: { store: any }) {
                   className="px-6 py-3.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-2xl text-[14px] font-bold shadow-sm transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
                 >
                   <Copy size={18} /> Copier
+                </button>
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="px-6 py-3.5 bg-white border border-gray-200 text-emerald-600 hover:bg-emerald-50 rounded-2xl text-[14px] font-bold shadow-sm transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                >
+                  <Share2 size={18} /> Partager
                 </button>
                 <button 
                   type="button"
