@@ -53,34 +53,29 @@ export default async function AdminSettingsPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className="flex flex-col gap-8">
         
-        {/* -- COLONNE DE GAUCHE : LE PROFIL -- */}
-        <div className="xl:col-span-1">
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/40 p-6 overflow-hidden relative h-full">
-            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[80px] -z-0 pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
-            <div className="relative z-10">
-              <ProfileSection
-                userId={adminUser?.id ?? user.id}
-                initialName={adminUser?.name ?? ''}
-                email={adminUser?.email ?? user.email ?? ''}
-                avatarUrl={adminUser?.avatar_url ?? null}
-                role={adminUser?.role ?? 'support'}
-              />
-            </div>
-          </div>
+        {/* -- BLOC PROFIL (Désormais pleine largeur) -- */}
+        <div className="w-full">
+          <ProfileSection
+            userId={adminUser?.id ?? user.id}
+            initialName={adminUser?.name ?? ''}
+            email={adminUser?.email ?? user.email ?? ''}
+            avatarUrl={adminUser?.avatar_url ?? null}
+            role={adminUser?.role ?? 'support'}
+          />
         </div>
 
-        {/* -- COLONNE DE DROITE : CONTACT & LÉGAL -- */}
-        <div className="xl:col-span-2">
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/40 p-6 overflow-hidden relative h-full">
+        {/* -- BLOC CONTACT & LÉGAL -- */}
+        <div className="w-full">
+          <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/40 p-8 overflow-hidden relative">
              <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-100">
-               <div className="p-2.5 bg-gray-50 rounded-xl border border-gray-100">
-                 <Settings className="w-5 h-5 text-gray-500" />
+               <div className="p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                 <Settings className="w-6 h-6 text-gray-500" />
                </div>
                <div>
-                  <h3 className="font-black text-gray-800 text-lg">Informations Plateforme</h3>
-                  <p className="text-[13px] font-medium text-gray-500">Contact d'urgence & Légal.</p>
+                  <h3 className="font-black text-gray-900 text-xl tracking-tight">Informations Plateforme</h3>
+                  <p className="text-[14px] font-medium text-gray-500 mt-1">Contact d'urgence & Légal.</p>
                </div>
              </div>
              
