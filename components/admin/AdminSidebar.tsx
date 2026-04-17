@@ -103,7 +103,7 @@ const NAV: NavSection[] = [
   {
     title: 'COMPTE',
     items: [
-      { name: 'Mon Profil', href: '/admin/settings', icon: UserCircle },
+      { name: 'Paramètres', href: '/admin/settings', icon: Settings },
     ]
   }
 ]
