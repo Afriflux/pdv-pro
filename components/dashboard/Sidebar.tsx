@@ -369,7 +369,12 @@ function SidebarContent({
             {!collapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-[14px] font-black text-gray-900 truncate leading-tight tracking-tight">{storeName}</p>
-                <p className="text-[11px] text-gray-500 truncate uppercase tracking-wider font-semibold mt-0.5">{userName}</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <p className="text-[11px] text-gray-500 truncate uppercase tracking-wider font-semibold">{userName}</p>
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-[4px] text-[8px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700">
+                    {vendorType === 'digital' ? 'Digital' : vendorType === 'physical' ? 'Physique' : 'Hybride'}
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -481,9 +486,14 @@ export function Sidebar({
       {/* ── MOBILE : top bar compacte ── */}
       <div className="lg:hidden">
         <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-3 h-14">
-          <Link href="/" className="flex items-center gap-2 focus:outline-none ml-1">
-            <Logo variant="full" size="sm" textClassName="text-gray-900" />
-          </Link>
+          <div className="flex items-center gap-2 ml-1">
+            <Link href="/" className="focus:outline-none flex items-center">
+              <Logo variant="full" size="sm" textClassName="text-gray-900" />
+            </Link>
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-[4px] text-[8px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700">
+              {vendorType === 'digital' ? 'Digital' : vendorType === 'physical' ? 'Physique' : 'Hybride'}
+            </span>
+          </div>
           <div className="flex items-center gap-2 mr-1">
             <Link href="/dashboard/settings#profil" className="w-9 h-9 rounded-full overflow-hidden border-2 border-emerald-100 bg-emerald-50 flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all">
               {avatarUrl ? (
