@@ -116,15 +116,14 @@ export default async function AdminEmailPage() {
 
 async function EmailDashboardContent() {
   // 2. Charger les données Brevo en parallèle
-  const [fetchedCampaigns, fetchedList1, fetchedList2, fetchedList3] = await Promise.all([
+  const [fetchedCampaigns, fetchedList2, fetchedList3] = await Promise.all([
     listEmailCampaigns().catch((): Campaign[] => []),
-    getListStats(1).catch((): ListStat => ({ totalSubscribers: 0, totalBlacklisted: 0 })),
     getListStats(2).catch((): ListStat => ({ totalSubscribers: 0, totalBlacklisted: 0 })),
     getListStats(3).catch((): ListStat => ({ totalSubscribers: 0, totalBlacklisted: 0 })),
-  ]) as [Campaign[], ListStat, ListStat, ListStat]
+  ]) as [Campaign[], ListStat, ListStat]
 
   const campaigns = fetchedCampaigns || []
-  const list1 = fetchedList1 || { totalSubscribers: 0, totalBlacklisted: 0 }
+  const list1 = { totalSubscribers: 0, totalBlacklisted: 0 } // Liste 1 n'existe pas sur Brevo
   const list2 = fetchedList2 || { totalSubscribers: 0, totalBlacklisted: 0 }
   const list3 = fetchedList3 || { totalSubscribers: 0, totalBlacklisted: 0 }
 

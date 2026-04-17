@@ -3,7 +3,7 @@
 // Clé API lue depuis PlatformConfig (BDD) avec fallback sur process.env.BREVO_API_KEY
 // Base URL : https://api.brevo.com/v3
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { vendorEmptyStoreEmail, vendorMasterclassReminderEmail } from './email-templates'
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
@@ -62,8 +62,20 @@ export interface BrevoCreateCampaignParams {
  */
 export async function getBrevoApiKey(): Promise<string | null> {
   try {
-    // Tentative de lecture depuis PlatformConfig en BDD
-    const supabase = await createClient()
+    const supabase = createAdminClient()
+
+    // 1. Lecture depuis IntegrationKey (table utilisée par /admin/integrations)
+    const { data: integrationData } = await supabase
+      .from('IntegrationKey')
+      .select('value')
+      .eq('key', 'BREVO_API_KEY')
+      .maybeSingle()
+
+    if (integrationData?.value && typeof integrationData.value === 'string' && integrationData.value.trim() !== '') {
+      return integrationData.value.trim()
+    }
+
+    // 2. Fallback : PlatformConfig (ancienne table)
     const { data } = await supabase
       .from('PlatformConfig')
       .select('value')
@@ -74,17 +86,16 @@ export async function getBrevoApiKey(): Promise<string | null> {
       return data.value.trim()
     }
   } catch {
-    // En cas d'erreur de connexion, on passe au fallback silencieusement
-    console.warn('[Brevo] Impossible de lire PlatformConfig, utilisation du fallback .env')
+    console.warn('[Brevo] Impossible de lire la clé API depuis la BDD, utilisation du fallback .env')
   }
 
-  // Fallback : variable d'environnement
+  // 3. Fallback : variable d'environnement
   const envKey = process.env.BREVO_API_KEY
   if (envKey && envKey.trim() !== '') {
     return envKey.trim()
   }
 
-  console.error('[Brevo] ⚠️ Aucune clé API Brevo configurée (PlatformConfig ni .env)')
+  console.error('[Brevo] ⚠️ Aucune clé API Brevo configurée (IntegrationKey, PlatformConfig, ni .env)')
   return null
 }
 
@@ -341,6 +352,38 @@ export async function createEmailCampaign(
   }
 }
 
+// ─── 6b. Envoyer immédiatement une campagne existante ─────────────────────────
+
+/**
+ * Envoie immédiatement une campagne email (déjà créée en brouillon) sur Brevo.
+ * POST /emailCampaigns/{campaignId}/sendNow
+ *
+ * @param campaignId - ID de la campagne Brevo à envoyer
+ */
+export async function sendCampaignNow(campaignId: string): Promise<boolean> {
+  const headers = await buildBrevoHeaders()
+  if (!headers) return false
+
+  try {
+    const response = await fetch(`${BREVO_BASE_URL}/emailCampaigns/${campaignId}/sendNow`, {
+      method: 'POST',
+      headers,
+    })
+
+    if (response.status === 204 || response.ok) {
+      console.log(`[Brevo] ✅ Campagne ${campaignId} envoyée avec succès !`)
+      return true
+    }
+
+    const errorText = await response.text()
+    console.error(`[Brevo] sendCampaignNow erreur ${response.status}:`, errorText)
+    return false
+  } catch (error) {
+    console.error('[Brevo] sendCampaignNow exception:', error)
+    return false
+  }
+}
+
 // ─── 7. Récupérer les stats d'un contact ─────────────────────────────────────
 
 /**
@@ -394,10 +437,13 @@ export interface BrevoCampaign {
   statistics?: {
     globalStats?: {
       uniqueClicks?: number
+      uniqueViews?: number
       uniqueOpens?: number
       unsubscriptions?: number
       delivered?: number
       sent?: number
+      hardBounces?: number
+      softBounces?: number
     }
   }
 }
@@ -411,19 +457,23 @@ export async function listEmailCampaigns(status?: 'sent' | 'scheduled' | 'draft'
   if (!headers) return []
 
   try {
-    const params = new URLSearchParams({ limit: '50', offset: '0' })
+    const params = new URLSearchParams({ limit: '50', offset: '0', statistics: 'globalStats' })
     if (status) {
       params.set('status', status)
     }
 
-    const response = await fetch(`${BREVO_BASE_URL}/emailCampaigns?${params.toString()}`, {
+    const url = `${BREVO_BASE_URL}/emailCampaigns?${params.toString()}`
+    console.log('[Brevo] Fetching campaigns:', url)
+
+    const response = await fetch(url, {
       method: 'GET',
       headers,
     })
 
     if (response.ok) {
       const data = await response.json() as { campaigns?: BrevoCampaign[] }
-      return data.campaigns ?? []
+      const campaigns = data.campaigns ?? []
+      return campaigns
     }
 
     const errorText = await response.text()
@@ -435,7 +485,77 @@ export async function listEmailCampaigns(status?: 'sent' | 'scheduled' | 'draft'
   }
 }
 
-// ─── 9. Récupérer les stats globales de la liste ─────────────────────────────
+// ─── 9. Lister toutes les listes de contacts Brevo ───────────────────────────
+
+/**
+ * Récupère toutes les listes de contacts du compte Brevo.
+ * GET /contacts/lists
+ */
+export async function listAllBrevoLists(): Promise<BrevoListStats[]> {
+  const headers = await buildBrevoHeaders()
+  if (!headers) return []
+
+  try {
+    const response = await fetch(`${BREVO_BASE_URL}/contacts/lists?limit=50&offset=0`, {
+      method: 'GET',
+      headers,
+    })
+
+    if (response.ok) {
+      const data = await response.json() as { lists?: any[] }
+      return (data.lists ?? []).map((l: any) => ({
+        id: l.id,
+        name: l.name,
+        totalBlacklisted: l.totalBlacklisted ?? 0,
+        totalSubscribers: l.uniqueSubscribers ?? l.totalSubscribers ?? 0,
+        uniqueSubscribers: l.uniqueSubscribers ?? 0,
+      }))
+    }
+
+    const errorText = await response.text()
+    console.error(`[Brevo] listAllBrevoLists erreur ${response.status}:`, errorText)
+    return []
+  } catch (error) {
+    console.error('[Brevo] listAllBrevoLists exception:', error)
+    return []
+  }
+}
+
+// ─── 9b. Récupérer les expéditeurs vérifiés Brevo ────────────────────────────
+
+/**
+ * Récupère la liste des expéditeurs vérifiés sur le compte Brevo.
+ * GET /senders
+ */
+export async function getBrevoSenders(): Promise<{email: string, name: string, active: boolean}[]> {
+  const headers = await buildBrevoHeaders()
+  if (!headers) return []
+
+  try {
+    const response = await fetch(`${BREVO_BASE_URL}/senders`, {
+      method: 'GET',
+      headers,
+    })
+
+    if (response.ok) {
+      const data = await response.json() as { senders?: any[] }
+      return (data.senders ?? []).map((s: any) => ({
+        email: s.email,
+        name: s.name,
+        active: s.active ?? false,
+      }))
+    }
+
+    const errorText = await response.text()
+    console.error(`[Brevo] getBrevoSenders erreur ${response.status}:`, errorText)
+    return []
+  } catch (error) {
+    console.error('[Brevo] getBrevoSenders exception:', error)
+    return []
+  }
+}
+
+// ─── 10. Récupérer les stats globales de la liste ─────────────────────────────
 
 export interface BrevoListStats {
   id: number
@@ -465,7 +585,7 @@ export async function getListStats(listId: number): Promise<BrevoListStats | nul
         id: data.id as number,
         name: data.name as string,
         totalBlacklisted: (data.totalBlacklisted as number) ?? 0,
-        totalSubscribers: (data.totalSubscribers as number) ?? 0,
+        totalSubscribers: (data.uniqueSubscribers as number) ?? (data.totalSubscribers as number) ?? 0,
         uniqueSubscribers: (data.uniqueSubscribers as number) ?? 0,
       }
     }

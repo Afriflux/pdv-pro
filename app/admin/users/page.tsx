@@ -5,6 +5,7 @@ import {
   Phone, Mail, Calendar, Filter, ChevronLeft, ChevronRight
 } from 'lucide-react'
 import UsersSearchInput from './UsersSearchInput'
+import UserActionMenu from './UserActionMenu'
 
 // ----------------------------------------------------------------
 // TYPES
@@ -294,14 +295,8 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          {detailLink !== '#' ? (
-                            <Link
-                              href={detailLink}
-                              className="text-xs font-black text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-all inline-block"
-                            >
-                              Voir espace →
-                            </Link>
-                          ) : (
+                          <UserActionMenu user={user} detailLink={detailLink} />
+                          {detailLink === '#' && (
                             <span className="text-[11px] font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200 inline-block">
                               Profil Standard
                             </span>

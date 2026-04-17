@@ -5,6 +5,7 @@ import { Search, Sparkles, Mail, LayoutGrid, List, PenTool } from 'lucide-react'
 import EmailCampaignsKanban from './EmailCampaignsKanban'
 import GenerateCampaignModal from './GenerateCampaignModal'
 import CreateManualCampaignModal from './CreateManualCampaignModal'
+import TriggerAutomationSection from './TriggerAutomationSection'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Campaign {
@@ -18,8 +19,10 @@ interface Campaign {
     globalStats?: {
       delivered?:    number
       uniqueOpens?:  number
+      uniqueViews?:  number
       uniqueClicks?: number
       unsubscribed?: number
+      unsubscriptions?: number
       hardBounces?:  number
       softBounces?:  number
     }
@@ -106,7 +109,7 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
     ? sentCampaigns.reduce((acc, c) => {
         const stats = c.statistics?.globalStats
         const d = stats?.delivered ?? 0
-        const o = stats?.uniqueOpens ?? 0
+        const o = stats?.uniqueViews ?? stats?.uniqueOpens ?? 0
         return acc + (d > 0 ? (o / d) * 100 : 0)
       }, 0) / sentCampaigns.length 
     : 0
@@ -114,7 +117,7 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
   const avgClickRate = sentCampaigns.length > 0 
     ? sentCampaigns.reduce((acc, c) => {
         const stats = c.statistics?.globalStats
-        const o = stats?.uniqueOpens ?? 0
+        const o = stats?.uniqueViews ?? stats?.uniqueOpens ?? 0
         const cl = stats?.uniqueClicks ?? 0
         return acc + (o > 0 ? (cl / o) * 100 : 0)
       }, 0) / sentCampaigns.length 
@@ -242,7 +245,28 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
                  </button>
                ))}
             </div>
+
+            {/* Boutons Création (toujours visibles) */}
+            <button 
+              onClick={() => setIsManualModalOpen(true)}
+              className="flex items-center gap-2 bg-white hover:bg-emerald-50 text-emerald-800 px-4 py-2.5 rounded-xl shadow-sm border border-emerald-100 transition-all font-bold shrink-0"
+            >
+              <PenTool className="w-4 h-4 text-emerald-600" />
+              <span className="text-xs font-black whitespace-nowrap">Créer</span>
+            </button>
+            <button 
+              onClick={() => setIsGenerateModalOpen(true)}
+              className="flex items-center gap-2 bg-[#0D5C4A] hover:bg-[#083D31] text-white px-4 py-2.5 rounded-xl shadow-md transition-all hover:shadow-lg border border-[#0F7A60] shrink-0"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-300" />
+              <span className="text-xs font-black whitespace-nowrap">Créer via IA</span>
+            </button>
           </div>
+        </div>
+
+        {/* ── NOUVEAU: Section Automatisations ── */}
+        <div className="lg:col-span-4">
+          <TriggerAutomationSection />
         </div>
 
         {/* CONTENU MESSAGE VIDE OU TABLEAU */}
@@ -255,7 +279,7 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
             </div>
             <p className="text-lg font-black text-gray-700 relative z-10">Aucune campagne correspondante</p>
             <p className="text-sm mt-2 text-gray-500 max-w-sm mx-auto relative z-10 font-medium">
-              {searchQuery ? "Aucune campagne ne correspond à votre recherche actuelle." : "Créez votre première campagne sur Brevo pour la voir apparaître ici."}
+              {searchQuery ? "Aucune campagne ne correspond à votre recherche actuelle." : "Créez votre première campagne en cliquant sur \"Créer\" ou \"Créer via IA\" ci-dessus."}
             </p>
             {searchQuery && (
               <button 
@@ -289,9 +313,9 @@ export default function EmailCampaignsDashboard({ campaigns }: Props) {
                   const dateStr  = campaign.scheduledAt ?? campaign.createdAt
                   
                   const delivered = stats.delivered ?? 0
-                  const opens = stats.uniqueOpens ?? 0
+                  const opens = stats.uniqueViews ?? stats.uniqueOpens ?? 0
                   const clicks = stats.uniqueClicks ?? 0
-                  const unsubscribed = stats.unsubscribed ?? 0
+                  const unsubscribed = stats.unsubscriptions ?? 0
                   const bounces = (stats.hardBounces ?? 0) + (stats.softBounces ?? 0)
 
                   // Ratios
