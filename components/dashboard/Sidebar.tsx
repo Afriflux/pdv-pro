@@ -369,15 +369,23 @@ function SidebarContent({
             {!collapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-[14px] font-black text-gray-900 truncate leading-tight tracking-tight">{storeName}</p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <p className="text-[11px] text-gray-500 truncate uppercase tracking-wider font-semibold">{userName}</p>
-                  <Link href="/dashboard/settings#vendor" className="inline-flex items-center px-1.5 py-0.5 rounded-[4px] text-[8px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 hover:bg-emerald-200 hover:scale-105 transition-all cursor-pointer shadow-sm">
-                    {vendorType === 'digital' ? 'Digital' : vendorType === 'physical' ? 'Physique' : 'Hybride'}
-                  </Link>
-                </div>
+                <p className="text-[11px] text-gray-500 truncate uppercase tracking-wider font-semibold mt-0.5">{userName}</p>
               </div>
             )}
           </div>
+
+          {!collapsed && (
+            <Link 
+              href="/dashboard/settings#vendor" 
+              className="w-full flex items-center justify-between px-3 py-2 mb-2.5 bg-white border border-gray-200 hover:border-emerald-300 rounded-xl text-xs font-bold text-gray-700 hover:text-emerald-700 hover:shadow-sm transition-all group/btn"
+            >
+              <div className="flex items-center gap-2">
+                <Store className="w-4 h-4 text-emerald-500" />
+                Mode {vendorType === 'digital' ? 'Digital' : vendorType === 'physical' ? 'Physique' : 'Hybride'}
+              </div>
+              <Settings className="w-3.5 h-3.5 opacity-40 group-hover/btn:opacity-100 group-hover/btn:rotate-45 transition-all" />
+            </Link>
+          )}
           
           <form action={signOut} className={`w-full flex items-center`}>
             <button
@@ -490,7 +498,11 @@ export function Sidebar({
             <Link href="/" className="focus:outline-none flex items-center">
               <Logo variant="full" size="sm" textClassName="text-gray-900" />
             </Link>
-            <Link href="/dashboard/settings#vendor" className="inline-flex items-center px-1.5 py-0.5 rounded-[4px] text-[8px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 hover:bg-emerald-200 active:scale-95 transition-all cursor-pointer shadow-sm">
+            <Link 
+              href="/dashboard/settings#vendor" 
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-[10px] font-black uppercase tracking-widest text-emerald-700 hover:bg-emerald-100 active:scale-95 transition-all shadow-sm"
+            >
+              <Store className="w-3.5 h-3.5" />
               {vendorType === 'digital' ? 'Digital' : vendorType === 'physical' ? 'Physique' : 'Hybride'}
             </Link>
           </div>
