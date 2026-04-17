@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import { toast } from '@/lib/toast'
-import { Loader2, Upload, Save } from 'lucide-react'
+import { Loader2, Save, User, Camera, Trash2, ShieldCheck, Mail } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
+import Image from 'next/image'
 
 // ----------------------------------------------------------------
-// Badge rôle coloré (copie légère pour éviter import serveur)
+// Badge rôle coloré
 // ----------------------------------------------------------------
 function RoleBadge({ role }: { role: string }) {
   const styles: Record<string, string> = {
@@ -49,60 +51,34 @@ export default function ProfileSection({
 }: ProfileSectionProps) {
   const [name,          setName]          = useState(initialName)
   const [currentAvatar, setCurrentAvatar] = useState(avatarUrl)
-  const [uploading,     setUploading]     = useState(false)
+  
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [cropModalFile, setCropModalFile] = useState<File | null>(null)
+
   const [saving,        setSaving]        = useState(false)
 
-  // Upload avatar dans Supabase Storage (bucket "avatars")
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
-    // Validation taille et type
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error('Image trop lourde. Maximum 2 MB.')
-      return
-    }
-    if (!file.type.startsWith('image/')) {
-      toast.error('Fichier invalide. Sélectionnez une image.')
-      return
-    }
-
-    setUploading(true)
-    try {
-      const supabase = createClient()
-      const ext       = file.name.split('.').pop() ?? 'jpg'
-      const path      = `admin/${userId}/avatar.${ext}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(path, file, { upsert: true, contentType: file.type })
-
-      if (uploadError) throw uploadError
-
-      // Récupérer l'URL publique
-      const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
-      const publicUrl = urlData.publicUrl + '?t=' + Date.now() // Cache busting
-
-      // Mettre à jour avatar_url dans la table User
-      const { error: updateError } = await supabase
-        .from('User')
-        .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
-        .eq('id', userId)
-
-      if (updateError) throw updateError
-
-      setCurrentAvatar(publicUrl)
-      toast.success('Photo de profil mise à jour ✅')
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err)
-      toast.error('Erreur upload : ' + msg)
-    } finally {
-      setUploading(false)
-    }
+    setCropModalFile(file)
+    e.target.value = '' // reset
   }
 
-  // Sauvegarde du nom
-  const handleSaveName = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCropDone = (croppedFile: File, previewUrl: string) => {
+    setAvatarFile(croppedFile)
+    setCurrentAvatar(previewUrl)
+    setCropModalFile(null)
+  }
+
+  const uploadFile = async (file: File, bucket: string, path: string) => {
+    const supabase = createClient()
+    const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true, contentType: file.type })
+    if (error) throw error
+    const { data } = supabase.storage.from(bucket).getPublicUrl(path)
+    return data.publicUrl + '?t=' + Date.now()
+  }
+
+  const handleSaveProfile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!name.trim()) {
       toast.error('Le nom ne peut pas être vide.')
@@ -111,13 +87,25 @@ export default function ProfileSection({
     setSaving(true)
     try {
       const supabase = createClient()
+      let finalAvatar = currentAvatar
+      
+      // If we cleared the avatar (currentAvatar is null but we had an avatarFile or we just pressed trash bin)
+      // Actually, if we have a new avatar file:
+      if (avatarFile) {
+        const ext = avatarFile.name.split('.').pop()
+        finalAvatar = await uploadFile(avatarFile, 'avatars', `admin/${userId}/avatar_${Date.now()}.${ext}`)
+      } else if (!currentAvatar) {
+         // L'utilisateur a supprimé son avatar
+         finalAvatar = null
+      }
+
       const { error } = await supabase
         .from('User')
-        .update({ name: name.trim(), updated_at: new Date().toISOString() })
+        .update({ name: name.trim(), avatar_url: finalAvatar, updated_at: new Date().toISOString() })
         .eq('id', userId)
 
       if (error) throw error
-      toast.success('Profil sauvegardé ✅')
+      toast.success('Profil mis à jour ✅')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
       toast.error('Erreur : ' + msg)
@@ -126,100 +114,112 @@ export default function ProfileSection({
     }
   }
 
+  const handleDeleteAvatar = () => {
+    setCurrentAvatar(null)
+    setAvatarFile(null)
+  }
+
   const initiale = (name || email).charAt(0).toUpperCase()
 
   return (
-    <form onSubmit={handleSaveName} className="space-y-6">
-      {/* Avatar */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-5 p-2 leading-none">
-        <div className="relative flex-shrink-0 group">
-          {currentAvatar ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={currentAvatar}
-              alt="Avatar admin"
-              className="w-20 h-20 rounded-2xl object-cover border-2 border-white/80 shadow-md transition-transform group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#0F7A60]/10 to-teal-500/10 flex items-center justify-center text-2xl font-black text-[#0F7A60] border-2 border-white/80 shadow-md transition-transform group-hover:scale-105">
-              {initiale}
-            </div>
-          )}
-          {uploading && (
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm rounded-2xl flex items-center justify-center transition-all delay-75">
-              <Loader2 className="w-5 h-5 text-white animate-spin" />
-            </div>
-          )}
+    <form onSubmit={handleSaveProfile} className="space-y-6 flex flex-col h-full w-full">
+      {/* 🌟 Bloc Avatar comme dans Paramètres 🌟 */}
+      <div className="relative group max-w-fit mx-auto mb-4 mt-2">
+        <div className="w-32 h-32 rounded-[2rem] bg-white p-2 shadow-xl relative z-10 mx-auto transition-transform duration-500">
+          <div className="w-full h-full rounded-[1.5rem] overflow-hidden bg-gray-50 flex items-center justify-center relative border border-gray-100">
+            {currentAvatar ? (
+              <Image 
+                sizes="128px" 
+                src={currentAvatar} 
+                alt="Avatar" 
+                fill 
+                unoptimized 
+                className="object-cover transition-transform duration-700 group-hover:scale-110" 
+              />
+            ) : (
+              <span className="text-gray-300 font-bold flex flex-col items-center justify-center text-4xl">
+                {initiale || <User size={48} strokeWidth={1} />}
+              </span>
+            )}
+            
+            {/* Overlay Upload au Hover */}
+            <label htmlFor="avatar-upload" className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all duration-300 backdrop-blur-sm cursor-pointer scale-110 group-hover:scale-100">
+              <Camera size={24} className="text-white mb-2" strokeWidth={1.5} />
+              <span className="text-white text-[10px] font-bold tracking-widest uppercase text-center leading-tight">Changer<br/>la photo</span>
+              <input id="avatar-upload" type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={handleFileChange} />
+            </label>
+          </div>
         </div>
-        <div className="flex flex-col gap-2">
-          <label
-            htmlFor="avatar-upload"
-            className="inline-flex items-center justify-center gap-2 cursor-pointer px-4 py-2.5 bg-white/60 backdrop-blur-sm shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] border border-white/80
-              rounded-xl text-xs font-bold text-gray-600 hover:border-[#0F7A60]/50 hover:bg-white hover:text-[#0F7A60] transition-all hover:shadow-sm"
+
+        {/* Petit bouton corbeille flottant */}
+        {currentAvatar && (
+          <button 
+            type="button" 
+            onClick={handleDeleteAvatar}
+            className="absolute -bottom-2 -right-2 w-8 h-8 bg-white hover:bg-red-50 text-red-500 rounded-full flex items-center justify-center shadow-lg border border-red-100 z-20 transition-all hover:scale-110"
+            title="Supprimer la photo"
           >
-            <Upload className="w-3.5 h-3.5" />
-            {uploading ? 'Upload en cours...' : 'Changer la photo'}
+            <Trash2 size={14} strokeWidth={2} />
+          </button>
+        )}
+      </div>
+
+      {/* Inputs Profil */}
+      <div className="space-y-5">
+        <div>
+          <label htmlFor="adminName" className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1">
+            Nom affiché
           </label>
           <input
-            id="avatar-upload"
-            type="file"
-            accept="image/*"
-            onChange={handleAvatarChange}
-            className="hidden"
-            disabled={uploading}
+            id="adminName"
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Ex: Sultan AlQalifa"
+            className="w-full px-4 py-3 bg-white/80 border border-gray-200/80 rounded-xl focus:ring-0 focus:border-[#0F7A60] outline-none transition-all text-sm font-bold text-gray-900 shadow-sm"
+            required
           />
-          <p className="mt-1 text-xs text-gray-400 font-medium">JPG, PNG — Max 2 MB</p>
+        </div>
+
+        <div>
+          <label htmlFor="adminEmail" className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1">
+            Reçu Sécurité & Rôle
+          </label>
+          <div className="flex flex-col gap-2">
+            <input
+              id="adminEmail"
+              type="email"
+              value={email}
+              readOnly
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200/80 rounded-xl text-gray-500 text-sm font-medium cursor-not-allowed shadow-inner outline-none"
+            />
+            <div className="flex items-center justify-between px-1">
+               <span className="text-xs text-gray-400">Verrouillé</span>
+               <RoleBadge role={role} />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Nom */}
-      <div>
-        <label htmlFor="adminName" className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1">
-          Nom affiché
-        </label>
-        <input
-          id="adminName"
-          type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Prénom Nom"
-          className="w-full bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl py-3 px-4 text-sm font-semibold text-[#1A1A1A]
-            focus:bg-white focus:border-[#0F7A60] focus-visible:ring-4 focus-visible:ring-[#0F7A60]/10 outline-none transition-all duration-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]"
-          required
-        />
-      </div>
-
-      {/* Email readonly + badge rôle */}
-      <div>
-        <label htmlFor="adminEmail" className="block text-xs font-black text-gray-500 mb-1.5 uppercase tracking-wider ml-1">
-          Email & Rôle
-        </label>
-        <div className="flex items-center gap-3">
-          <input
-            id="adminEmail"
-            aria-label="Email"
-            title="Email"
-            type="email"
-            value={email}
-            readOnly
-            className="flex-1 bg-gray-50/50 backdrop-blur-sm border border-gray-200/50 rounded-2xl py-3 px-4 text-sm font-medium text-gray-400 cursor-not-allowed shadow-[inset_0_2px_4px_rgba(0,0,0,0.01)]"
-          />
-          <RoleBadge role={role} />
-        </div>
-      </div>
-
-      {/* Bouton sauvegarde */}
-      <div className="flex justify-end pt-2">
+      <div className="mt-auto pt-6 w-full">
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#0F7A60] to-teal-500 hover:from-[#0D5C4A] hover:to-[#0F7A60]
-            disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-2xl transition-all shadow-[0_4px_15px_rgba(15,122,96,0.2)] hover:shadow-[0_6px_20px_rgba(15,122,96,0.3)] border border-[#0F7A60]/50"
+          className="w-full inline-flex justify-center items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-[#0F7A60] to-teal-500 hover:from-[#0D5C4A] hover:to-[#0F7A60]
+            disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-all shadow-[0_4px_15px_rgba(15,122,96,0.2)] hover:shadow-[0_6px_20px_rgba(15,122,96,0.3)] border border-[#0F7A60]/50"
         >
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          {saving ? 'Sauvegarde...' : 'Sauvegarder le profil'}
+          {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShieldCheck className="w-5 h-5" />}
+          {saving ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
         </button>
       </div>
+
+      {cropModalFile && (
+        <ImageCropperModal
+          imageFile={cropModalFile}
+          onClose={() => setCropModalFile(null)}
+          onCrop={handleCropDone}
+        />
+      )}
     </form>
   )
 }
