@@ -104,7 +104,7 @@ export default async function ClosingPage() {
     <div className="min-h-screen bg-[#F0F2F5] pb-24 font-sans overflow-x-hidden">
       
       {/* ── EN-TÊTE FULL BLEED IMMERSIF ── */}
-      <div className="relative bg-gradient-to-br from-[#012928] via-[#0A4138] to-[#04332A] pt-12 pb-36 px-4 sm:px-6 lg:px-8 border-b border-white/10 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-[#012928] via-[#0A4138] to-[#04332A] pt-8 pb-24 px-4 sm:px-6 lg:px-8 border-b border-white/10 overflow-hidden">
         {/* Motif Glassmorphism de fond */}
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         {/* Glow Effects */}

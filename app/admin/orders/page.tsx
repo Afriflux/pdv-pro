@@ -211,7 +211,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
   return (
     <div className="min-h-screen bg-[#F0F2F5] pb-12 overflow-x-hidden">
       {/* ── EN-TÊTE FULL BLEED IMMERSIF ── */}
-      <div className="relative bg-gradient-to-r from-[#012928] to-[#0A4138] pt-16 pb-32 px-4 sm:px-6 lg:px-8 border-b border-white/10 overflow-hidden">
+      <div className="relative bg-gradient-to-r from-[#012928] to-[#0A4138] pt-8 pb-20 px-4 sm:px-6 lg:px-8 border-b border-white/10 overflow-hidden">
         {/* Motif Glassmorphism de fond */}
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         {/* Glow Effects */}

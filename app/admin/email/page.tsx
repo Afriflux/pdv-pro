@@ -72,7 +72,7 @@ export default async function AdminEmailPage() {
     <div className="flex-1 flex flex-col min-h-screen bg-[#F0F2F5] w-full animate-in fade-in duration-500 pb-0 overflow-x-hidden">
       
       {/* ── HEADER FULL-BLEED (COVER PREMIUM) ── */}
-      <div className="relative bg-gradient-to-r from-[#012928] to-[#0A4138] pt-16 pb-32 px-4 sm:px-6 lg:px-8 border-b border-white/10 overflow-hidden shrink-0">
+      <div className="relative bg-gradient-to-r from-[#012928] to-[#0A4138] pt-8 pb-20 px-4 sm:px-6 lg:px-8 border-b border-white/10 overflow-hidden shrink-0">
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] -z-0 pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-400/10 rounded-full blur-[80px] -z-0 pointer-events-none -translate-x-1/2 translate-y-1/2"></div>
