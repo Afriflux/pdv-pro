@@ -260,7 +260,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs text-gray-400 truncate">{user.id.slice(0, 12)}...</p>
+                              <p className="text-[11px] font-bold text-emerald-600/80 tracking-tight truncate hidden md:block">@{user.name ? user.name.replace(/\s+/g, '').toLowerCase() : 'utilisateur'}</p>
                             </div>
                           </div>
                         </td>

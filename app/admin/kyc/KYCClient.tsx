@@ -461,10 +461,10 @@ export default function KYCClient({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        <div className="space-y-2">
                          <p className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2">Recto (Image HD)</p>
-                         {selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url ? (
-                           <button onClick={() => { setLightboxImage(selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url!); setLightboxScale(1); }} className="block relative aspect-[1.58] bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
+                         {(selectedStore.kyc_documents as any)?.recto || selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url ? (
+                           <button onClick={() => { setLightboxImage((selectedStore.kyc_documents as any)?.recto || selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url!); setLightboxScale(1); }} className="block relative aspect-[1.58] bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                             <img src={selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url!} alt="Recto" className="object-cover w-full h-full group-hover/img:scale-105 transition-transform duration-500" />
+                             <img src={(selectedStore.kyc_documents as any)?.recto || selectedStore.kyc_documents?.id_card_url || selectedStore.id_card_url!} alt="Recto" className="object-cover w-full h-full group-hover/img:scale-105 transition-transform duration-500" />
                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                                <span className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-xl text-white font-bold text-sm flex items-center gap-2 border border-white/30 shadow-xl"><Maximize2 size={16}/> Agrandir (Lightbox)</span>
                              </div>
@@ -473,11 +473,11 @@ export default function KYCClient({
                        </div>
 
                        <div className="space-y-2">
-                         <p className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2">Verso (Optionnel)</p>
-                         {selectedStore.kyc_documents?.id_card_back_url ? (
-                           <button onClick={() => { setLightboxImage(selectedStore.kyc_documents!.id_card_back_url!); setLightboxScale(1); }} className="block relative aspect-[1.58] bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
+                         <p className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2">Verso (Image HD)</p>
+                         {(selectedStore.kyc_documents as any)?.verso || selectedStore.kyc_documents?.id_card_back_url ? (
+                           <button onClick={() => { setLightboxImage((selectedStore.kyc_documents as any)?.verso || selectedStore.kyc_documents!.id_card_back_url!); setLightboxScale(1); }} className="block relative aspect-[1.58] bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                             <img src={selectedStore.kyc_documents.id_card_back_url} alt="Verso" className="object-cover w-full h-full group-hover/img:scale-105 transition-transform duration-500" />
+                             <img src={(selectedStore.kyc_documents as any)?.verso || selectedStore.kyc_documents!.id_card_back_url} alt="Verso" className="object-cover w-full h-full group-hover/img:scale-105 transition-transform duration-500" />
                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                                <span className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-xl text-white font-bold text-sm flex items-center gap-2 border border-white/30 shadow-xl"><Maximize2 size={16}/> Agrandir (Lightbox)</span>
                              </div>
@@ -486,11 +486,11 @@ export default function KYCClient({
                        </div>
 
                        <div className="space-y-2 md:col-span-2">
-                         <p className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2">Justificatif de domicile (Moins de 3 mois)</p>
-                         {selectedStore.kyc_documents?.domicile_url ? (
-                           <button onClick={() => { setLightboxImage(selectedStore.kyc_documents!.domicile_url!); setLightboxScale(1); }} className="block relative h-48 bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
+                         <p className="text-xs font-black text-gray-400 uppercase tracking-widest pl-2">Selfie / Justificatif de domicile</p>
+                         {(selectedStore.kyc_documents as any)?.selfie || selectedStore.kyc_documents?.domicile_url ? (
+                           <button onClick={() => { setLightboxImage((selectedStore.kyc_documents as any)?.selfie || selectedStore.kyc_documents!.domicile_url!); setLightboxScale(1); }} className="block relative h-48 bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 group/img w-full cursor-zoom-in">
                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                             <img src={selectedStore.kyc_documents.domicile_url} alt="Domicile" className="object-cover w-full h-full group-hover/img:scale-105 transition-transform duration-500" />
+                             <img src={(selectedStore.kyc_documents as any)?.selfie || selectedStore.kyc_documents!.domicile_url} alt="Domicile ou Selfie" className="object-cover w-full h-full group-hover/img:scale-105 transition-transform duration-500" />
                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
                                <span className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-xl text-white font-bold text-sm flex items-center gap-2 border border-white/30 shadow-xl"><Maximize2 size={16}/> Agrandir (Lightbox)</span>
                              </div>
