@@ -10,6 +10,10 @@ export const dynamic = 'force-dynamic'
  * Vérifie la connectivité DB et retourne le statut de la plateforme.
  * Utile pour le monitoring externe (UptimeRobot, Vercel, etc.)
  */
+export async function HEAD() {
+  return GET()
+}
+
 export async function GET() {
   const start = Date.now()
   

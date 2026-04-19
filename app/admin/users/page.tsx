@@ -296,11 +296,6 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <UserActionMenu user={user} detailLink={detailLink} />
-                          {detailLink === '#' && (
-                            <span className="text-[11px] font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200 inline-block">
-                              Profil Standard
-                            </span>
-                          )}
                         </td>
                       </tr>
                     )

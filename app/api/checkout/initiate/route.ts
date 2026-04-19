@@ -12,6 +12,7 @@ import { sendWhatsApp, msgVendorNewOrder, msgOrderConfirmed } from '@/lib/whatsa
 import { sendSaleNotification } from '@/lib/telegram/community-service'
 import { executeWorkflows } from '@/lib/workflows/execution'
 import { triggerPurchasePixels } from '@/lib/tracking/trigger-pixels'
+import { triggerInitiateCheckoutCAPI } from '@/lib/tracking/trigger-funnel'
 import { checkBuyerForCOD } from '@/lib/anti-fraud/buyer-check'
 import { createPaymentSession } from '@/lib/payments/routing'
 import { validate, checkoutSchema } from '@/lib/validation'
@@ -561,6 +562,13 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ order_id: orderRecord.id, cod: true })
     }
+
+    // ── CAPI: InitiateCheckout Server-Side (tous les paiements) ──
+    triggerInitiateCheckoutCAPI(
+      store_id, product.name, total, buyer_phone,
+      req.headers.get('x-forwarded-for') || undefined,
+      req.headers.get('user-agent') || undefined
+    ).catch(e => console.error('[CAPI InitiateCheckout Error]', e))
 
     const baseUrl = `${req.nextUrl.protocol}//${req.nextUrl.host}`
     const returnUrl = `${baseUrl}/checkout/success?order=${orderRecord.id}`

@@ -23,6 +23,7 @@ interface ProductGridProps {
   products: Product[]
   promotions: PromotionData[]
   accent: string
+  cardTheme?: string
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -49,7 +50,7 @@ function toggleWishlistItem(id: string): string[] {
   return next
 }
 
-export function ProductGrid({ products, promotions, accent }: ProductGridProps) {
+export function ProductGrid({ products, promotions, accent, cardTheme }: ProductGridProps) {
   // States filtres et tri
   const [searchQuery, setSearchQuery] = useState('')
   const [filterType, setFilterType] = useState('all')
@@ -192,7 +193,7 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
          )}
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 ${cardTheme === 'hover_reveal' ? 'lg:grid-cols-3' : ''}`}>
         {visibleProducts.length === 0 ? (
           <div className="col-span-full py-12 text-center text-gray-500 bg-white rounded-2xl border border-gray-100">
              Aucun produit ne correspond à votre recherche.
@@ -202,7 +203,11 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
           const isWishlisted = wishlist.includes(product.id)
           return (
              <Link key={product.id} href={`/checkout/${product.id}`} className="block group h-full">
-               <div className="bg-white rounded-2xl md:rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full relative">
+               <div className={`overflow-hidden border shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full relative ${
+                 cardTheme === 'hover_reveal'
+                   ? 'bg-gray-900 rounded-3xl border-white/5'
+                   : 'bg-white rounded-2xl md:rounded-3xl border-gray-100'
+               }`}>
                  
                  {/* Image Section */}
                  <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
@@ -270,8 +275,8 @@ export function ProductGrid({ products, promotions, accent }: ProductGridProps) 
                  </div>
 
                  {/* Info Section */}
-                 <div className="p-3 md:p-5 flex flex-col flex-grow">
-                    <h3 className="text-sm md:text-base font-bold text-gray-900 line-clamp-2 leading-snug group-hover:underline decoration-2 transition-all mb-3 md:mb-4"
+                 <div className={`p-3 md:p-5 flex flex-col flex-grow ${cardTheme === 'hover_reveal' ? 'text-white' : ''}`}>
+                    <h3 className={`text-sm md:text-base font-bold line-clamp-2 leading-snug group-hover:underline decoration-2 transition-all mb-3 md:mb-4 ${cardTheme === 'hover_reveal' ? 'text-white' : 'text-gray-900'}`}
                         {...{ style: { textDecorationColor: accent } }}>
                       {product.name}
                     </h3>

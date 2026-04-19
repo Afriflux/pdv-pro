@@ -19,6 +19,7 @@ import { LandingHeader } from '@/components/landing/LandingHeader'
 import { Logo } from '@/components/ui/Logo'
 
 import dynamic from 'next/dynamic'
+import { AnimatedAfricaMap } from '@/components/landing/AnimatedAfricaMap'
 
 // Lazy-load heavy components (below the fold)
 const BentoGrid = dynamic(() => import('@/components/landing/BentoGrid').then(m => m.BentoGrid))
@@ -531,35 +532,41 @@ export default async function LandingPage() {
         </section>
 
         {/* 9. REAL-TIME SOCIAL PROOF : IMPACT VISUEL */}
-        <section className="py-24 bg-ink border-b border-white/10 relative overflow-hidden">
-           {/* Background décoratif Africain */}
-           <div className="absolute inset-0 z-0 opacity-10">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-gradient-to-tr from-emerald-900 to-transparent rounded-full blur-[150px]"></div>
+        <section className="bg-ink border-b border-white/10 overflow-hidden">
+           <div className="max-w-[1500px] mx-auto text-center px-6 pt-24 pb-8">
+             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 text-white font-bold px-4 py-2 rounded-full text-xs tracking-widest uppercase mb-8 shadow-lg backdrop-blur-md">
+               <Globe size={16} className="text-emerald-400" /> Écosystème Panafricain
+             </div>
+             
+             <h3 className="font-display font-black text-4xl md:text-6xl text-white mb-6 leading-tight">
+                Présent dans toute la <span className="text-amber-400">zone UEMOA</span><br/>
+                et la <span className="text-emerald-400">zone CEMAC</span>.
+             </h3>
+
+             <p className="text-xl md:text-2xl text-white/70 font-light max-w-2xl mx-auto">
+               L\'écosystème Yayyam en temps réel. <br/><strong className="text-white">Parfait pour tous les business.</strong>
+             </p>
            </div>
 
-           <div className="max-w-[1500px] mx-auto text-center px-6 relative z-10">
-             <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 text-cream font-bold px-4 py-2 rounded-full text-xs tracking-widest uppercase mb-8 shadow-sm backdrop-blur-md">
-               <Globe size={16} className="text-emerald-500" /> Écosystème Panafricain
+           {/* Image Carte Afrique au centre */}
+           <div className="max-w-6xl mx-auto px-6 py-8">
+             <div className="relative rounded-[2rem] overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)]">
+               <img 
+                 src="/landing/africa_map.jpg" 
+                 alt="Carte Afrique – Zones UEMOA et CEMAC desservies par Yayyam" 
+                 className="w-full h-auto object-contain" 
+                 draggable={false} 
+               />
              </div>
-             <h3 className="font-display font-black text-4xl md:text-6xl text-white mb-6 leading-tight">
-               Déjà utilisé au <span className="text-emerald-500">Sénégal 🇸🇳</span><br/>
-               en <span className="text-orange-500">Côte d'Ivoire 🇨🇮</span> <br className="md:hidden" />
-               et au <span className="text-gold">Mali 🇲🇱</span>.
-             </h3>
-             <p className="text-xl md:text-2xl text-cream/70 font-light mb-16 max-w-2xl mx-auto">
-               L'écosystème Yayyam en temps réel. <br/><strong className="text-white">Parfait pour tous les business.</strong>
-             </p>
-             
-             {/* Enveloppement des compteurs dans un conteneur verre immersif */}
-             <div className="relative p-1 rounded-3xl bg-gradient-to-b from-white/10 to-transparent max-w-5xl mx-auto shadow-2xl">
-               <div className="bg-[#0A1F1A]/80 backdrop-blur-xl rounded-[1.4rem] p-8 md:p-12 border border-white/5">
-                 <LiveCounters 
-                   vendorsCount={vendorsCount ?? 200} 
-                   productsCount={productsCount ?? 1200} 
-                   ordersCount={ordersCount ?? 8500} 
-                 />
-               </div>
-             </div>
+           </div>
+
+           {/* Compteurs en bas */}
+           <div className="pb-8">
+             <LiveCounters 
+               vendorsCount={vendorsCount ?? 200} 
+               productsCount={productsCount ?? 1200} 
+               ordersCount={ordersCount ?? 8500} 
+             />
            </div>
         </section>
 

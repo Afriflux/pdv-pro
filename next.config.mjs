@@ -66,7 +66,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' https://fonts.gstatic.com",
-              "connect-src 'self' https://*.supabase.co https://*.supabase.in https://api.telegram.org https://graph.facebook.com https://api.brevo.com https://*.vercel-storage.com https://*.b-cdn.net wss://*.supabase.co",
+              "connect-src 'self' https://*.supabase.co https://*.supabase.in https://api.telegram.org https://graph.facebook.com https://api.brevo.com https://*.vercel-storage.com https://*.b-cdn.net wss://*.supabase.co https://analytics.tiktok.com https://business-api.tiktok.com https://www.google-analytics.com https://www.googletagmanager.com",
               "frame-src 'self' https://checkout.wave.com https://app.paytech.sn https://checkout.cinetpay.com https://widget.kkiapay.me",
               "media-src 'self' https://*.b-cdn.net https://iframe.mediadelivery.net",
               "worker-src 'self' blob:",

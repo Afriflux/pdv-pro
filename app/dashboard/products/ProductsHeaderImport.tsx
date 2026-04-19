@@ -28,20 +28,16 @@ export default function ProductsHeaderImport() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto pb-2 lg:pb-0">
-            {/* Bouton Générateur IA */}
-            <button
-              onClick={() => setActiveView(v => v === 'ia' ? 'none' : 'ia')}
-              title="Générer un catalogue via IA"
+            {/* Bouton Générateur IA V2 */}
+            <Link
+              href="/dashboard/products/ai"
+              title="Créer un Produit avec l'IA"
               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm
-                transition border flex-1 sm:flex-none justify-center ${
-                activeView === 'ia'
-                  ? 'bg-[#FAFAF7] border-gray-200 text-gray-500 hover:bg-gray-100'
-                  : 'bg-white border-gray-200 text-[#0F7A60] hover:border-[#0F7A60] hover:bg-[#0F7A60]/5'
-              }`}
+                transition border flex-1 sm:flex-none justify-center bg-white border-gray-200 text-[#0F7A60] hover:border-[#0F7A60] hover:bg-[#0F7A60]/5`}
             >
-              {activeView === 'ia' ? <X className="w-4 h-4" /> : <Sparkles className="w-4 h-4 text-[#C9A84C]" />}
-              {activeView === 'ia' ? 'Fermer' : 'Générateur IA'}
-            </button>
+              <Sparkles className="w-4 h-4 text-[#C9A84C]" />
+              Générateur IA
+            </Link>
             {/* Bouton Import CSV */}
             <button
               onClick={() => setActiveView(v => v === 'csv' ? 'none' : 'csv')}
@@ -73,16 +69,7 @@ export default function ProductsHeaderImport() {
           </div>
         )}
 
-        {/* ── Section Générateur IA (conditionnelle) ── */}
-        {activeView === 'ia' && (
-          <div className="py-4 animate-in fade-in slide-in-from-top-2 duration-300">
-            <UniversalAIGenerator 
-              mode="bulk-products" 
-              onImportSuccess={() => {
-              window.location.reload()
-            }} />
-          </div>
-        )}
+        {/* L'ancien Générateur IA inline a été retiré au profit de la nouvelle page dédiée V2 */}
       </div>
     </div>
   )

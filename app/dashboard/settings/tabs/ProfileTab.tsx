@@ -13,7 +13,7 @@ import { ImageCropperModal } from '@/components/ui/ImageCropperModal'
 export function ProfileTab({ profile, userId, store }: { profile: any; userId: string; store?: any }) {
   const [userName, setUserName] = useState(profile?.name || '')
   const [userPhone, setUserPhone] = useState(profile?.phone || '')
-  const [storeName, setStoreName] = useState(store?.store_name || '')
+  const [storeName, setStoreName] = useState(store?.name || '')
   const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url || null)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [serverError, setServerError] = useState('')

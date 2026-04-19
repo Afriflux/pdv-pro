@@ -1,12 +1,14 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { triggerViewContentCAPI } from '@/lib/tracking/trigger-funnel'
 
 /**
  * Incrémente le compteur de vues d'un produit via une fonction RPC Supabase.
+ * Déclenche aussi les événements ViewContent CAPI (Meta + TikTok) côté serveur.
  * @param productId ID du produit à tracker
  */
-export async function trackProductView(productId: string) {
+export async function trackProductView(productId: string, clientIp?: string, clientUserAgent?: string) {
   try {
     const supabase = await createClient()
     
@@ -18,6 +20,19 @@ export async function trackProductView(productId: string) {
     if (error) {
       console.error('[Analytics] Error incrementing views:', error)
       return { success: false, error: error.message }
+    }
+
+    // Déclencher CAPI ViewContent (Meta + TikTok) côté serveur
+    // On récupère le store_id pour savoir quels pixels sont configurés
+    const { data: product } = await supabase
+      .from('Product')
+      .select('store_id')
+      .eq('id', productId)
+      .single()
+
+    if (product?.store_id) {
+      triggerViewContentCAPI(productId, product.store_id, clientIp, clientUserAgent)
+        .catch(e => console.error('[CAPI ViewContent Error]', e))
     }
 
     return { success: true }

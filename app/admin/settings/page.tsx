@@ -47,7 +47,7 @@ export default async function AdminSettingsPage() {
           <UserCircle className="w-5 h-5" />
           <span className="font-bold text-sm tracking-wide">Espace Compte</span>
         </div>
-        <h1 className="text-3xl font-black text-[#1A1A1A] tracking-tight">Mon Profil</h1>
+        <h1 className="text-3xl font-black text-[#1A1A1A] tracking-tight">Paramètres</h1>
         <p className="text-gray-500 font-medium mt-2 max-w-2xl">
           Gérez vos informations personnelles et les paramètres généraux de l'administration.
         </p>
@@ -79,10 +79,9 @@ export default async function AdminSettingsPage() {
                </div>
              </div>
              
-             <div className="relative z-10">
+             <div className="relative z-10 w-full">
                 <PlatformSection 
                   initialConfig={configMap} 
-                  allowedTabs={['general', 'legal', 'communications']} 
                 />
              </div>
           </div>

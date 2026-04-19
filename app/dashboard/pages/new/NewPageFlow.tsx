@@ -130,8 +130,9 @@ export function NewPageFlow({ storeId, products, initialTemplateData, globalTemp
     setSelectedTemplate(id)
     const tpl = globalTemplates.find(t => t.id === id)
     if (tpl) {
-      setTitle(tpl.defaultTitle)
-      setSlug(tpl.defaultTitle
+      const defaultTitle = tpl.defaultTitle || tpl.label || 'Nouvelle page'
+      setTitle(defaultTitle)
+      setSlug(defaultTitle
         .toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-z0-9]+/g, '-')

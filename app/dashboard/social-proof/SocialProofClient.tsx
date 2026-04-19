@@ -16,11 +16,15 @@ export function SocialProofClient({
   onSave: (config: any) => Promise<void>
 }) {
   const [active, setActive] = useState(initialActive)
-  const [config, setConfig] = useState(initialConfig || {
-    style: 'modern',
-    durationSeconds: 5,
-    delaySeconds: 10,
-    textTemplate: "{buyer_name} vient d'acheter {product_name}"
+  const [config, setConfig] = useState(() => {
+    const defaultData = {
+      style: 'modern',
+      durationSeconds: 5,
+      delaySeconds: 10,
+      textTemplate: "{buyer_name} vient d'acheter {product_name}"
+    }
+    if (!initialConfig || typeof initialConfig !== 'object') return defaultData
+    return { ...defaultData, ...initialConfig }
   })
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -151,7 +155,7 @@ export function SocialProofClient({
                     <img src="https://source.unsplash.com/random/100x100/?product,box" alt="Product" className="w-full h-full object-cover" />
                   </div>
                   <div>
-                    <p className="text-[13px] text-gray-500">{config.textTemplate.replace('{buyer_name}', 'Awa').replace('{product_name}', 'Robe Wax Premium').replace('{time_ago}', '2h')}</p>
+                    <p className="text-[13px] text-gray-500">{(config.textTemplate || "{buyer_name} vient d'acheter {product_name}").replace('{buyer_name}', 'Awa').replace('{product_name}', 'Robe Wax Premium').replace('{time_ago}', '2h')}</p>
                     <p className="text-[11px] font-bold text-emerald-600 mt-0.5 flex items-center gap-1"><Check size={12}/> Achat Vérifié</p>
                   </div>
                </div>

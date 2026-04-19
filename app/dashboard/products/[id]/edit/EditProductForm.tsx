@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { UniversalAIGenerator } from '@/components/shared/ai/UniversalAIGenerator'
 import { Sparkles, HelpCircle } from 'lucide-react'
+import { ImageCropperModal } from '@/components/shared/ImageCropperModal'
 
 // ----------------------------------------------------------------
 // Types
@@ -76,6 +77,9 @@ interface Product {
   // ── Tarification Récurrente ──
   payment_type?: string | null
   recurring_interval?: string | null
+  
+  // ── Template UI ──
+  template?: string | null
 }
 
 interface EditProductFormProps {
@@ -108,6 +112,10 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
   const [existingImages, setExistingImages] = useState<string[]>(product.images ?? [])
   const [newFiles, setNewFiles]             = useState<File[]>([])
   const [newPreviews, setNewPreviews]       = useState<string[]>([])
+  
+  // File d'attente pour le Cropper
+  const [filesQueue, setFilesQueue]         = useState<File[]>([])
+  const [currentCropFile, setCurrentCropFile] = useState<File | null>(null)
 
   // Variétés
   const [hasVariants, setHasVariants] = useState(initialVariants.length > 0)
@@ -145,6 +153,21 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
   )
   const [licenseNotes,       setLicenseNotes]       = useState(product.license_notes ?? '')
   const existingDigitalFileUrl = product.digital_file_url ?? null
+
+  // ── Moteur Config JSON (Layout, Theme, Couleur) ──────────────────────────
+  const parsedTemplate = useMemo(() => {
+    try {
+      if (!product.template) return { layout: 'default', theme: 'default', color: '' }
+      const config = JSON.parse(product.template)
+      return { layout: config.layout || 'default', theme: config.theme || 'default', color: config.color || '' }
+    } catch {
+      return { layout: product.template || 'default', theme: 'default', color: '' }
+    }
+  }, [product.template])
+
+  const [layoutOverride, setLayoutOverride] = useState(parsedTemplate.layout)
+  const [themeOverride, setThemeOverride] = useState(parsedTemplate.theme)
+  const [colorOverride, setColorOverride] = useState(parsedTemplate.color)
 
   // ── États Droit de revente ──
   const [resaleAllowed,    setResaleAllowed]    = useState(product.resale_allowed ?? false)
@@ -227,6 +250,14 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
   const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
   const MAX_SIZE_MB    = 10
 
+  // Traitement sécurisé de la file d'attente (sans side-effects dans les reducers)
+  useEffect(() => {
+    if (!currentCropFile && filesQueue.length > 0) {
+      setCurrentCropFile(filesQueue[0])
+      setFilesQueue(prev => prev.slice(1))
+    }
+  }, [currentCropFile, filesQueue])
+
   const validateImageFile = (file: File): string | null => {
     if (!ACCEPTED_TYPES.includes(file.type)) {
       return `${file.name} : format non supporté (JPG, PNG, WebP, GIF).`
@@ -245,8 +276,25 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
     const total  = existingImages.length + newFiles.length
     const slots  = Math.max(0, 50 - total)
     const added  = files.slice(0, slots)
-    setNewFiles(prev => [...prev, ...added])
-    setNewPreviews(prev => [...prev, ...added.map(f => URL.createObjectURL(f))])
+    // Engager le rognage pour le premier fichier, mettre les autres en attente
+    if (added.length > 0) {
+      setCurrentCropFile(added[0])
+      setFilesQueue(added.slice(1))
+    }
+    // Nettoyer l'input pour pouvoir resélectionner
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  const handleCropComplete = (croppedFile: File) => {
+    setNewFiles(prev => [...prev, croppedFile])
+    setNewPreviews(prev => [...prev, URL.createObjectURL(croppedFile)])
+    // Déclenche l'appel du useEffect pour dépiler le suivant
+    setCurrentCropFile(null)
+  }
+
+  const handleCropCancel = () => {
+    // Déclenche l'appel du useEffect pour dépiler le suivant
+    setCurrentCropFile(null)
   }
 
   const removeExisting = (i: number) =>
@@ -361,6 +409,11 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
           oto_active:      otoActive,
           oto_product_id:  otoActive ? (otoProductId || null) : null,
           oto_discount:    otoActive ? (parseFloat(otoDiscount) || null) : null,
+          template:        JSON.stringify({
+            layout: layoutOverride === 'default' ? null : layoutOverride,
+            theme: themeOverride === 'default' ? null : themeOverride,
+            color: colorOverride || null
+          }),
           ...typeExtra,
         })
         .eq('id', product.id)
@@ -1252,6 +1305,56 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
           </div>
         </section>
 
+        {/* ── DESIGN & APPARENCE ── */}
+        <section className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <h3 className="w-full p-5 font-semibold text-ink bg-gray-50 border-b border-gray-100 flex items-center gap-2">
+            <span>✨ Design & Apparence Visuelle</span>
+          </h3>
+          <div className="p-5 space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Agencement (Layout)</label>
+              <select
+                title="Agencement"
+                value={layoutOverride} onChange={e => setLayoutOverride(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition bg-white"
+              >
+                <option value="default">Agencement Classique (Défaut)</option>
+                <option value="elegance">Élégance Premium</option>
+                <option value="sales_letter">Lettre de Vente (Max Conversions)</option>
+                <option value="minimal">Minimaliste (Sans distraction)</option>
+                <option value="video_first">Vidéo au centre (V-SL)</option>
+                <option value="portfolio">Portfolio (Agences & Freelances)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Thème (Couleurs globales)</label>
+              <select
+                title="Thème des couleurs"
+                value={themeOverride} onChange={e => setThemeOverride(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition bg-white"
+              >
+                <option value="default">Hérité de la boutique</option>
+                <option value="classic">Clair / Blanc</option>
+                <option value="awa_mode">Awa Mode (Doux)</option>
+                <option value="cinematic">Cinématique (Sombre Premium)</option>
+                <option value="cream_elegant">Crème Élégante</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Couleur des Boutons (Code HEX)</label>
+              <div className="flex gap-3">
+                <input type="color" title="Couleur principale" value={colorOverride || '#0F7A60'} onChange={e => setColorOverride(e.target.value)} className="w-12 h-12 rounded-xl cursor-pointer border-0 p-1" />
+                <input
+                  type="text" value={colorOverride} onChange={e => setColorOverride(e.target.value)}
+                  placeholder="Ex: #FF0055 ou vide pour hériter de la boutique"
+                  className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+                />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Laissez vide pour utiliser la couleur principale de votre boutique.</p>
+            </div>
+          </div>
+        </section>
+
         {/* ── STATUT ── */}
         <section className="bg-white rounded-2xl shadow-sm p-5">
           <div className="flex items-center justify-between">
@@ -1304,6 +1407,16 @@ export function EditProductForm({ storeId, product, initialVariants }: EditProdu
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── IMAGE CROPPER MODAL ── */}
+      {currentCropFile && (
+        <ImageCropperModal
+          imageFile={currentCropFile}
+          aspectRatio={1} // Format Carré 1:1 pour les produits
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+        />
       )}
     </>
   )

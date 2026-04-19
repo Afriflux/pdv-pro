@@ -122,7 +122,7 @@ export function AiGeneratorClient({
               </p>
             </div>
             <p className="text-[11px] font-medium text-purple-700 mt-2 leading-relaxed">
-              Nous utilisons le modèle Claude 3.5 Sonnet pour garantir une syntaxe culturelle adaptée au marché africain francophone.
+              Nous utilisons le modèle Claude 4.6 Sonnet (Pensée adaptative) pour garantir une syntaxe culturelle parfaitement adaptée au marché africain francophone.
             </p>
             <button 
               onClick={() => setIsCheckoutOpen(true)}

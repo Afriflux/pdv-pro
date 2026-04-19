@@ -7,6 +7,7 @@ import { getStorePromotions } from '@/lib/promotions/promotionActions'
 import SocialProofBanner from '@/components/widgets/SocialProofBanner'
 import { PoweredByBadge } from '@/components/branding/PoweredByBadge'
 import { StorefrontClient } from './StorefrontClient'
+import { resolveThemePreferences } from '@/lib/themes/resolver'
 
 export const revalidate = 60 // 1 minute Edge Caching
 
@@ -27,7 +28,8 @@ const getStoreBySlug = cache(async (slug: string) => {
       announcement_active, announcement_text, announcement_bg_color,
       is_active, kyc_status, user:User(phone),
       volume_discounts_active, volume_discounts_config,
-      smart_reviews_active
+      smart_reviews_active,
+      theme_storefront, theme_funnel, theme_product_card
     `)
     .eq('slug', slug)
     .single()
@@ -139,6 +141,8 @@ export default async function StorePage({ params }: StorePageProps) {
   const waPhone     = store.whatsapp || storeUser?.phone || ''
   const socialLinks = store.social_links as Record<string, string> | null
 
+  const themePreferences = resolveThemePreferences(store)
+
   return (
     <StorefrontClient 
       store={store}
@@ -152,6 +156,7 @@ export default async function StorePage({ params }: StorePageProps) {
       waPhone={waPhone}
       socialLinks={socialLinks}
       accent={accent}
+      themePreferences={themePreferences}
       socialProofSlot={
         products && products[0] ? (
           <SocialProofBanner storeId={store.id} productId={products[0].id} stock={99} stockThreshold={10} />

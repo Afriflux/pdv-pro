@@ -85,7 +85,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     .from('Product')
     .select(`
       id, name, description, price, type, images, category, resale_allowed, resale_commission, cash_on_delivery, digital_files, coaching_durations, coaching_is_pack, coaching_pack_count, bump_active, bump_product_id, bump_offer_text,
-      store:Store(id, name, slug, logo_url, primary_color, meta_pixel_id, tiktok_pixel_id, google_tag_id, contract_accepted, vendor_type, kyc_status, created_at, social_links, coaching_max_per_day, coaching_min_notice, free_shipping_threshold, gamification_active, gamification_config, volume_discounts_active, volume_discounts_config)
+      store:Store(id, name, slug, logo_url, primary_color, meta_pixel_id, tiktok_pixel_id, google_tag_id, contract_accepted, vendor_type, kyc_status, created_at, social_links, coaching_max_per_day, coaching_min_notice, free_shipping_threshold, gamification_active, gamification_config, volume_discounts_active, volume_discounts_config, theme_funnel)
     `)
     .eq('id', params.id)
     .eq('active', true)
@@ -112,6 +112,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     meta_pixel_id: string | null; tiktok_pixel_id: string | null; google_tag_id: string | null
     contract_accepted: boolean | null; vendor_type: 'digital' | 'physical' | 'hybrid' | null
     kyc_status: string | null; created_at: string; social_links: any
+    theme_funnel: string
     coaching_max_per_day: number | null; coaching_min_notice: number | null
     free_shipping_threshold: number | null
     gamification_active: boolean

@@ -96,6 +96,7 @@ export function trackPurchase(data: TrackingData) {
     value: data.value,
     currency: data.currency || 'XOF',
     order_id: data.order_id,
+    event_id: data.event_id, // TikTok Events API deduplication
   })
   getGtag()?.('event', 'purchase', {
     transaction_id: data.order_id,

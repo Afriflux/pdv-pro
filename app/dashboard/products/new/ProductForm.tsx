@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { UniversalAIGenerator } from '@/components/shared/ai/UniversalAIGenerator'
 import { Sparkles, HelpCircle, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
+import { ImageCropperModal } from '@/components/shared/ImageCropperModal'
 import { MobilePreviewer } from '@/components/ui/MobilePreviewer'
 
 // ----------------------------------------------------------------
@@ -56,6 +57,8 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
   // Images
   const [imageFiles, setImageFiles]   = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [filesQueue, setFilesQueue]         = useState<File[]>([])
+  const [currentCropFile, setCurrentCropFile] = useState<File | null>(null)
 
   // Variétés
   const [hasVariants, setHasVariants] = useState(false)
@@ -75,7 +78,9 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
   const [currentStep, setCurrentStep] = useState(1)
   const [seoTitle, setSeoTitle] = useState('')
   const [seoDescription, setSeoDescription] = useState('')
-  const [template, _setTemplate] = useState('default')
+  const [layoutOverride, setLayoutOverride] = useState('default')
+  const [themeOverride, setThemeOverride] = useState('default')
+  const [colorOverride, setColorOverride] = useState('')
 
   // Apply Template Data if provided
   useEffect(() => {
@@ -181,6 +186,14 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
   const MAX_SIZE_MB    = 10
 
   // Validation d'un fichier image (format + taille)
+  // Traitement sécurisé de la file d'attente d'images sans side-effects (React strict)
+  useEffect(() => {
+    if (!currentCropFile && filesQueue.length > 0) {
+      setCurrentCropFile(filesQueue[0])
+      setFilesQueue(prev => prev.slice(1))
+    }
+  }, [currentCropFile, filesQueue])
+
   const validateImageFile = (file: File): string | null => {
     if (!ACCEPTED_TYPES.includes(file.type)) {
       return `${file.name} : format non supporté (JPG, PNG, WebP, GIF uniquement).`
@@ -195,14 +208,27 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
     const files  = Array.from(e.target.files ?? [])
     // Valider chaque fichier
     const errors = files.map(validateImageFile).filter(Boolean) as string[]
-    if (errors.length > 0) {
-      setError(errors[0])
-      return
+    if (errors.length > 0) { setError(errors[0]); return }
+    const total = imageFiles.length
+    const slots = Math.max(0, 5 - total) // Max 5 images
+    const added = files.slice(0, slots)
+    
+    // Engager le rognage
+    if (added.length > 0) {
+      setCurrentCropFile(added[0])
+      setFilesQueue(added.slice(1))
     }
-    const newFiles  = [...imageFiles, ...files].slice(0, 5)
-    const previews  = newFiles.map(f => URL.createObjectURL(f))
-    setImageFiles(newFiles)
-    setImagePreviews(previews)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const handleCropComplete = (croppedFile: File) => {
+    setImageFiles(prev => [...prev, croppedFile])
+    setImagePreviews(prev => [...prev, URL.createObjectURL(croppedFile)])
+    setCurrentCropFile(null) // trigger le useEffect pour charger le suivant
+  }
+
+  const handleCropCancel = () => {
+    setCurrentCropFile(null) // trigger le useEffect pour charger le suivant
   }
 
   const removeImage = (index: number) => {
@@ -407,7 +433,11 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
           oto_discount:    otoActive ? (parseFloat(otoDiscount) || null) : null,
           seo_title:       seoTitle.trim() || null,
           seo_description: seoDescription.trim() || null,
-          template:        template,
+          template:        JSON.stringify({
+            layout: layoutOverride === 'default' ? null : layoutOverride,
+            theme: themeOverride === 'default' ? null : themeOverride,
+            color: colorOverride || null
+          }),
           created_at:  new Date().toISOString(),
           updated_at:  new Date().toISOString(),
           ...typeExtra,
@@ -1500,6 +1530,56 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
         )}
       </section>
 
+      {/* ── DESIGN & APPARENCE ── */}
+      <section className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <h3 className="w-full p-5 font-semibold text-ink bg-gray-50 border-b border-gray-100 flex items-center gap-2">
+          <span>✨ Design & Apparence Visuelle</span>
+        </h3>
+        <div className="p-5 space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Agencement (Layout)</label>
+            <select
+              title="Agencement"
+              value={layoutOverride} onChange={e => setLayoutOverride(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition bg-white"
+            >
+              <option value="default">Agencement Classique (Défaut)</option>
+              <option value="elegance">Élégance Premium</option>
+              <option value="sales_letter">Lettre de Vente (Max Conversions)</option>
+              <option value="minimal">Minimaliste (Sans distraction)</option>
+              <option value="video_first">Vidéo au centre (V-SL)</option>
+              <option value="portfolio">Portfolio (Agences & Freelances)</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Thème (Couleurs globales)</label>
+            <select
+              title="Thème des couleurs"
+              value={themeOverride} onChange={e => setThemeOverride(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition bg-white"
+            >
+              <option value="default">Hérité de la boutique</option>
+              <option value="classic">Clair / Blanc</option>
+              <option value="awa_mode">Awa Mode (Doux)</option>
+              <option value="cinematic">Cinématique (Sombre Premium)</option>
+              <option value="cream_elegant">Crème Élégante</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Couleur des Boutons (Code HEX)</label>
+            <div className="flex gap-3">
+              <input type="color" title="Couleur principale" value={colorOverride || '#0F7A60'} onChange={e => setColorOverride(e.target.value)} className="w-12 h-12 rounded-xl cursor-pointer border-0 p-1" />
+              <input
+                type="text" value={colorOverride} onChange={e => setColorOverride(e.target.value)}
+                placeholder="Ex: #FF0055 ou vide pour hériter de la boutique"
+                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gold text-sm transition"
+              />
+            </div>
+            <p className="text-xs text-gray-400 mt-1">Laissez vide pour utiliser la couleur principale de votre boutique.</p>
+          </div>
+        </div>
+      </section>
+
       {/* ── STATUT ── */}
       <section className="bg-white rounded-2xl shadow-sm p-5">
         <div className="flex items-center justify-between">
@@ -1597,13 +1677,23 @@ export function ProductForm({ storeId, vendorType, initialTemplateData }: Produc
              price={price}
              description={description}
              images={imagePreviews}
-             template={template}
+             template={layoutOverride}
              type={type}
            />
         </div>
       </div>
 
      </div>
+      
+      {/* ── IMAGE CROPPER MODAL ── */}
+      {currentCropFile && (
+        <ImageCropperModal
+          imageFile={currentCropFile}
+          aspectRatio={1} // Format Carré 1:1
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+        />
+      )}
     </form>
   )
 }

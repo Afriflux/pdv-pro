@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { BioLinkClientModules, TrackedLink } from './BioLinkClientModules'
 import BioLinkHeaderClient from './BioLinkHeaderClient'
+import BioBlockRenderer from './BioBlockRenderer'
+import type { BioBlock } from './BioBlockRenderer'
 
 import { Metadata } from 'next'
 
@@ -199,14 +201,27 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
             </p>
           )}
 
-          {/* Links Section */}
+          {/* Blocks & Links Section */}
           <div className="space-y-4 w-full flex flex-col mt-10">
-            {links.filter((l: any) => l.isActive !== false).map((link: any, idx: number) => {
-              const delay = `${(idx * 75) + 200}ms`
-              
-              const isPrimary = link.isPrimary;
+            {links.filter((l: any) => l.isActive !== false).map((block: any, idx: number) => {
+              // ── Rich blocks (gallery, media-kit, products, portfolio, faq, text, divider)
+              const blockType = block.type || 'link'
+              if (blockType !== 'link') {
+                return (
+                  <BioBlockRenderer
+                    key={block.id}
+                    block={block as BioBlock}
+                    theme={theme}
+                    brandColor={brandColor}
+                    idx={idx}
+                  />
+                )
+              }
 
-              // Auto-détection d'icône sociale depuis l'URL
+              // ── Classic link rendering (backward compatible)
+              const delay = `${(idx * 75) + 200}ms`
+              const isPrimary = block.isPrimary;
+
               const detectIcon = (url: string): string | null => {
                 if (!url) return null
                 const u = url.toLowerCase()
@@ -226,28 +241,27 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
                 return null
               }
               
-              const autoIcon = link.icon || detectIcon(link.url)
-              
-              const shapeClass = link.buttonShape && link.buttonShape !== 'default' ? link.buttonShape : theme === 'custom' ? customApp?.button_shape : 'rounded-2xl';
+              const autoIcon = block.icon || detectIcon(block.url)
+              const shapeClass = block.buttonShape && block.buttonShape !== 'default' ? block.buttonShape : theme === 'custom' ? customApp?.button_shape : 'rounded-2xl';
               
               return (
                 <TrackedLink 
-                  key={link.id} 
-                  href={link.url}
+                  key={block.id} 
+                  href={block.url}
                   slug={bioLink.slug}
                   className={`w-full py-4 px-4 shadow-sm hover:shadow-md transition-transform hover:scale-[1.02] active:scale-[0.98] font-bold text-sm text-center flex items-center justify-center gap-2 ${shapeClass} ${
                     isPrimary ? 'shadow-lg' : ''
-                  } ${link.animation === 'pulse' ? 'animate-pulse' : link.animation === 'bounce' ? 'animate-bounce' : ''}`}
+                  } ${block.animation === 'pulse' ? 'animate-pulse' : block.animation === 'bounce' ? 'animate-bounce' : ''}`}
                   {...{ style: {
                     animationDelay: delay, 
                     animationFillMode: 'both',
-                    ...(theme === 'custom' && !link.bgColor && customApp?.button_style === 'outline' ? {
+                    ...(theme === 'custom' && !block.bgColor && customApp?.button_style === 'outline' ? {
                       backgroundColor: 'transparent',
                       borderColor: brandColor,
                       color: brandColor,
                       borderWidth: '1px',
                       borderStyle: 'solid'
-                    } : theme === 'custom' && !link.bgColor && customApp?.button_style === 'glass' ? {
+                    } : theme === 'custom' && !block.bgColor && customApp?.button_style === 'glass' ? {
                       backgroundColor: 'rgba(255,255,255,0.1)',
                       borderColor: 'rgba(255,255,255,0.2)',
                       backdropFilter: 'blur(10px)',
@@ -256,20 +270,20 @@ export default async function BioLinkPage({ params }: { params: { slug: string }
                       borderStyle: 'solid'
                     } :
                     isPrimary ? {
-                      backgroundColor: link.bgColor ? link.bgColor : (isGlassTheme ? 'rgba(255, 255, 255, 0.95)' : brandColor),
-                      color: link.textColor ? link.textColor : (isGlassTheme ? brandColor : ctaTextColor),
-                      borderColor: link.bgColor ? 'transparent' : (isGlassTheme ? 'rgba(255, 255, 255, 1)' : brandColor),
+                      backgroundColor: block.bgColor ? block.bgColor : (isGlassTheme ? 'rgba(255, 255, 255, 0.95)' : brandColor),
+                      color: block.textColor ? block.textColor : (isGlassTheme ? brandColor : ctaTextColor),
+                      borderColor: block.bgColor ? 'transparent' : (isGlassTheme ? 'rgba(255, 255, 255, 1)' : brandColor),
                       borderWidth: '1px',
                       borderStyle: 'solid'
                     } : {
-                      backgroundColor: link.bgColor ? link.bgColor : (isDarkTheme ? '#2A2A2A' : isGlassTheme ? 'rgba(255,255,255,0.1)' : '#FFFFFF'),
-                      color: link.textColor ? link.textColor : (isDarkTheme || isGlassTheme ? '#FFFFFF' : '#1A1A1A'),
-                      border: link.bgColor ? 'none' : (isGlassTheme ? '1px solid rgba(255,255,255,0.2)' : isLightTheme ? '1px solid #E5E7EB' : '1px solid transparent')
+                      backgroundColor: block.bgColor ? block.bgColor : (isDarkTheme ? '#2A2A2A' : isGlassTheme ? 'rgba(255,255,255,0.1)' : '#FFFFFF'),
+                      color: block.textColor ? block.textColor : (isDarkTheme || isGlassTheme ? '#FFFFFF' : '#1A1A1A'),
+                      border: block.bgColor ? 'none' : (isGlassTheme ? '1px solid rgba(255,255,255,0.2)' : isLightTheme ? '1px solid #E5E7EB' : '1px solid transparent')
                     })
                   } }}
                 >
                   {autoIcon && <span>{autoIcon}</span>}
-                  {link.title}
+                  {block.title}
                 </TrackedLink>
               )
             })}

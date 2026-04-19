@@ -43,10 +43,16 @@ export async function createBictorysPayment(payload: PaymentRequestPayload): Pro
       throw new Error(data.message || data.error?.message || `Bictorys a refusé la transaction (${response.status})`)
     }
 
+    const paymentUrl = data.url || data.data?.url || data.checkoutUrl || data.paymentUrl;
+
+    if (!paymentUrl) {
+      throw new Error(`Réponse Bictorys invalide. URL de paiement introuvable dans: ${JSON.stringify(data)}`)
+    }
+
     return {
       success: true,
-      paymentUrl: data.checkoutUrl || data.paymentUrl || payload.returnUrl,
-      transactionId: data.id || payload.orderId
+      paymentUrl: paymentUrl,
+      transactionId: data.id || data.data?.id || payload.orderId
     }
   } catch (error: any) {
     console.error('Bictorys Error:', error)

@@ -48,10 +48,15 @@ export async function createCinetpayPayment(payload: PaymentRequestPayload): Pro
       throw new Error(data.description || data.message || 'Erreur lors de la création de la session CinetPay')
     }
 
+    const paymentUrl = data.data?.payment_url
+    if (!paymentUrl) {
+      throw new Error(`Réponse CinetPay invalide. URL de paiement introuvable dans: ${JSON.stringify(data)}`)
+    }
+
     return {
       success: true,
-      paymentUrl: data.data.payment_url,
-      transactionId: data.data.payment_token
+      paymentUrl: paymentUrl,
+      transactionId: data.data?.payment_token
     }
   } catch (error: any) {
     console.error('CinetPay Error:', error)

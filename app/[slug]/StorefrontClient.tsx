@@ -15,6 +15,7 @@ import { SocialProofWidget } from '@/components/shared/storefront/SocialProofWid
 import { HelpdeskWidget } from '@/components/shared/storefront/HelpdeskWidget'
 import { trackViewContent } from '@/lib/tracking/pixel-events'
 import { ReactNode, useState, useEffect } from 'react'
+import type { ThemePreferences } from '@/lib/themes/resolver'
 
 interface StorefrontClientProps {
   store: any
@@ -29,6 +30,7 @@ interface StorefrontClientProps {
   accent: string
   socialProofSlot?: ReactNode
   recentReviews?: any[]
+  themePreferences?: ThemePreferences
 }
 
 export function StorefrontClient({
@@ -44,6 +46,7 @@ export function StorefrontClient({
   accent,
   socialProofSlot,
   recentReviews = [],
+  themePreferences,
 }: StorefrontClientProps) {
   
   const containerVariants = {
@@ -51,6 +54,18 @@ export function StorefrontClient({
     show: {
       opacity: 1,
       transition: { staggerChildren: 0.1 }
+    }
+  }
+
+  // ─── Moteur de Thèmes ───
+  function getThemeClasses(theme?: string) {
+    switch (theme) {
+      case 'cinematic':
+        return 'bg-gray-950 text-gray-100'
+      case 'cream_elegant':
+        return 'bg-[#FAF9F6] text-[#1C201F]'
+      default: // classic
+        return isDark ? 'bg-gray-950 text-gray-100' : 'bg-[#FDFDFD] text-gray-900'
     }
   }
 
@@ -85,7 +100,7 @@ export function StorefrontClient({
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className={`min-h-screen relative overflow-hidden font-body transition-colors duration-300 ${isDark ? 'bg-gray-950 text-gray-100' : 'bg-[#FDFDFD] text-gray-900'}`}>
+    <div className={`min-h-screen relative overflow-hidden font-body transition-colors duration-500 ${getThemeClasses(themePreferences?.theme_storefront)}`}>
       {/* Bandeau d'annonce configurable par le vendeur */}
       {store.announcement_active && store.announcement_text && (
         <div 
@@ -363,7 +378,7 @@ export function StorefrontClient({
               </div>
             )}
 
-            <ProductGrid products={products} promotions={promotions} accent={accent} />
+            <ProductGrid products={products} promotions={promotions} accent={accent} cardTheme={themePreferences?.theme_product_card} />
           </motion.section>
         )}
 

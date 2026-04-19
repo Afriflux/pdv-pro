@@ -10,7 +10,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { format, addDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Minus, Plus, Lock, ShieldCheck, BadgeCheck, MessageCircle, ChevronDown, Facebook, Link2, Check, Timer, Tags, Home, Compass, Store } from 'lucide-react'
+import { ArrowLeft, ShoppingBag, RotateCcw, Truck, ChevronLeft, ChevronRight, Minus, Plus, Lock, ShieldCheck, BadgeCheck, MessageCircle, ChevronDown, Facebook, Link2, Check, Timer, Tags, Home, Compass, Store, Star, CheckCircle2 } from 'lucide-react'
 import Image from 'next/image'
 import { CheckoutForm } from './CheckoutForm'
 import { EleganceTemplate } from './templates/EleganceTemplate'
@@ -75,6 +75,7 @@ interface ProductPageProps {
       free_shipping_threshold?: number | null
       gamification_active?: boolean
       gamification_config?: unknown | null
+      theme_funnel?: string | null
     }
     bump_active?: boolean
     bump_product_id?: string | null
@@ -285,19 +286,19 @@ function ImageGallery({
         )}
       </div>
 
-      {/* Miniatures (desktop seulement) */}
+      {/* Miniatures (Visibles sur tous les écrans) */}
       {images.length > 1 && (
-        <div className="hidden lg:flex gap-2 overflow-x-auto">
+        <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x mt-4">
           {images.map((src, i) => (
             <button
               key={i}
               type="button"
               onClick={() => setActiveIndex(i)}
               aria-label={`Miniature ${i + 1}`}
-              className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+              className={`flex-shrink-0 w-[4.5rem] h-[4.5rem] rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
                 i === activeIndex 
-                  ? 'border-transparent shadow-sm bg-white' 
-                  : 'border-transparent opacity-60 bg-gray-100 hover:opacity-100 mix-blend-multiply'
+                  ? 'shadow-md bg-white scale-105' 
+                  : 'border-transparent opacity-60 bg-[#F9FAFB] hover:opacity-100'
               }`}
               {...{ style: i === activeIndex ? { borderColor: accent } : {} }}
             >
@@ -310,7 +311,38 @@ function ImageGallery({
   )
 }
 
-// ─── Composant Principal ──────────────────────────────────────────────────────
+// ─── Variables Dynamiques de Thème ──────────────────────────────────────────
+function getThemeClasses(theme: string) {
+  switch (theme) {
+    case 'cinematic':
+      return {
+        bg: 'bg-gray-950 text-gray-100',
+        card: 'bg-gray-900 border-gray-800 shadow-2xl',
+        input: 'bg-gray-800 border-gray-700 text-white',
+        text: 'text-gray-100',
+        textMuted: 'text-gray-400',
+        border: 'border-gray-800',
+      }
+    case 'cream_elegant':
+      return {
+        bg: 'bg-[#FAF9F6] text-gray-900', // Coquille d'œuf
+        card: 'bg-white border-[#E8E6DF] shadow-[0_8px_30px_rgb(0,0,0,0.03)] rounded-[2rem]',
+        input: 'bg-[#F5F4EF] border-[#E8E6DF] text-gray-900 focus:bg-white',
+        text: 'text-[#1C201F]', // Vert très très sombre
+        textMuted: 'text-[#7D827D]',
+        border: 'border-[#E8E6DF]',
+      }
+    default: // classic
+      return {
+        bg: 'bg-[#FAFAF7] text-gray-900',
+        card: 'bg-white border-gray-100 shadow-sm rounded-2xl',
+        input: 'bg-white border-gray-200 text-gray-900',
+        text: 'text-gray-900',
+        textMuted: 'text-gray-500',
+        border: 'border-gray-100',
+      }
+  }
+}
 
 export default function ProductPage({
   product,
@@ -328,7 +360,20 @@ export default function ProductPage({
   clientProfile,
   recentOrderSlot,
 }: ProductPageProps) {
-  const accent = product.store.primary_color || '#0F7A60'
+  // ── Moteur Config JSON (Layout, Theme, Couleur) ──────────────────────────
+  const [layoutTemplate, themeOverride, colorOverride] = useMemo(() => {
+    try {
+      if (!product.template) return ['default', null, null]
+      const config = JSON.parse(product.template)
+      return [config.layout || 'default', config.theme || null, config.color || null]
+    } catch {
+      return [product.template || 'default', null, null]
+    }
+  }, [product.template])
+
+  const theme = themeOverride || product.store.theme_funnel || 'classic'
+  const t = getThemeClasses(theme)
+  const accent = colorOverride || product.store.primary_color || '#0F7A60'
 
   const getIntervalSuffix = (interval?: string | null) => {
     switch(interval) {
@@ -400,12 +445,13 @@ export default function ProductPage({
     ? computedPrice.finalPrice
     : product.price
   const finalPrice = baseProductPrice + (selectedVariant?.price_adjust ?? 0)
+  const calculatedTotal = finalPrice * quantity
 
   // --- NOUVEAU : WhatsApp direct ---
   const rawWhatsapp = product.store.social_links?.whatsapp
   const whatsappNumber = rawWhatsapp ? rawWhatsapp.replace(/[^0-9]/g, '') : null
   const isWhatsappCallable = !!whatsappNumber
-  const whatsappMessage = encodeURIComponent(`Bonjour, je veux commander "${product.name}" à ${finalPrice.toLocaleString('fr-FR')} FCFA. (Quantité souhaitée : ${quantity})`)
+  const whatsappMessage = encodeURIComponent(`Bonjour, je veux commander "${product.name}" à ${calculatedTotal.toLocaleString('fr-FR')} FCFA. (Quantité souhaitée : ${quantity})`)
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`
 
   const showCOD = product.type === 'physical' 
@@ -504,7 +550,7 @@ export default function ProductPage({
     />
   )
 
-  if (product.template === 'elegance') {
+  if (layoutTemplate === 'elegance') {
     return (
       <>
         {floatingNavNode}
@@ -530,7 +576,7 @@ export default function ProductPage({
     )
   }
 
-  if (product.template === 'sales_letter') {
+  if (layoutTemplate === 'sales_letter') {
     return (
       <>
         {floatingNavNode}
@@ -552,7 +598,7 @@ export default function ProductPage({
     )
   }
 
-  if (product.template === 'minimal') {
+  if (layoutTemplate === 'minimal') {
     return (
       <>
         {floatingNavNode}
@@ -575,7 +621,7 @@ export default function ProductPage({
     )
   }
 
-  if (product.template === 'video_first') {
+  if (layoutTemplate === 'video_first') {
     return (
       <>
         {floatingNavNode}
@@ -600,7 +646,7 @@ export default function ProductPage({
     )
   }
 
-  if (product.template === 'portfolio') {
+  if (layoutTemplate === 'portfolio') {
     return (
       <>
         {floatingNavNode}
@@ -624,7 +670,7 @@ export default function ProductPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7]">
+    <div className={`min-h-screen ${t.bg} transition-colors duration-500`}>
       {floatingNavNode}
       <ProductJsonLd product={product as any} storeName={product.store.name} storeSlug={product.store.slug} />
 
@@ -705,8 +751,8 @@ export default function ProductPage({
           <div className="space-y-6">
 
             {/* ── Nom produit ────────────────────────────────────────────── */}
-            <div>
-              <h1 className="text-2xl lg:text-3xl font-black text-gray-900 leading-tight">
+            <div className={`${t.card} p-6 sm:p-8 lg:bg-transparent lg:border-none lg:shadow-none lg:p-0`}>
+              <h1 className={`text-3xl sm:text-4xl lg:text-[2.75rem] font-black ${t.text} tracking-tighter leading-[1.1]`}>
                 {product.name}
               </h1>
               
@@ -742,13 +788,13 @@ export default function ProductPage({
             {/* ── Prix ───────────────────────────────────────────────────── */}
             <div className="flex items-center gap-3 flex-wrap">
               {computedPrice.hasDiscount && (
-                <span className="text-lg text-gray-400 line-through">
-                  {product.price.toLocaleString('fr-FR')} FCFA
+                <span className="text-xl md:text-2xl text-gray-400 line-through font-bold">
+                  {(product.price * quantity).toLocaleString('fr-FR')} FCFA
                 </span>
               )}
-              <span className="text-3xl font-black" {...{ style: { color: accent } }}>
-                {finalPrice.toLocaleString('fr-FR')}{' '}
-                <span className="text-base font-medium opacity-60">
+              <span className="text-4xl md:text-5xl font-black tracking-tight" {...{ style: { color: accent } }}>
+                {calculatedTotal.toLocaleString('fr-FR')}{' '}
+                <span className="text-xl md:text-2xl font-bold opacity-60">
                   FCFA{product.payment_type === 'recurring' ? getIntervalSuffix(product.recurring_interval) : ''}
                 </span>
               </span>
@@ -764,15 +810,18 @@ export default function ProductPage({
 
             {/* ── Countdown Timer (Booster) ─────────────────────────────── */}
             {promoEndsAt && timeLeft && (timeLeft.d > 0 || timeLeft.h > 0 || timeLeft.m > 0 || timeLeft.s > 0) && (
-              <div className="flex items-center gap-3 bg-red-50 border border-red-100 p-3 rounded-xl max-w-max">
-                <Timer className="w-5 h-5 text-red-500 animate-pulse" />
+              <div className="flex items-center gap-4 bg-gradient-to-r from-red-50 to-red-50/20 border border-red-100 p-3 lg:p-4 rounded-2xl max-w-max shadow-[0_4px_20px_rgb(239,68,68,0.1)] relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-red-500 animate-pulse"></div>
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
+                  <Timer className="w-5 h-5 text-red-500 animate-pulse" />
+                </div>
                 <div>
-                  <p className="text-xs font-black uppercase text-red-500 tracking-widest leading-tight">L'offre expire dans</p>
-                  <div className="text-red-700 font-black flex items-center gap-1 text-sm">
+                  <p className="text-[10px] sm:text-xs font-black uppercase text-red-500 tracking-widest leading-tight mb-1">L'offre expire dans</p>
+                  <div className="text-red-700 font-black flex items-center gap-1.5 text-sm sm:text-base">
                     {timeLeft.d > 0 && <span>{timeLeft.d}j</span>}
-                    <span className="w-7 text-center bg-white rounded shadow-sm">{timeLeft.h.toString().padStart(2, '0')}</span> h
-                    <span className="w-7 text-center bg-white rounded shadow-sm">{timeLeft.m.toString().padStart(2, '0')}</span> m
-                    <span className="w-7 text-center bg-white rounded shadow-sm">{timeLeft.s.toString().padStart(2, '0')}</span> s
+                    <span className="w-8 py-0.5 text-center bg-white rounded-lg shadow-sm border border-red-100">{timeLeft.h.toString().padStart(2, '0')}</span> h
+                    <span className="w-8 py-0.5 text-center bg-white rounded-lg shadow-sm border border-red-100">{timeLeft.m.toString().padStart(2, '0')}</span> m
+                    <span className="w-8 py-0.5 text-center bg-white rounded-lg shadow-sm border border-red-100">{timeLeft.s.toString().padStart(2, '0')}</span> s
                   </div>
                 </div>
               </div>
@@ -797,9 +846,9 @@ export default function ProductPage({
                             disabled={isOutOfStock}
                             onClick={() => setSelectedVariantId(v.id)}
                             className={`
-                              px-4 py-2.5 rounded-xl border-2 text-sm font-bold transition-all
-                              ${isOutOfStock ? 'opacity-40 cursor-not-allowed line-through text-gray-400 border-gray-200' : ''}
-                              ${isSelected && !isOutOfStock ? 'scale-105 shadow-md' : !isOutOfStock ? 'border-gray-200 text-gray-600 hover:border-gray-400' : ''}
+                              px-5 py-3 rounded-2xl border-2 text-sm font-bold transition-all duration-300
+                              ${isOutOfStock ? 'opacity-40 cursor-not-allowed line-through text-gray-400 border-gray-100 bg-gray-50' : ''}
+                              ${isSelected && !isOutOfStock ? 'scale-105 shadow-[0_8px_20px_rgb(0,0,0,0.06)] bg-white' : !isOutOfStock ? 'border-gray-100 bg-[#F9FAFB] text-gray-600 hover:border-gray-300 hover:bg-white hover:shadow-sm' : ''}
                             `}
                             {...{ style: isSelected && !isOutOfStock
                                 ? { borderColor: accent, backgroundColor: `${accent}0D`, color: accent }
@@ -829,21 +878,21 @@ export default function ProductPage({
                 <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
                   Quantité
                 </p>
-                <div className="inline-flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
+                <div className="inline-flex items-center border-2 border-gray-100 bg-[#F9FAFB] rounded-2xl overflow-hidden shadow-sm">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     aria-label="Diminuer la quantité"
-                    className="w-11 h-11 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                    className="w-12 h-12 flex items-center justify-center hover:bg-white transition-colors"
                   >
                     <Minus className="w-4 h-4 text-gray-600" />
                   </button>
-                  <span className="w-12 text-center font-black text-gray-800">{quantity}</span>
+                  <span className="w-14 text-center font-black text-lg text-gray-800">{quantity}</span>
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => q + 1)}
                     aria-label="Augmenter la quantité"
-                    className="w-11 h-11 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                    className="w-12 h-12 flex items-center justify-center hover:bg-white transition-colors"
                   >
                     <Plus className="w-4 h-4 text-gray-600" />
                   </button>
@@ -922,11 +971,14 @@ export default function ProductPage({
                   <button
                     type="button"
                     onClick={() => handleOpenForm('online')}
-                    className="w-full text-white font-black py-4 rounded-2xl text-base transition-all shadow-xl hover:shadow-2xl hover:scale-[1.01] active:scale-[0.99] flex justify-center items-center gap-2"
-                    {...{ style: { backgroundColor: accent } }}
+                    className="w-full text-white font-black py-4.5 min-h-[60px] rounded-[1.25rem] text-[15px] uppercase tracking-wide transition-all hover:scale-[1.02] active:scale-[0.98] flex justify-center items-center gap-2.5 relative overflow-hidden group"
+                    {...{ style: { backgroundColor: accent, boxShadow: `0 8px 40px -10px ${accent}` } }}
                   >
-                    <ShoppingBag className="w-5 h-5" />
-                    Commander maintenant
+                    <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-300"></div>
+                    <span className="relative z-10 flex items-center gap-2">
+                      <ShoppingBag className="w-5 h-5 animate-bounce" />
+                      Commander maintenant
+                    </span>
                   </button>
 
                   {isWhatsappCallable && (
@@ -960,19 +1012,25 @@ export default function ProductPage({
               </div>
             )}
 
-            {/* ── Badges de confiance (améliorés) ─────────────────────── */}
-            <div className="grid grid-cols-3 gap-2">
-              <div className="flex flex-col items-center justify-center gap-1.5 bg-white rounded-xl p-3 border border-gray-100 text-center shadow-sm">
-                <Lock className="w-5 h-5 text-gray-400" />
-                <span className="text-xs font-bold text-gray-500 leading-tight">Paiement sécurisé</span>
+            {/* ── Badges de confiance (Premium) ─────────────────────── */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col items-center justify-center gap-2 bg-[#F9FAFB] rounded-2xl p-4 border border-gray-50 text-center hover:shadow-md transition-shadow">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-600 mb-1">
+                  <Lock className="w-5 h-5" {...{ style: { color: accent } }} />
+                </div>
+                <span className="text-[11px] font-bold text-gray-600 leading-tight">Paiement 100% sécurisé</span>
               </div>
-              <div className="flex flex-col items-center justify-center gap-1.5 bg-white rounded-xl p-3 border border-gray-100 text-center shadow-sm">
-                <Truck className="w-5 h-5 text-gray-400" />
-                <span className="text-xs font-bold text-gray-500 leading-tight">Livraison suivie</span>
+              <div className="flex flex-col items-center justify-center gap-2 bg-[#F9FAFB] rounded-2xl p-4 border border-gray-50 text-center hover:shadow-md transition-shadow">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-600 mb-1">
+                  <Truck className="w-5 h-5" {...{ style: { color: accent } }} />
+                </div>
+                <span className="text-[11px] font-bold text-gray-600 leading-tight">Livraison ultra-rapide</span>
               </div>
-              <div className="flex flex-col items-center justify-center gap-1.5 bg-white rounded-xl p-3 border border-gray-100 text-center shadow-sm">
-                <ShieldCheck className="w-5 h-5 text-gray-400" />
-                <span className="text-xs font-bold text-gray-500 leading-tight">Satisfait ou remboursé 7j</span>
+              <div className="flex flex-col items-center justify-center gap-2 bg-[#F9FAFB] rounded-2xl p-4 border border-gray-50 text-center hover:shadow-md transition-shadow">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-600 mb-1">
+                  <ShieldCheck className="w-5 h-5" {...{ style: { color: accent } }} />
+                </div>
+                <span className="text-[11px] font-bold text-gray-600 leading-tight">Garanti Satisfait ou Remboursé</span>
               </div>
               {product.store.kyc_status === 'verified' && (
                 <div className="flex flex-col items-center justify-center gap-1.5 bg-white rounded-xl p-3 border border-[#0F7A60]/20 text-center shadow-sm bg-[#0F7A60]/5">
@@ -986,8 +1044,9 @@ export default function ProductPage({
               </div>
             </div>
 
-            {/* ── Section Vendeur Etsy-style ──────────────────────────── */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5 flex flex-col sm:flex-row items-center gap-5 shadow-sm">
+            {/* ── Section Vendeur Premium ──────────────────────────── */}
+            <div className="bg-gradient-to-br from-[#FAFAFA] to-white rounded-[2rem] border border-gray-100 p-6 flex flex-col sm:flex-row items-center gap-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-gray-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
               {product.store.logo_url ? (
                 <img src={product.store.logo_url} alt={product.store.name} className="w-16 h-16 rounded-full object-cover border-2 border-gray-100 shadow-sm" />
               ) : (
@@ -1018,6 +1077,7 @@ export default function ProductPage({
                 </a>
               </div>
             </div>
+
 
             {/* ── Badge droit de revente ──
                 Visible uniquement si le produit autorise la revente par l'acheteur */}
@@ -1054,34 +1114,6 @@ export default function ProductPage({
               </div>
             )}
 
-            {/* ── Description ────────────────────────────────────────── */}
-            {product.description && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-                <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">
-                  Description
-                </h2>
-                <div className="prose prose-sm max-w-none text-gray-700">
-                  {product.description.split('\n').map((line, i) =>
-                    line.trim() ? (
-                      <p key={i} className="mb-2 text-sm leading-relaxed">{line}</p>
-                    ) : (
-                      <br key={i} />
-                    )
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* ── Politique de retour ────────────────────────────────── */}
-            <details className="bg-white rounded-2xl border border-gray-100 shadow-sm [&_summary::-webkit-details-marker]:hidden group">
-              <summary className="flex items-center justify-between p-5 cursor-pointer list-none font-bold text-gray-800 select-none">
-                <span className="flex items-center gap-2"><RotateCcw className="w-5 h-5 text-gray-400" /> Politique de retour</span>
-                <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
-              </summary>
-              <div className="px-5 pb-5 pt-0 text-sm text-gray-600 leading-relaxed border-t border-gray-50 mt-1 pt-4">
-                Retour accepté sous 7 jours après réception. Le produit doit être dans son état d'origine. Contactez le vendeur via WhatsApp pour initier un retour.
-              </div>
-            </details>
 
             {/* ── Volume Discounts — Tableau visuel ──────────────────── */}
             {(product.store as any).volume_discounts_active && (product.store as any).volume_discounts_config && (() => {
@@ -1107,31 +1139,6 @@ export default function ProductPage({
               )
             })()}
 
-            {/* ── Avis clients — Ouvert par défaut ─────────────────────── */}
-            <details open className="bg-white rounded-2xl border border-gray-100 shadow-sm [&_summary::-webkit-details-marker]:hidden group mt-2">
-              <summary className="flex items-center justify-between p-5 cursor-pointer list-none font-bold text-gray-800 select-none">
-                <span className="flex items-center gap-2">⭐ Avis Clients</span>
-                <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
-              </summary>
-              <div className="px-5 pb-5 pt-0 border-t border-gray-50 mt-1 pt-4">
-                <ReviewWidget
-                  storeId={storeId}
-                  productId={product.id}
-                  showForm={true}
-                />
-              </div>
-            </details>
-
-            {/* ── Questions & Réponses (Optionnel) ────────────────────── */}
-            <details className="bg-white rounded-2xl border border-gray-100 shadow-sm [&_summary::-webkit-details-marker]:hidden group mt-2 mb-4">
-              <summary className="flex items-center justify-between p-5 cursor-pointer list-none font-bold text-gray-800 select-none">
-                <span className="flex items-center gap-2">❓ Questions Fréquentes</span>
-                <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
-              </summary>
-              <div className="px-5 pb-5 pt-0 border-t border-gray-50 mt-1 pt-4">
-                <ProductQA productId={product.id} />
-              </div>
-            </details>
 
 
 
@@ -1165,66 +1172,172 @@ export default function ProductPage({
           {/* fin colonne droite */}
         </div>
 
-        {/* ── Boosters / Gamification Globales ─────────────────────── */}
-        <FortuneWheelPopup
-          storeId={product.store.id}
-          active={product.store.gamification_active ?? false}
-          config={product.store.gamification_config}
-        />
+      </div>
+      {/* ── FIN DU MAIN CONTENEUR ── */}
 
-        {/* ── Produits Similaires ───────────────────────────────────── */}
-        {similarProducts && similarProducts.length > 0 && (
-          <div className="mt-16 lg:mt-24 border-t border-gray-100 pt-10">
-            <h2 className="text-2xl font-black text-gray-900 mb-6 text-center lg:text-left">Vous aimerez aussi</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-              {similarProducts.map((p) => {
-                const imgUrl = p.images && p.images.length > 0 ? p.images[0] : null
-                const discountValue = p.computedPrice.activePromo?.discount_type === 'percentage' 
-                  ? `-${p.computedPrice.activePromo.discount_value}%`
-                  : `-${p.computedPrice.activePromo?.discount_value?.toLocaleString('fr-FR')} F`
-                
-                return (
-                  <Link 
-                    key={p.id} 
-                    href={`/checkout/${p.id}`}
-                    className="group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 block"
-                  >
-                    <div className="aspect-square relative bg-gray-50 overflow-hidden">
-                      {imgUrl ? (
-                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={imgUrl} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <ShoppingBag className="w-10 h-10 text-gray-300" />
-                        </div>
-                      )}
-                      {p.computedPrice.hasDiscount && (
-                        <div className="absolute top-2 right-2 bg-red-500 text-white text-xs sm:text-xs font-black px-2 py-1 rounded-full shadow-sm">
-                          {discountValue}
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-sm font-bold text-gray-800 line-clamp-2 leading-snug group-hover:opacity-80 transition-opacity">{p.name}</h3>
-                      <div className="mt-3 flex items-center flex-wrap gap-2">
-                         <p className="font-black text-base sm:text-lg" {...{ style: { color: accent } }}>
-                           {p.computedPrice.finalPrice.toLocaleString('fr-FR')} <span className="text-xs sm:text-xs opacity-70">FCFA</span>
-                         </p>
-                         {p.computedPrice.hasDiscount && (
-                            <p className="text-xs sm:text-xs text-gray-400 line-through">
-                              {p.price.toLocaleString('fr-FR')} F
-                            </p>
-                         )}
-                      </div>
-                    </div>
-                  </Link>
-                )
-              })}
+      {/* ── SECTION FULL-WIDTH: POURQUOI NOUS CHOISIR (WHITE BACKGROUND) ── */}
+      <div className="w-full bg-white border-y border-gray-100 py-16 lg:py-24">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center justify-center bg-yellow-50 text-yellow-600 w-16 h-16 rounded-3xl mb-6 shadow-sm border border-yellow-100">
+              <Star className="w-8 h-8 fill-yellow-500" />
+            </span>
+            <h2 className="text-3xl lg:text-5xl font-black text-gray-900 tracking-tight">Pourquoi nous choisir ?</h2>
+            <p className="text-gray-500 text-lg font-medium mt-4 max-w-2xl mx-auto">La promesse d'une expérience d'achat incomparable, de la commande à la livraison.</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div className="bg-[#F9FAFB] rounded-[2rem] p-8 border border-gray-50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <CheckCircle2 className="w-10 h-10 text-emerald-500 mb-6" />
+              <h3 className="font-black text-gray-900 text-xl mb-3">Qualité supérieure</h3>
+              <p className="text-gray-600 text-base leading-relaxed">Chaque article est sélectionné rigoureusement pour garantir votre satisfaction absolue.</p>
+            </div>
+            {product.type === 'physical' && (
+              <div className="bg-[#F9FAFB] rounded-[2rem] p-8 border border-gray-50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <Truck className="w-10 h-10 text-emerald-500 mb-6" />
+                <h3 className="font-black text-gray-900 text-xl mb-3">Expédition Rapide</h3>
+                <p className="text-gray-600 text-base leading-relaxed">Colis discrètement protégé et expédié avec un suivi en temps réel.</p>
+              </div>
+            )}
+            <div className="bg-[#F9FAFB] rounded-[2rem] p-8 border border-gray-50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <MessageCircle className="w-10 h-10 text-emerald-500 mb-6" />
+              <h3 className="font-black text-gray-900 text-xl mb-3">Assistance VIP</h3>
+              <p className="text-gray-600 text-base leading-relaxed">Notre équipe dédiée est réactive sur WhatsApp 7j/7 pour vous accompagner.</p>
+            </div>
+            <div className="bg-[#F9FAFB] rounded-[2rem] p-8 border border-gray-50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <ShieldCheck className="w-10 h-10 text-emerald-500 mb-6" />
+              <h3 className="font-black text-gray-900 text-xl mb-3">Paiement Sécurisé</h3>
+              <p className="text-gray-600 text-base leading-relaxed">Transactions cryptées via Mobile Money ou Cartes Bancaires. Sans aucun risque.</p>
             </div>
           </div>
-        )}
-
+        </div>
       </div>
+
+      {/* ── SECTION FULL-WIDTH: DESCRIPTION (INVISIBLE BASE) ── */}
+      {product.description && (
+        <div className="w-full py-16 lg:py-24">
+          <div className="max-w-4xl mx-auto px-4">
+            <h2 className="text-3xl lg:text-5xl font-black text-gray-900 mb-12 text-center tracking-tight flex flex-col items-center gap-4">
+              <span className="w-12 h-1.5 rounded-full" {...{ style: { backgroundColor: accent } }}></span>
+              À propos de ce produit
+            </h2>
+            <div className="bg-white rounded-[3rem] border border-gray-100 p-8 md:p-14 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-center sm:text-left">
+              <div className="prose prose-lg md:prose-xl max-w-none text-gray-700 leading-loose font-medium">
+                {product.description.split('\n').map((line, i) =>
+                  line.trim() ? <p key={i} className="mb-6">{line}</p> : <br key={i} />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── SECTION FULL-WIDTH: GARANTIE IMMENSE (DARK EMERALD) ── */}
+      <div className="w-full bg-[#064E3B] py-20 lg:py-32 relative overflow-hidden border-y border-[#065F46]">
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#10B981] to-transparent"></div>
+        <div className="max-w-6xl mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16 text-center md:text-left">
+          <div className="w-32 h-32 md:w-48 md:h-48 rounded-full bg-white/10 backdrop-blur-xl flex items-center justify-center shrink-0 border border-white/20 shadow-2xl">
+            <ShieldCheck className="w-16 h-16 md:w-24 md:h-24 text-white" />
+          </div>
+          <div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight drop-shadow-md">
+              Garantie Yayyam <br className="hidden md:block" />
+              100% Satisfait ou Remboursé
+            </h2>
+            <p className="text-lg md:text-2xl text-emerald-100 font-medium leading-relaxed max-w-3xl drop-shadow">
+              Testez le produit sans aucun risque. Retour garanti sous 7 jours après réception si le produit ne correspond pas à vos attentes. Votre satisfaction passe avant tout.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── SECTION FULL-WIDTH: Q&A ET AVIS (WHITE BACKGROUND) ── */}
+      <div className="w-full bg-white py-20 lg:py-32 border-b border-gray-100">
+        <div className="max-w-5xl mx-auto px-4 space-y-16">
+          
+          <div className="bg-[#F9FAFB] rounded-[3rem] border border-gray-100 shadow-sm p-8 md:p-14">
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-10 flex items-center gap-4">
+               <span className="text-4xl">❓</span> Questions Fréquentes
+            </h2>
+            <ProductQA productId={product.id} />
+          </div>
+
+          <div className="bg-[#F9FAFB] rounded-[3rem] border border-gray-100 shadow-sm p-8 md:p-14">
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-10 flex items-center gap-4">
+               <span className="text-4xl">⭐</span> Avis Clients
+            </h2>
+            <ReviewWidget
+              storeId={storeId}
+              productId={product.id}
+              showForm={true}
+            />
+          </div>
+
+        </div>
+      </div>
+
+      <div className="w-full bg-[#F9FAFB]">
+        <div className="max-w-6xl mx-auto px-4 pt-4 pb-16">
+          {/* ── Boosters / Gamification Globales ─────────────────────── */}
+          <FortuneWheelPopup
+            storeId={product.store.id}
+            active={product.store.gamification_active ?? false}
+            config={product.store.gamification_config}
+          />
+
+          {/* ── Produits Similaires ───────────────────────────────────── */}
+          {similarProducts && similarProducts.length > 0 && (
+            <div className="mt-16 lg:mt-24 border-t border-gray-100 pt-10">
+              <h2 className="text-3xl lg:text-4xl font-black text-gray-900 mb-10 text-center lg:text-left tracking-tight">Vous aimerez aussi</h2>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                {similarProducts.map((p) => {
+                  const imgUrl = p.images && p.images.length > 0 ? p.images[0] : null
+                  const discountValue = p.computedPrice.activePromo?.discount_type === 'percentage' 
+                    ? `-${p.computedPrice.activePromo.discount_value}%`
+                    : `-${p.computedPrice.activePromo?.discount_value?.toLocaleString('fr-FR')} F`
+                  
+                  return (
+                    <Link 
+                      key={p.id} 
+                      href={`/checkout/${p.id}`}
+                      className="group bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 block"
+                    >
+                      <div className="aspect-square relative bg-gray-50 overflow-hidden">
+                        {imgUrl ? (
+                           // eslint-disable-next-line @next/next/no-img-element
+                          <img src={imgUrl} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ShoppingBag className="w-10 h-10 text-gray-300" />
+                          </div>
+                        )}
+                        {p.computedPrice.hasDiscount && (
+                          <div className="absolute top-3 right-3 bg-red-500 text-white text-xs sm:text-xs font-black px-3 py-1.5 rounded-full shadow-sm">
+                            {discountValue}
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-5 flex flex-col justify-between h-[120px]">
+                        <h3 className="text-sm lg:text-base font-bold text-gray-800 line-clamp-2 leading-snug group-hover:opacity-80 transition-opacity">{p.name}</h3>
+                        <div className="mt-auto flex items-center flex-wrap gap-2">
+                           <p className="font-black text-lg sm:text-xl" {...{ style: { color: accent } }}>
+                             {p.computedPrice.finalPrice.toLocaleString('fr-FR')} <span className="text-xs sm:text-sm font-bold opacity-70">FCFA</span>
+                           </p>
+                           {p.computedPrice.hasDiscount && (
+                              <p className="text-xs sm:text-sm font-bold text-gray-400 line-through">
+                                {p.price.toLocaleString('fr-FR')} F
+                              </p>
+                           )}
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
 
       {/* ── Trust & Protection Badges ─────────────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-3">
@@ -1254,10 +1367,10 @@ export default function ProductPage({
       {/* ── Sticky bar DESKTOP — au scroll ────────────────────────────── */}
       <StickyDesktopBar 
         productName={product.name}
-        price={finalPrice}
+        price={calculatedTotal}
         accent={accent}
         hasDiscount={computedPrice.hasDiscount}
-        originalPrice={product.price}
+        originalPrice={product.price * quantity}
         onBuy={() => handleOpenForm('online')}
         showForm={showForm}
       />
@@ -1282,11 +1395,11 @@ export default function ProductPage({
             <div className="flex-shrink-0">
               {computedPrice.hasDiscount && (
                 <p className="text-xs text-gray-400 line-through leading-none">
-                  {product.price.toLocaleString('fr-FR')} F
+                  {(product.price * quantity).toLocaleString('fr-FR')} F
                 </p>
               )}
               <p className="font-black text-lg leading-none" {...{ style: { color: accent } }}>
-                {finalPrice.toLocaleString('fr-FR')}{' '}
+                {calculatedTotal.toLocaleString('fr-FR')}{' '}
                 <span className="text-xs font-medium opacity-60">FCFA</span>
               </p>
             </div>

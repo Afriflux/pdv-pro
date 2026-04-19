@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
-export const dynamic = 'force-dynamic'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import { createEmailCampaign, sendCampaignNow, getBrevoSenders } from '@/lib/brevo/brevo-service'
+
+export const dynamic = 'force-dynamic'
 
 function getYayyamHtmlTemplate(subject: string, htmlContent: string) {
   const formattedContent = htmlContent.replace(/\n/g, '<br/>')

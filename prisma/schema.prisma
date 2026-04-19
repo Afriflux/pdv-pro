@@ -167,6 +167,9 @@ model Store {
   store_name                                          String?
   google_api_secret                                   String?
   tiktok_capi_token                                   String?
+  theme_storefront                                    String                 @default("classic")
+  theme_funnel                                        String                 @default("classic")
+  theme_product_card                                  String                 @default("minimal")
   ai_credits                                          Int                    @default(5)
   Affiliate                                           Affiliate[]
   AffiliateReferral                                   AffiliateReferral?

@@ -223,6 +223,13 @@ export function RegisterForm({ errorMsg }: RegisterFormProps) {
                       return
                     }
                     if (res?.success) {
+                      try {
+                        if (typeof window !== 'undefined') {
+                          if ((window as any).fbq) (window as any).fbq('track', 'CompleteRegistration', { content_name: role })
+                          if ((window as any).ttq) (window as any).ttq.track('CompleteRegistration', { content_type: role })
+                        }
+                      } catch (e) {}
+
                       await Swal.fire({
                         title: 'Inscription Réussie ! 🎉',
                         text: 'Votre compte a bien été créé. Redirection en cours...',

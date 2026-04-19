@@ -3,7 +3,7 @@
 'use client'
 
 import { useState, useTransition, useRef } from 'react'
-import { Plus, Trash2, GripVertical, Save, CheckCircle2, ExternalLink, UploadCloud, Loader2, Image as ImageIcon, Link2, Copy, Grid2X2, List, Eye, Palette, Share2 } from 'lucide-react'
+import { Plus, Trash2, GripVertical, Save, CheckCircle2, ExternalLink, UploadCloud, Loader2, Image as ImageIcon, Link2, Copy, Grid2X2, List, Eye, Palette, Share2, ChevronDown, Type, Minus, HelpCircle, Briefcase, ShoppingBag, LayoutGrid } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { createClient } from '@/lib/supabase/client'
 import { saveBioLink } from '@/app/actions/biolink'
@@ -230,8 +230,52 @@ export default function BioLinkEditor({ userId, initialBioLink, domain, onBack }
     }
   }
 
-  const addLink = () => {
-    setLinks([...links, { id: Math.random().toString(), title: '', url: '', icon: '', isPrimary: false, animation: 'none', isActive: true }])
+  const [showBlockMenu, setShowBlockMenu] = useState(false)
+
+  const BLOCK_TYPES = [
+    { type: 'link', label: 'Lien', icon: '🔗', desc: 'Lien classique' },
+    { type: 'gallery', label: 'Galerie Photos', icon: '🖼️', desc: 'Grille ou carousel d\'images' },
+    { type: 'media-kit', label: 'Media Kit', icon: '📊', desc: 'Stats & chiffres-clés' },
+    { type: 'products', label: 'Produits', icon: '🛒', desc: 'Carousel de produits' },
+    { type: 'portfolio', label: 'Portfolio', icon: '💼', desc: 'Galerie portfolio' },
+    { type: 'faq', label: 'FAQ', icon: '❓', desc: 'Questions fréquentes' },
+    { type: 'text', label: 'Texte', icon: '📝', desc: 'Bloc de texte libre' },
+    { type: 'divider', label: 'Séparateur', icon: '➖', desc: 'Séparateur visuel' },
+  ]
+
+  const addBlock = (blockType: string) => {
+    const id = Math.random().toString(36).slice(2)
+    let newBlock: any = { id, type: blockType, isActive: true }
+    
+    switch (blockType) {
+      case 'link':
+        newBlock = { ...newBlock, title: '', url: '', icon: '', isPrimary: false, animation: 'none' }
+        break
+      case 'gallery':
+        newBlock = { ...newBlock, title: 'Mes Photos', images: [], layout: 'grid' }
+        break
+      case 'media-kit':
+        newBlock = { ...newBlock, title: 'Media Kit', stats: [{ label: 'Followers', value: '10K' }, { label: 'Engagement', value: '5.2%' }], downloadUrl: '', coverImage: '' }
+        break
+      case 'products':
+        newBlock = { ...newBlock, title: 'Mes Produits', items: [] }
+        break
+      case 'portfolio':
+        newBlock = { ...newBlock, title: 'Portfolio', items: [] }
+        break
+      case 'faq':
+        newBlock = { ...newBlock, title: 'FAQ', items: [{ question: '', answer: '' }] }
+        break
+      case 'text':
+        newBlock = { ...newBlock, content: '' }
+        break
+      case 'divider':
+        newBlock = { ...newBlock, dividerStyle: 'line' }
+        break
+    }
+    
+    setLinks([...links, newBlock])
+    setShowBlockMenu(false)
   }
 
   const updateLink = (index: number, key: string, value: any) => {
@@ -628,151 +672,250 @@ export default function BioLinkEditor({ userId, initialBioLink, domain, onBack }
           </div>
         </div>
 
-        {/* LIENS CARD */}
+        {/* BLOCS CARD */}
         <div className="bg-white rounded-[32px] p-6 sm:p-8 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
-            <h3 className="text-xl font-black text-[#1A1A1A]">Mes Liens</h3>
-            <button 
-              onClick={addLink}
-              className="flex items-center gap-1.5 bg-[#0F7A60]/10 text-[#0F7A60] px-4 py-2 rounded-lg font-bold text-sm hover:bg-[#0F7A60] hover:text-white transition-colors"
-            >
-              <Plus size={16} /> Ajouter
-            </button>
+            <h3 className="text-xl font-black text-[#1A1A1A]">Mes Blocs</h3>
+            <div className="relative">
+              <button 
+                onClick={() => setShowBlockMenu(!showBlockMenu)}
+                className="flex items-center gap-1.5 bg-[#0F7A60]/10 text-[#0F7A60] px-4 py-2 rounded-lg font-bold text-sm hover:bg-[#0F7A60] hover:text-white transition-colors"
+              >
+                <Plus size={16} /> Ajouter <ChevronDown size={14} className={`transition-transform ${showBlockMenu ? 'rotate-180' : ''}`} />
+              </button>
+              {showBlockMenu && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowBlockMenu(false)} />
+                  <div className="absolute right-0 top-12 z-50 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    {BLOCK_TYPES.map(bt => (
+                      <button
+                        key={bt.type}
+                        onClick={() => addBlock(bt.type)}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left"
+                      >
+                        <span className="text-lg">{bt.icon}</span>
+                        <div>
+                          <p className="text-sm font-bold text-gray-800">{bt.label}</p>
+                          <p className="text-[10px] text-gray-400 font-medium">{bt.desc}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           
           <div className="space-y-4">
             {links.length === 0 ? (
               <div className="text-center py-6 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                 <Link2 className="mx-auto h-8 w-8 text-gray-300 mb-2" />
-                <p className="text-sm font-medium text-gray-500">Aucun lien ajouté.</p>
+                <p className="text-sm font-medium text-gray-500">Aucun bloc ajouté. Cliquez sur &quot;Ajouter&quot; pour commencer.</p>
               </div>
             ) : (
-              links.map((link, index) => (
+              links.map((link, index) => {
+                const blockType = link.type || 'link'
+                const blockLabel = BLOCK_TYPES.find(b => b.type === blockType)
+                
+                return (
                 <div key={link.id} className={`group relative border rounded-2xl p-4 flex flex-col sm:flex-row gap-3 transition-all hover:shadow-md ${link.isPrimary ? 'border-[#0F7A60] bg-[#0F7A60]/5' : 'border-gray-100 bg-[#FAFAF7]'}`}>
-                  <div className="mt-2 text-gray-400 cursor-grab active:cursor-grabbing self-start">
+                  <div className="mt-2 text-gray-400 cursor-grab active:cursor-grabbing self-start flex flex-col items-center gap-1">
                     <GripVertical size={20} />
+                    {blockLabel && blockType !== 'link' && (
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">{blockLabel.icon}</span>
+                    )}
                   </div>
                   
                   <div className="flex-1 space-y-3">
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <div className="w-16 shrink-0 relative">
-                        <button 
-                          title="Icône"
-                          type="button" 
-                          onClick={() => setOpenEmojiId(openEmojiId === link.id ? null : link.id)}
-                          className="w-full bg-white border border-gray-200 rounded-lg h-[38px] flex items-center justify-center text-lg hover:bg-gray-50 focus:ring-2 focus:ring-[#0F7A60]/20 outline-none"
-                        >
-                          {link.icon || '😌'}
-                        </button>
-                        {openEmojiId === link.id && (
-                          <>
-                            <div className="fixed inset-0 z-40" onClick={() => setOpenEmojiId(null)} />
-                            <div className="absolute top-12 left-0 z-50 shadow-2xl rounded-lg">
-                              <EmojiPicker 
-                                onEmojiClick={(emojiData) => {
-                                  updateLink(index, 'icon', emojiData.emoji)
-                                  setOpenEmojiId(null)
-                                }}
-                                width={280}
-                                height={380}
-                              />
+                    {/* ── Link Block ─────────────────── */}
+                    {blockType === 'link' && (
+                      <>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <div className="w-16 shrink-0 relative">
+                            <button 
+                              title="Icône"
+                              type="button" 
+                              onClick={() => setOpenEmojiId(openEmojiId === link.id ? null : link.id)}
+                              className="w-full bg-white border border-gray-200 rounded-lg h-[38px] flex items-center justify-center text-lg hover:bg-gray-50 focus:ring-2 focus:ring-[#0F7A60]/20 outline-none"
+                            >
+                              {link.icon || '😌'}
+                            </button>
+                            {openEmojiId === link.id && (
+                              <>
+                                <div className="fixed inset-0 z-40" onClick={() => setOpenEmojiId(null)} />
+                                <div className="absolute top-12 left-0 z-50 shadow-2xl rounded-lg">
+                                  <EmojiPicker 
+                                    onEmojiClick={(emojiData) => {
+                                      updateLink(index, 'icon', emojiData.emoji)
+                                      setOpenEmojiId(null)
+                                    }}
+                                    width={280}
+                                    height={380}
+                                  />
+                                </div>
+                              </>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <input title="Titre du lien" type="text" value={link.title} onChange={(e) => updateLink(index, 'title', e.target.value)} placeholder="Titre du lien" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-[#0F7A60]/20 outline-none" />
+                          </div>
+                        </div>
+                        <input title="URL du lien" type="url" value={link.url} onChange={(e) => updateLink(index, 'url', e.target.value)} placeholder="URL (https://...)" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-[#0F7A60]/20 outline-none" />
+                        <div className="flex items-center gap-3 mt-1">
+                          <div className="flex flex-col flex-1">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Fond</label>
+                            <div className="flex">
+                              <input type="color" title="Couleur de fond" value={link.bgColor || '#ffffff'} onChange={(e) => updateLink(index, 'bgColor', e.target.value)} className="h-8 w-10 border-0 p-0 rounded-l-md cursor-pointer shrink-0" />
+                              <input type="text" value={link.bgColor || ''} onChange={(e) => updateLink(index, 'bgColor', e.target.value)} placeholder="Défaut" className="flex-1 border border-gray-200 border-l-0 rounded-r-md px-2 text-xs font-medium focus:outline-none" />
                             </div>
-                          </>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <input 
-                          title="Titre du lien"
-                          type="text" 
-                          value={link.title}
-                          onChange={(e) => updateLink(index, 'title', e.target.value)}
-                          placeholder="Titre du lien"
-                          className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-[#0F7A60]/20 outline-none"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <input 
-                        title="URL du lien"
-                        type="url" 
-                        value={link.url}
-                        onChange={(e) => updateLink(index, 'url', e.target.value)}
-                        placeholder="URL (https://...)"
-                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-[#0F7A60]/20 outline-none"
-                      />
-                    </div>
-                    
-                    <div className="flex items-center gap-3 mt-1">
-                       <div className="flex flex-col flex-1">
-                         <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Fond personnalisé</label>
-                         <div className="flex">
-                           <input type="color" title="Couleur de fond" value={link.bgColor || '#ffffff'} onChange={(e) => updateLink(index, 'bgColor', e.target.value)} className="h-8 w-10 border-0 p-0 rounded-l-md cursor-pointer shrink-0" />
-                           <input type="text" value={link.bgColor || ''} onChange={(e) => updateLink(index, 'bgColor', e.target.value)} placeholder="Défaut" className="flex-1 border border-gray-200 border-l-0 rounded-r-md px-2 text-xs font-medium focus:outline-none" />
-                         </div>
-                       </div>
-                       <div className="flex flex-col flex-1">
-                         <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Texte / Icône</label>
-                         <div className="flex">
-                           <input type="color" title="Couleur du texte" value={link.textColor || '#000000'} onChange={(e) => updateLink(index, 'textColor', e.target.value)} className="h-8 w-10 border-0 p-0 rounded-l-md cursor-pointer shrink-0" />
-                           <input type="text" value={link.textColor || ''} onChange={(e) => updateLink(index, 'textColor', e.target.value)} placeholder="Défaut" className="flex-1 border border-gray-200 border-l-0 rounded-r-md px-2 text-xs font-medium focus:outline-none" />
-                         </div>
-                       </div>
-                    </div>
+                          </div>
+                          <div className="flex flex-col flex-1">
+                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Texte</label>
+                            <div className="flex">
+                              <input type="color" title="Couleur du texte" value={link.textColor || '#000000'} onChange={(e) => updateLink(index, 'textColor', e.target.value)} className="h-8 w-10 border-0 p-0 rounded-l-md cursor-pointer shrink-0" />
+                              <input type="text" value={link.textColor || ''} onChange={(e) => updateLink(index, 'textColor', e.target.value)} placeholder="Défaut" className="flex-1 border border-gray-200 border-l-0 rounded-r-md px-2 text-xs font-medium focus:outline-none" />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-200/60 mt-1">
+                          <div className="flex items-center gap-2">
+                            <input title="Mettre en avant" type="checkbox" id={`primary-${index}`} checked={link.isPrimary || false} onChange={(e) => updateLink(index, 'isPrimary', e.target.checked)} className="rounded text-[#0F7A60] focus:ring-[#0F7A60]" />
+                            <label htmlFor={`primary-${index}`} className="text-xs font-bold text-gray-500 cursor-pointer select-none">Mettre en avant</label>
+                          </div>
+                          <select title="Animation" value={link.animation || 'none'} onChange={(e) => updateLink(index, 'animation', e.target.value)} className="bg-transparent text-xs font-bold text-gray-500 cursor-pointer outline-none border-b border-gray-200 pb-0.5">
+                            <option value="none">Sans animation</option>
+                            <option value="pulse">Pulse</option>
+                            <option value="bounce">Bounce</option>
+                          </select>
+                        </div>
+                      </>
+                    )}
 
-                    <div className="flex items-center gap-3 mt-2">
-                       <div className="flex flex-col flex-1">
-                         <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Forme Personnalisée</label>
-                         <select
-                           title="Forme du bouton locale"
-                           value={link.buttonShape || 'default'}
-                           onChange={(e) => updateLink(index, 'buttonShape', e.target.value === 'default' ? '' : e.target.value)}
-                           className="w-full text-xs p-2 border border-gray-200 rounded-lg outline-none"
-                         >
-                           <option value="default">Par défaut (Thème)</option>
-                           <option value="rounded-none">Carré</option>
-                           <option value="rounded-xl">Pilule</option>
-                           <option value="rounded-full">Ovale</option>
-                         </select>
-                       </div>
-                    </div>
+                    {/* ── Gallery Block ─────────────── */}
+                    {blockType === 'gallery' && (
+                      <>
+                        <input title="Titre de la galerie" type="text" value={link.title || ''} onChange={(e) => updateLink(index, 'title', e.target.value)} placeholder="Titre de la galerie" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-[#0F7A60]/20 outline-none" />
+                        <div className="flex gap-2 mb-2">
+                          <button onClick={() => updateLink(index, 'layout', 'grid')} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border ${link.layout === 'grid' ? 'bg-[#0F7A60]/10 border-[#0F7A60] text-[#0F7A60]' : 'border-gray-200 text-gray-400'}`}><LayoutGrid size={14} className="inline mr-1" />Grille</button>
+                          <button onClick={() => updateLink(index, 'layout', 'carousel')} className={`flex-1 py-1.5 text-xs font-bold rounded-lg border ${link.layout === 'carousel' ? 'bg-[#0F7A60]/10 border-[#0F7A60] text-[#0F7A60]' : 'border-gray-200 text-gray-400'}`}>📜 Carousel</button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {(link.images || []).map((img: string, i: number) => (
+                            <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200 group">
+                              <img src={img} alt="" className="w-full h-full object-cover" />
+                              <button title="Supprimer l'image" onClick={() => { const imgs = [...(link.images || [])]; imgs.splice(i, 1); updateLink(index, 'images', imgs) }} className="absolute inset-0 bg-red-500/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition text-white"><Trash2 size={14} /></button>
+                            </div>
+                          ))}
+                        </div>
+                        <input title="Ajouter une image (URL)" type="url" placeholder="URL de l'image (https://...)" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-[#0F7A60]/20 outline-none" onKeyDown={(e: any) => { if (e.key === 'Enter' && e.target.value.trim()) { updateLink(index, 'images', [...(link.images || []), e.target.value.trim()]); e.target.value = '' } }} />
+                        <p className="text-[10px] text-gray-400 font-medium">Collez l'URL d'une image et appuyez sur Entrée</p>
+                      </>
+                    )}
 
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-200/60 mt-1">
-                       <div className="flex items-center gap-2">
-                         <input 
-                           title="Mettre en avant"
-                           type="checkbox" 
-                           id={`primary-${index}`}
-                           checked={link.isPrimary || false}
-                           onChange={(e) => updateLink(index, 'isPrimary', e.target.checked)}
-                           className="rounded text-[#0F7A60] focus:ring-[#0F7A60]"
-                         />
-                         <label htmlFor={`primary-${index}`} className="text-xs font-bold text-gray-500 cursor-pointer select-none">
-                           Mettre en avant
-                         </label>
-                       </div>
-                       
-                       <select
-                         title="Animation"
-                         value={link.animation || 'none'}
-                         onChange={(e) => updateLink(index, 'animation', e.target.value)}
-                         className="bg-transparent text-xs font-bold text-gray-500 cursor-pointer outline-none border-b border-gray-200 pb-0.5"
-                       >
-                         <option value="none">Sans animation</option>
-                         <option value="pulse">Pulse (Battement)</option>
-                         <option value="bounce">Bounce (Rebond)</option>
-                       </select>
-                    </div>
+                    {/* ── Media Kit Block ───────────── */}
+                    {blockType === 'media-kit' && (
+                      <>
+                        <input title="Titre" type="text" value={link.title || ''} onChange={(e) => updateLink(index, 'title', e.target.value)} placeholder="Media Kit" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-[#0F7A60]/20 outline-none" />
+                        <div className="space-y-2">
+                          {(link.stats || []).map((stat: any, si: number) => (
+                            <div key={si} className="flex gap-2">
+                              <input type="text" value={stat.label} onChange={(e) => { const stats = [...(link.stats || [])]; stats[si] = { ...stats[si], label: e.target.value }; updateLink(index, 'stats', stats) }} placeholder="Label" className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-medium focus:outline-none" />
+                              <input type="text" value={stat.value} onChange={(e) => { const stats = [...(link.stats || [])]; stats[si] = { ...stats[si], value: e.target.value }; updateLink(index, 'stats', stats) }} placeholder="Valeur" className="w-24 bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-bold focus:outline-none" />
+                              <button title="Supprimer la stat" onClick={() => { const stats = [...(link.stats || [])]; stats.splice(si, 1); updateLink(index, 'stats', stats) }} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
+                            </div>
+                          ))}
+                          <button onClick={() => updateLink(index, 'stats', [...(link.stats || []), { label: '', value: '' }])} className="text-xs font-bold text-[#0F7A60] hover:underline">+ Ajouter une stat</button>
+                        </div>
+                        <input title="URL de téléchargement" type="url" value={link.downloadUrl || ''} onChange={(e) => updateLink(index, 'downloadUrl', e.target.value)} placeholder="URL PDF du media kit (optionnel)" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-medium focus:outline-none" />
+                      </>
+                    )}
+
+                    {/* ── Products Block ────────────── */}
+                    {blockType === 'products' && (
+                      <>
+                        <input title="Titre" type="text" value={link.title || ''} onChange={(e) => updateLink(index, 'title', e.target.value)} placeholder="Mes Produits" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-[#0F7A60]/20 outline-none" />
+                        <div className="space-y-2">
+                          {(link.items || []).map((item: any, pi: number) => (
+                            <div key={pi} className="bg-white border border-gray-200 rounded-xl p-3 space-y-2">
+                              <div className="flex gap-2">
+                                <input type="text" value={item.name} onChange={(e) => { const items = [...(link.items || [])]; items[pi] = { ...items[pi], name: e.target.value }; updateLink(index, 'items', items) }} placeholder="Nom du produit" className="flex-1 text-xs font-bold border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none" />
+                                <input type="number" value={item.price || ''} onChange={(e) => { const items = [...(link.items || [])]; items[pi] = { ...items[pi], price: parseInt(e.target.value) || 0 }; updateLink(index, 'items', items) }} placeholder="Prix" className="w-20 text-xs font-bold border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none" />
+                                <button title="Supprimer le produit" onClick={() => { const items = [...(link.items || [])]; items.splice(pi, 1); updateLink(index, 'items', items) }} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
+                              </div>
+                              <input type="url" value={item.url || ''} onChange={(e) => { const items = [...(link.items || [])]; items[pi] = { ...items[pi], url: e.target.value }; updateLink(index, 'items', items) }} placeholder="Lien du produit" className="w-full text-xs border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none" />
+                              <input type="url" value={item.image || ''} onChange={(e) => { const items = [...(link.items || [])]; items[pi] = { ...items[pi], image: e.target.value }; updateLink(index, 'items', items) }} placeholder="Image du produit (URL)" className="w-full text-xs border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none" />
+                            </div>
+                          ))}
+                          <button onClick={() => updateLink(index, 'items', [...(link.items || []), { name: '', price: 0, url: '', image: '' }])} className="text-xs font-bold text-[#0F7A60] hover:underline">+ Ajouter un produit</button>
+                        </div>
+                      </>
+                    )}
+
+                    {/* ── Portfolio Block ───────────── */}
+                    {blockType === 'portfolio' && (
+                      <>
+                        <input title="Titre" type="text" value={link.title || ''} onChange={(e) => updateLink(index, 'title', e.target.value)} placeholder="Portfolio" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-[#0F7A60]/20 outline-none" />
+                        <div className="space-y-2">
+                          {(link.items || []).map((item: any, pi: number) => (
+                            <div key={pi} className="bg-white border border-gray-200 rounded-xl p-3 space-y-2">
+                              <input type="text" value={item.title} onChange={(e) => { const items = [...(link.items || [])]; items[pi] = { ...items[pi], title: e.target.value }; updateLink(index, 'items', items) }} placeholder="Titre du projet" className="w-full text-xs font-bold border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none" />
+                              <input type="url" value={item.image || ''} onChange={(e) => { const items = [...(link.items || [])]; items[pi] = { ...items[pi], image: e.target.value }; updateLink(index, 'items', items) }} placeholder="Image (URL)" className="w-full text-xs border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none" />
+                              <input type="text" value={item.description || ''} onChange={(e) => { const items = [...(link.items || [])]; items[pi] = { ...items[pi], description: e.target.value }; updateLink(index, 'items', items) }} placeholder="Description courte" className="w-full text-xs border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none" />
+                              <div className="flex gap-2">
+                                <input type="url" value={item.url || ''} onChange={(e) => { const items = [...(link.items || [])]; items[pi] = { ...items[pi], url: e.target.value }; updateLink(index, 'items', items) }} placeholder="Lien (optionnel)" className="flex-1 text-xs border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none" />
+                                <button title="Supprimer le projet" onClick={() => { const items = [...(link.items || [])]; items.splice(pi, 1); updateLink(index, 'items', items) }} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
+                              </div>
+                            </div>
+                          ))}
+                          <button onClick={() => updateLink(index, 'items', [...(link.items || []), { title: '', image: '', description: '', url: '' }])} className="text-xs font-bold text-[#0F7A60] hover:underline">+ Ajouter un projet</button>
+                        </div>
+                      </>
+                    )}
+
+                    {/* ── FAQ Block ─────────────────── */}
+                    {blockType === 'faq' && (
+                      <>
+                        <input title="Titre" type="text" value={link.title || ''} onChange={(e) => updateLink(index, 'title', e.target.value)} placeholder="FAQ" className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-[#0F7A60]/20 outline-none" />
+                        <div className="space-y-2">
+                          {(link.items || []).map((item: any, qi: number) => (
+                            <div key={qi} className="bg-white border border-gray-200 rounded-xl p-3 space-y-2">
+                              <div className="flex gap-2">
+                                <input type="text" value={item.question} onChange={(e) => { const items = [...(link.items || [])]; items[qi] = { ...items[qi], question: e.target.value }; updateLink(index, 'items', items) }} placeholder="Question" className="flex-1 text-xs font-bold border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none" />
+                                <button title="Supprimer la question" onClick={() => { const items = [...(link.items || [])]; items.splice(qi, 1); updateLink(index, 'items', items) }} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
+                              </div>
+                              <textarea value={item.answer} onChange={(e) => { const items = [...(link.items || [])]; items[qi] = { ...items[qi], answer: e.target.value }; updateLink(index, 'items', items) }} placeholder="Réponse" className="w-full text-xs border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none resize-none h-16" />
+                            </div>
+                          ))}
+                          <button onClick={() => updateLink(index, 'items', [...(link.items || []), { question: '', answer: '' }])} className="text-xs font-bold text-[#0F7A60] hover:underline">+ Ajouter une question</button>
+                        </div>
+                      </>
+                    )}
+
+                    {/* ── Text Block ────────────────── */}
+                    {blockType === 'text' && (
+                      <textarea value={link.content || ''} onChange={(e) => updateLink(index, 'content', e.target.value)} placeholder="Écrivez votre texte ici..." className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-[#0F7A60]/20 outline-none resize-none h-24" />
+                    )}
+
+                    {/* ── Divider Block ─────────────── */}
+                    {blockType === 'divider' && (
+                      <div className="flex gap-2">
+                        <button onClick={() => updateLink(index, 'dividerStyle', 'line')} className={`flex-1 py-2 text-xs font-bold rounded-lg border ${link.dividerStyle === 'line' || !link.dividerStyle ? 'bg-[#0F7A60]/10 border-[#0F7A60] text-[#0F7A60]' : 'border-gray-200 text-gray-400'}`}>── Ligne</button>
+                        <button onClick={() => updateLink(index, 'dividerStyle', 'dotted')} className={`flex-1 py-2 text-xs font-bold rounded-lg border ${link.dividerStyle === 'dotted' ? 'bg-[#0F7A60]/10 border-[#0F7A60] text-[#0F7A60]' : 'border-gray-200 text-gray-400'}`}>···· Pointillés</button>
+                        <button onClick={() => updateLink(index, 'dividerStyle', 'space')} className={`flex-1 py-2 text-xs font-bold rounded-lg border ${link.dividerStyle === 'space' ? 'bg-[#0F7A60]/10 border-[#0F7A60] text-[#0F7A60]' : 'border-gray-200 text-gray-400'}`}>⬜ Espace</button>
+                      </div>
+                    )}
                   </div>
                   
                   <button 
-                    title="Supprimer le lien"
+                    title="Supprimer le bloc"
                     onClick={() => removeLink(index)}
                     className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg h-fit transition-colors shrink-0 self-end sm:self-start mt-4 sm:mt-0"
                   >
                     <Trash2 size={18} />
                   </button>
                 </div>
-              ))
+                )
+              })
             )}
           </div>
         </div>
@@ -934,7 +1077,173 @@ export default function BioLinkEditor({ userId, initialBioLink, domain, onBack }
                   </p>
                   
                   <div className="w-full space-y-3 pb-10">
-                    {links.map((link) => {
+                    {links.filter((l: any) => l.isActive !== false).map((link: any) => {
+                      const blockType = link.type || 'link'
+                      const previewCard = isDarkTheme ? 'bg-white/5 border border-white/10' : isGlassTheme ? 'bg-white/10 backdrop-blur-sm border border-white/20' : 'bg-white border border-gray-100'
+                      const previewSub = isDarkTheme ? 'text-gray-400' : isGlassTheme ? 'text-white/60' : 'text-gray-500'
+
+                      {/* ── Gallery Preview ─────────── */}
+                      if (blockType === 'gallery') {
+                        return (
+                          <div key={link.id} className={`w-full rounded-2xl p-3 shadow-sm ${previewCard}`}>
+                            {link.title && <h4 className="font-black text-xs mb-2">{link.title}</h4>}
+                            {(link.images || []).length > 0 ? (
+                              link.layout === 'carousel' ? (
+                                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+                                  {(link.images || []).map((img: string, i: number) => (
+                                    <div key={i} className="shrink-0 w-20 h-20 rounded-xl overflow-hidden border border-black/5">
+                                      <img src={img} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className={`grid gap-1.5 ${(link.images || []).length === 1 ? 'grid-cols-1' : (link.images || []).length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                                  {(link.images || []).map((img: string, i: number) => (
+                                    <div key={i} className="aspect-square rounded-xl overflow-hidden border border-black/5">
+                                      <img src={img} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                  ))}
+                                </div>
+                              )
+                            ) : (
+                              <div className={`text-center py-4 text-[10px] font-medium ${previewSub}`}>🖼️ Ajoutez des images</div>
+                            )}
+                          </div>
+                        )
+                      }
+
+                      {/* ── Media Kit Preview ────────── */}
+                      if (blockType === 'media-kit') {
+                        return (
+                          <div key={link.id} className={`w-full rounded-2xl overflow-hidden shadow-sm ${previewCard}`}>
+                            {link.coverImage && (
+                              <div className="w-full h-16 overflow-hidden">
+                                <img src={link.coverImage} alt="" className="w-full h-full object-cover" />
+                              </div>
+                            )}
+                            <div className="p-3">
+                              <h4 className="font-black text-xs mb-0.5">{link.title || 'Media Kit'}</h4>
+                              <p className={`text-[9px] font-medium mb-2 ${previewSub}`}>Chiffres clés</p>
+                              <div className="grid grid-cols-2 gap-1.5">
+                                {(link.stats || []).map((stat: any, i: number) => (
+                                  <div key={i} className="rounded-lg p-1.5 text-center" {...{ style: { backgroundColor: `${formData.brand_color}10` } }}>
+                                    <div className="font-black text-[11px]" {...{ style: { color: formData.brand_color } }}>{stat.value}</div>
+                                    <div className={`text-[8px] font-bold uppercase tracking-wider ${previewSub}`}>{stat.label}</div>
+                                  </div>
+                                ))}
+                              </div>
+                              {link.downloadUrl && (
+                                <div className="mt-2 w-full py-1.5 rounded-lg text-white text-[10px] font-bold text-center" {...{ style: { backgroundColor: formData.brand_color } }}>
+                                  📥 Télécharger
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      }
+
+                      {/* ── Products Preview ─────────── */}
+                      if (blockType === 'products') {
+                        return (
+                          <div key={link.id} className={`w-full rounded-2xl p-3 shadow-sm ${previewCard}`}>
+                            {link.title && <h4 className="font-black text-xs mb-2 flex items-center gap-1">🛒 {link.title}</h4>}
+                            {(link.items || []).length > 0 ? (
+                              <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+                                {(link.items || []).map((item: any, i: number) => (
+                                  <div key={i} className="shrink-0 w-24 rounded-xl border border-black/5 overflow-hidden">
+                                    {item.image ? (
+                                      <div className="w-full aspect-square overflow-hidden">
+                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                      </div>
+                                    ) : (
+                                      <div className="w-full aspect-square flex items-center justify-center text-xl" {...{ style: { backgroundColor: `${formData.brand_color}10` } }}>🛍️</div>
+                                    )}
+                                    <div className="p-1.5">
+                                      <p className="text-[9px] font-bold truncate">{item.name || 'Produit'}</p>
+                                      <p className="text-[10px] font-black mt-0.5" {...{ style: { color: formData.brand_color } }}>{(item.price || 0).toLocaleString('fr-FR')} F</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className={`text-center py-4 text-[10px] font-medium ${previewSub}`}>🛒 Ajoutez des produits</div>
+                            )}
+                          </div>
+                        )
+                      }
+
+                      {/* ── Portfolio Preview ────────── */}
+                      if (blockType === 'portfolio') {
+                        return (
+                          <div key={link.id} className={`w-full rounded-2xl p-3 shadow-sm ${previewCard}`}>
+                            {link.title && <h4 className="font-black text-xs mb-2">{link.title}</h4>}
+                            {(link.items || []).length > 0 ? (
+                              <div className="grid grid-cols-2 gap-1.5">
+                                {(link.items || []).map((item: any, i: number) => (
+                                  <div key={i} className="rounded-xl overflow-hidden border border-black/5 relative group">
+                                    {item.image ? (
+                                      <div className="aspect-[4/5] overflow-hidden">
+                                        <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                                      </div>
+                                    ) : (
+                                      <div className="aspect-[4/5] flex items-center justify-center text-lg" {...{ style: { backgroundColor: `${formData.brand_color}10` } }}>💼</div>
+                                    )}
+                                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 pt-4">
+                                      <p className="text-white font-bold text-[9px] truncate">{item.title || 'Projet'}</p>
+                                      {item.description && <p className="text-white/70 text-[8px] truncate">{item.description}</p>}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className={`text-center py-4 text-[10px] font-medium ${previewSub}`}>💼 Ajoutez des projets</div>
+                            )}
+                          </div>
+                        )
+                      }
+
+                      {/* ── FAQ Preview ───────────────── */}
+                      if (blockType === 'faq') {
+                        return (
+                          <div key={link.id} className={`w-full rounded-2xl p-3 shadow-sm ${previewCard}`}>
+                            {link.title && <h4 className="font-black text-xs mb-2">{link.title}</h4>}
+                            {(link.items || []).length > 0 ? (
+                              <div className="space-y-1">
+                                {(link.items || []).map((item: any, i: number) => (
+                                  <div key={i} className="rounded-lg border border-black/5 px-2.5 py-2 flex items-center justify-between">
+                                    <span className="text-[10px] font-bold truncate pr-2">{item.question || 'Question...'}</span>
+                                    <ChevronDown size={10} className="shrink-0" {...{ style: { color: formData.brand_color } }} />
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className={`text-center py-4 text-[10px] font-medium ${previewSub}`}>❓ Ajoutez des questions</div>
+                            )}
+                          </div>
+                        )
+                      }
+
+                      {/* ── Text Preview ──────────────── */}
+                      if (blockType === 'text') {
+                        return (
+                          <div key={link.id} className="w-full text-center">
+                            <p className={`text-[11px] font-medium leading-relaxed whitespace-pre-wrap ${previewSub}`}>
+                              {link.content || 'Texte libre...'}
+                            </p>
+                          </div>
+                        )
+                      }
+
+                      {/* ── Divider Preview ───────────── */}
+                      if (blockType === 'divider') {
+                        const divColor = isDarkTheme ? 'border-white/10' : isGlassTheme ? 'border-white/20' : 'border-gray-200'
+                        if (link.dividerStyle === 'space') return <div key={link.id} className="h-4" />
+                        return (
+                          <div key={link.id} className={`w-full ${link.dividerStyle === 'dotted' ? `border-t-2 border-dotted ${divColor}` : `border-t ${divColor}`}`} />
+                        )
+                      }
+
+                      {/* ── Classic Link Preview ─────── */}
                       const shapeClass = link.buttonShape && link.buttonShape !== 'default' ? link.buttonShape : formData.theme === 'custom' ? formData.custom_appearance?.button_shape : 'rounded-2xl';
                       const animClass = link.animation === 'pulse' ? 'animate-pulse' : link.animation === 'bounce' ? 'animate-bounce' : '';
                       

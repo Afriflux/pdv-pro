@@ -33,7 +33,7 @@ import { Store,
   Gift,
   BellRing
  } from 'lucide-react'
-import { NotificationBell } from '../dashboard/NotificationBell' // On réutilise celle du dashboard
+import { AdminGlobalBell } from './AdminGlobalBell' 
 import { Logo } from '@/components/ui/Logo'
 
 interface NavItem {
@@ -54,6 +54,7 @@ const NAV: NavSection[] = [
     items: [
       { name: 'Vue d\'ensemble', href: '/admin', icon: LayoutDashboard },
       { name: 'Tous Utilisateurs', href: '/admin/users', icon: UsersRound, badge: 'NEW' },
+      { name: 'Catalogue Global', href: '/admin/products', icon: ShoppingBag, badge: 'NEW' },
       { name: 'Commandes', href: '/admin/orders', icon: ShoppingBag },
       { name: 'Closers (COD)', href: '/admin/closing', icon: PhoneCall },
     ]
@@ -64,6 +65,7 @@ const NAV: NavSection[] = [
       { name: 'Yayyam ERP', href: '/admin/erp', icon: Building2, badge: 'NATIV' },
       { name: 'Plaintes', href: '/admin/complaints', icon: AlertTriangle },
       { name: 'Vérifications KYC', href: '/admin/kyc', icon: ShieldCheck },
+      { name: 'Contrats & Légal', href: '/admin/contracts', icon: ShieldCheck, badge: 'NEW' },
       { name: 'Rôles & Admins', href: '/admin/roles', icon: ShieldCheck },
       { name: 'Audit & Historique', href: '/admin/audit', icon: History },
     ]
@@ -210,7 +212,7 @@ function AdminSidebarContent({
         </Link>
         
         <div className={`flex items-center gap-2 ${collapsed ? 'flex-col' : ''}`}>
-          <NotificationBell />
+          <AdminGlobalBell />
           {setCollapsed && (
             <button 
               onClick={() => setCollapsed(!collapsed)} 

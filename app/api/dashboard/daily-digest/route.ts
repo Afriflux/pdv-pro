@@ -1,10 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(req: NextRequest) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+  }
+
   const storeId = req.nextUrl.searchParams.get('storeId')
   if (!storeId) {
     return NextResponse.json(null, { status: 400 })
+  }
+
+  // Vérifier que l'utilisateur possède cette boutique
+  const store = await prisma.store.findFirst({
+    where: { id: storeId, user_id: user.id },
+    select: { id: true }
+  })
+  if (!store) {
+    return NextResponse.json({ error: 'Accès refusé' }, { status: 403 })
   }
 
   const today = new Date()

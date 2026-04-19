@@ -1,10 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendWhatsApp } from '@/lib/whatsapp/sendWhatsApp'
+import { verifyCronSecret } from '@/lib/cron/cron-helpers'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  if (!verifyCronSecret(req)) {
+    return new NextResponse('Unauthorized', { status: 401 })
+  }
+
   try {
     const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
     const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)

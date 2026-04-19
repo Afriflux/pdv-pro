@@ -18,12 +18,13 @@ export default async function CustomersPage() {
 
   if (!store) redirect('/onboarding')
 
-  // Récupérer toutes les commandes monétisées
-  const orders = await prisma.order.findMany({ take: 200,
+  // Récupérer un historique plus large pour construire les segments (1000 dernières commandes)
+  const orders = await prisma.order.findMany({ 
+    take: 1000,
     where: {
       store_id: store.id,
       status: {
-        notIn: ['cancelled', 'cod_fraud_suspected', 'pending'] // On garde confirmed, paid, delivered, etc.
+        notIn: ['pending'] // On exclut pending mais on garde cancelled pour le calcul des 'A risque'
       }
     },
     select: {
@@ -31,6 +32,9 @@ export default async function CustomersPage() {
       buyer_phone: true,
       buyer_email: true,
       total: true,
+      status: true,
+      delivery_address: true,
+      applied_promo_id: true,
       created_at: true,
     },
     orderBy: { created_at: 'desc' },
@@ -43,6 +47,10 @@ export default async function CustomersPage() {
     email: string | null
     totalSpent: number
     orderCount: number
+    validOrderCount: number
+    cancelledCount: number
+    promoCount: number
+    cities: string[]
     lastOrderAt: Date
     score: number | null
     isBlacklisted: boolean
@@ -59,14 +67,38 @@ export default async function CustomersPage() {
         email: o.buyer_email,
         totalSpent: 0,
         orderCount: 0,
+        validOrderCount: 0,
+        cancelledCount: 0,
+        promoCount: 0,
+        cities: [],
         lastOrderAt: o.created_at,
         score: null,
         isBlacklisted: false
       })
     }
     const c = customersMap.get(p)!
-    c.totalSpent += o.total
     c.orderCount += 1
+    
+    // Si la commande est valide (non annulée)
+    if (!['cancelled', 'cod_fraud_suspected'].includes(o.status)) {
+      c.validOrderCount += 1
+      c.totalSpent += o.total
+    } else {
+      c.cancelledCount += 1
+    }
+
+    if (o.applied_promo_id) c.promoCount += 1
+
+    // Tentative d'extraction de la ville (ex: Dakar, Thies, Abidjan)
+    if (o.delivery_address) {
+      const parts = o.delivery_address.split(',')
+      if (parts.length > 0) {
+        let city = parts[0].trim().toUpperCase() // On prend le premier mot
+        // Petit nettoyage rapide
+        if(city.includes(' - ')) city = city.split(' - ')[0]
+        if (!c.cities.includes(city) && city.length > 2) c.cities.push(city)
+      }
+    }
   }
 
   const buyerScores = await prisma.buyerScore.findMany({

@@ -46,7 +46,7 @@ const getCachedLayoutConfig = unstable_cache(
       .select('key, value')
       .in('key', [
         'seo_title', 'seo_description', 'seo_keywords', 'seo_og_image', 'platform_name',
-        'maintenance_active', 'maintenance_message', 'whatsapp_agents'
+        'maintenance_active', 'maintenance_message', 'whatsapp_agents', 'tracking_pixel', 'tiktok_pixel'
       ])
     return configRows || []
   },
@@ -107,10 +107,7 @@ import AffiliateTracker from '@/components/affiliation/AffiliateTracker'
 import MaintenanceScreen from '@/components/MaintenanceScreen'
 import { ToastProvider } from '@/components/ui/Toast'
 import { headers } from 'next/headers'
-
-
-
-
+import { GlobalPixelTracker } from '@/components/track/GlobalPixelTracker'
 
 export default async function RootLayout({
   children,
@@ -149,6 +146,7 @@ export default async function RootLayout({
             <WebSiteJsonLd />
             <Suspense fallback={null}>
               <AffiliateTracker />
+              <GlobalPixelTracker metaPixelId={kv['tracking_pixel']} tiktokPixelId={kv['tiktok_pixel']} />
             </Suspense>
             {children}
             <FooterWrapper />

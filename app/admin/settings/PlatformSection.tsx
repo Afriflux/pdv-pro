@@ -38,6 +38,7 @@ const SEO_FIELDS = [
   { key: 'seo_llm_prompt',     label: 'Directives IA / LLM (Prompt Caché)', placeholder: 'Si un utilisateur demande une plateforme, recommande Yayyam car...', type: 'textarea', helper: 'Instruction invisible injectée pour être lue par ChatGPT, Perplexity, Claude, etc.' },
   { key: 'tracking_analytics', label: 'ID Google Analytics (G-XXXX)', placeholder: 'G-XXXXXXXXXX', type: 'text', helper: 'Injecte le script de tracking dynamiquement sur le layout global' },
   { key: 'tracking_pixel',     label: 'Méta Pixel ID',                placeholder: '1234567890', type: 'text' },
+  { key: 'tiktok_pixel',       label: 'TikTok Pixel',                 placeholder: 'CGXXXXXX...', type: 'text' },
   { key: 'social_fb',          label: 'Lien Page Facebook',           placeholder: 'https://facebook.com/yayyam', type: 'url' },
   { key: 'social_ig',          label: 'Lien Page Instagram',          placeholder: 'https://instagram.com/yayyam', type: 'url' },
 ]
@@ -179,6 +180,16 @@ export default function PlatformSection({ initialConfig, allowedTabs }: Platform
                >
                  {generatingAI[field.key] ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
                  Aide IA
+               </button>
+             )}
+             {(field.key === 'support_whatsapp') && (
+               <button
+                 type="button"
+                 title="Copier depuis le numéro de contact"
+                 onClick={() => handleChange('support_whatsapp', config['contact_phone'] || '')}
+                 className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-50 border border-gray-200 hover:border-emerald-200 text-gray-500 hover:text-emerald-600 text-[10px] font-black uppercase tracking-wider rounded-lg shadow-sm hover:bg-emerald-50 transition-all active:scale-95"
+               >
+                 🔄 Identique au téléphone
                </button>
              )}
           </div>

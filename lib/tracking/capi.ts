@@ -275,3 +275,216 @@ export async function sendGoogleCAPIPurchaseEvent(params: {
     return false
   }
 }
+
+// ─── 4. META CAPI — ViewContent ───────────────────────────────────────────────
+
+export async function sendMetaCAPIViewContentEvent(params: {
+  pixelId: string
+  capiToken: string
+  eventId: string
+  contentName: string
+  contentId: string
+  value?: number
+  currency?: string
+  clientIp?: string
+  clientUserAgent?: string
+  sourceUrl?: string
+}) {
+  const { pixelId, capiToken, eventId, contentName, contentId, value, currency, clientIp, clientUserAgent, sourceUrl } = params
+  if (!pixelId || !capiToken) return false
+
+  const payload = {
+    data: [{
+      event_name: 'ViewContent',
+      event_time: Math.floor(Date.now() / 1000),
+      event_id: eventId,
+      event_source_url: sourceUrl || 'https://yayyam.com',
+      action_source: 'website',
+      user_data: {
+        client_ip_address: clientIp || '0.0.0.0',
+        client_user_agent: clientUserAgent || 'Yayyam Server',
+      },
+      custom_data: {
+        currency: (currency || 'XOF').toUpperCase(),
+        value: value || 0,
+        content_name: contentName,
+        content_ids: [contentId],
+        content_type: 'product',
+      }
+    }]
+  }
+
+  try {
+    const response = await fetch(`https://graph.facebook.com/v19.0/${pixelId}/events?access_token=${capiToken}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    if (!response.ok) {
+      const result = await response.json()
+      console.error('[CAPI Meta ViewContent] Erreur:', result)
+      return false
+    }
+    return true
+  } catch (error) {
+    console.error('[CAPI Meta ViewContent] Erreur réseau:', error)
+    return false
+  }
+}
+
+// ─── 5. META CAPI — InitiateCheckout ──────────────────────────────────────────
+
+export async function sendMetaCAPIInitiateCheckoutEvent(params: {
+  pixelId: string
+  capiToken: string
+  eventId: string
+  contentName: string
+  value: number
+  currency?: string
+  customerPhone?: string
+  clientIp?: string
+  clientUserAgent?: string
+  sourceUrl?: string
+}) {
+  const { pixelId, capiToken, eventId, contentName, value, currency, customerPhone, clientIp, clientUserAgent, sourceUrl } = params
+  if (!pixelId || !capiToken) return false
+
+  const userData: Record<string, unknown> = {
+    client_ip_address: clientIp || '0.0.0.0',
+    client_user_agent: clientUserAgent || 'Yayyam Server',
+  }
+  if (customerPhone) userData.ph = [hashVal(customerPhone)]
+
+  const payload = {
+    data: [{
+      event_name: 'InitiateCheckout',
+      event_time: Math.floor(Date.now() / 1000),
+      event_id: eventId,
+      event_source_url: sourceUrl || 'https://yayyam.com',
+      action_source: 'website',
+      user_data: userData,
+      custom_data: {
+        currency: (currency || 'XOF').toUpperCase(),
+        value,
+        content_name: contentName,
+      }
+    }]
+  }
+
+  try {
+    const response = await fetch(`https://graph.facebook.com/v19.0/${pixelId}/events?access_token=${capiToken}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    if (!response.ok) {
+      const result = await response.json()
+      console.error('[CAPI Meta InitiateCheckout] Erreur:', result)
+      return false
+    }
+    return true
+  } catch (error) {
+    console.error('[CAPI Meta InitiateCheckout] Erreur réseau:', error)
+    return false
+  }
+}
+
+// ─── 6. TIKTOK CAPI — ViewContent ────────────────────────────────────────────
+
+export async function sendTikTokCAPIViewContentEvent(params: {
+  pixelId: string
+  capiToken: string
+  eventId: string
+  contentName: string
+  contentId: string
+  value?: number
+  currency?: string
+  clientIp?: string
+  clientUserAgent?: string
+}) {
+  const { pixelId, capiToken, eventId, contentName, contentId, value, currency, clientIp, clientUserAgent } = params
+  if (!pixelId || !capiToken) return false
+
+  try {
+    const response = await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Token': capiToken,
+      },
+      body: JSON.stringify({
+        event_source: 'web',
+        event_source_id: pixelId,
+        data: [{
+          event: 'ViewContent',
+          event_id: eventId,
+          timestamp: new Date().toISOString(),
+          context: {
+            ip: clientIp || '0.0.0.0',
+            user_agent: clientUserAgent || 'Yayyam Server',
+          },
+          properties: {
+            currency: (currency || 'XOF').toUpperCase(),
+            value: value || 0,
+            contents: [{ content_name: contentName, content_id: contentId, content_type: 'product', quantity: 1 }],
+          },
+        }],
+      })
+    })
+    const result = await response.json()
+    return result.code === 0
+  } catch (error) {
+    console.error('[CAPI TikTok ViewContent] Erreur:', error)
+    return false
+  }
+}
+
+// ─── 7. TIKTOK CAPI — InitiateCheckout ───────────────────────────────────────
+
+export async function sendTikTokCAPIInitiateCheckoutEvent(params: {
+  pixelId: string
+  capiToken: string
+  eventId: string
+  contentName: string
+  value: number
+  currency?: string
+  clientIp?: string
+  clientUserAgent?: string
+}) {
+  const { pixelId, capiToken, eventId, contentName, value, currency, clientIp, clientUserAgent } = params
+  if (!pixelId || !capiToken) return false
+
+  try {
+    const response = await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Token': capiToken,
+      },
+      body: JSON.stringify({
+        event_source: 'web',
+        event_source_id: pixelId,
+        data: [{
+          event: 'InitiateCheckout',
+          event_id: eventId,
+          timestamp: new Date().toISOString(),
+          context: {
+            ip: clientIp || '0.0.0.0',
+            user_agent: clientUserAgent || 'Yayyam Server',
+          },
+          properties: {
+            currency: (currency || 'XOF').toUpperCase(),
+            value,
+            contents: [{ content_name: contentName, content_type: 'product', quantity: 1, price: value }],
+          },
+        }],
+      })
+    })
+    const result = await response.json()
+    return result.code === 0
+  } catch (error) {
+    console.error('[CAPI TikTok InitiateCheckout] Erreur:', error)
+    return false
+  }
+}
+

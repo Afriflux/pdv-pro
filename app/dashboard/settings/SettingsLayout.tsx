@@ -101,6 +101,7 @@ export function SettingsLayout({ store, profile, userId }: { store: any, profile
             <MenuBtn active={activeSection === 'securite'} icon={<ShieldCheck size={16} />} label="Sécurité" onClick={() => setActiveSection('securite')} />
             <MenuBtn active={activeSection === 'notifications'} icon={<Bell size={16} />} label="Notifications" onClick={() => setActiveSection('notifications')} />
             <MenuBtn active={activeSection === 'retrait'} icon={<Wallet size={16} />} label="Retraits" onClick={() => setActiveSection('retrait')} />
+            <MenuBtn active={activeSection === 'kyc'} icon={<CheckCircle2 size={16} />} label="Vérification KYC" onClick={() => setActiveSection('kyc')} />
             <MenuBtn active={activeSection === 'contrat'} icon={<FileText size={16} />} label="Contrat" onClick={() => setActiveSection('contrat')} />
             
             {store?.installedApps?.some((a: { app_id: string; status: string }) => a.app_id === 'whatsapp-bot' && a.status === 'active') && (

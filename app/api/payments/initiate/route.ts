@@ -161,9 +161,21 @@ export async function POST(req: Request) {
         break
       }
       case 'paytech': {
-        // PayTech uses same CinetPay-like flow for now
-        const result = await initiateCardPayment(intent)
-        checkoutUrl = result.checkoutUrl
+        // Route via le Smart Router (qui appelle la vraie API PayTech)
+        const { createPaymentSession } = await import('@/lib/payments/routing')
+        const result = await createPaymentSession({
+          amount: order.total,
+          currency: 'XOF',
+          orderId: order.id,
+          method: 'paytech',
+          customer: { name: 'Client', phone: intent.customerPhone || '770000000' },
+          description: `Commande Yayyam #${order.id}`,
+          returnUrl: intent.redirectUrl,
+          notifyUrl: intent.webhookUrl,
+          env: process.env.NODE_ENV === 'production' ? 'prod' : 'test'
+        })
+        if (!result.success || !result.paymentUrl) throw new Error(result.error || 'PayTech Error')
+        checkoutUrl = result.paymentUrl
         break
       }
       case 'bictorys': {

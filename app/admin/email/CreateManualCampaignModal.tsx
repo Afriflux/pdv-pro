@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { X, Loader2, Users, PenTool, Send, Type, Image, Link2, AlignLeft, Eye, Edit3, MessageSquare, Upload } from 'lucide-react'
+import { X, Loader2, Users, PenTool, Send, Type, Image as ImageIcon, Link2, AlignLeft, Eye, Edit3, MessageSquare, Upload } from 'lucide-react'
 import { toast } from '@/lib/toast'
 import { createBrowserClient } from '@supabase/ssr'
 
@@ -338,7 +338,7 @@ export default function CreateManualCampaignModal({ isOpen, onClose }: Props) {
               {/* ── Section 1 : Bannière ── */}
               <div className="bg-gradient-to-r from-indigo-50/50 to-purple-50/50 p-5 rounded-2xl border border-indigo-100/50">
                 <label className="text-xs font-black text-indigo-600 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                  <Image className="w-3.5 h-3.5" /> Bannière visuelle <span className="text-gray-400 font-medium normal-case tracking-normal ml-1">(optionnel)</span>
+                  <ImageIcon className="w-3.5 h-3.5" /> Bannière visuelle <span className="text-gray-400 font-medium normal-case tracking-normal ml-1">(optionnel)</span>
                 </label>
                 <div className="flex gap-3">
                   <input
@@ -371,7 +371,7 @@ export default function CreateManualCampaignModal({ isOpen, onClose }: Props) {
                 </div>
                 {bannerUrl && (
                   <div className="mt-3 rounded-xl overflow-hidden border border-indigo-100 max-h-48 relative group">
-                    <img src={bannerUrl} alt="Aperçu bannière" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                    <img src={bannerUrl} alt="Aperçu de la bannière email" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
                     <button
                       onClick={() => setBannerUrl('')}
                       title="Supprimer la bannière"
