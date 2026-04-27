@@ -139,23 +139,24 @@ function StickyDesktopBar({ productName, price, accent, hasDiscount, originalPri
   if (!visible || showForm) return null
 
   return (
-    <div className="hidden lg:block fixed top-0 left-0 right-0 z-50 transform transition-all duration-300 animate-in slide-in-from-top-6 fade-in">
-      <div className="bg-white/80 backdrop-blur-xl border-b border-gray-100/50 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
-          <h2 className="font-black text-gray-900 text-sm truncate max-w-md">{productName}</h2>
-          <div className="flex items-center gap-4">
+    <div className="hidden lg:block fixed top-0 left-0 right-0 z-50 transform transition-all duration-500 animate-in slide-in-from-top-6 fade-in">
+      <div className="bg-white/70 backdrop-blur-2xl border-b border-white/50 shadow-[0_4px_30px_rgba(0,0,0,0.08)]">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+          <h2 className="font-black text-gray-900 text-sm truncate max-w-md tracking-tight">{productName}</h2>
+          <div className="flex items-center gap-5">
             <div className="flex items-baseline gap-2">
               {hasDiscount && (
                 <span className="text-xs text-gray-400 line-through font-medium">{originalPrice.toLocaleString('fr-FR')} F</span>
               )}
-              <span className="font-black text-lg" {...{ style: { color: accent } }}>{price.toLocaleString('fr-FR')} <span className="text-xs opacity-70">FCFA</span></span>
+              <span className="font-black text-xl" {...{ style: { color: accent } }}>{price.toLocaleString('fr-FR')} <span className="text-xs opacity-60 font-bold">FCFA</span></span>
             </div>
             <button
               onClick={onBuy}
-              className="text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-md transition-all hover:scale-[1.02] active:scale-95"
-              {...{ style: { backgroundColor: accent } }}
+              className="relative text-white font-black text-sm px-7 py-3 rounded-xl transition-all hover:scale-[1.03] active:scale-95 overflow-hidden group border border-white/20"
+              {...{ style: { backgroundColor: accent, boxShadow: `0 8px 25px -5px ${accent}60` } }}
             >
-              Commander
+              <div className="absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out" />
+              <span className="relative z-10">🛒 Commander</span>
             </button>
           </div>
         </div>
@@ -1377,30 +1378,30 @@ export default function ProductPage({
 
       {/* ── Sticky bar mobile ──────────────────────────────────────────────── */}
       {!showForm && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-2xl px-4 py-3 safe-area-inset-bottom">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-3 pb-safe pointer-events-none">
           
           {variantStock < 15 && variantStock > 0 && (
-            <div className={`absolute -top-7 left-1/2 -translate-x-1/2 px-4 py-1 rounded-t-xl text-xs font-bold text-white shadow-lg whitespace-nowrap ${variantStock < 5 ? 'bg-red-500 animate-pulse' : 'bg-orange-500'}`}>
-              {variantStock < 5 ? `🔥 Vite ! Plus que ${variantStock} en stock` : `⚠️ Stock limité : ${variantStock}`}
+            <div className={`absolute -top-8 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-black text-white shadow-xl whitespace-nowrap pointer-events-auto ${variantStock < 5 ? 'bg-red-500 animate-pulse' : 'bg-orange-500'}`}>
+              {variantStock < 5 ? `🔥 Plus que ${variantStock} en stock !` : `⚠️ Stock limité : ${variantStock}`}
             </div>
           )}
           {variantStock === 0 && (
-            <div className="absolute -top-7 left-1/2 -translate-x-1/2 px-4 py-1 rounded-t-xl text-xs font-bold text-white bg-gray-500 shadow-lg whitespace-nowrap">
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-black text-white bg-gray-500 shadow-xl whitespace-nowrap pointer-events-auto">
               ❌ Rupture de stock
             </div>
           )}
 
-          <div className="flex items-center gap-3">
+          <div className="bg-white/85 backdrop-blur-2xl border border-white/50 shadow-[0_-8px_30px_rgba(0,0,0,0.1)] rounded-[1.5rem] p-3 flex items-center gap-3 pointer-events-auto">
             {/* Prix */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 pl-2">
               {computedPrice.hasDiscount && (
-                <p className="text-xs text-gray-400 line-through leading-none">
+                <p className="text-[10px] text-gray-400 line-through leading-none">
                   {(product.price * quantity).toLocaleString('fr-FR')} F
                 </p>
               )}
-              <p className="font-black text-lg leading-none" {...{ style: { color: accent } }}>
-                {calculatedTotal.toLocaleString('fr-FR')}{' '}
-                <span className="text-xs font-medium opacity-60">FCFA</span>
+              <p className="font-black text-lg leading-tight" {...{ style: { color: accent } }}>
+                {calculatedTotal.toLocaleString('fr-FR')}
+                <span className="text-[10px] font-bold opacity-50 ml-0.5">FCFA</span>
               </p>
             </div>
 
@@ -1408,10 +1409,10 @@ export default function ProductPage({
             <button
               type="button"
               onClick={() => handleOpenForm('online')}
-              className="flex-1 text-white font-black py-3.5 rounded-xl text-sm transition-all shadow-lg active:scale-95"
-              {...{ style: { backgroundColor: accent } }}
+              className="flex-1 text-white font-black py-3.5 rounded-[1rem] text-sm transition-all active:scale-95 border border-white/20"
+              {...{ style: { backgroundColor: accent, boxShadow: `0 8px 25px -5px ${accent}60` } }}
             >
-              🛒 Commander maintenant
+              🛒 Commander
             </button>
           </div>
         </div>
