@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ShieldCheck, Truck, Lock, ArrowRight } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 interface UpsellClientProps {
   baseOrderId: string
@@ -47,7 +48,6 @@ export default function UpsellClient({ baseOrderId, product, discountedPrice, or
         throw new Error(data.error || 'Erreur inconnue')
       }
       
-      // Success -> Redirect to normal COD success page with appended order? Or just the normal success page
       router.push(`/checkout/success?order=${baseOrderId}&cod=true`)
     } catch (e: any) {
       setError(e.message)
@@ -60,7 +60,12 @@ export default function UpsellClient({ baseOrderId, product, discountedPrice, or
   }
 
   return (
-    <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl border-4 border-emerald-500 overflow-hidden relative">
+    <motion.div 
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl border-4 border-emerald-500 overflow-hidden relative"
+    >
       {/* ── TIMER RIBBON ── */}
       <div className="bg-emerald-600 text-white py-3 px-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 font-bold text-center">
         <span className="uppercase tracking-widest text-sm">Offre Expire Dans :</span>
@@ -153,6 +158,6 @@ export default function UpsellClient({ baseOrderId, product, discountedPrice, or
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

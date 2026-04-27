@@ -586,7 +586,7 @@ export function CheckoutForm({
         </div>
 
         {/* Récapitulatif commande */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 p-4">
+        <div className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden border border-white/60 p-4">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Récapitulatif</p>
           <div className="flex justify-between text-sm text-gray-600">
             <span>{product.name} × {quantity}</span>
@@ -622,7 +622,7 @@ export function CheckoutForm({
               <span>-{loyaltyDiscount.toLocaleString('fr-FR')} F</span>
             </div>
           )}
-          <div className="border-t border-gray-100 pt-2 mt-2 flex justify-between font-black">
+          <div className="border-t border-white/60 pt-2 mt-2 flex justify-between font-black">
             <span className="text-gray-700">Total</span>
             <span className="text-[var(--accent)]">{total.toLocaleString('fr-FR')} FCFA</span>
           </div>
@@ -657,7 +657,7 @@ export function CheckoutForm({
               <button 
                 type="button"
                 onClick={() => setRedeemPoints(Math.min(loyaltyData.account?.balance || 0, maxAllowedPoints))}
-                className="text-xs font-bold text-orange-600 bg-white border border-gray-100 px-3 py-2.5 min-h-[44px] rounded uppercase tracking-wide shadow-sm hover:bg-orange-600 hover:text-white transition"
+                className="text-xs font-bold text-orange-600 bg-white border border-white/60 px-3 py-2.5 min-h-[44px] rounded uppercase tracking-wide shadow-sm hover:bg-orange-600 hover:text-white transition"
               >
                 Max ({Math.min(loyaltyData.account?.balance || 0, maxAllowedPoints)})
               </button>
@@ -716,7 +716,7 @@ export function CheckoutForm({
       </div>
 
       {/* Produit */}
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+      <div className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden border border-white/60">
         {product.images?.[0] && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={product.images[0]} alt={product.name} className="w-full h-44 object-cover" />
@@ -771,7 +771,7 @@ export function CheckoutForm({
 
         {/* Variantes */}
         {variants.length > 0 && (
-          <section className="bg-white rounded-2xl shadow-sm p-4 space-y-3 border border-gray-100">
+          <section className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 space-y-3 border border-white/60">
             <h2 className="font-semibold text-gray-800 text-sm italic">Options disponibles</h2>
             <div className="flex flex-wrap gap-2">
               {variants.map(v => (
@@ -796,7 +796,7 @@ export function CheckoutForm({
 
         {/* Quantité & Palier B2B */}
         {product.type === 'physical' && (
-          <section className="bg-white rounded-2xl shadow-sm p-4 border border-gray-100">
+          <section className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 border border-white/60">
             <div className="flex justify-between items-center mb-3">
               <h2 className="font-semibold text-gray-800 text-sm">Quantité</h2>
               {volumeDiscountAmount > 0 && (
@@ -824,7 +824,7 @@ export function CheckoutForm({
                 const sortedRules = [...config.rules].sort((a, b) => a.quantity - b.quantity)
                 
                 return (
-                  <div className="mt-4 pt-4 border-t border-gray-100">
+                  <div className="mt-4 pt-4 border-t border-white/60">
                     <p className="text-xs font-black text-gray-800 mb-3">{config.title || "Achetez plus, économisez plus !"}</p>
                     <div className="flex flex-col gap-2">
                       {sortedRules.map((rule: { quantity: number; discountType: string; value: number }, idx: number) => {
@@ -833,7 +833,7 @@ export function CheckoutForm({
                           <div 
                             key={idx} 
                             onClick={() => setQuantity(rule.quantity)}
-                            className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${isUnlocked ? 'border-emerald-500 bg-emerald-50/50 scale-[1.02] shadow-sm' : 'border-gray-100 bg-gray-50 hover:border-emerald-200 hover:bg-emerald-50/30'}`}
+                            className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${isUnlocked ? 'border-emerald-500 bg-emerald-50/50 scale-[1.02] shadow-sm' : 'border-white/60 bg-gray-50 hover:border-emerald-200 hover:bg-emerald-50/30'}`}
                           >
                             <div className="flex items-center gap-2">
                               <div className={`w-5 h-5 rounded-full flex items-center justify-center border ${isUnlocked ? 'bg-emerald-500 border-emerald-600' : 'bg-white border-gray-300'}`}>
@@ -860,7 +860,7 @@ export function CheckoutForm({
 
         {/* Coaching : Choix du créneau */}
         {product.type === 'coaching' && (
-          <section className="bg-white rounded-2xl shadow-sm p-4 space-y-4 border border-gray-100">
+          <section className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 space-y-4 border border-white/60">
             <h2 className="font-semibold text-gray-800 text-sm">Réserver votre session</h2>
             
             {product.coaching_durations && product.coaching_durations.length > 1 && (
@@ -900,7 +900,7 @@ export function CheckoutForm({
             {selectedDate && (
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-2">Créneaux horaires disponibles <span className="text-red-500">*</span></label>
-                <p className="text-xs text-gray-500 mb-3 bg-gray-50 p-2 rounded-lg border border-gray-100 flex items-start gap-1">
+                <p className="text-xs text-gray-500 mb-3 bg-gray-50 p-2 rounded-lg border border-white/60 flex items-start gap-1">
                   <span className="text-sm">🌍</span>
                   <span>Les horaires sont affichés à l'heure du vendeur (GMT). 
                   {userTz && <strong> Votre fuseau : {userTz}</strong>}</span>
@@ -1005,7 +1005,7 @@ export function CheckoutForm({
                             type="button"
                             disabled={isFull && !isSelected}
                             onClick={() => setSelectedSlotStr(slotValue)}
-                            className={`py-2.5 px-2 rounded-xl border-2 text-sm font-bold transition flex items-center justify-center ${isFull && !isSelected ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-100' : isSelected ? 'bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] border-[var(--accent)] text-[var(--accent)]' : 'border-gray-200 text-gray-700 bg-white'}`}
+                            className={`py-2.5 px-2 rounded-xl border-2 text-sm font-bold transition flex items-center justify-center ${isFull && !isSelected ? 'opacity-40 cursor-not-allowed bg-gray-50 text-gray-400 border-white/60' : isSelected ? 'bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] border-[var(--accent)] text-[var(--accent)]' : 'border-gray-200 text-gray-700 bg-white'}`}
                           >
                             {combo.start} - {combo.end} {isFull && !isSelected ? '(Complet)' : ''}
                           </button>
@@ -1020,7 +1020,7 @@ export function CheckoutForm({
         )}
 
         {/* Coordonnées */}
-        <section className="bg-white rounded-2xl shadow-sm p-4 space-y-4 border border-gray-100">
+        <section className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 space-y-4 border border-white/60">
           <h2 className="font-semibold text-gray-800 text-sm">Vos coordonnées</h2>
 
           {product.type !== 'digital' && (
@@ -1172,7 +1172,7 @@ export function CheckoutForm({
           <>
         {/* Code Promo */}
         {!computedPrice.hasDiscount && (
-          <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <section className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 overflow-hidden">
             {appliedPromo ? (
               <div className="p-4">
                 <div className="flex items-center justify-between p-3 rounded-xl border bg-[color-mix(in_srgb,var(--accent)_5%,transparent)] border-[color-mix(in_srgb,var(--accent)_11%,transparent)]">
@@ -1268,7 +1268,7 @@ export function CheckoutForm({
                 <img 
                   src={bumpProduct.images[0]} 
                   alt={bumpProduct.name} 
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-gray-100 shadow-sm shrink-0" 
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-white/60 shadow-sm shrink-0" 
                 />
               ) : (
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
@@ -1361,7 +1361,7 @@ export function CheckoutForm({
               <span>{deliveryFee.toLocaleString('fr-FR')} F</span>
             </div>
           )}
-          <div className="border-t border-gray-100 pt-3 flex justify-between items-end font-black">
+          <div className="border-t border-white/60 pt-3 flex justify-between items-end font-black">
             <span className="text-gray-900">Total à payer</span>
             <span className="text-xl text-[var(--accent)]">{total.toLocaleString('fr-FR')} <span className="text-xs opacity-50">FCFA</span></span>
           </div>
@@ -1395,7 +1395,7 @@ export function CheckoutForm({
         )}
 
         {/* Badges de Paiement Sécurisé Ouest-Africains */}
-        <div className="mt-8 pt-6 border-t border-gray-100">
+        <div className="mt-8 pt-6 border-t border-white/60">
           <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
             GARANTIE ACHETEUR YAYYAM
           </p>

@@ -52,20 +52,22 @@ export default function VisitorCounter({
       role="status"
       aria-live="polite"
       aria-label={`${count} personnes regardent ce produit en ce moment`}
-      className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5"
+      className="flex items-center gap-2 bg-emerald-50/50 backdrop-blur-md border border-emerald-100 rounded-2xl px-4 py-3 shadow-[0_4px_20px_-4px_rgba(16,185,129,0.1)] transition-all hover:scale-[1.02]"
     >
-      {/* Point vert "en temps réel" */}
+      {/* Point vert "en temps réel" God-Tier */}
       <span
-        className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0"
+        className="relative flex h-3 w-3 flex-shrink-0"
         aria-hidden="true"
-      />
+      >
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+      </span>
 
       {/* Message avec animation fade sur le nombre */}
-      <p className="text-sm text-gray-500 font-medium">
-        <span aria-hidden="true">👀</span>{' '}
+      <p className="text-sm text-emerald-900 font-medium tracking-tight">
         <span
-          className={`font-black text-gray-700 transition-opacity duration-300 ${
-            animating ? 'opacity-0' : 'opacity-100'
+          className={`font-black text-emerald-700 transition-all duration-300 ${
+            animating ? 'opacity-0 scale-90' : 'opacity-100 scale-100'
           }`}
         >
           {count}
